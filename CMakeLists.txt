@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.19)
+project(Basic_On_Board_Software_Project_Template)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(Basic_On_Board_Software_Project_Template main.cpp)
