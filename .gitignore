@@ -1,8 +1,5 @@
 # Build files
-build
-cmake-build-debug
-docs
-/cmake-build-debug/
+
 
 # Dump and continuous integration files
 *.dump
