@@ -1,6 +1,6 @@
 format_version: v1.0
 type: UniqueComponent
-attributes: {id: twihs1}
+attributes: {id: twihs0}
 children:
 - type: Symbols
   children:
@@ -10,7 +10,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: twihs1, value: 'true'}
+        attributes: {id: twihs0, value: 'true'}
   - type: Combo
     attributes: {id: TWIHS_OPMODE}
     children:
@@ -23,11 +23,11 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: twihs1, value: MASTER}
+        attributes: {id: twihs0, value: MASTER}
 - type: Attachments
   children:
   - type: DirectCapability
-    attributes: {id: TWIHS1_I2C}
+    attributes: {id: TWIHS0_I2C}
     children:
     - type: Attributes
       children:
@@ -40,4 +40,4 @@ children:
         children:
         - {type: Value, value: drv_i2c_I2C_dependency}
 - type: ElementPosition
-  attributes: {x: '45', y: '237', id: twihs1}
+  attributes: {x: '70', y: '334', id: twihs0}

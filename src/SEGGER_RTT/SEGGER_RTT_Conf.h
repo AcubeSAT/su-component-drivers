@@ -68,7 +68,7 @@ Revision: $Rev: 13430 $
 #define SEGGER_RTT_CONF_H
 
 #ifdef __IAR_SYSTEMS_ICC__
-#include <intrinsics.h>
+  #include <intrinsics.h>
 #endif
 
 /*********************************************************************
@@ -92,19 +92,19 @@ Revision: $Rev: 13430 $
 *
 *       RTT memcpy configuration
 *
-*       memcpy() is good for large amounts of data,
+*       memcpy() is good for large amounts of data, 
 *       but the overhead is big for small amounts, which are usually stored via RTT.
 *       With SEGGER_RTT_MEMCPY_USE_BYTELOOP a simple byte loop can be used instead.
 *
 *       SEGGER_RTT_MEMCPY() can be used to replace standard memcpy() in RTT functions.
-*       This is may be required with memory access restrictions,
+*       This is may be required with memory access restrictions, 
 *       such as on Cortex-A devices with MMU.
 */
 #define SEGGER_RTT_MEMCPY_USE_BYTELOOP              0 // 0: Use memcpy/SEGGER_RTT_MEMCPY, 1: Use a simple byte-loop
 //
 // Example definition of SEGGER_RTT_MEMCPY to external memcpy with GCC toolchains and Cortex-A targets
 //
-//#if ((defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__)) && (defined (__ARM_ARCH_7A__))
+//#if ((defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__)) && (defined (__ARM_ARCH_7A__))  
 //  #define SEGGER_RTT_MEMCPY(pDest, pSrc, NumBytes)      SEGGER_memcpy((pDest), (pSrc), (NumBytes))
 //#endif
 
@@ -131,8 +131,8 @@ Revision: $Rev: 13430 $
 *       Rowley CrossStudio and GCC
 */
 #if (defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__) || (defined __clang__)
-#if (defined(__ARM_ARCH_6M__) || defined(__ARM_ARCH_8M_BASE__))
-#define SEGGER_RTT_LOCK()   {                                                                   \
+  #if (defined(__ARM_ARCH_6M__) || defined(__ARM_ARCH_8M_BASE__))
+    #define SEGGER_RTT_LOCK()   {                                                                   \
                                     unsigned int LockState;                                         \
                                   __asm volatile ("mrs   %0, primask  \n\t"                         \
                                                   "movs  r1, $1       \n\t"                         \
@@ -148,11 +148,11 @@ Revision: $Rev: 13430 $
                                                   :                                                 \
                                                   );                                                \
                                 }
-#elif (defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__) || defined(__ARM_ARCH_8M_MAIN__))
-#ifndef   SEGGER_RTT_MAX_INTERRUPT_PRIORITY
-#define SEGGER_RTT_MAX_INTERRUPT_PRIORITY   (0x20)
-#endif
-#define SEGGER_RTT_LOCK()   {                                                                   \
+  #elif (defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__) || defined(__ARM_ARCH_8M_MAIN__))
+    #ifndef   SEGGER_RTT_MAX_INTERRUPT_PRIORITY
+      #define SEGGER_RTT_MAX_INTERRUPT_PRIORITY   (0x20)
+    #endif
+    #define SEGGER_RTT_LOCK()   {                                                                   \
                                     unsigned int LockState;                                         \
                                   __asm volatile ("mrs   %0, basepri  \n\t"                         \
                                                   "mov   r1, %1       \n\t"                         \
@@ -162,15 +162,15 @@ Revision: $Rev: 13430 $
                                                   : "r1"                                            \
                                                   );
 
-#define SEGGER_RTT_UNLOCK()   __asm volatile ("msr   basepri, %0  \n\t"                         \
+    #define SEGGER_RTT_UNLOCK()   __asm volatile ("msr   basepri, %0  \n\t"                         \
                                                   :                                                 \
                                                   : "r" (LockState)                                 \
                                                   :                                                 \
                                                   );                                                \
                                 }
 
-#elif defined(__ARM_ARCH_7A__)
-#define SEGGER_RTT_LOCK() {                                                \
+  #elif defined(__ARM_ARCH_7A__)
+    #define SEGGER_RTT_LOCK() {                                                \
                                  unsigned int LockState;                       \
                                  __asm volatile ("mrs r1, CPSR \n\t"           \
                                                  "mov %0, r1 \n\t"             \
@@ -195,7 +195,7 @@ Revision: $Rev: 13430 $
 #else
     #define SEGGER_RTT_LOCK()
     #define SEGGER_RTT_UNLOCK()
-#endif
+  #endif
 #endif
 
 /*********************************************************************
@@ -203,7 +203,7 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration for IAR EWARM
 */
 #ifdef __ICCARM__
-#if (defined (__ARM6M__) && (__CORE__ == __ARM6M__))
+  #if (defined (__ARM6M__) && (__CORE__ == __ARM6M__))
     #define SEGGER_RTT_LOCK()   {                                                                   \
                                   unsigned int LockState;                                           \
                                   LockState = __get_PRIMASK();                                      \
@@ -230,7 +230,7 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration for IAR RX
 */
 #ifdef __ICCRX__
-#define SEGGER_RTT_LOCK()   {                                                                     \
+  #define SEGGER_RTT_LOCK()   {                                                                     \
                                 unsigned long LockState;                                            \
                                 LockState = __get_interrupt_state();                                \
                                 __disable_interrupt();
@@ -244,7 +244,7 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration for IAR RL78
 */
 #ifdef __ICCRL78__
-#define SEGGER_RTT_LOCK()   {                                                                     \
+  #define SEGGER_RTT_LOCK()   {                                                                     \
                                 __istate_t LockState;                                               \
                                 LockState = __get_interrupt_state();                                \
                                 __disable_interrupt();
@@ -258,7 +258,7 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration for KEIL ARM
 */
 #ifdef __CC_ARM
-#if (defined __TARGET_ARCH_6S_M)
+  #if (defined __TARGET_ARCH_6S_M)
     #define SEGGER_RTT_LOCK()   {                                                                   \
                                   unsigned int LockState;                                           \
                                   register unsigned char PRIMASK __asm( "primask");                 \
@@ -291,7 +291,7 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration for TI ARM
 */
 #ifdef __TI_ARM__
-#if defined (__TI_ARM_V6M0__)
+  #if defined (__TI_ARM_V6M0__)
     #define SEGGER_RTT_LOCK()   {                                                                   \
                                   unsigned int LockState;                                           \
                                   LockState = __get_PRIMASK();                                      \
@@ -317,11 +317,11 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration for CCRX
 */
 #ifdef __RX
-#define SEGGER_RTT_LOCK()   {                                                                     \
+  #define SEGGER_RTT_LOCK()   {                                                                     \
                                 unsigned long LockState;                                            \
                                 LockState = get_psw() & 0x010000;                                   \
-                                clrpsw_i();
-
+                                clrpsw_i();                           
+                                    
   #define SEGGER_RTT_UNLOCK()   set_psw(get_psw() | LockState);                                     \
                               }
 #endif
@@ -331,11 +331,11 @@ Revision: $Rev: 13430 $
 *       RTT lock configuration fallback
 */
 #ifndef   SEGGER_RTT_LOCK
-#define SEGGER_RTT_LOCK()                // Lock RTT (nestable)   (i.e. disable interrupts)
+  #define SEGGER_RTT_LOCK()                // Lock RTT (nestable)   (i.e. disable interrupts)
 #endif
 
 #ifndef   SEGGER_RTT_UNLOCK
-#define SEGGER_RTT_UNLOCK()              // Unlock RTT (nestable) (i.e. enable previous interrupt lock state)
+  #define SEGGER_RTT_UNLOCK()              // Unlock RTT (nestable) (i.e. enable previous interrupt lock state)
 #endif
 
 #endif

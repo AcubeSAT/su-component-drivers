@@ -52,7 +52,7 @@
 #include "peripheral/pio/plib_pio.h"
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/systick/plib_systick.h"
-#include "peripheral/twihs/master/plib_twihs1_master.h"
+#include "peripheral/twihs/master/plib_twihs0_master.h"
 #include "peripheral/efc/plib_efc.h"
 #include "system/time/sys_time.h"
 #include "system/int/sys_int.h"

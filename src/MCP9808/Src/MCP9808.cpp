@@ -1,4 +1,4 @@
-#include "MCP9808.h"
+#include "../inc/MCP9808.h"
 
 
 

@@ -68,10 +68,136 @@ include CMakeFiles/TEST_INTEGRATION.elf.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
 
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj: ../src/FreeRTOS/Source/FreeRTOS_tasks.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\FreeRTOS_tasks.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\FreeRTOS_tasks.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\FreeRTOS_tasks.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\FreeRTOS_tasks.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\FreeRTOS_tasks.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\FreeRTOS_tasks.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\FreeRTOS_tasks.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj: ../src/FreeRTOS/Source/croutine.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\croutine.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\croutine.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\croutine.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\croutine.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\croutine.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\croutine.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\croutine.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj: ../src/FreeRTOS/Source/event_groups.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\event_groups.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\event_groups.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\event_groups.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\event_groups.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\event_groups.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\event_groups.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\event_groups.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj: ../src/FreeRTOS/Source/list.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\list.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\list.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\list.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\list.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\list.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\list.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\list.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj: ../src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\GCC\SAM\CM7\port.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj: ../src/FreeRTOS/Source/portable/MemMang/heap_4.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\MemMang\heap_4.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\MemMang\heap_4.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\portable\MemMang\heap_4.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\portable\MemMang\heap_4.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\MemMang\heap_4.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\portable\MemMang\heap_4.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\portable\MemMang\heap_4.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj: ../src/FreeRTOS/Source/queue.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\queue.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\queue.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\queue.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\queue.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\queue.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\queue.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\queue.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj: ../src/FreeRTOS/Source/stream_buffer.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\stream_buffer.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\stream_buffer.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\stream_buffer.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\stream_buffer.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\stream_buffer.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\stream_buffer.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\stream_buffer.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj: ../src/FreeRTOS/Source/timers.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\timers.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\timers.c.obj -c C:\Clone\component-drivers\src\FreeRTOS\Source\timers.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\FreeRTOS\Source\timers.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\timers.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\FreeRTOS\Source\timers.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\FreeRTOS\Source\timers.c.s
+
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj: ../src/MCP9808/Src/MCP9808-internal.cpp
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj"
 	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\MCP9808\Src\MCP9808-internal.cpp.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\MCP9808\Src\MCP9808-internal.cpp.obj -c C:\Clone\component-drivers\src\MCP9808\Src\MCP9808-internal.cpp
 
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.i: cmake_force
@@ -85,7 +211,7 @@ CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.s: cmak
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj: ../src/MCP9808/Src/MCP9808.cpp
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj"
 	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\MCP9808\Src\MCP9808.cpp.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\MCP9808\Src\MCP9808.cpp.obj -c C:\Clone\component-drivers\src\MCP9808\Src\MCP9808.cpp
 
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.i: cmake_force
@@ -96,24 +222,304 @@ CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.s"
 	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Clone\component-drivers\src\MCP9808\Src\MCP9808.cpp -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\MCP9808\Src\MCP9808.cpp.s
 
-CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
-CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj: ../src/SampleClass.cpp
-CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj"
-	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\SampleClass.cpp.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\SampleClass.cpp.obj -c C:\Clone\component-drivers\src\SampleClass.cpp
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj: ../src/SEGGER_RTT/SEGGER_RTT.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT.c.obj -c C:\Clone\component-drivers\src\SEGGER_RTT\SEGGER_RTT.c
 
-CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.i"
-	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Clone\component-drivers\src\SampleClass.cpp > CMakeFiles\TEST_INTEGRATION.elf.dir\src\SampleClass.cpp.i
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\SEGGER_RTT\SEGGER_RTT.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT.c.i
 
-CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.s"
-	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Clone\component-drivers\src\SampleClass.cpp -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\SampleClass.cpp.s
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\SEGGER_RTT\SEGGER_RTT.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj: ../src/SEGGER_RTT/SEGGER_RTT_printf.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT_printf.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT_printf.c.obj -c C:\Clone\component-drivers\src\SEGGER_RTT\SEGGER_RTT_printf.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\SEGGER_RTT\SEGGER_RTT_printf.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT_printf.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\SEGGER_RTT\SEGGER_RTT_printf.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\SEGGER_RTT\SEGGER_RTT_printf.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj: ../src/app.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\app.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\app.c.obj -c C:\Clone\component-drivers\src\app.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\app.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\app.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\app.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\app.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj: ../src/config/default/driver/i2c/src/drv_i2c.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\driver\i2c\src\drv_i2c.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\driver\i2c\src\drv_i2c.c.obj -c C:\Clone\component-drivers\src\config\default\driver\i2c\src\drv_i2c.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\driver\i2c\src\drv_i2c.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\driver\i2c\src\drv_i2c.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\driver\i2c\src\drv_i2c.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\driver\i2c\src\drv_i2c.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj: ../src/config/default/exceptions.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\exceptions.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\exceptions.c.obj -c C:\Clone\component-drivers\src\config\default\exceptions.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\exceptions.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\exceptions.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\exceptions.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\exceptions.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj: ../src/config/default/initialization.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\initialization.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\initialization.c.obj -c C:\Clone\component-drivers\src\config\default\initialization.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\initialization.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\initialization.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\initialization.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\initialization.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj: ../src/config/default/interrupts.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\interrupts.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\interrupts.c.obj -c C:\Clone\component-drivers\src\config\default\interrupts.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\interrupts.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\interrupts.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\interrupts.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\interrupts.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj: ../src/config/default/libc_syscalls.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\libc_syscalls.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\libc_syscalls.c.obj -c C:\Clone\component-drivers\src\config\default\libc_syscalls.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\libc_syscalls.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\libc_syscalls.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\libc_syscalls.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\libc_syscalls.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj: ../src/config/default/peripheral/clk/plib_clk.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\clk\plib_clk.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\clk\plib_clk.c.obj -c C:\Clone\component-drivers\src\config\default\peripheral\clk\plib_clk.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\peripheral\clk\plib_clk.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\clk\plib_clk.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\peripheral\clk\plib_clk.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\clk\plib_clk.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj: ../src/config/default/peripheral/efc/plib_efc.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\efc\plib_efc.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\efc\plib_efc.c.obj -c C:\Clone\component-drivers\src\config\default\peripheral\efc\plib_efc.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\peripheral\efc\plib_efc.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\efc\plib_efc.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\peripheral\efc\plib_efc.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\efc\plib_efc.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj: ../src/config/default/peripheral/nvic/plib_nvic.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\nvic\plib_nvic.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\nvic\plib_nvic.c.obj -c C:\Clone\component-drivers\src\config\default\peripheral\nvic\plib_nvic.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\peripheral\nvic\plib_nvic.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\nvic\plib_nvic.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\peripheral\nvic\plib_nvic.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\nvic\plib_nvic.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj: ../src/config/default/peripheral/pio/plib_pio.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\pio\plib_pio.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\pio\plib_pio.c.obj -c C:\Clone\component-drivers\src\config\default\peripheral\pio\plib_pio.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\peripheral\pio\plib_pio.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\pio\plib_pio.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\peripheral\pio\plib_pio.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\pio\plib_pio.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj: ../src/config/default/peripheral/systick/plib_systick.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\systick\plib_systick.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\systick\plib_systick.c.obj -c C:\Clone\component-drivers\src\config\default\peripheral\systick\plib_systick.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\peripheral\systick\plib_systick.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\systick\plib_systick.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\peripheral\systick\plib_systick.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\systick\plib_systick.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj: ../src/config/default/peripheral/twihs/master/plib_twihs0_master.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\twihs\master\plib_twihs0_master.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\twihs\master\plib_twihs0_master.c.obj -c C:\Clone\component-drivers\src\config\default\peripheral\twihs\master\plib_twihs0_master.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\peripheral\twihs\master\plib_twihs0_master.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\twihs\master\plib_twihs0_master.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\peripheral\twihs\master\plib_twihs0_master.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\peripheral\twihs\master\plib_twihs0_master.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj: ../src/config/default/startup_gcc.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\startup_gcc.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\startup_gcc.c.obj -c C:\Clone\component-drivers\src\config\default\startup_gcc.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\startup_gcc.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\startup_gcc.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\startup_gcc.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\startup_gcc.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj: ../src/config/default/stdio/gcc_monitor.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\stdio\gcc_monitor.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\stdio\gcc_monitor.c.obj -c C:\Clone\component-drivers\src\config\default\stdio\gcc_monitor.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\stdio\gcc_monitor.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\stdio\gcc_monitor.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\stdio\gcc_monitor.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\stdio\gcc_monitor.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj: ../src/config/default/system/cache/sys_cache.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\cache\sys_cache.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\cache\sys_cache.c.obj -c C:\Clone\component-drivers\src\config\default\system\cache\sys_cache.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\system\cache\sys_cache.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\cache\sys_cache.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\system\cache\sys_cache.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\cache\sys_cache.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj: ../src/config/default/system/int/src/sys_int.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\int\src\sys_int.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\int\src\sys_int.c.obj -c C:\Clone\component-drivers\src\config\default\system\int\src\sys_int.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\system\int\src\sys_int.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\int\src\sys_int.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\system\int\src\sys_int.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\int\src\sys_int.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj: ../src/config/default/system/time/src/sys_time.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\time\src\sys_time.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\time\src\sys_time.c.obj -c C:\Clone\component-drivers\src\config\default\system\time\src\sys_time.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\system\time\src\sys_time.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\time\src\sys_time.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\system\time\src\sys_time.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\system\time\src\sys_time.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj: ../src/config/default/tasks.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\tasks.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\tasks.c.obj -c C:\Clone\component-drivers\src\config\default\tasks.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\config\default\tasks.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\tasks.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\config\default\tasks.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\config\default\tasks.c.s
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj: ../src/main.c
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\main.c.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\main.c.obj -c C:\Clone\component-drivers\src\main.c
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.i"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Clone\component-drivers\src\main.c > CMakeFiles\TEST_INTEGRATION.elf.dir\src\main.c.i
+
+CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.s"
+	arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Clone\component-drivers\src\main.c -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\main.c.s
 
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/flags.make
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj: ../src/main.cpp
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj: CMakeFiles/TEST_INTEGRATION.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj"
 	arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj -MF CMakeFiles\TEST_INTEGRATION.elf.dir\src\main.cpp.obj.d -o CMakeFiles\TEST_INTEGRATION.elf.dir\src\main.cpp.obj -c C:\Clone\component-drivers\src\main.cpp
 
 CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.i: cmake_force
@@ -126,21 +532,79 @@ CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.s: cmake_force
 
 # Object files for target TEST_INTEGRATION.elf
 TEST_INTEGRATION_elf_OBJECTS = \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj" \
 "CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj" \
 "CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj" \
-"CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj" \
+"CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj" \
 "CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj"
 
 # External object files for target TEST_INTEGRATION.elf
 TEST_INTEGRATION_elf_EXTERNAL_OBJECTS =
 
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/FreeRTOS_tasks.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/croutine.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/event_groups.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/list.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/GCC/SAM/CM7/port.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/portable/MemMang/heap_4.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/queue.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/stream_buffer.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/FreeRTOS/Source/timers.c.obj
 TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808-internal.cpp.obj
 TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/MCP9808/Src/MCP9808.cpp.obj
-TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/SampleClass.cpp.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/SEGGER_RTT/SEGGER_RTT_printf.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/app.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/driver/i2c/src/drv_i2c.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/exceptions.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/initialization.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/interrupts.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/libc_syscalls.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/clk/plib_clk.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/efc/plib_efc.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/nvic/plib_nvic.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/pio/plib_pio.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/systick/plib_systick.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/peripheral/twihs/master/plib_twihs0_master.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/startup_gcc.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/stdio/gcc_monitor.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/cache/sys_cache.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/int/src/sys_int.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/system/time/src/sys_time.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/config/default/tasks.c.obj
+TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.c.obj
 TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/src/main.cpp.obj
 TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/build.make
 TEST_INTEGRATION.elf: CMakeFiles/TEST_INTEGRATION.elf.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable TEST_INTEGRATION.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Linking CXX executable TEST_INTEGRATION.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\TEST_INTEGRATION.elf.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

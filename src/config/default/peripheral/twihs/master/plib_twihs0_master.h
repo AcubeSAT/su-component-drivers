@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name
-    plib_twihs1_master.h
+    plib_twihs0_master.h
 
   Summary
     TWIHS Master peripheral library interface.
@@ -44,8 +44,8 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef PLIB_TWIHS1_MASTER_H
-#define PLIB_TWIHS1_MASTER_H
+#ifndef PLIB_TWIHS0_MASTER_H
+#define PLIB_TWIHS0_MASTER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -69,21 +69,21 @@
 // *****************************************************************************
 // *****************************************************************************
 
-void TWIHS1_Initialize( void );
+void TWIHS0_Initialize( void );
 
-void TWIHS1_CallbackRegister( TWIHS_CALLBACK callback, uintptr_t contextHandle );
+void TWIHS0_CallbackRegister( TWIHS_CALLBACK callback, uintptr_t contextHandle );
 
-bool TWIHS1_IsBusy( void );
+bool TWIHS0_IsBusy( void );
 
-bool TWIHS1_Read( uint16_t address, uint8_t *pdata, size_t length );
+bool TWIHS0_Read( uint16_t address, uint8_t *pdata, size_t length );
 
-bool TWIHS1_Write( uint16_t address, uint8_t *pdata, size_t length );
+bool TWIHS0_Write( uint16_t address, uint8_t *pdata, size_t length );
 
-bool TWIHS1_WriteRead( uint16_t address, uint8_t *wdata, size_t wlength, uint8_t *rdata, size_t rlength );
+bool TWIHS0_WriteRead( uint16_t address, uint8_t *wdata, size_t wlength, uint8_t *rdata, size_t rlength );
 
-TWIHS_ERROR TWIHS1_ErrorGet( void );
+TWIHS_ERROR TWIHS0_ErrorGet( void );
 
-bool TWIHS1_TransferSetup( TWIHS_TRANSFER_SETUP* setup, uint32_t srcClkFreq );
+bool TWIHS0_TransferSetup( TWIHS_TRANSFER_SETUP* setup, uint32_t srcClkFreq );
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -93,4 +93,4 @@ bool TWIHS1_TransferSetup( TWIHS_TRANSFER_SETUP* setup, uint32_t srcClkFreq );
 #endif
 // DOM-IGNORE-END
 
-#endif //PLIB_TWIHS1_MASTER_H
+#endif //PLIB_TWIHS0_MASTER_H

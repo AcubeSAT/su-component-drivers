@@ -72,21 +72,21 @@ children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
   - type: Boolean
-    attributes: {id: NVIC_20_0_ENABLE}
+    attributes: {id: NVIC_19_0_ENABLE}
     children:
     - type: Values
       children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
   - type: String
-    attributes: {id: NVIC_20_0_HANDLER}
+    attributes: {id: NVIC_19_0_HANDLER}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: TWIHS1_InterruptHandler}
+        attributes: {id: core, value: TWIHS0_InterruptHandler}
   - type: Boolean
-    attributes: {id: NVIC_20_0_HANDLER_LOCK}
+    attributes: {id: NVIC_19_0_HANDLER_LOCK}
     children:
     - type: Values
       children:
@@ -135,34 +135,6 @@ children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
   - type: String
-    attributes: {id: PIN_105_FUNCTION_TYPE}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: TWIHS1_TWD1}
-  - type: String
-    attributes: {id: PIN_105_PERIPHERAL_FUNCTION}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: A}
-  - type: String
-    attributes: {id: PIN_109_FUNCTION_TYPE}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: TWIHS1_TWCK1}
-  - type: String
-    attributes: {id: PIN_109_PERIPHERAL_FUNCTION}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: A}
-  - type: String
     attributes: {id: PIN_46_DIR}
     children:
     - type: Values
@@ -190,6 +162,34 @@ children:
       children:
       - type: User
         attributes: {value: GPIO}
+  - type: String
+    attributes: {id: PIN_77_FUNCTION_TYPE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: TWIHS0_TWCK0}
+  - type: String
+    attributes: {id: PIN_77_PERIPHERAL_FUNCTION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: A}
+  - type: String
+    attributes: {id: PIN_91_FUNCTION_TYPE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: TWIHS0_TWD0}
+  - type: String
+    attributes: {id: PIN_91_PERIPHERAL_FUNCTION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: A}
   - type: Hex
     attributes: {id: PIOA_ABCDSR1_VALUE}
     children:
@@ -224,21 +224,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0'}
-  - type: Hex
-    attributes: {id: PIOB_ABCDSR1_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: core, value: '0'}
-  - type: Hex
-    attributes: {id: PIOB_ABCDSR2_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: core, value: '0'}
+        attributes: {id: core, value: '24'}
   - type: Boolean
     attributes: {id: PIOB_CLOCK_ENABLE}
     children:
@@ -246,13 +232,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
-  - type: Hex
-    attributes: {id: PIOB_PDR_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: core, value: '48'}
   - type: Boolean
     attributes: {id: PIOC_CLOCK_ENABLE}
     children:
@@ -275,19 +254,12 @@ children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
   - type: Hex
-    attributes: {id: PIO_CCFG_SYSIO_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: core, value: '48'}
-  - type: Hex
     attributes: {id: PMC_PCER0}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '1252352'}
+        attributes: {id: core, value: '728064'}
   - type: KeyValueSet
     attributes: {id: PMC_PCR_GCLK0CSS}
     children:
@@ -466,40 +438,40 @@ children:
       - type: Dynamic
         attributes: {id: core, value: 0 KB}
   - type: Boolean
-    attributes: {id: TWIHS1_CLOCK_ENABLE}
+    attributes: {id: TWIHS0_CLOCK_ENABLE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: twihs1, value: 'true'}
+        attributes: {id: twihs0, value: 'true'}
   - type: Boolean
-    attributes: {id: TWIHS1_INTERRUPT_ENABLE}
+    attributes: {id: TWIHS0_INTERRUPT_ENABLE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: twihs1, value: 'true'}
+        attributes: {id: twihs0, value: 'true'}
   - type: Boolean
-    attributes: {id: TWIHS1_INTERRUPT_ENABLE_UPDATE}
+    attributes: {id: TWIHS0_INTERRUPT_ENABLE_UPDATE}
     children:
     - type: Values
       children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
   - type: String
-    attributes: {id: TWIHS1_INTERRUPT_HANDLER}
+    attributes: {id: TWIHS0_INTERRUPT_HANDLER}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: twihs1, value: TWIHS1_InterruptHandler}
+        attributes: {id: twihs0, value: TWIHS0_InterruptHandler}
   - type: Boolean
-    attributes: {id: TWIHS1_INTERRUPT_HANDLER_LOCK}
+    attributes: {id: TWIHS0_INTERRUPT_HANDLER_LOCK}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: twihs1, value: 'true'}
+        attributes: {id: twihs0, value: 'true'}
   - type: Boolean
     attributes: {id: USE_SYSTICK_INTERRUPT}
     children:

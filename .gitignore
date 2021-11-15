@@ -1,5 +1,21 @@
-# Build files
+# .gitignore file sources:
+# https://www.microchip.com/forums/m790048.aspx
+# https://gitlab.com/acubesat/obc/ecss-services/-/blob/master/.gitignore
+#
 
+# Ignoring files according to http://microchip.wikidot.com/faq:72
+/*.X/build/
+/*.X/dist/
+
+# Ingoring private Makefiles, to create them open the MPLAB IDE or use the mplab_ide\bin\prjMakefilesGenerator script
+/*.X/nbproject/Makefile-*
+/*.X/nbproject/Package-*
+/*.X/nbproject/private/
+
+# Build files
+/build
+/cmake-build-debug
+/docs
 
 # Dump and continuous integration files
 *.dump
@@ -40,28 +56,30 @@ __pycache__
 *.exe
 *.out
 *.app
+*.elf
+*.bin
 
-# User-specific stuff
+# JetBrains User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
 
-# Generated files
+# JetBrains Generated files
 .idea/**/contentModel.xml
 
-# User-specific stuff
+# JetBrains User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
 
-# Generated files
+# JetBrains Generated files
 .idea/**/contentModel.xml
 
-# Sensitive or high-churn files
+# JetBrains Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml
@@ -71,5 +89,5 @@ __pycache__
 .idea/**/dbnavigator.xml
 .idea/**/markdown-*
 
-# IDEs
+# Other IDEs
 .vscode

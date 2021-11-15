@@ -80,12 +80,12 @@ clean: CMakeFiles/TEST_INTEGRATION.elf.dir/clean
 CMakeFiles/TEST_INTEGRATION.elf.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TEST_INTEGRATION.elf.dir\build.make CMakeFiles/TEST_INTEGRATION.elf.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TEST_INTEGRATION.elf.dir\build.make CMakeFiles/TEST_INTEGRATION.elf.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=1,2,3,4,5 "Built target TEST_INTEGRATION.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Clone\component-drivers\cmake-build-debug\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34 "Built target TEST_INTEGRATION.elf"
 .PHONY : CMakeFiles/TEST_INTEGRATION.elf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/TEST_INTEGRATION.elf.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Clone\component-drivers\cmake-build-debug\CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Clone\component-drivers\cmake-build-debug\CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/TEST_INTEGRATION.elf.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Clone\component-drivers\cmake-build-debug\CMakeFiles 0
 .PHONY : CMakeFiles/TEST_INTEGRATION.elf.dir/rule

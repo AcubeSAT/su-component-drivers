@@ -2,7 +2,7 @@
 #define MCP9808DRIVER_MCP9808_HPP
 
 #include <cstdint>
-#include "master/plib_twihs1_master.h"
+#include "plib_twihs0_master.h"
 #include "MCP9808-constants.h"
 
 

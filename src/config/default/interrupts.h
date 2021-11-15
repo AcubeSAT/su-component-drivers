@@ -61,7 +61,7 @@ void Reset_Handler (void);
 void NonMaskableInt_Handler (void);
 void HardFault_Handler (void);
 void SysTick_Handler (void);
-void TWIHS1_InterruptHandler (void);
+void TWIHS0_InterruptHandler (void);
 
 
 

@@ -271,7 +271,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>ARM</languageToolchain>
-        <languageToolchainVersion>9.2.1</languageToolchainVersion>
+        <languageToolchainVersion>6.3.1</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <packs>

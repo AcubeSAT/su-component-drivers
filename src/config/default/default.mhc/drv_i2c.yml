@@ -15,7 +15,7 @@ children:
         - type: Values
           children:
           - type: Dynamic
-            attributes: {id: drv_i2c_0, value: TWIHS1}
+            attributes: {id: drv_i2c_0, value: TWIHS0}
     - type: Attachments
       children:
       - type: DirectDependency
@@ -26,10 +26,10 @@ children:
           - type: String
             attributes: {id: targetComponentID}
             children:
-            - {type: Value, value: twihs1}
+            - {type: Value, value: twihs0}
           - type: String
             attributes: {id: targetAttachmentID}
             children:
-            - {type: Value, value: TWIHS1_I2C}
+            - {type: Value, value: TWIHS0_I2C}
 - type: ElementPosition
-  attributes: {x: '275', y: '115', id: drv_i2c}
+  attributes: {x: '284', y: '270', id: drv_i2c}
