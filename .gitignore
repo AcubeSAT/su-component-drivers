@@ -75,6 +75,10 @@ __pycache__
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/**/misc.xml
+.idea/**/modules.xml
+.idea/**/vcs.xml
+.idea/**/*.iml
 
 # JetBrains Generated files
 .idea/**/contentModel.xml
