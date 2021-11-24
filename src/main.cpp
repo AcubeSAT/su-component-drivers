@@ -6,6 +6,9 @@ extern "C" {
 #endif
 
     void main_cpp(){
+        /*
+         * These lines are just for testing
+         */
         float result;
         MCP9808 TempSensor;
         TempSensor.getTemp(result);

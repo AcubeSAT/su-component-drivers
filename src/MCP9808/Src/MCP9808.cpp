@@ -57,7 +57,6 @@ void MCP9808::getTemp(float &result) {
     readReg(MCP9808_REG_TEMP, data);
 
     // keep bit 12 only (the sign bit) and if it's 1, we start counting from -2^12
-    // TODO: find a way to test negative temperatures
     if ((data & 0x100000)) {
         result += 1 / (2 << 12);
     }

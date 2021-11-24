@@ -47,8 +47,7 @@ volatile int xTask1 = 1;
 void xTask1Code(void *pvParameters){
 
     for(;;){
-       //SEGGER_RTT_printf(0, "Hello World");
-       //vTaskDelay(pdMS_TO_TICKS(500));
+
     }
 
 };
@@ -58,7 +57,6 @@ void xTask2Code(void *pvParameters){
     for(;;){
         main_cpp();
         vTaskDelay(pdMS_TO_TICKS(500));
-
     }
 
 };

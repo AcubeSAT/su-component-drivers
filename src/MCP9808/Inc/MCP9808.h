@@ -9,21 +9,15 @@
 /**
  * MCP9808 temperature sensor driver
  *
- * This is a simple, (almost) feature-complete, documented (to the best of my ability) driver to use the
- * MCP9808 sensor on STM32 microcontrollers. All STM32-specific functions are used solely within the file
- * <b>MCP9808-internal.cpp</b> to allow for portability.
- *
- * Almost all settings are accessible via the provided functions, apart from whatever is a TODO,
- * of course ;-) using the constants provided in each function's javadoc string.
- * Tell me if I've missed something.
+ * This is a simple driver to use the MCP9808 sensor on STM32 microcontrollers. All Microchip-specific
+ * functions are used solely within the file <b>MCP9808-internal.cpp</b> to allow for portability.
  *
  * For more details about the operation of the sensor, see the datasheet found at:
  * http://ww1.microchip.com/downloads/en/DeviceDoc/25095A.pdf
  *
- * @todo Create a function which enables setting a custom address other than 0b000
- * @todo Create functions for setting the T_LOWER, T_UPPER and T_CRIT registers
+ * This is a modified version of the already existed driver writen in
+ * https://gitlab.com/acubesat/obc/stm32-component-drivers/-/tree/mcp9808 by Grigoris Pavlakis
  *
- * @author Grigoris Pavlakis <grigpavl@ece.auth.gr>
  */
 
 class MCP9808 {

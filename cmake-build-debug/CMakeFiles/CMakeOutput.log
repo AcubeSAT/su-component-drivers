@@ -35,13 +35,13 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 Determining if the C compiler works passed with the following output:
 Change Dir: C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/MinGW/bin/mingw32-make.exe -f Makefile cmTC_9dbf9/fast && C:/MinGW/bin/mingw32-make.exe  -f CMakeFiles\cmTC_9dbf9.dir\build.make CMakeFiles/cmTC_9dbf9.dir/build
+Run Build Command(s):C:/MinGW/bin/mingw32-make.exe -f Makefile cmTC_5cfe6/fast && C:/MinGW/bin/mingw32-make.exe  -f CMakeFiles\cmTC_5cfe6.dir\build.make CMakeFiles/cmTC_5cfe6.dir/build
 mingw32-make.exe[1]: Entering directory 'C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_9dbf9.dir/testCCompiler.c.obj
-C:\MinGW\bin\gcc.exe    -o CMakeFiles\cmTC_9dbf9.dir\testCCompiler.c.obj -c C:\Clone\component-drivers\cmake-build-debug\CMakeFiles\CMakeTmp\testCCompiler.c
-Linking C executable cmTC_9dbf9
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_9dbf9.dir\link.txt --verbose=1
-C:\MinGW\bin\gcc.exe CMakeFiles/cmTC_9dbf9.dir/testCCompiler.c.obj -o cmTC_9dbf9 
+Building C object CMakeFiles/cmTC_5cfe6.dir/testCCompiler.c.obj
+C:\MinGW\bin\gcc.exe    -o CMakeFiles\cmTC_5cfe6.dir\testCCompiler.c.obj -c C:\Clone\component-drivers\cmake-build-debug\CMakeFiles\CMakeTmp\testCCompiler.c
+Linking C executable cmTC_5cfe6
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_5cfe6.dir\link.txt --verbose=1
+C:\MinGW\bin\gcc.exe CMakeFiles/cmTC_5cfe6.dir/testCCompiler.c.obj -o cmTC_5cfe6 
 mingw32-make.exe[1]: Leaving directory 'C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/CMakeTmp'
 
 
@@ -49,13 +49,13 @@ mingw32-make.exe[1]: Leaving directory 'C:/Clone/component-drivers/cmake-build-d
 Determining if the CXX compiler works passed with the following output:
 Change Dir: C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/MinGW/bin/mingw32-make.exe -f Makefile cmTC_cad46/fast && C:/MinGW/bin/mingw32-make.exe  -f CMakeFiles\cmTC_cad46.dir\build.make CMakeFiles/cmTC_cad46.dir/build
+Run Build Command(s):C:/MinGW/bin/mingw32-make.exe -f Makefile cmTC_3f327/fast && C:/MinGW/bin/mingw32-make.exe  -f CMakeFiles\cmTC_3f327.dir\build.make CMakeFiles/cmTC_3f327.dir/build
 mingw32-make.exe[1]: Entering directory 'C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_cad46.dir/testCXXCompiler.cxx.obj
-C:\MinGW\bin\g++.exe    -o CMakeFiles\cmTC_cad46.dir\testCXXCompiler.cxx.obj -c C:\Clone\component-drivers\cmake-build-debug\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
-Linking CXX executable cmTC_cad46
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_cad46.dir\link.txt --verbose=1
-C:\MinGW\bin\g++.exe CMakeFiles/cmTC_cad46.dir/testCXXCompiler.cxx.obj -o cmTC_cad46 
+Building CXX object CMakeFiles/cmTC_3f327.dir/testCXXCompiler.cxx.obj
+C:\MinGW\bin\g++.exe    -o CMakeFiles\cmTC_3f327.dir\testCXXCompiler.cxx.obj -c C:\Clone\component-drivers\cmake-build-debug\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+Linking CXX executable cmTC_3f327
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_3f327.dir\link.txt --verbose=1
+C:\MinGW\bin\g++.exe CMakeFiles/cmTC_3f327.dir/testCXXCompiler.cxx.obj -o cmTC_3f327 
 mingw32-make.exe[1]: Leaving directory 'C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/CMakeTmp'
 
 
