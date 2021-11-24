@@ -3,7 +3,7 @@ SET(CMAKE_SYSTEM_VERSION 1)
 cmake_minimum_required(VERSION 3.19.2)
 
 # project settings
-project( TEST_INTEGRATION C CXX ASM)
+project( MCP9808 C CXX ASM)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 

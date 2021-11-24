@@ -1,3 +1,0 @@
-C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/TEST_INTEGRATION.elf.dir
-C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Clone/component-drivers/cmake-build-debug/CMakeFiles/rebuild_cache.dir
