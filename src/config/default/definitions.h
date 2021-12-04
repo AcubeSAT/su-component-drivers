@@ -51,12 +51,19 @@
 #include "peripheral/clk/plib_clk.h"
 #include "peripheral/pio/plib_pio.h"
 #include "peripheral/nvic/plib_nvic.h"
-#include "peripheral/systick/plib_systick.h"
-#include "peripheral/twihs/master/plib_twihs0_master.h"
+#include "usb/usb_host_cdc.h"
+#include "usb/usb_cdc.h"
 #include "peripheral/efc/plib_efc.h"
+#include "peripheral/tc/plib_tc0.h"
+#include "driver/i2c/drv_i2c.h"
 #include "system/time/sys_time.h"
+#include "usb/usb_chapter_9.h"
+#include "usb/usb_host.h"
+#include "driver/usb/usbhsv1/drv_usbhsv1.h"
+#include "peripheral/twihs/master/plib_twihs0_master.h"
 #include "system/int/sys_int.h"
 #include "system/cache/sys_cache.h"
+#include "system/dma/sys_dma.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
 #include "driver/i2c/drv_i2c.h"
@@ -185,11 +192,10 @@ Remarks:
 
 typedef struct
 {
-    /* I2C0 Driver Object */
     SYS_MODULE_OBJ drvI2C0;
-
     SYS_MODULE_OBJ  sysTime;
-
+	SYS_MODULE_OBJ  usbHostObject0;
+	SYS_MODULE_OBJ  drvUSBHSV1Object;
 } SYSTEM_OBJECTS;
 
 // *****************************************************************************
@@ -198,6 +204,7 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
+extern const USB_HOST_INIT usbHostInitData; 
 
 
 extern SYSTEM_OBJECTS sysObj;

@@ -74,12 +74,9 @@ typedef uint32_t (*SYS_TIME_PLIB_FREQUENCY_GET)(void);
 typedef void (*SYS_TIME_PLIB_START)(void);
 typedef void (*SYS_TIME_PLIB_STOP)(void);
 
-typedef void (*SYS_TIME_PLIB_INTERRUPT_ENABLE)(void);
-typedef void (*SYS_TIME_PLIB_INTERRUPT_DISABLE)(void);
-
-typedef void (*SYS_TIME_PLIB_PERIOD_SET)(uint32_t period);
-typedef void (*SYS_TIME_PLIB_COMPARE_SET) (uint32_t compare);
-typedef uint32_t (*SYS_TIME_PLIB_COUNTER_GET)(void);
+typedef void (*SYS_TIME_PLIB_PERIOD_SET)(uint16_t period);
+typedef void (*SYS_TIME_PLIB_COMPARE_SET) (uint16_t compare);
+typedef uint16_t (*SYS_TIME_PLIB_COUNTER_GET)(void);
 
 typedef struct
 {
@@ -88,8 +85,8 @@ typedef struct
     SYS_TIME_PLIB_STOP                  timerStop;
     SYS_TIME_PLIB_FREQUENCY_GET         timerFrequencyGet;
     SYS_TIME_PLIB_PERIOD_SET            timerPeriodSet;
-    SYS_TIME_PLIB_INTERRUPT_ENABLE      timerInterruptEnable;
-    SYS_TIME_PLIB_INTERRUPT_DISABLE     timerInterruptDisable;
+    SYS_TIME_PLIB_COMPARE_SET           timerCompareSet;
+    SYS_TIME_PLIB_COUNTER_GET           timerCounterGet;
 } SYS_TIME_PLIB_INTERFACE;
 
 

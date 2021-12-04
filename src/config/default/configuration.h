@@ -82,8 +82,11 @@ extern "C" {
 /* TIME System Service Configuration Options */
 #define SYS_TIME_INDEX_0                            (0)
 #define SYS_TIME_MAX_TIMERS                         (5)
-#define SYS_TIME_HW_COUNTER_WIDTH                   (24)
-#define SYS_TIME_TICK_FREQ_IN_HZ                    (1000)
+#define SYS_TIME_HW_COUNTER_WIDTH                   (16)
+#define SYS_TIME_HW_COUNTER_PERIOD                  (65535U)
+#define SYS_TIME_HW_COUNTER_HALF_PERIOD             (SYS_TIME_HW_COUNTER_PERIOD>>1)
+#define SYS_TIME_CPU_CLOCK_FREQUENCY                (300000000)
+#define SYS_TIME_COMPARE_UPDATE_EXECUTION_CYCLES    (900)
 
 
 
@@ -109,6 +112,31 @@ extern "C" {
 // Section: Middleware & Other Library Configuration
 // *****************************************************************************
 // *****************************************************************************
+#define USB_HOST_CDC_INSTANCES_NUMBER               1
+#define USB_HOST_CDC_ATTACH_LISTENERS_NUMBER        1
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: USB Host Layer Configuration
+// *****************************************************************************
+// **************************************************************************
+#define DRV_USBHSV1_ENDPOINTS_NUMBER                        1
+#define USB_HOST_DEVICES_NUMBER                             1
+#define  USB_HOST_TPL_ENTRIES                               1
+#define USB_HOST_DEVICE_INTERFACES_NUMBER                   5
+#define USB_HOST_CONTROLLERS_NUMBER                         1
+#define USB_HOST_TRANSFERS_NUMBER                           10
+#define USB_HOST_PIPES_NUMBER                               10
+
+#define DRV_USBHSV1_INSTANCES_NUMBER                        1
+#define DRV_USBHSV1_INTERRUPT_MODE                          true
+#define DRV_USBHSV1_DEVICE_SUPPORT                          false
+#define DRV_USBHSV1_HOST_SUPPORT                            true
+#define DRV_USBHSV1_HOST_NAK_LIMIT                          2000
+#define DRV_USBHSV1_HOST_PIPES_NUMBER                       10
+#define DRV_USBHSV1_HOST_ATTACH_DEBOUNCE_DURATION           500
+#define DRV_USBHSV1_HOST_RESET_DURATION                     100
+#define USB_ALIGN  CACHE_ALIGN
 
 
 // *****************************************************************************
