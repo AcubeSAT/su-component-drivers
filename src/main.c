@@ -33,6 +33,7 @@
 
 #include "main.h"
 #include "SEGGER_RTT/SEGGER_RTT.h"
+#include "config/default/peripheral/pio/plib_pio.h"
 
 
 // *****************************************************************************
@@ -44,23 +45,55 @@
 volatile uint8_t pinval = 0;
 volatile int xTask1 = 1;
 
-void xTask1Code(void *pvParameters){
-
-    for(;;){
-       //SEGGER_RTT_printf(0, "Hello World");
-       //vTaskDelay(pdMS_TO_TICKS(500));
+void xTask1Code(void *pvParameters)
+{
+    for(;;)
+    {
+        //SEGGER_RTT_printf(0, "Hello World");
+        //vTaskDelay(pdMS_TO_TICKS(500));
     }
 
 };
 
-void xTask2Code(void *pvParameters){
-
-    for(;;){
-        main_cpp();
+void xTask2Code(void *pvParameters)
+{
+    for(;;)
+    {
+//       main_cpp();
+        GPIO_PA23_Toggle(); // LED0 Toggle XULT board
         vTaskDelay(pdMS_TO_TICKS(500));
-
     }
 
+};
+
+void xTaskUsbHostTasks(void *pvParameters)
+{
+    for(;;)
+    {
+        /* USB Host layer Task Routine */
+        USB_HOST_Tasks(sysObj.usbHostObject0);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+};
+
+void xTaskDrvUsbHsV1Tasks(void *pvParameters)
+{
+    for(;;)
+    {
+        /* USB HS Driver Task Routine */
+        DRV_USBHSV1_Tasks(sysObj.drvUSBHSV1Object);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+};
+
+void xTaskUsbCamDrvTasks(void *pvParameters)
+{
+    for(;;)
+    {
+        /* USB Camera Driver Task Routine */
+        UsbCamDrv_Tasks();
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
 };
 
 
@@ -73,7 +106,12 @@ int main ( void )
     xTaskCreate(xTask1Code, "Task1",100, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(xTask2Code, "Task2",100, NULL, tskIDLE_PRIORITY + 1, NULL);
 
-    vTaskStartScheduler();
+    xTaskCreate(xTaskUsbHostTasks, "USB_HOST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(xTaskDrvUsbHsV1Tasks, "DRV_USBHSV1_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(xTaskUsbCamDrvTasks, "USB_CAM_DRV_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
+
+    vTaskStartScheduler(); // never exits
+
     while ( true )
     {
 

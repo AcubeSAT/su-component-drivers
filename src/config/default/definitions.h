@@ -68,6 +68,7 @@
 #include "system/debug/sys_debug.h"
 #include "driver/i2c/drv_i2c.h"
 #include "app.h"
+#include "UsbCamDrv/UsbCamDrv.h"
 
 
 
@@ -193,9 +194,9 @@ Remarks:
 typedef struct
 {
     SYS_MODULE_OBJ drvI2C0;
-    SYS_MODULE_OBJ  sysTime;
-	SYS_MODULE_OBJ  usbHostObject0;
-	SYS_MODULE_OBJ  drvUSBHSV1Object;
+    SYS_MODULE_OBJ sysTime;
+    SYS_MODULE_OBJ usbHostObject0;
+    SYS_MODULE_OBJ drvUSBHSV1Object;
 } SYSTEM_OBJECTS;
 
 // *****************************************************************************
@@ -204,7 +205,7 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
-extern const USB_HOST_INIT usbHostInitData; 
+extern const USB_HOST_INIT usbHostInitData;
 
 
 extern SYSTEM_OBJECTS sysObj;

@@ -122,7 +122,7 @@ extern "C" {
 // **************************************************************************
 #define DRV_USBHSV1_ENDPOINTS_NUMBER                        1
 #define USB_HOST_DEVICES_NUMBER                             1
-#define  USB_HOST_TPL_ENTRIES                               1
+#define USB_HOST_TPL_ENTRIES                                1
 #define USB_HOST_DEVICE_INTERFACES_NUMBER                   5
 #define USB_HOST_CONTROLLERS_NUMBER                         1
 #define USB_HOST_TRANSFERS_NUMBER                           10
