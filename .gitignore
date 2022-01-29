@@ -11,6 +11,7 @@
 /*.X/nbproject/Makefile-*
 /*.X/nbproject/Package-*
 /*.X/nbproject/private/
+/*.X/.generated_files/
 
 # Build files
 /build
