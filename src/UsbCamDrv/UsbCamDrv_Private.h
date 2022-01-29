@@ -14,19 +14,10 @@ extern "C" {
 
 /*** Macro definitions ***/
 
+#define USB_HOST_U3V_RESULT_MIN                        -100
 
 
 /*** Type definitions ***/
-
-/*** Application States ***
- *
- * Summary:
- *  USB Application states enumeration
- *
- * Description:
- *   This enumeration defines the valid application states.  These states determine the behavior of
- *   the USB application at various times.
- */
 
 typedef enum
 {
@@ -45,8 +36,26 @@ typedef enum
     USB_APP_STATE_GET_DATA_FROM_DEVICE,                /* USB Application request to get data from device */
     USB_APP_STATE_WAIT_FOR_DATA_FROM_DEVICE,           /* USB Application waits for data from device */
     USB_APP_STATE_ERROR                                /* USB Application is in error state */
-
 } USB_APP_STATES;
+
+
+typedef USB_APP_STATES T_UsbCamAppStates;
+
+
+typedef uintptr_t T_UsbHostU3VObject;
+
+
+typedef enum
+{
+    USB_HOST_U3V_RESULT_FAILURE             = USB_HOST_U3V_RESULT_MIN,
+    USB_HOST_U3V_RESULT_BUSY,
+    USB_HOST_U3V_RESULT_REQUEST_STALLED,
+    USB_HOST_U3V_RESULT_INVALID_PARAMETER,
+    USB_HOST_U3V_RESULT_DEVICE_UNKNOWN,
+    USB_HOST_U3V_RESULT_ABORTED,
+    USB_HOST_U3V_RESULT_HANDLE_INVALID,
+    USB_HOST_U3V_RESULT_SUCCESS             = 1
+} T_UsbHostU3VResult;
 
 
 typedef struct
@@ -68,36 +77,49 @@ typedef struct
     bool                        deviceWasDetached;     /* True if device was detached */
 } USB_APP_DATA;
 
+typedef struct
+{
+    uint8_t                     inDataArray[64];       /* First place to be aligned - Array to hold read data */
+    T_UsbCamAppStates           state;                 /* The USB application's current state */
+    T_UsbHostU3VObject          u3vObj;                /* USB3 Vision Object */
+    bool                        deviceIsAttached;      /* True if a device is attached */
+    bool                        controlRequestDone;    /* True if control request is done */
+    T_UsbHostU3VResult          controlRequestResult;  /* Control Request Result */
+    USB_CDC_LINE_CODING         cdcHostLineCoding;     /* A CDC Line Coding object */
+    USB_CDC_CONTROL_LINE_STATE  controlLineState;      /* A Control Line State object*/
+    USB_HOST_CDC_HANDLE         cdcHostHandle;         /* Handle to the CDC device. */
+    USB_HOST_CDC_REQUEST_HANDLE requestHandle;         /* Handle to request */
+    bool                        writeTransferDone;     /* True when a write transfer has complete */
+    USB_HOST_CDC_RESULT         writeTransferResult;   /* Write Transfer Result */
+    bool                        readTransferDone;      /* True when a read transfer has complete */
+    USB_HOST_CDC_RESULT         readTransferResult;    /* Read Transfer Result */
+    bool                        deviceWasDetached;     /* True if device was detached */
+} T_U3VCamAppData;
+
 
 typedef enum
 {
-    CAM_DISCONNECTED     = -1,
-    CAM_STATUS_UNKNOWN   =  0,
-    CAM_CONNECTED        =  1
-} T_CamConnectionStatus;
+    U3V_CAM_DISCONNECTED     = -1,
+    U3V_CAM_STATUS_UNKNOWN   =  0,
+    U3V_CAM_CONNECTED        =  1
+} T_U3VCamConnectStatus;
 
 
 typedef enum
 {
-    CAM_DEV_ID_ERROR     = 0,
-    CAM_DEV_ID_OK        = 1
-} T_CamUSBDevIDStatus;
+    U3V_CAM_DEV_ID_ERROR     = 0,
+    U3V_CAM_DEV_ID_OK        = 1
+} T_U3VCamDevIDStatus;
 
 
-typedef bool  CamIDValid_t;
-
+typedef bool  U3VCamIDValid_t;
 
 
 /*** Constant declarations ***/
 
-
-
 /*** Variable declarations ***/
 
-
-
 /*** Function declarations ***/
-
 
 
 #ifdef __cplusplus

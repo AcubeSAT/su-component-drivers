@@ -25,10 +25,10 @@ extern "C" {
 
 typedef enum
 {
-    USB_CAM_DRV_NOT_INITD   = -2,
-    USB_CAM_DRV_ERROR       = -1,
-    USB_CAM_DRV_OK          =  0
-} T_UsbCameraDriver_Status;
+    USB3V_CAM_DRV_NOT_INITD   = -2,
+    USB3V_CAM_DRV_ERROR       = -1,
+    USB3V_CAM_DRV_OK          =  0
+} T_UsbCameraDriverStatus;
 
 
 typedef enum
@@ -36,7 +36,7 @@ typedef enum
     DRV_INITIALZN_FAIL   = -1,
     DRV_NOT_INITIALZD    =  0,
     DRV_INITIALZN_OK     =  1
-} T_UsbCamDrvInitStatus;
+} T_UsbCameraDriverInitStatus;
 
 
 
@@ -52,11 +52,9 @@ typedef enum
 
 void UsbCamDrv_Initialize(void);
 
-T_UsbCamDrvInitStatus UsbCamDrv_DrvInitStatus(void);
-
 void UsbCamDrv_Tasks(void); 
 
-T_UsbCameraDriver_Status UsbCamDrv_AcquireNewImage(void *params);
+T_UsbCameraDriverStatus UsbCamDrv_AcquireNewImage(void *params);
 
 
 #ifdef __cplusplus

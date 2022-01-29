@@ -10,20 +10,23 @@
 
 /*** Local function declarations (static) ***/
 
-T_CamConnectionStatus UsbCamDrv_GetCamConnectionStatus(void);
+T_UsbCameraDriverInitStatus UsbCamDrv_DrvInitStatus(void);
 
-T_CamUSBDevIDStatus UsbCamDrv_USBCamDeviceIDisValid(void);
+T_U3VCamConnectStatus UsbCamDrv_GetCamConnectionStatus(void);
 
-static inline CamIDValid_t CamVIDisValid(void);
+T_U3VCamDevIDStatus UsbCamDrv_USBCamDeviceIDisValid(void);
 
-static inline CamIDValid_t CamPIDisValid(void);
+
+static inline U3VCamIDValid_t CamVIDisValid(void);
+
+static inline U3VCamIDValid_t CamPIDisValid(void);
 
 
 
 
 /*** Constants & Variable declarations ***/
 
-T_UsbCamDrvInitStatus UsbCamDrv_InitStatus = DRV_NOT_INITIALZD;
+T_UsbCameraDriverInitStatus UsbCamDrv_InitStatus = DRV_NOT_INITIALZD;
 
 USB_APP_DATA USB_ALIGN UsbAppData;
 
@@ -35,7 +38,7 @@ USB_ALIGN uint8_t prompt[8]  = "\r\nLED : ";       /* This is the string that wi
 
 void UsbCamDrv_Initialize(void)
 {
-    T_UsbCamDrvInitStatus DrvSts = DRV_INITIALZN_OK;
+    T_UsbCameraDriverInitStatus DrvSts = DRV_INITIALZN_OK;
 
     /* DEBUG XULT - Disable VBUS power */
     VBUS_HOST_EN_PowerDisable();
@@ -62,7 +65,7 @@ void UsbCamDrv_Initialize(void)
 }
 
 
-T_UsbCamDrvInitStatus UsbCamDrv_DrvInitStatus(void)
+T_UsbCameraDriverInitStatus UsbCamDrv_DrvInitStatus(void)
 {
     return UsbCamDrv_InitStatus;
 }
@@ -70,8 +73,6 @@ T_UsbCamDrvInitStatus UsbCamDrv_DrvInitStatus(void)
 
 void UsbCamDrv_Tasks(void)
 {
-    //to do
-
     /* Check the application's current state. */
     USB_HOST_CDC_RESULT result;
 
@@ -88,11 +89,8 @@ void UsbCamDrv_Tasks(void)
     switch (UsbAppData.state)
     {
         case USB_APP_STATE_BUS_ENABLE:
-        
-            /* In this state the application enables the USB Host Bus. Note
-             * how the CDC Attach event handler are registered before the bus
-             * is enabled. */
-
+            /* In this state the application enables the USB Host Bus. Note how the CDC Attach 
+             * event handler are registered before the bus is enabled. */
             USB_HOST_EventHandlerSet(UsbApp_USBHostEventHandler, (uintptr_t)0);
             USB_HOST_CDC_AttachEventHandlerSet(UsbApp_USBHostCDCAttachEventListener, (uintptr_t)&UsbAppData);
             USB_HOST_BusEnable(USB_HOST_BUS_ALL);
@@ -100,7 +98,6 @@ void UsbCamDrv_Tasks(void)
             break;
         
         case USB_APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE:
-            
             /* In this state we wait for the Bus enable to complete */
             if(USB_HOST_BusIsEnabled(USB_HOST_BUS_ALL))
             {
@@ -109,9 +106,7 @@ void UsbCamDrv_Tasks(void)
             break;
             
         case USB_APP_STATE_WAIT_FOR_DEVICE_ATTACH:
-            
-            /* In this state the application is waiting for the device to be
-             * attached */
+            /* In this state the application is waiting for the device to be attached */
             if(UsbAppData.deviceIsAttached)
             {
                 /* A device is attached. We can open this device */
@@ -121,23 +116,19 @@ void UsbCamDrv_Tasks(void)
             break;
             
         case USB_APP_STATE_OPEN_DEVICE:
-            
             /* In this state the application opens the attached device */
             UsbAppData.cdcHostHandle = USB_HOST_CDC_Open(UsbAppData.cdcObj);
             if(UsbAppData.cdcHostHandle != USB_HOST_CDC_HANDLE_INVALID)
             {
-                /* The driver was opened successfully. Set the event handler
-                 * and then go to the next state. */
+                /* The driver was opened successfully. Set the event handler and then go to the next state. */
                 USB_HOST_CDC_EventHandlerSet(UsbAppData.cdcHostHandle, UsbApp_USBHostCDCEventHandler, (uintptr_t)&UsbAppData);
                 UsbAppData.state = USB_APP_STATE_SET_LINE_CODING;
             }
             break;
             
         case USB_APP_STATE_SET_LINE_CODING:
-            
-            /* Here we set the Line coding. The control request done flag will
-             * be set to true when the control request has completed. */
-            
+            /* Here we set the Line coding. The control request done flag will be set to true when
+             * the control request has completed. */
             UsbAppData.controlRequestDone = false;
             result = USB_HOST_CDC_ACM_LineCodingSet(UsbAppData.cdcHostHandle, NULL, &UsbAppData.cdcHostLineCoding);
             
@@ -146,7 +137,6 @@ void UsbCamDrv_Tasks(void)
                 /* We wait for the set line coding to complete */
                 UsbAppData.state = USB_APP_STATE_WAIT_FOR_SET_LINE_CODING;
             }
-                            
             break;
             
         case USB_APP_STATE_WAIT_FOR_SET_LINE_CODING:
@@ -167,22 +157,19 @@ void UsbCamDrv_Tasks(void)
             break;
             
         case USB_APP_STATE_SEND_SET_CONTROL_LINE_STATE:
-            
             /* Here we set the control line state */
             UsbAppData.controlRequestDone = false;
             result = USB_HOST_CDC_ACM_ControlLineStateSet(UsbAppData.cdcHostHandle, NULL, 
                     &UsbAppData.controlLineState);
-            
+
             if(result == USB_HOST_CDC_RESULT_SUCCESS)
             {
                 /* We wait for the set line coding to complete */
                 UsbAppData.state = USB_APP_STATE_WAIT_FOR_SET_CONTROL_LINE_STATE;
             }
-            
             break;
             
         case USB_APP_STATE_WAIT_FOR_SET_CONTROL_LINE_STATE:
-            
             /* Here we wait for the control line state set request to complete */
             if(UsbAppData.controlRequestDone)
             {
@@ -197,14 +184,11 @@ void UsbCamDrv_Tasks(void)
                     UsbAppData.state = USB_APP_STATE_SEND_PROMPT_TO_DEVICE;
                 }
             }
-            
             break;
             
         case USB_APP_STATE_SEND_PROMPT_TO_DEVICE:
-            
-            /* The prompt is sent to the device here. The write transfer done
-             * flag is updated in the event handler. */
-            
+            /* The prompt is sent to the device here. The write transfer done flag is updated in
+             * the event handler. */
             UsbAppData.writeTransferDone = false;
             result = USB_HOST_CDC_Write(UsbAppData.cdcHostHandle, NULL, ( void * )prompt, 8);
             
@@ -215,7 +199,6 @@ void UsbCamDrv_Tasks(void)
             break;
             
         case USB_APP_STATE_WAIT_FOR_PROMPT_SEND_COMPLETE:
-            
             /* Here we check if the write transfer is done */
             if(UsbAppData.writeTransferDone)
             {
@@ -230,11 +213,9 @@ void UsbCamDrv_Tasks(void)
                     UsbAppData.state = USB_APP_STATE_SEND_PROMPT_TO_DEVICE;
                 }
             }
-            
             break;
             
         case USB_APP_STATE_GET_DATA_FROM_DEVICE:
-            
             /* Here we request data from the device */
             UsbAppData.readTransferDone = false;
             result = USB_HOST_CDC_Read(UsbAppData.cdcHostHandle, NULL, UsbAppData.inDataArray, 8);
@@ -245,9 +226,7 @@ void UsbCamDrv_Tasks(void)
             break;
            
         case USB_APP_STATE_WAIT_FOR_DATA_FROM_DEVICE:
-            
-            /* Wait for data from device. If the data has arrived, then toggle
-             * the LED. */
+            /* Wait for data from device. If the data has arrived, then toggle the LED. */
             if(UsbAppData.readTransferDone)
             {
                 if(UsbAppData.readTransferResult == USB_HOST_CDC_RESULT_SUCCESS)
@@ -268,7 +247,8 @@ void UsbCamDrv_Tasks(void)
                     UsbAppData.state = USB_APP_STATE_SEND_PROMPT_TO_DEVICE;
                 }
             }
-            
+            break;
+
         case USB_APP_STATE_ERROR:
             /* An error has occurred */
             // error handling...
@@ -281,12 +261,12 @@ void UsbCamDrv_Tasks(void)
 }
 
 
-T_UsbCameraDriver_Status UsbCamDrv_AcquireNewImage(void *params)
+T_UsbCameraDriverStatus UsbCamDrv_AcquireNewImage(void *params)
 {
-    T_UsbCameraDriver_Status DrvSts = USB_CAM_DRV_OK;
+    T_UsbCameraDriverStatus DrvSts = USB3V_CAM_DRV_OK;
 
-    DrvSts = (UsbCamDrv_DrvInitStatus() == DRV_INITIALZN_OK)       ? DrvSts : USB_CAM_DRV_NOT_INITD;
-    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == CAM_CONNECTED) ? DrvSts : USB_CAM_DRV_ERROR;
+    DrvSts = (UsbCamDrv_DrvInitStatus()          == DRV_INITIALZN_OK)  ? DrvSts : USB3V_CAM_DRV_NOT_INITD;
+    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED) ? DrvSts : USB3V_CAM_DRV_ERROR;
 
     // to do
 
@@ -294,14 +274,14 @@ T_UsbCameraDriver_Status UsbCamDrv_AcquireNewImage(void *params)
 }
 
 
-T_CamConnectionStatus UsbCamDrv_GetCamConnectionStatus(void)
+T_U3VCamConnectStatus UsbCamDrv_GetCamConnectionStatus(void)
 {
-    T_CamConnectionStatus CamStatus = CAM_STATUS_UNKNOWN;
+    T_U3VCamConnectStatus CamStatus = U3V_CAM_STATUS_UNKNOWN;
 
     // to do
     if (1)
     {
-        CamStatus = CAM_CONNECTED;
+        CamStatus = U3V_CAM_CONNECTED;
     }
     // to do
 
@@ -309,18 +289,18 @@ T_CamConnectionStatus UsbCamDrv_GetCamConnectionStatus(void)
 }
 
 
-T_CamUSBDevIDStatus UsbCamDrv_USBCamDeviceIDisValid(void)
+T_U3VCamDevIDStatus UsbCamDrv_USBCamDeviceIDisValid(void)
 {
-    T_CamUSBDevIDStatus CamUSBDevIDSts = CAM_DEV_ID_OK;
+    T_U3VCamDevIDStatus CamDevIDSts = U3V_CAM_DEV_ID_OK;
 
-    CamUSBDevIDSts = (CamPIDisValid()) ? CamUSBDevIDSts : CAM_DEV_ID_ERROR;
-    CamUSBDevIDSts = (CamVIDisValid()) ? CamUSBDevIDSts : CAM_DEV_ID_ERROR;
+    CamDevIDSts = (CamPIDisValid()) ? CamDevIDSts : U3V_CAM_DEV_ID_ERROR;
+    CamDevIDSts = (CamVIDisValid()) ? CamDevIDSts : U3V_CAM_DEV_ID_ERROR;
 
-    return CamUSBDevIDSts;
+    return CamDevIDSts;
 }
 
 
-static inline CamIDValid_t CamVIDisValid(void)
+static inline U3VCamIDValid_t CamVIDisValid(void)
 {
     // to do
     if (1)
@@ -331,7 +311,7 @@ static inline CamIDValid_t CamVIDisValid(void)
 }
 
 
-static inline CamIDValid_t CamPIDisValid(void)
+static inline U3VCamIDValid_t CamPIDisValid(void)
 {
     // to do
     if (1)
