@@ -17,9 +17,9 @@ T_U3VCamConnectStatus UsbCamDrv_GetCamConnectionStatus(void);
 T_U3VCamDevIDStatus UsbCamDrv_USBCamDeviceIDisValid(void);
 
 
-static inline U3VCamIDValid_t CamVIDisValid(void);
+static inline T_U3VCamIDValid CamVIDisValid(void);
 
-static inline U3VCamIDValid_t CamPIDisValid(void);
+static inline T_U3VCamIDValid CamPIDisValid(void);
 
 
 
@@ -300,7 +300,7 @@ T_U3VCamDevIDStatus UsbCamDrv_USBCamDeviceIDisValid(void)
 }
 
 
-static inline U3VCamIDValid_t CamVIDisValid(void)
+static inline T_U3VCamIDValid CamVIDisValid(void)
 {
     // to do
     if (1)
@@ -311,7 +311,7 @@ static inline U3VCamIDValid_t CamVIDisValid(void)
 }
 
 
-static inline U3VCamIDValid_t CamPIDisValid(void)
+static inline T_U3VCamIDValid CamPIDisValid(void)
 {
     // to do
     if (1)

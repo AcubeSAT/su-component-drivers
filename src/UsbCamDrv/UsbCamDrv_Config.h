@@ -50,21 +50,6 @@ extern "C" {
 #define VBUS_HOST_EN_PowerDisable()                    (PIOC_REGS->PIO_SODR = (1<<16))
 
 
-/*** Type definitions ***/
-
-
-
-/*** Constant declarations ***/
-
-
-
-/*** Variable declarations ***/
-
-
-
-/*** Function declarations ***/
-
-
 
 #ifdef __cplusplus
 }

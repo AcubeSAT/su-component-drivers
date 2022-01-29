@@ -112,7 +112,7 @@ typedef enum
 } T_U3VCamDevIDStatus;
 
 
-typedef bool  U3VCamIDValid_t;
+typedef bool  T_U3VCamIDValid;
 
 
 /*** Constant declarations ***/
