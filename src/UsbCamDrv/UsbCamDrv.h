@@ -5,21 +5,37 @@
 #ifndef COMPONENT_DRIVERS_USBCAMDRV_H
 #define COMPONENT_DRIVERS_USBCAMDRV_H
 
-#include "UsbCamDrv_Main.h"
+#include "UsbCamDrv_App.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*** Macro definitions ***/
 
-/*** Type definitions ***/
+/********************************************************
+* Macro definitions
+*********************************************************/
 
-/*** Constant declarations ***/
 
-/*** Variable declarations ***/
+/********************************************************
+* Type definitions
+*********************************************************/
 
-/*** Function declarations ***/
+
+/********************************************************
+* Constant declarations
+*********************************************************/
+
+
+/********************************************************
+* Variable declarations
+*********************************************************/
+
+
+/********************************************************
+* Function declarations
+*********************************************************/
+
 
 
 #ifdef __cplusplus

@@ -11,12 +11,17 @@ extern "C" {
 #endif
 
 
-/*** Macro definitions ***/
+/********************************************************
+* Macro definitions
+*********************************************************/
 
-#define APP_HOST_CDC_BAUDRATE_SUPPORTED                9600UL
-#define APP_HOST_CDC_PARITY_TYPE                       0u
-#define APP_HOST_CDC_STOP_BITS                         0u
-#define APP_HOST_CDC_NO_OF_DATA_BITS                   8u
+#define USB_HOST_U3V_INSTANCES_NUMBER                  1u
+#define USB_HOST_U3V_ATTACH_LISTENERS_NUMBER           1u
+
+// #define APP_HOST_CDC_BAUDRATE_SUPPORTED                9600UL
+// #define APP_HOST_CDC_PARITY_TYPE                       0u
+// #define APP_HOST_CDC_STOP_BITS                         0u
+// #define APP_HOST_CDC_NO_OF_DATA_BITS                   8u
 
 #define U3V_ENDIANNESS                                 LITTLE_ENDIAN
 #define U3V_PIXEL_FORMAT                               _RGB8

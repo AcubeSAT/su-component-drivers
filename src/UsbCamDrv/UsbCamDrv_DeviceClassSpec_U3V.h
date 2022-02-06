@@ -5,12 +5,16 @@
 #ifndef COMPONENT_DRIVERS_USBCAMDRV_DEVCLASSU3V_H
 #define COMPONENT_DRIVERS_USBCAMDRV_DEVCLASSU3V_H
 
-#include "UsbCamDrv_Main.h"
+#include "UsbCamDrv_App.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
+/********************************************************
+* Macro definitions
+*********************************************************/
 
 /*** USB3Vision - USB IF Device class ***/
 #define U3V_USB_DEVICE_CLASS                           0xEF     /* Miscellaneous class of USB-IF */
@@ -18,7 +22,6 @@ extern "C" {
 #define U3V_USB_DEVICE_CONTROL_IF_PRCOL                0x00     /* Control IF protocol for USB3 Vision */
 #define U3V_USB_DEVICE_EVENT_IF_PRCOL                  0x01     /* Event IF protocol for USB3 Vision */
 #define U3V_USB_DEVICE_STREAMING_IF_PRCOL              0x02     /* Streaming IF protocol for USB3 Vision */
-
 
 /*** USB3Vision - GenCP Registers Size ***/
 #define U3V_REG_GENCP_VERSION_SIZE                     4u
@@ -44,6 +47,10 @@ extern "C" {
 #define U3V_REG_IMPLEMENTATION_ENDIANESS_SIZE          4u
 #define U3V_REG_RESERVED_SPACE_SIZE                    65008u
 
+
+/********************************************************
+* Type definitions
+*********************************************************/
 
 /*** USB3 Vision - GenCP Registers Offset Mapping ***/
 typedef enum

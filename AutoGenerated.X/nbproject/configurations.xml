@@ -340,8 +340,9 @@
         <itemPath>../src/SEGGER_RTT/SEGGER_RTT_printf.c</itemPath>
       </logicalFolder>
       <logicalFolder name="UsbCamDrv" displayName="UsbCamDrv" projectFiles="true">
-        <itemPath>../src/UsbCamDrv/UsbCamDrv_Main.c</itemPath>
+        <itemPath>../src/UsbCamDrv/UsbCamDrv_App.c</itemPath>
         <itemPath>../src/UsbCamDrv/UsbCamDrv_AppCallbacks.c</itemPath>
+        <itemPath>../src/UsbCamDrv/UsbCamDrv_Host_U3V.c</itemPath>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
       <itemPath>../src/app.c</itemPath>
@@ -607,7 +608,7 @@
         <property key="communication.speed" value="2.000"/>
         <property key="debugoptions.debug-startup" value="Use system settings"/>
         <property key="debugoptions.reset-behaviour" value="Use system settings"/>
-        <property key="debugoptions.useswbreakpoints" value="true"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
         <property key="firmware.path"
                   value="Press to browse for a specific firmware version"/>
         <property key="firmware.toolpack"
