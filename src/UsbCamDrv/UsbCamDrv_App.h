@@ -1,5 +1,5 @@
 //
-// Created by mojo on 8/12/21.
+// Created by mojo on 02/02/22.
 //
 
 #ifndef COMPONENT_DRIVERS_USBCAMDRV_APP_H
@@ -12,6 +12,7 @@
 #include "configuration.h"
 #include "definitions.h"
 #include "UsbCamDrv_Host_U3V.h"
+#include "UsbCamDrv/UsbCamDrv_DeviceClassSpec_U3V.h"
 
 #ifdef __cplusplus
 extern "C" {
