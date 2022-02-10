@@ -22,13 +22,13 @@ extern "C" {
 *********************************************************/
 
 
-#define USB_HOST_U3V_RESULT_MIN                        -100
+#define USB_HOST_U3V_RESULT_MIN                        (USB_HOST_RESULT_MIN)
 
 #define USB_HOST_U3V_HANDLE_INVALID                    ((T_UsbHostU3VHandle)(-1))
 #define USB_HOST_U3V_TRANSFER_HANDLE_INVALID           ((T_UsbHostU3VTransferHandle)(-1))
 #define USB_HOST_U3V_REQUEST_HANDLE_INVALID            ((T_UsbHostU3VRequestHandle)(-1))
 
-#define USB_HOST_U3V_INTERFACE   &gUSBHostU3VClientDriver
+#define USB_HOST_U3V_INTERFACE                         (&gUSBHostU3VClientDriver)
 
 
 /********************************************************
