@@ -17,14 +17,18 @@ extern "C" {
 *********************************************************/
 
 /*** USB3 Vision - USB IF Device class ***/
-#define U3V_USB_MISC_CLASS                            0xEF     /* Miscellaneous class of USB-IF standard */
-#define U3V_USB_IAD_SUBCLASS                          0x02     /* Interface Association Descriptor subclass */
-#define U3V_USB_IAD_PROTOCOL                          0x01     /* Interface Association Descriptor protocol */
-#define U3V_USB_IAD_DESC_TYPE                         0x0B     /* Interdace Association Descriptor type */
-#define U3V_USB_VISION_FUNC_SUBLCASS                  0x05     /* USB3 Vision camera functional subclass */      
-#define U3V_USB_VISION_CONTROL_PROTCL                 0x00     /* USB3 Vision camera control protocol */
-#define U3V_USB_VISION_EVENT_PROTCL                   0x01     /* USB3 Vision camera event protocol */
-#define U3V_USB_VISION_STREAMING_PROTCL               0x02     /* USB3 Vision camera streaming protocol */
+#define U3V_USB_DEVICE_MISC_CLASS                     0xEF     /* Miscellaneous class of USB-IF standard */
+#define U3V_USB_DEVICE_SUBCLASS_COMMON                0x02     /* Interface Association Descriptor subclass */
+#define U3V_USB_DEVICE_PROTOCOL_IAD                   0x01     /* Interface Association Descriptor protocol */
+#define U3V_USB_DESCRIPTOR_TYPE_DEVICE                0x01     /* Descriptor type = Device */
+#define U3V_USB_DESCRIPTOR_TYPE_CONFIGURATION         0x02     /* Descriptor type = Configuration */
+#define U3V_USB_DESCRIPTOR_TYPE_INTERFACE             0x04     /* Descriptor type = Interface */
+#define U3V_USB_DESCRIPTOR_TYPE_ENDPOINT              0x05     /* Descriptor type = Endpoint */
+#define U3V_USB_DESCRIPTOR_TYPE_IAD                   0x0B     /* Descriptor type = Interface Association Descriptor */
+#define U3V_USB_FUNCTION_USB3VIS_SUBLCASS             0x05     /* USB3 Vision camera function subclass */      
+#define U3V_USB_FUNCTION_USB3VIS_CONTROL_IF_PROTCL    0x00     /* USB3 Vision camera function control interface protocol */
+#define U3V_USB_FUNCTION_USB3VIS_EVENT_IF_PROTCL      0x01     /* USB3 Vision camera function event interface protocol */
+#define U3V_USB_FUNCTION_USB3VIS_STREAMING_IF_PROTCL  0x02     /* USB3 Vision camera function streaming interface protocol */
 
 /*** USB3Vision - GenCP Registers Size ***/
 #define U3V_REG_GENCP_VERSION_SIZE                    4u

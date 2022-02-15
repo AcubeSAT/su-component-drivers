@@ -238,31 +238,6 @@ T_UsbHostU3VResult USB_HostU3V_Write(T_UsbHostU3VHandle          handle,
 
 
 
-// T_UsbHostU3VResult USB_HostU3V_SerialStateNotificationGet(T_UsbHostU3VHandle          handle,
-//                                                           T_UsbHostU3VTransferHandle *transferHandle,
-//                                                           USB_CDC_SERIAL_STATE       *serialState)
-// {
-//     //todo
-// }
-
-
-// T_UsbHostU3VResult USB_HostU3V_ACM_LineCodingSet(T_UsbHostU3VHandle         handle,
-//                                                  T_UsbHostU3VRequestHandle *requestHandle,
-//                                                  USB_CDC_LINE_CODING       *lineCoding)
-// {
-//     //todo
-// }
-
-
-// T_UsbHostU3VResult USB_HostU3V_ACM_ControlLineStateSet(T_UsbHostU3VHandle          handle,
-//                                                       T_UsbHostU3VRequestHandle  *requestHandle,
-//                                                       USB_CDC_CONTROL_LINE_STATE *controlLineState)
-// {
-//     //todo
-// }
-
-
-
 /********************************************************
 * Local function definitions
 *********************************************************/
@@ -335,9 +310,9 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
              * descriptor because the number of interfaces is 1 */
             interfaceDescriptor = (USB_INTERFACE_DESCRIPTOR *)descriptor;
 
-            if ((interfaceDescriptor->bInterfaceClass == U3V_USB_MISC_CLASS) &&
-                (interfaceDescriptor->bInterfaceSubClass == U3V_USB_IAD_SUBCLASS) &&
-                (interfaceDescriptor->bInterfaceProtocol == U3V_USB_IAD_PROTOCOL))
+            if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_MISC_CLASS) &&
+                (interfaceDescriptor->bInterfaceSubClass == U3V_USB_FUNCTION_USB3VIS_SUBLCASS) &&
+                (interfaceDescriptor->bInterfaceProtocol == U3V_USB_FUNCTION_USB3VIS_CONTROL_IF_PROTCL))
             {
                 /* This interface is the communications class interface. Get the
                  * endpoint number */
@@ -358,9 +333,9 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                                                                                endpointDescriptor->bEndpointAddress);
                 }
             }
-            else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_MISC_CLASS) &&
-                     (interfaceDescriptor->bInterfaceSubClass == U3V_USB_VISION_FUNC_SUBLCASS) &&
-                     (interfaceDescriptor->bInterfaceProtocol == U3V_USB_VISION_CONTROL_PROTCL))
+            else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_MISC_CLASS) &&
+                     (interfaceDescriptor->bInterfaceSubClass == U3V_USB_FUNCTION_USB3VIS_SUBLCASS) &&
+                     (interfaceDescriptor->bInterfaceProtocol == U3V_USB_FUNCTION_USB3VIS_EVENT_IF_PROTCL))
             {
                 /* This is the data interface */
                 u3vInstance->dataInterfaceHandle = interfaces[0u];
@@ -393,6 +368,12 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                     u3vInstance->bulkOutPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->dataInterfaceHandle,
                                                                              endpointDescriptor->bEndpointAddress);
                 }
+            }
+            else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_MISC_CLASS) &&
+                     (interfaceDescriptor->bInterfaceSubClass == U3V_USB_FUNCTION_USB3VIS_SUBLCASS) &&
+                     (interfaceDescriptor->bInterfaceProtocol == U3V_USB_FUNCTION_USB3VIS_STREAMING_IF_PROTCL))
+            {
+                /* video stream IF N/A */
             }
             else
             {
@@ -452,9 +433,9 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                 /* If we have a valid interface descriptor find out its type */
                 if (interfaceDescriptor != NULL)
                 {
-                    if ((interfaceDescriptor->bInterfaceClass == U3V_USB_MISC_CLASS) &&
-                        (interfaceDescriptor->bInterfaceSubClass == U3V_USB_IAD_SUBCLASS) &&
-                        (interfaceDescriptor->bInterfaceProtocol == U3V_USB_IAD_PROTOCOL))
+                    if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_MISC_CLASS) &&
+                        (interfaceDescriptor->bInterfaceSubClass == U3V_USB_FUNCTION_USB3VIS_SUBLCASS) &&
+                        (interfaceDescriptor->bInterfaceProtocol == U3V_USB_FUNCTION_USB3VIS_CONTROL_IF_PROTCL))
                     {
                         /* We found the communication class */
                         u3vInstance->commInterfaceNumber = interfaceDescriptor->bInterfaceNumber;
@@ -480,9 +461,9 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                             u3vInstance->interruptPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
                     }
-                    else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_MISC_CLASS) &&
-                             (interfaceDescriptor->bInterfaceSubClass == U3V_USB_VISION_FUNC_SUBLCASS) &&
-                             (interfaceDescriptor->bInterfaceProtocol == U3V_USB_VISION_CONTROL_PROTCL))
+                    else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_MISC_CLASS) &&
+                             (interfaceDescriptor->bInterfaceSubClass == U3V_USB_FUNCTION_USB3VIS_SUBLCASS) &&
+                             (interfaceDescriptor->bInterfaceProtocol == U3V_USB_FUNCTION_USB3VIS_EVENT_IF_PROTCL))
                     {
                         /* We found the data class */
 
@@ -525,6 +506,13 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                             u3vInstance->bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
                     }
+                    else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_MISC_CLASS) &&
+                             (interfaceDescriptor->bInterfaceSubClass == U3V_USB_FUNCTION_USB3VIS_SUBLCASS) &&
+                             (interfaceDescriptor->bInterfaceProtocol == U3V_USB_FUNCTION_USB3VIS_STREAMING_IF_PROTCL))
+                    {
+                        /* video stream IF N/A */
+                    }
+                    
                 }
                 else
                 {
