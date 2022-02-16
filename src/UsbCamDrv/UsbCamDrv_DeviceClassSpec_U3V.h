@@ -26,9 +26,9 @@ extern "C" {
 #define U3V_USB_DESCRIPTOR_TYPE_ENDPOINT              0x05     /* Descriptor type = Endpoint */
 #define U3V_USB_DESCRIPTOR_TYPE_IAD                   0x0B     /* Descriptor type = Interface Association Descriptor */
 #define U3V_USB_FUNCTION_USB3VIS_SUBLCASS             0x05     /* USB3 Vision camera function subclass */      
-#define U3V_USB_FUNCTION_USB3VIS_CONTROL_IF_PROTCL    0x00     /* USB3 Vision camera function control interface protocol */
-#define U3V_USB_FUNCTION_USB3VIS_EVENT_IF_PROTCL      0x01     /* USB3 Vision camera function event interface protocol */
-#define U3V_USB_FUNCTION_USB3VIS_STREAMING_IF_PROTCL  0x02     /* USB3 Vision camera function streaming interface protocol */
+#define U3V_USB_FUNCTION_USB3VIS_CONTROL_IF_PRCL      0x00     /* USB3 Vision camera function control interface protocol */
+#define U3V_USB_FUNCTION_USB3VIS_EVENT_IF_PRCL        0x01     /* USB3 Vision camera function event interface protocol */
+#define U3V_USB_FUNCTION_USB3VIS_DATA_STREAM_IF_PRCL  0x02     /* USB3 Vision camera function streaming interface protocol */
 
 /*** USB3Vision - GenCP Registers Size ***/
 #define U3V_REG_GENCP_VERSION_SIZE                    4u
