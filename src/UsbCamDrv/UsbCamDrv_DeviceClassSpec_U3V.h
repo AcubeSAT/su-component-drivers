@@ -17,18 +17,25 @@ extern "C" {
 *********************************************************/
 
 /*** USB3 Vision - USB IF Device class ***/
-#define U3V_USB_DEVICE_MISC_CLASS                     0xEF     /* Miscellaneous class of USB-IF standard */
-#define U3V_USB_DEVICE_SUBCLASS_COMMON                0x02     /* Interface Association Descriptor subclass */
-#define U3V_USB_DEVICE_PROTOCOL_IAD                   0x01     /* Interface Association Descriptor protocol */
+#define U3V_USB_DEVICE_CLASS_MISC                     0xEF     /* U3V device miscellaneous class */
+#define U3V_USB_DEVICE_SUBCLASS_COMMON                0x02     /* U3V device common subclass */
+#define U3V_USB_DEVICE_PROTOCOL_IAD                   0x01     /* U3V device IAD protocol */
 #define U3V_USB_DESCRIPTOR_TYPE_DEVICE                0x01     /* Descriptor type = Device */
 #define U3V_USB_DESCRIPTOR_TYPE_CONFIGURATION         0x02     /* Descriptor type = Configuration */
 #define U3V_USB_DESCRIPTOR_TYPE_INTERFACE             0x04     /* Descriptor type = Interface */
 #define U3V_USB_DESCRIPTOR_TYPE_ENDPOINT              0x05     /* Descriptor type = Endpoint */
-#define U3V_USB_DESCRIPTOR_TYPE_IAD                   0x0B     /* Descriptor type = Interface Association Descriptor */
-#define U3V_USB_FUNCTION_USB3VIS_SUBLCASS             0x05     /* USB3 Vision camera function subclass */      
-#define U3V_USB_FUNCTION_USB3VIS_CONTROL_IF_PRCL      0x00     /* USB3 Vision camera function control interface protocol */
-#define U3V_USB_FUNCTION_USB3VIS_EVENT_IF_PRCL        0x01     /* USB3 Vision camera function event interface protocol */
-#define U3V_USB_FUNCTION_USB3VIS_DATA_STREAM_IF_PRCL  0x02     /* USB3 Vision camera function streaming interface protocol */
+#define U3V_USB_DESCRIPTOR_TYPE_IAD                   0x0B     /* Descriptor type = IAD */
+#define U3V_USB_INTERFACE_U3V_SUBLCASS                0x05     /* U3V interface subclass */      
+#define U3V_USB_INTERFACE_CONTROL                     0x00     /* U3V function interface control */
+#define U3V_USB_INTERFACE_EVENT                       0x01     /* U3V function interface event */
+#define U3V_USB_INTERFACE_DATASTREAM                  0x02     /* U3V function interface data streaming */
+#define U3V_USB_INFO_IS_U3V_INTERFACE                 0x24     /* U3V descriptor data = U3V type */
+#define U3V_USB_INFO_IS_DEVICEINFO                    0x01     /* U3V descriptor data = info type*/
+#define U3V_USB_INFO_MIN_LENGTH_STR                   20u      /* U3V descriptor data min length */
+#define U3V_USB_MAX_DESCR_STR_LENGTH                  64u      /* U3V descriptor data buffer size */
+#define U3V_USB_REQ_ACK                               0x4000
+#define U3V_USB_REQ_TIMEOUT                           5000u
+
 
 /*** USB3Vision - GenCP Registers Size ***/
 #define U3V_REG_GENCP_VERSION_SIZE                    4u
