@@ -85,6 +85,23 @@ typedef struct      //to do: rework
 } T_UsbAppData;     //todo rework
 
 
+typedef enum
+{
+    U3V_CAM_DISCONNECTED     = -1,
+    U3V_CAM_STATUS_UNKNOWN   =  0,
+    U3V_CAM_CONNECTED        =  1
+} T_U3VCamConnectStatus;
+
+
+typedef enum
+{
+    U3V_CAM_DEV_ID_ERROR     = 0,
+    U3V_CAM_DEV_ID_OK        = 1
+} T_U3VCamDevIDStatus;
+
+
+typedef bool  T_U3VCamIDValid;
+
 
 /********************************************************
 * Constant declarations

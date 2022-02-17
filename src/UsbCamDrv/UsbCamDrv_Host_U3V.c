@@ -4,7 +4,6 @@
 
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv_Host_U3V_Local.h"
-#include "UsbCamDrv_Private.h"
 #include "UsbCamDrv_Config.h"
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
 

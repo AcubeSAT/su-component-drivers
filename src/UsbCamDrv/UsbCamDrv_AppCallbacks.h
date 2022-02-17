@@ -6,7 +6,6 @@
 #define COMPONENT_DRIVERS_USBCAMDRV_APPCALLBACKS_H
 
 #include "definitions.h"
-#include "UsbCamDrv_Private.h"
 #include "UsbCamDrv_Host_U3V.h"
 
 

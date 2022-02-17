@@ -3,7 +3,6 @@
 //
 
 #include "UsbCamDrv_App.h"
-#include "UsbCamDrv_Private.h"
 #include "UsbCamDrv_AppCallbacks.h"
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv_Config.h"
