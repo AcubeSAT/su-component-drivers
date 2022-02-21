@@ -146,17 +146,6 @@ T_UsbHostU3VResult USB_HostU3V_Write(T_UsbHostU3VHandle          handle,
                                      void                       *data,
                                      size_t                      size);
 
-// T_UsbHostU3VResult USB_HostU3V_SerialStateNotificationGet(T_UsbHostU3VHandle        handle,
-//                                                         T_UsbHostU3VTransferHandle *transferHandle,
-//                                                         USB_CDC_SERIAL_STATE       *serialState);
-
-// T_UsbHostU3VResult USB_HostU3V_ACM_LineCodingSet(T_UsbHostU3VHandle        handle,
-//                                                 T_UsbHostU3VRequestHandle *requestHandle,
-//                                                 USB_CDC_LINE_CODING       *lineCoding);
-
-// T_UsbHostU3VResult USB_HostU3V_ACM_ControlLineStateSet(T_UsbHostU3VHandle         handle,
-//                                                       T_UsbHostU3VRequestHandle  *requestHandle,
-//                                                       USB_CDC_CONTROL_LINE_STATE *controlLineState);
 
 
 

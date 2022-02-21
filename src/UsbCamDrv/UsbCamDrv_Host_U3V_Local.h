@@ -101,46 +101,46 @@ extern T_UsbHostU3VInstanceObj gUSBHostU3VObj[USB_HOST_U3V_INSTANCES_NUMBER];
 * Function declarations
 *********************************************************/
 
-void _USB_HostU3V_Initialize(void * data);
+static void _USB_HostU3V_Initialize(void * data);
+ 
+static void _USB_HostU3V_Deinitialize(void);
+ 
+static void _USB_HostU3V_Reinitialize(void * msdInitData);
 
-void _USB_HostU3V_Deinitialize(void);
+static void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
+                                      USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
+                                      USB_DEVICE_DESCRIPTOR *deviceDescriptor);
 
-void _USB_HostU3V_Reinitialize(void * msdInitData);
+static void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle);
 
-void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
-                               USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
-                               USB_DEVICE_DESCRIPTOR *deviceDescriptor);
+static void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle);
 
-void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle);
+static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,
+                                         USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
+                                         size_t nInterfaces,
+                                         uint8_t *descriptor);
 
-void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle);
+static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
+                                                                                   USB_HOST_DEVICE_INTERFACE_EVENT event,
+                                                                                   void *eventData,
+                                                                                   uintptr_t context);
 
-void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,
-                                  USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
-                                  size_t nInterfaces,
-                                  uint8_t *descriptor);
+static void _USB_HostU3V_InterfaceTasks(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
 
-USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
-                                                                            USB_HOST_DEVICE_INTERFACE_EVENT event,
-                                                                            void *eventData,
-                                                                            uintptr_t context);
+static void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
 
-void _USB_HostU3V_InterfaceTasks(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
+static USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
+                                                                      USB_HOST_DEVICE_EVENT event,
+                                                                      void *eventData,
+                                                                      uintptr_t context);
 
-void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
+static int32_t _USB_HostU3V_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE deviceClientHandle);
 
-USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
-                                                               USB_HOST_DEVICE_EVENT event,
-                                                               void *eventData,
-                                                               uintptr_t context);
+static int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle);
 
-int32_t _USB_HostU3V_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE deviceClientHandle);
+static int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
 
-int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle);
-
-int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
-
-T_UsbHostU3VResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
+static T_UsbHostU3VResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 
 
 

@@ -241,7 +241,7 @@ T_UsbHostU3VResult USB_HostU3V_Write(T_UsbHostU3VHandle          handle,
 * Local function definitions
 *********************************************************/
 
-void _USB_HostU3V_Initialize(void * data)
+static void _USB_HostU3V_Initialize(void * data)
 {
     uint32_t iterator;
     T_UsbHostU3VInstanceObj *u3vInstanceObj;
@@ -259,22 +259,22 @@ void _USB_HostU3V_Initialize(void * data)
 }
 
 
-void _USB_HostU3V_Deinitialize(void)
+static void _USB_HostU3V_Deinitialize(void)
 {
     /* N/A */
 }
 
 
-void _USB_HostU3V_Reinitialize(void * msdInitData)
+static void _USB_HostU3V_Reinitialize(void * msdInitData)
 {
     /* N/A */
 }
 
 
-void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,         //todo rework
-                                  USB_HOST_DEVICE_OBJ_HANDLE        deviceObjHandle,
-                                  size_t                            nInterfaces,
-                                  uint8_t                          *descriptor)
+static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,         //todo rework
+                                         USB_HOST_DEVICE_OBJ_HANDLE        deviceObjHandle,
+                                         size_t                            nInterfaces,
+                                         uint8_t                          *descriptor)
 {
     int32_t                             u3vInstanceIndex;
     uint32_t                            iterator;
@@ -282,112 +282,10 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
     USB_INTERFACE_DESCRIPTOR           *interfaceDescriptor;
     USB_ENDPOINT_DESCRIPTOR            *endpointDescriptor;
     USB_HOST_ENDPOINT_DESCRIPTOR_QUERY  endpointDescriptorQuery;
-    USB_HOST_INTERFACE_DESCRIPTOR_QUERY interfaceDescriptorQuery; 
+    USB_HOST_INTERFACE_DESCRIPTOR_QUERY interfaceDescriptorQuery;
 
-    /* This function will be called when there is an interface level match.
-     * There are two possible cases here. In case of a simple U3V device, the
-     * driver would have matched at the device level in which case the device Client
-     * handle will not be invalid. Or else this driver matched at the interface
-     * level because this is a composite device. */
-
-    /* If the number of interfaces passed to this function is 1, then we know
-     * this is a single interface */
-
-    if (nInterfaces == 1u)
-    {
-        /* One one interface was passed. This means there was device level class
-         * subclass protocol match. The device must aleady exist in the system */
-
-        u3vInstanceIndex = _USB_HostU3V_DeviceObjHandleToInstance(deviceObjHandle);
-
-        if (u3vInstanceIndex >= 0)
-        {
-            /* Found the instance index that owns this object */
-            u3vInstance = &gUSBHostU3VObj[u3vInstanceIndex];
-
-            /* Get the interface descriptor. We know this is an interface
-             * descriptor because the number of interfaces is 1 */
-            interfaceDescriptor = (USB_INTERFACE_DESCRIPTOR *)descriptor;
-
-            if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_CLASS_MISC) &&
-                (interfaceDescriptor->bInterfaceSubClass == U3V_USB_INTERFACE_U3V_SUBLCASS) &&
-                (interfaceDescriptor->bInterfaceProtocol == U3V_USB_INTERFACE_CONTROL))
-            {
-                /* This interface is the communications class interface. Get the
-                 * endpoint number */
-                u3vInstance->communicationInterfaceHandle = interfaces[0u];
-                u3vInstance->commInterfaceNumber = interfaceDescriptor->bInterfaceNumber;
-                USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
-                endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_INTERRUPT;
-                endpointDescriptorQuery.direction = USB_DATA_DIRECTION_DEVICE_TO_HOST;
-                endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
-                endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
-
-                /* Did we find the endpoint? */
-                if (endpointDescriptor != NULL)
-                {
-                    /* Found the endpoint. Open the pipe. If the pipe was not
-                     * opened, the device will never move to a ready state. */
-                    u3vInstance->interruptPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->communicationInterfaceHandle,
-                                                                               endpointDescriptor->bEndpointAddress);
-                }
-            }
-            else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_CLASS_MISC) &&
-                     (interfaceDescriptor->bInterfaceSubClass == U3V_USB_INTERFACE_U3V_SUBLCASS) &&
-                     (interfaceDescriptor->bInterfaceProtocol == U3V_USB_INTERFACE_EVENT))
-            {
-                /* This is the data interface */
-                u3vInstance->dataInterfaceHandle = interfaces[0u];
-                u3vInstance->dataInterfaceNumber = interfaceDescriptor->bInterfaceNumber;
-                USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
-                endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
-                endpointDescriptorQuery.direction = USB_DATA_DIRECTION_DEVICE_TO_HOST;
-                endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE | USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
-                endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
-
-                /* Did we find the bulk in point */
-                if (endpointDescriptor != NULL)
-                {
-                    /* Yes we did. Open this pipe */
-                    u3vInstance->bulkInPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->dataInterfaceHandle,
-                                                                            endpointDescriptor->bEndpointAddress);
-                }
-
-                /* Bulk in pipe is opened. Now open the bulk out pipe */
-                USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
-                endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
-                endpointDescriptorQuery.direction = USB_DATA_DIRECTION_HOST_TO_DEVICE;
-                endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
-                endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
-
-                /* Did we find the pipe */
-                if (endpointDescriptor != NULL)
-                {
-                    /* Yes we did. Open this pipe */
-                    u3vInstance->bulkOutPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->dataInterfaceHandle,
-                                                                             endpointDescriptor->bEndpointAddress);
-                }
-            }
-            else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_CLASS_MISC) &&
-                     (interfaceDescriptor->bInterfaceSubClass == U3V_USB_INTERFACE_U3V_SUBLCASS) &&
-                     (interfaceDescriptor->bInterfaceProtocol == U3V_USB_INTERFACE_DATASTREAM))
-            {
-                /* data stream IF */
-            }
-            else
-            {
-                /* Dont know what this interface is. Return it back */
-                USB_HOST_DeviceInterfaceRelease(interfaces[0u]);
-            }
-        }
-        else
-        {
-            /* This is an error case. The instance should exist. We return this
-             * interface back to the host. */
-            USB_HOST_DeviceInterfaceRelease(interfaces[0u]);
-        }
-    }
-    else if (nInterfaces > 1u)
+    /* Expected number of interfaces = 3 for U3V device (Control/Event/Streaming) */
+    if (nInterfaces > 1u) 
     {
         /* Then this means that this is an IAD. We first assign a U3V instance to this device */
 
@@ -460,6 +358,23 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                              * we could not open the pipe */
                             u3vInstance->interruptPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
+                        /* Get the bulk out endpoint */
+                        USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
+                        endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
+                        endpointDescriptorQuery.direction = USB_DATA_DIRECTION_HOST_TO_DEVICE;
+                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
+                        endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
+
+                        if (endpointDescriptor != NULL)
+                        {
+                            u3vInstance->bulkOutPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->communicationInterfaceHandle,
+                                                                                     endpointDescriptor->bEndpointAddress);
+                        }
+                        else
+                        {
+                            /* Make the pipe handle invalid */
+                            u3vInstance->bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
+                        }
                     }
                     /* Event Interface*/
                     else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_CLASS_MISC) &&
@@ -488,32 +403,36 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
                             /* Make the pipe handle invalid */
                             u3vInstance->bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
-
-                        /* Get the bulk in endpoint */ 
-                        USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
-                        endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
-                        endpointDescriptorQuery.direction = USB_DATA_DIRECTION_HOST_TO_DEVICE;
-                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
-                        endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
-
-                        if (endpointDescriptor != NULL)
-                        {
-                            u3vInstance->bulkOutPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->dataInterfaceHandle,
-                                                                                     endpointDescriptor->bEndpointAddress);
-                        }
-                        else
-                        {
-                            /* Make the pipe handle invalid */
-                            u3vInstance->bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
-                        }
+                        /* no EP OUT in Event interface*/
                     }
                     /* Data Streaming Interface */
                     else if ((interfaceDescriptor->bInterfaceClass == U3V_USB_DEVICE_CLASS_MISC) &&
                              (interfaceDescriptor->bInterfaceSubClass == U3V_USB_INTERFACE_U3V_SUBLCASS) &&
                              (interfaceDescriptor->bInterfaceProtocol == U3V_USB_INTERFACE_DATASTREAM))
                     {
-                        /* data stream IF */
-                        //todo
+                        /* We found the data class */
+
+                        u3vInstance->dataInterfaceHandle = interfaces[iterator];
+                        u3vInstance->dataInterfaceNumber = interfaceDescriptor->bInterfaceNumber;
+
+                        /* Get the bulk in endpoint */ 
+                        USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
+                        endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
+                        endpointDescriptorQuery.direction = USB_DATA_DIRECTION_DEVICE_TO_HOST;
+                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
+                        endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
+
+                        if (endpointDescriptor != NULL)
+                        {
+                            u3vInstance->bulkInPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->dataInterfaceHandle,
+                                                                                    endpointDescriptor->bEndpointAddress);
+                        }
+                        else
+                        {
+                            /* Make the pipe handle invalid */
+                            u3vInstance->bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
+                        }
+                        /* no EP OUT in Streaming interface*/
                     }
                     
                 }
@@ -562,7 +481,7 @@ void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces, 
 }
 
 
-void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
+static void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     int32_t u3vIndex;
     T_UsbHostU3VInstanceObj * u3vInstance;
@@ -616,10 +535,10 @@ void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHan
 }
 
 
-USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
-                                                                            USB_HOST_DEVICE_INTERFACE_EVENT event,
-                                                                            void *eventData,
-                                                                            uintptr_t context)
+static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
+                                                                                   USB_HOST_DEVICE_INTERFACE_EVENT event,
+                                                                                   void *eventData,
+                                                                                   uintptr_t context)
 {
     int32_t u3vIndex;
     T_UsbHostU3VInstanceObj *u3vInstance;
@@ -631,9 +550,9 @@ USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_
     u3vIndex = _USB_HostU3V_InterfaceHandleToInstance(interfaceHandle);
 
     u3vInstance = &gUSBHostU3VObj[u3vIndex];
-    u3vEvent = (T_UsbHostU3VEvent)(context); 
+    u3vEvent = (T_UsbHostU3VEvent)(context);
 
-    switch(event)
+    switch (event)
     {
         case USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE:
             /* This means a data transfer has completed */
@@ -642,7 +561,7 @@ USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_
             u3vTransferCompleteData.result = _USB_HostU3V_HostToU3VResultsMap(dataTransferEvent->result);
             u3vTransferCompleteData.length = dataTransferEvent->length;
 
-            if(u3vInstance->eventHandler != NULL)
+            if (u3vInstance->eventHandler != NULL)
             {
                 u3vInstance->eventHandler((T_UsbHostU3VHandle)(u3vInstance), u3vEvent, &u3vTransferCompleteData, u3vInstance->context);
             }
@@ -651,21 +570,21 @@ USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_
         default:
             break;
     }
-    
-    return(USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE_NONE);
+
+    return (USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE_NONE);
 }
 
 
-void _USB_HostU3V_InterfaceTasks(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
+static void _USB_HostU3V_InterfaceTasks(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     /* N/A */
 }
 
 
-USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
-                                                               USB_HOST_DEVICE_EVENT event,
-                                                               void *eventData,
-                                                               uintptr_t context)
+static USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
+                                                                      USB_HOST_DEVICE_EVENT event,
+                                                                      void *eventData,
+                                                                      uintptr_t context)
 {
    /* The event context is the pointer to the U3V Instance Object */
    T_UsbHostU3VInstanceObj *u3vInstance = (T_UsbHostU3VInstanceObj *)(context);
@@ -690,9 +609,9 @@ USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_DEVICE_C
 }
 
 
-void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
-                               USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
-                               USB_DEVICE_DESCRIPTOR *deviceDescriptor)
+static void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
+                                      USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
+                                      USB_DEVICE_DESCRIPTOR *deviceDescriptor)
 {
     uint32_t iterator;
     T_UsbHostU3VInstanceObj *u3vInstanceObj = NULL;
@@ -736,7 +655,7 @@ void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
 }
 
 
-void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
+static void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     int32_t index;
     T_UsbHostU3VInstanceObj *u3vInstance;
@@ -787,7 +706,7 @@ void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 }
 
 
-void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
+static void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     int32_t index;
     int32_t iterator;
@@ -797,7 +716,7 @@ void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 
     index = _USB_HostU3V_DeviceHandleToInstance(deviceHandle);
 
-    if (index >= 0)
+   if (index >= 0)
     {
         u3vInstance = &gUSBHostU3VObj[index];
 
@@ -881,7 +800,7 @@ void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 }
 
 
-int32_t _USB_HostU3V_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE deviceClientHandle)
+static int32_t _USB_HostU3V_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE deviceClientHandle)
 {
     int32_t result = -1;
     int32_t iterator;
@@ -898,7 +817,7 @@ int32_t _USB_HostU3V_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE device
 }
 
 
-int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle)
+static int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle)
 {
     int32_t result = -1;
     int32_t iterator;
@@ -915,7 +834,7 @@ int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE device
 }
 
 
-int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
+static int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     int32_t result = -1;
     int32_t iterator;
@@ -933,7 +852,7 @@ int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE 
 }
 
 
-T_UsbHostU3VResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT result)
+static T_UsbHostU3VResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT result)
 {
     T_UsbHostU3VResult u3vResult;
 
