@@ -45,15 +45,26 @@ typedef struct
 
 typedef struct
 {
+    uint8_t                             idNum;              /* Number of interface */
+    USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
+    USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
+    USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
+} T_UsbHostU3VInterfaceStr;
+
+typedef struct
+{
     bool                                inUse;                        /* True if object is in use */
     USB_HOST_DEVICE_CLIENT_HANDLE       deviceClientHandle;           /* Device client handle */
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;              /* Device object handle */
-    USB_HOST_DEVICE_INTERFACE_HANDLE    dataInterfaceHandle;          /* Data Interface Handle */
-    USB_HOST_DEVICE_INTERFACE_HANDLE    communicationInterfaceHandle; /* Communication Interface Handle */
+    T_UsbHostU3VInterfaceStr            controlIF;                    /* Control Interface obj */
+    T_UsbHostU3VInterfaceStr            eventIF;                      /* Event Interface obj */
+    T_UsbHostU3VInterfaceStr            streamIF;                     /* Stream Interface obj */
+    // USB_HOST_DEVICE_INTERFACE_HANDLE    dataInterfaceHandle;          /* Data Interface Handle */
+    // USB_HOST_DEVICE_INTERFACE_HANDLE    communicationInterfaceHandle; /* Communication Interface Handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;            /* Control Pipe Handle */
-    USB_HOST_PIPE_HANDLE                bulkInPipeHandle;             /* Bulk pipe handles */
-    USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;            /* Bulk pipe handles */
-    USB_HOST_PIPE_HANDLE                interruptPipeHandle;          /* Interrupt pipe handles */
+    // USB_HOST_PIPE_HANDLE                bulkInPipeHandle;             /* Bulk pipe handles */
+    // USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;            /* Bulk pipe handles */
+    // USB_HOST_PIPE_HANDLE                interruptPipeHandle;          /* Interrupt pipe handles */
     USB_SETUP_PACKET                    setupPacket;                  /* Setup packet information */
     uintptr_t                           context;                      /* Application defined context */
     T_UsbHostU3VEventHandler            eventHandler;                 /* Application callback */
@@ -61,8 +72,9 @@ typedef struct
     bool                                hostRequestDone;              /* True if an ongoing host request is done */
     USB_HOST_RESULT                     hostRequestResult;            /* Result of the host request */
     T_UsbHostU3VControlTransferObj      controlTransferObj;           /* Control transfer object */
-    uint8_t                             commInterfaceNumber;          /* Interface numbers */
-    uint8_t                             dataInterfaceNumber;          /* Interface numbers */
+    // uint8_t                             controlInterfaceNumber;          /* Interface numbers */
+    // uint8_t                             eventInterfaceNumber;          /* Interface numbers */
+    // uint8_t                             streamInterfaceNumber;        /* Interface numbers */
 } T_UsbHostU3VInstanceObj;
 
 

@@ -51,6 +51,7 @@ typedef enum        //to do: rework
     USB_APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE,        /* USB Application waits for bus to be enabled */
     USB_APP_STATE_WAIT_FOR_DEVICE_ATTACH,              /* USB Application waits for U3V Device Attach */
     USB_APP_STATE_OPEN_DEVICE,                         /* USB U3V Device is Attached */
+    
     USB_APP_STATE_SET_LINE_CODING,                     /* USB Set the Line Coding */
     USB_APP_STATE_WAIT_FOR_GET_LINE_CODING,            /* USB Application waits to get the device line coding */
     USB_APP_STATE_SEND_SET_LINE_CODING,                /* USB Application sets the line coding */
