@@ -45,7 +45,7 @@ extern "C" {
 * Function declarations
 *********************************************************/
 
-int32_t U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3v);
+T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3v);
 
 int32_t U3VCtrlIf_HandleMessage(T_UsbHostU3VInstanceObj *u3vDev, uint8_t request, uint8_t requesttype, uint16_t value, uint16_t index, void *usr_data, uint16_t size);
 
