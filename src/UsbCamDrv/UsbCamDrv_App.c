@@ -13,7 +13,7 @@
 * Local function declarations
 *********************************************************/
 
-T_UsbCameraDriverInitStatus UsbCamDrv_DrvInitStatus(void);
+T_U3VCamDriverInitStatus UsbCamDrv_DrvInitStatus(void);
 
 T_U3VCamConnectStatus UsbCamDrv_GetCamConnectionStatus(void);
 
@@ -29,7 +29,7 @@ static inline T_U3VCamIDValid CamPIDisValid(void);
 * Constant & Variable declarations
 *********************************************************/
 
-T_UsbCameraDriverInitStatus UsbCamDrv_InitStatus = DRV_NOT_INITIALZD;
+T_U3VCamDriverInitStatus UsbCamDrv_InitStatus = U3V_DRV_NOT_INITIALZD;
 
 T_UsbAppData USB_ALIGN UsbAppData;
 
@@ -44,14 +44,14 @@ USB_ALIGN uint8_t prompt[8]  = "\r\nLED : ";       /* debug / to remove */
 
 void UsbCamDrv_Initialize(void)
 {
-    T_UsbCameraDriverInitStatus DrvSts = DRV_INITIALZN_OK;
+    T_U3VCamDriverInitStatus DrvSts = U3V_DRV_INITIALZN_OK;
 
     /* DEBUG XULT - Disable VBUS power */
     VBUS_HOST_EN_PowerDisable();
 
-    /* DEBUG XULT - Switch off LEDs */
-    LED0_Off();
-    LED1_Off();
+    /* Switch off LEDs */
+    LED0_Off(); // DEBUG XULT board
+    LED1_Off(); // DEBUG XULT board
 
     /* Initialize the USB application state machine elements */
     UsbAppData.state                            = USB_APP_STATE_BUS_ENABLE;
@@ -71,7 +71,7 @@ void UsbCamDrv_Initialize(void)
 }
 
 
-T_UsbCameraDriverInitStatus UsbCamDrv_DrvInitStatus(void)
+T_U3VCamDriverInitStatus UsbCamDrv_DrvInitStatus(void)
 {
     return UsbCamDrv_InitStatus;
 }
@@ -80,7 +80,7 @@ T_UsbCameraDriverInitStatus UsbCamDrv_DrvInitStatus(void)
 void UsbCamDrv_Tasks(void)
 {
     /* Check the application's current state. */
-    T_UsbHostU3VResult result;
+    T_U3VHostResult result;
 
     if (UsbAppData.deviceWasDetached)
     {
@@ -98,7 +98,7 @@ void UsbCamDrv_Tasks(void)
             /* In this state the application enables the USB Host Bus. Note how the U3V Attach 
              * event handler are registered before the bus is enabled. */
             USB_HOST_EventHandlerSet(_USBHostEventHandlerCbk, (uintptr_t)0);
-            USB_HostU3V_AttachEventHandlerSet(_USBHostU3VAttachEventListenerCbk, (uintptr_t)&UsbAppData);
+            USB_U3VHost_AttachEventHandlerSet(_USBHostU3VAttachEventListenerCbk, (uintptr_t)&UsbAppData);
             USB_HOST_BusEnable(USB_HOST_BUS_ALL);
             UsbAppData.state = USB_APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE;
             break;
@@ -123,12 +123,13 @@ void UsbCamDrv_Tasks(void)
             
         case USB_APP_STATE_OPEN_DEVICE:
             /* In this state the application opens the attached device */
-            UsbAppData.u3vHostHandle = USB_HostU3V_Open(UsbAppData.u3vObj);
-            if(UsbAppData.u3vHostHandle != USB_HOST_U3V_HANDLE_INVALID)
+            UsbAppData.u3vHostHandle = USB_U3VHost_Open(UsbAppData.u3vObj);
+            if(UsbAppData.u3vHostHandle != U3V_HOST_HANDLE_INVALID)
             {
                 /* The driver was opened successfully. Set the event handler and then go to the next state. */
-                USB_HostU3V_EventHandlerSet(UsbAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&UsbAppData);
+                USB_U3VHost_EventHandlerSet(UsbAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&UsbAppData);
                 UsbAppData.state = USB_APP_STATE_SET_LINE_CODING; //todo rework
+                LED1_On();  // DEBUG XULT board
             }
             break;
             
@@ -137,7 +138,7 @@ void UsbCamDrv_Tasks(void)
             UsbAppData.controlRequestDone = false;
             // result = USB_HOST_CDC_ACM_LineCodingSet(UsbAppData.u3vHostHandle, NULL, &UsbAppData.cdcHostLineCoding);  //todo rework
             
-            if(result == USB_HOST_U3V_RESULT_SUCCESS)
+            if(result == U3V_HOST_RESULT_SUCCESS)
             {
                 /* We wait for the set line coding to complete */
                 UsbAppData.state = USB_APP_STATE_WAIT_FOR_SET_LINE_CODING;
@@ -148,7 +149,7 @@ void UsbCamDrv_Tasks(void)
             
             if(UsbAppData.controlRequestDone)
             {
-                if(UsbAppData.controlRequestResult != USB_HOST_U3V_RESULT_SUCCESS)
+                if(UsbAppData.controlRequestResult != U3V_HOST_RESULT_SUCCESS)
                 {
                     /* The control request was not successful. */
                     UsbAppData.state = USB_APP_STATE_ERROR;
@@ -166,7 +167,7 @@ void UsbCamDrv_Tasks(void)
             UsbAppData.controlRequestDone = false;
             // result = USB_HOST_CDC_ACM_ControlLineStateSet(UsbAppData.u3vHostHandle, NULL, &UsbAppData.controlLineState);    //todo rework
 
-            if(result == USB_HOST_U3V_RESULT_SUCCESS)
+            if(result == U3V_HOST_RESULT_SUCCESS)
             {
                 /* We wait for the set line coding to complete */
                 UsbAppData.state = USB_APP_STATE_WAIT_FOR_SET_CONTROL_LINE_STATE;
@@ -177,7 +178,7 @@ void UsbCamDrv_Tasks(void)
             /* Here we wait for the control line state set request to complete */
             if(UsbAppData.controlRequestDone)
             {
-                if(UsbAppData.controlRequestResult != USB_HOST_U3V_RESULT_SUCCESS)
+                if(UsbAppData.controlRequestResult != U3V_HOST_RESULT_SUCCESS)
                 {
                     /* The control request was not successful. */
                     UsbAppData.state = USB_APP_STATE_ERROR;
@@ -193,9 +194,9 @@ void UsbCamDrv_Tasks(void)
         case USB_APP_STATE_SEND_PROMPT_TO_DEVICE:
             /* The prompt is sent to the device here. The write transfer done flag is updated in the event handler. */
             UsbAppData.writeTransferDone = false;
-            result = USB_HostU3V_Write(UsbAppData.u3vHostHandle, NULL, ( void * )prompt, 8);
-            
-            if(result == USB_HOST_U3V_RESULT_SUCCESS)
+            result = USB_U3VHost_Write(UsbAppData.u3vHostHandle, NULL, (void *)prompt, 8);
+
+            if(result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbAppData.state = USB_APP_STATE_WAIT_FOR_PROMPT_SEND_COMPLETE;
             }
@@ -205,7 +206,7 @@ void UsbCamDrv_Tasks(void)
             /* Here we check if the write transfer is done */
             if(UsbAppData.writeTransferDone)
             {
-                if(UsbAppData.writeTransferResult == USB_HOST_U3V_RESULT_SUCCESS)
+                if(UsbAppData.writeTransferResult == U3V_HOST_RESULT_SUCCESS)
                 {
                     /* Now to get data from the device */
                     UsbAppData.state = USB_APP_STATE_GET_DATA_FROM_DEVICE;
@@ -221,8 +222,8 @@ void UsbCamDrv_Tasks(void)
         case USB_APP_STATE_GET_DATA_FROM_DEVICE:
             /* Here we request data from the device */
             UsbAppData.readTransferDone = false;
-            result = USB_HostU3V_Read(UsbAppData.u3vHostHandle, NULL, UsbAppData.inDataArray, 8);
-            if(result == USB_HOST_U3V_RESULT_SUCCESS)
+            result = USB_U3VHost_Read(UsbAppData.u3vHostHandle, NULL, UsbAppData.inDataArray, 8);
+            if(result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbAppData.state = USB_APP_STATE_WAIT_FOR_DATA_FROM_DEVICE;
             }
@@ -232,17 +233,15 @@ void UsbCamDrv_Tasks(void)
             /* Wait for data from device. If the data has arrived, then toggle the LED. */
             if(UsbAppData.readTransferDone)
             {
-                if(UsbAppData.readTransferResult == USB_HOST_U3V_RESULT_SUCCESS)
+                if(UsbAppData.readTransferResult == U3V_HOST_RESULT_SUCCESS)
                 {
                    if ( UsbAppData.inDataArray[0] == '1')
                    {
-                       /* DEBUG XULT - Switch on LED  */
-                       LED1_On();
+                       LED1_On();   // DEBUG XULT board
                    }
                    else
                    {
-                       /* DEBUG XULT - Switch off LED  */
-                       LED1_Off();
+                       LED1_Off();  // DEBUG XULT board
                    }
 
                     /* Send the prompt to the device and wait for data again */
@@ -262,12 +261,12 @@ void UsbCamDrv_Tasks(void)
 }
 
 
-T_UsbCameraDriverStatus UsbCamDrv_AcquireNewImage(void *params)
+T_U3VCamDriverStatus UsbCamDrv_AcquireNewImage(void *params)
 {
-    T_UsbCameraDriverStatus DrvSts = USB3V_CAM_DRV_OK;
+    T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
 
-    DrvSts = (UsbCamDrv_DrvInitStatus()          == DRV_INITIALZN_OK)  ? DrvSts : USB3V_CAM_DRV_NOT_INITD;
-    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED) ? DrvSts : USB3V_CAM_DRV_ERROR;
+    DrvSts = (UsbCamDrv_DrvInitStatus()          == U3V_DRV_INITIALZN_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
+    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED) ? DrvSts : U3V_CAM_DRV_ERROR;
 
     //todo
 

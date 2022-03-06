@@ -40,12 +40,14 @@ extern "C" {
 
 USB_HOST_EVENT_RESPONSE _USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context);
 
-void _USBHostU3VAttachEventListenerCbk(T_UsbHostU3VObject u3vObj, uintptr_t context);
+void _USBHostU3VAttachEventListenerCbk(T_U3VHostObject u3vObj, uintptr_t context);
 
-T_UsbHostU3VEventResponse _USBHostU3VEventHandlerCbk(T_UsbHostU3VHandle u3vHandle,
-                                                     T_UsbHostU3VEvent  event,
-                                                     void              *pEventData,
-                                                     uintptr_t          context);
+T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
+                                                  T_U3VHostEvent event,
+                                                  void *pEventData,
+                                                  uintptr_t context);
+
+
 
 #ifdef __cplusplus
 }

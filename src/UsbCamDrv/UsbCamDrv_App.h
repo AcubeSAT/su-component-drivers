@@ -30,19 +30,18 @@ extern "C" {
 
 typedef enum
 {
-    USB3V_CAM_DRV_NOT_INITD   = -2,
-    USB3V_CAM_DRV_ERROR       = -1,
-    USB3V_CAM_DRV_OK          =  0
-} T_UsbCameraDriverStatus;
+    U3V_CAM_DRV_NOT_INITD   = -2,
+    U3V_CAM_DRV_ERROR       = -1,
+    U3V_CAM_DRV_OK          =  0
+} T_U3VCamDriverStatus;
 
 
 typedef enum
 {
-    DRV_INITIALZN_FAIL   = -1,
-    DRV_NOT_INITIALZD    =  0,
-    DRV_INITIALZN_OK     =  1
-} T_UsbCameraDriverInitStatus;
-
+    U3V_DRV_INITIALZN_FAIL   = -1,
+    U3V_DRV_NOT_INITIALZD    =  0,
+    U3V_DRV_INITIALZN_OK     =  1
+} T_U3VCamDriverInitStatus;
 
 
 typedef enum        //to do: rework
@@ -66,22 +65,22 @@ typedef enum        //to do: rework
 } T_UsbAppStates;
 
 
-typedef struct      //to do: rework
+typedef struct
 {
     uint8_t                     inDataArray[64];       /* First place to be aligned - Array to hold read data */
     T_UsbAppStates              state;                 /* The USB application's current state */
-    T_UsbHostU3VObject          u3vObj;                /* U3V Object */
+    T_U3VHostObject             u3vObj;                /* U3V Object */
     bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        controlRequestDone;    /* True if control request is done */
-    T_UsbHostU3VResult          controlRequestResult;  /* Control Request Result */
+    T_U3VHostResult             controlRequestResult;  /* Control Request Result */
     // USB_CDC_LINE_CODING         cdcHostLineCoding;     /* A CDC Line Coding object */
     // USB_CDC_CONTROL_LINE_STATE  controlLineState;      /* A Control Line State object*/
-    T_UsbHostU3VHandle          u3vHostHandle;         /* Handle to the CDC device. */
-    T_UsbHostU3VRequestHandle   requestHandle;         /* Handle to request */
+    T_U3VHostHandle             u3vHostHandle;         /* Handle to the U3V device. */
+    T_U3VHostRequestHandle      requestHandle;         /* Handle to request */
     bool                        writeTransferDone;     /* True when a write transfer has complete */
-    T_UsbHostU3VResult          writeTransferResult;   /* Write Transfer Result */
+    T_U3VHostResult             writeTransferResult;   /* Write Transfer Result */
     bool                        readTransferDone;      /* True when a read transfer has complete */
-    T_UsbHostU3VResult          readTransferResult;    /* Read Transfer Result */
+    T_U3VHostResult             readTransferResult;    /* Read Transfer Result */
     bool                        deviceWasDetached;     /* True if device was detached */
 } T_UsbAppData;     //todo rework
 
@@ -101,7 +100,7 @@ typedef enum
 } T_U3VCamDevIDStatus;
 
 
-typedef bool  T_U3VCamIDValid;
+typedef bool T_U3VCamIDValid;
 
 
 /********************************************************
@@ -122,7 +121,7 @@ void UsbCamDrv_Initialize(void);
 
 void UsbCamDrv_Tasks(void); 
 
-T_UsbCameraDriverStatus UsbCamDrv_AcquireNewImage(void *params);
+T_U3VCamDriverStatus UsbCamDrv_AcquireNewImage(void *params);
 
 
 #ifdef __cplusplus

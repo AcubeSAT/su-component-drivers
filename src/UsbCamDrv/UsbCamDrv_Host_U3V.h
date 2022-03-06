@@ -21,90 +21,72 @@ extern "C" {
 * Macro definitions
 *********************************************************/
 
+#define U3V_HOST_RESULT_MIN                         (USB_HOST_RESULT_MIN)
 
-#define USB_HOST_U3V_RESULT_MIN                        (USB_HOST_RESULT_MIN)
+#define U3V_HOST_HANDLE_INVALID                    ((T_U3VHostHandle)(-1))
+#define U3V_HOST_TRANSFER_HANDLE_INVALID           ((T_U3VHostTransferHandle)(-1))
+#define U3V_HOST_REQUEST_HANDLE_INVALID            ((T_U3VHostRequestHandle)(-1))
 
-#define USB_HOST_U3V_HANDLE_INVALID                    ((T_UsbHostU3VHandle)(-1))
-#define USB_HOST_U3V_TRANSFER_HANDLE_INVALID           ((T_UsbHostU3VTransferHandle)(-1))
-#define USB_HOST_U3V_REQUEST_HANDLE_INVALID            ((T_UsbHostU3VRequestHandle)(-1))
-
-#define USB_HOST_U3V_INTERFACE                         (&gUSBHostU3VClientDriver)
+#define U3V_INTERFACE                              (&gUSBHostU3VClientDriver)
 
 
 /********************************************************
 * Type definitions
 *********************************************************/
 
-typedef uintptr_t T_UsbHostU3VHandle;
-typedef uintptr_t T_UsbHostU3VTransferHandle;
-typedef uintptr_t T_UsbHostU3VRequestHandle;
-typedef uintptr_t T_UsbHostU3VObject;
-typedef USB_HOST_DEVICE_OBJ_HANDLE T_UsbHostDeviceObjectHandle;  /* Inherited type from usb_host.h */
+typedef uintptr_t T_U3VHostHandle;
+typedef uintptr_t T_U3VHostTransferHandle;
+typedef uintptr_t T_U3VHostRequestHandle;
+typedef uintptr_t T_U3VHostObject;
+typedef USB_HOST_DEVICE_OBJ_HANDLE T_U3VHostDeviceObjHandle;  /* Inherited type from usb_host.h */
 
 
 typedef enum
 {
-    USB_HOST_U3V_RESULT_FAILURE             = USB_HOST_U3V_RESULT_MIN,
-    USB_HOST_U3V_RESULT_BUSY,
-    USB_HOST_U3V_RESULT_REQUEST_STALLED,
-    USB_HOST_U3V_RESULT_INVALID_PARAMETER,
-    USB_HOST_U3V_RESULT_DEVICE_UNKNOWN,
-    USB_HOST_U3V_RESULT_ABORTED,
-    USB_HOST_U3V_RESULT_HANDLE_INVALID,
-    USB_HOST_U3V_RESULT_SUCCESS             = 1
-} T_UsbHostU3VResult;
+    U3V_HOST_RESULT_FAILURE             = U3V_HOST_RESULT_MIN,
+    U3V_HOST_RESULT_BUSY,
+    U3V_HOST_RESULT_REQUEST_STALLED,
+    U3V_HOST_RESULT_INVALID_PARAMETER,
+    U3V_HOST_RESULT_DEVICE_UNKNOWN,
+    U3V_HOST_RESULT_ABORTED,
+    U3V_HOST_RESULT_HANDLE_INVALID,
+    U3V_HOST_RESULT_SUCCESS             = 1
+} T_U3VHostResult;
+
+
 
 
 typedef struct
 {   
-    T_UsbHostU3VRequestHandle   requestHandle;        /* Request handle of this request */   
-    T_UsbHostU3VResult          result;               /* Termination status */
-    size_t                      length;               /* Size of the data transferred in the request */
-}
-T_USB_HOST_U3V_EVENT_ACM_GET_LINE_CODING_COMPLETE_DATA,             
-T_USB_HOST_U3V_EVENT_ACM_SET_LINE_CODING_COMPLETE_DATA,
-T_USB_HOST_U3V_EVENT_ACM_SET_CONTROL_LINE_STATE_COMPLETE_DATA,
-T_USB_HOST_U3V_EVENT_ACM_SEND_BREAK_COMPLETE_DATA;      //todo review
+    T_U3VHostTransferHandle  transferHandle;      /* Transfer handle of this transfer */
+    T_U3VHostResult          result;              /* Termination transfer status */
+    size_t                   length;              /* Size of the data transferred in the request */
+} T_U3VHostEventReadCompleteData,
+    T_U3VHostEventWriteCompleteData;
 
-
-typedef struct
-{   
-    T_UsbHostU3VTransferHandle  transferHandle;      /* Transfer handle of this transfer */
-    T_UsbHostU3VResult          result;              /* Termination transfer status */
-    size_t                      length;              /* Size of the data transferred in the request */
-}
-T_USB_HOST_U3V_EVENT_SERIAL_STATE_NOTIFICATION_RECEIVED_DATA,
-T_USB_HOST_U3V_EVENT_READ_COMPLETE_DATA,
-T_USB_HOST_U3V_EVENT_WRITE_COMPLETE_DATA;               //todo review
+typedef enum
+{
+    U3V_HOST_EVENT_READ_COMPLETE,
+    U3V_HOST_EVENT_WRITE_COMPLETE,
+    U3V_HOST_EVENT_DEVICE_DETACHED
+} T_U3VHostEvent;
 
 
 typedef enum
 {
-    USB_HOST_U3V_EVENT_READ_COMPLETE,
-    USB_HOST_U3V_EVENT_WRITE_COMPLETE,
-    USB_HOST_U3V_EVENT_ACM_SEND_BREAK_COMPLETE,
-    USB_HOST_U3V_EVENT_ACM_SET_CONTROL_LINE_STATE_COMPLETE,
-    USB_HOST_U3V_EVENT_ACM_SET_LINE_CODING_COMPLETE,
-    USB_HOST_U3V_EVENT_ACM_GET_LINE_CODING_COMPLETE,
-    USB_HOST_U3V_EVENT_SERIAL_STATE_NOTIFICATION_RECEIVED,
-    USB_HOST_U3V_EVENT_DEVICE_DETACHED
-} T_UsbHostU3VEvent;        //todo review
+    U3V_HOST_EVENT_RESPONE_NONE  = 0     /* This means no response is required */
+
+} T_U3VHostEventResponse;
 
 
-typedef enum
-{
-    USB_HOST_U3V_EVENT_RESPONE_NONE  = 0     /* This means no response is required */
-
-} T_UsbHostU3VEventResponse;
+typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostObject u3vObjHandle, uintptr_t context);
 
 
-typedef void (*T_UsbHostU3VAttachEventHandler)(T_UsbHostU3VObject u3vObjHandle, uintptr_t context);
+typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vHandle,
+                                                        T_U3VHostEvent event,
+                                                        void *eventData,
+                                                        uintptr_t context);
 
-
-typedef T_UsbHostU3VEventResponse (*T_UsbHostU3VEventHandler)(T_UsbHostU3VHandle     u3vHandle,
-                                                              T_UsbHostU3VEvent      event,
-                                                              void                  *eventData,
-                                                              uintptr_t              context);
 
 
 /********************************************************
@@ -123,31 +105,28 @@ extern USB_HOST_CLIENT_DRIVER   gUSBHostU3VClientDriver;
 * Function declarations
 *********************************************************/
 
-T_UsbHostU3VResult USB_HostU3V_AttachEventHandlerSet(T_UsbHostU3VAttachEventHandler eventHandler,
-                                                     uintptr_t                      context);
+T_U3VHostResult USB_U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventHandler,
+                                                  uintptr_t context);
 
-T_UsbHostDeviceObjectHandle USB_HostU3V_DeviceObjectHandleGet(T_UsbHostU3VObject u3vDeviceObj);  //to review return type
+T_U3VHostDeviceObjHandle USB_U3VHost_DeviceObjectHandleGet(T_U3VHostObject u3vDeviceObj);  //to review return type
 
-T_UsbHostU3VHandle USB_HostU3V_Open(T_UsbHostU3VObject u3vDeviceObj);
+T_U3VHostHandle USB_U3VHost_Open(T_U3VHostObject u3vDeviceObj);
 
-void USB_HostU3V_Close(T_UsbHostU3VHandle u3vDeviceHandle);
+void USB_U3VHost_Close(T_U3VHostHandle u3vDeviceHandle);
 
-T_UsbHostU3VResult USB_HostU3V_EventHandlerSet(T_UsbHostU3VHandle       handle,
-                                               T_UsbHostU3VEventHandler eventHandler,
-                                               uintptr_t                context);
+T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
+                                            T_U3VHostEventHandler eventHandler,
+                                            uintptr_t context);
 
-T_UsbHostU3VResult USB_HostU3V_Read(T_UsbHostU3VHandle          handle,
-                                    T_UsbHostU3VTransferHandle *transferHandle,
-                                    void                       *data,
-                                    size_t                      size);
+T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle handle,
+                                 T_U3VHostTransferHandle *transferHandle,
+                                 void *data,
+                                 size_t size);
 
-T_UsbHostU3VResult USB_HostU3V_Write(T_UsbHostU3VHandle          handle,
-                                     T_UsbHostU3VTransferHandle *transferHandle,
-                                     void                       *data,
-                                     size_t                      size);
-
-
-
+T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
+                                  T_U3VHostTransferHandle *transferHandle,
+                                  void *data,
+                                  size_t size);
 
 #ifdef __cplusplus
 }

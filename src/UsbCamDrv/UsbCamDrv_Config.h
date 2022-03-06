@@ -30,6 +30,7 @@ extern "C" {
 #define U3V_IN_BUFFER_MAX_SIZE                         512u
 
 
+// DEBUG XULT board
 /*** LED Macros for LED0 ***/
 #define LED0_Toggle()                                  (PIOA_REGS->PIO_ODSR ^= (1<<23))
 #define LED0_On()                                      (PIOA_REGS->PIO_CODR = (1<<23))
