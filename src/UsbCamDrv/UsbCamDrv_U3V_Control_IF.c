@@ -30,8 +30,10 @@ static inline void _FreeCtrlIfObjAllocSpace(T_U3V_ControlIntfStr *pCtrlIfObj)
 * Function definitions
 *********************************************************/
 
-T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
+T_U3VHostResult U3VCtrlIf_IntfCreate(T_U3VHostObject u3vInstObj)
 {
+    T_UsbHostU3VInstanceObj *u3vInstance;
+
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3V_ControlIntfStr *ctrlIfobj = NULL;
     uint64_t sbrmAddress;
@@ -40,14 +42,20 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
     uint32_t cmdBfrSize;
     uint32_t ackBfrSize;
 
+    if (u3vInstObj == 0)
+    {
+        u3vResult = U3V_HOST_RESULT_DEVICE_UNKNOWN;
+        return u3vResult;
+    }
+
+    u3vInstance = (T_UsbHostU3VInstanceObj *)u3vInstObj;
+
     /* check for argument errors */
-    u3vResult = (u3vInst == NULL)                        ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (u3vInst->state != U3V_HOST_STATE_READY) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (u3vInst->controlIfData != NULL)         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (u3vInstance->state != U3V_HOST_STATE_READY) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (u3vInstance->controlIfData != NULL)         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
-        _FreeCtrlIfObjAllocSpace(ctrlIfobj);
         return u3vResult;
     }
 
@@ -71,8 +79,8 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
     ctrlIfobj->ackBuffer = OSAL_Malloc(ctrlIfobj->maxAckTransfSize);
     ctrlIfobj->cmdBuffer = OSAL_Malloc(ctrlIfobj->maxCmdTransfSize);
 
-    u3vResult = (ctrlIfobj->ackBuffer != NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (ctrlIfobj->cmdBuffer != NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (ctrlIfobj->ackBuffer == NULL) ? U3V_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (ctrlIfobj->cmdBuffer == NULL) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -80,7 +88,10 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
         return u3vResult;
     }
 
-    u3vResult = U3VCtrlIf_ReadMemory(u3vInst,
+    u3vInstance->controlIfData = ctrlIfobj;
+
+    /* get ABRM max device response time */
+    u3vResult = U3VCtrlIf_ReadMemory(u3vInstance,
                                      NULL,
                                      U3V_ABRM_MAX_DEV_RESPONSE_TIME_MS_OFS,
                                      U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE,
@@ -92,12 +103,14 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
+        u3vInstance->controlIfData = NULL;
         return u3vResult;
     }
 
     ctrlIfobj->u3vTimeout = MAX(U3V_REQ_TIMEOUT, maxResponse);
 
-    u3vResult = U3VCtrlIf_ReadMemory(u3vInst,
+    /* get ABRM -> SBRM address */
+    u3vResult = U3VCtrlIf_ReadMemory(u3vInstance,
                                      NULL,
                                      U3V_ABRM_SBRM_ADDRESS_OFS,
                                      U3V_REG_SBRM_ADDRESS_SIZE,
@@ -109,10 +122,12 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
+        u3vInstance->controlIfData = NULL;
         return u3vResult;
     }
 
-    u3vResult = U3VCtrlIf_ReadMemory(u3vInst,
+    /* get SBRM max command buffer size */
+    u3vResult = U3VCtrlIf_ReadMemory(u3vInstance,
                                      NULL,
                                      sbrmAddress + U3V_SBRM_MAX_CMD_TRANSFER_OFS,
                                      sizeof(uint32_t),
@@ -124,12 +139,14 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
+        u3vInstance->controlIfData = NULL;
         return u3vResult;
     }
 
     ctrlIfobj->maxCmdTransfSize = MIN(ctrlIfobj->maxCmdTransfSize, cmdBfrSize);
 
-    u3vResult = U3VCtrlIf_ReadMemory(u3vInst,
+    /* get SBRM max acknowledge buffer size */
+    u3vResult = U3VCtrlIf_ReadMemory(u3vInstance,
                                      NULL,
                                      sbrmAddress + U3V_SBRM_MAX_ACK_TRANSFER_OFS,
                                      sizeof(uint32_t),
@@ -141,12 +158,13 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3vInst)
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
+        u3vInstance->controlIfData = NULL;
         return u3vResult;
     }
 
     ctrlIfobj->maxAckTransfSize = MIN(ctrlIfobj->maxAckTransfSize, ackBfrSize);
     
-    u3vInst->controlIfData = ctrlIfobj;
+    // u3vInstance->controlIfData = ctrlIfobj;
 
     return u3vResult;
 }
@@ -503,16 +521,19 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_UsbHostU3VInstanceObj *u3vInstance,
     return u3vResult;
 }
 
-void U3VCtrlIf_IntfDestroy(T_UsbHostU3VInstanceObj *u3vInst)
+
+void U3VCtrlIf_IntfDestroy(T_U3VHostObject u3vInstObj)
 {
+    T_UsbHostU3VInstanceObj *u3vInstance = NULL;
     T_U3V_ControlIntfStr *ctrlIfobj = NULL;
 
-    if(u3vInst == NULL)
+    if(u3vInstObj == 0)
     {
         return;
     }
 
-    ctrlIfobj = u3vInst->controlIfData;
+    u3vInstance = (T_UsbHostU3VInstanceObj *)u3vInstObj;
+    ctrlIfobj = u3vInstance->controlIfData;
 
     if (ctrlIfobj == NULL)
     {
@@ -525,8 +546,6 @@ void U3VCtrlIf_IntfDestroy(T_UsbHostU3VInstanceObj *u3vInst)
 	// 	reset_pipe(u3vInst, &u3vInst->control_info);
 
     _FreeCtrlIfObjAllocSpace(ctrlIfobj);
-	u3vInst->controlIfData = NULL;
+	u3vInstance->controlIfData = NULL;
 }
-
-
 

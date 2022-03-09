@@ -45,9 +45,9 @@ extern "C" {
 * Function declarations
 *********************************************************/
 
-T_U3VHostResult U3VCtrlIf_IntfCreate(T_UsbHostU3VInstanceObj *u3v);
+T_U3VHostResult U3VCtrlIf_IntfCreate(T_U3VHostObject u3vInstObj);
 
-int32_t U3VCtrlIf_HandleMessage(T_UsbHostU3VInstanceObj *u3vDev, uint8_t request, uint8_t requesttype, uint16_t value, uint16_t index, void *usr_data, uint16_t size);
+// int32_t U3VCtrlIf_HandleMessage(T_UsbHostU3VInstanceObj *u3vDev, uint8_t request, uint8_t requesttype, uint16_t value, uint16_t index, void *usr_data, uint16_t size);
 
 T_U3VHostResult U3VCtrlIf_ReadMemory(T_UsbHostU3VInstanceObj *u3vInstance,
 									 T_U3VHostTransferHandle *transferHandle,
@@ -63,7 +63,7 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_UsbHostU3VInstanceObj *u3vInstance,
 									  uint32_t *bytesWritten,
 									  const void *buffer);
 
-void U3VCtrlIf_IntfDestroy(T_UsbHostU3VInstanceObj *u3vDev);
+void U3VCtrlIf_IntfDestroy(T_U3VHostObject u3vInstObj);
 
 
 

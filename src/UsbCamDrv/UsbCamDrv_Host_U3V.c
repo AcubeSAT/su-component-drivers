@@ -104,7 +104,9 @@ void USB_U3VHost_Close(T_U3VHostHandle u3vDeviceHandle)
 }
 
 
-T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context)
+T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
+                                            T_U3VHostEventHandler eventHandler, 
+                                            uintptr_t context)
 {
     T_U3VHostResult result = U3V_HOST_RESULT_HANDLE_INVALID;
     T_UsbHostU3VInstanceObj *u3vInstance = (T_UsbHostU3VInstanceObj *)(handle);
@@ -119,10 +121,10 @@ T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEve
 }
 
 
-T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle          handle,
-                                    T_U3VHostTransferHandle *transferHandle,
-                                    void                       *data,
-                                    size_t                      size)
+T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle handle,
+                                 T_U3VHostTransferHandle *transferHandle,
+                                 void *data,
+                                 size_t size)
 {
     T_UsbHostU3VInstanceObj *u3vInstance;
     T_U3VHostTransferHandle *tempTransferHandle, localTransferHandle;
@@ -178,10 +180,10 @@ T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle          handle,
     return u3vResult;
 }
 
-T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle          handle,
-                                     T_U3VHostTransferHandle *transferHandle,
-                                     void                       *data,
-                                     size_t                      size)
+T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
+                                  T_U3VHostTransferHandle *transferHandle,
+                                  void *data,
+                                  size_t size)
 {
     T_UsbHostU3VInstanceObj *u3vInstance;
     T_U3VHostTransferHandle *tempTransferHandle, localTransferHandle;
@@ -225,7 +227,9 @@ T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle          handle,
                      * sent to the application when the transfer completes is
                      * U3V_HOST_EVENT_WRITE_COMPLETE */
                     hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlIf.bulkOutPipeHandle,
-                                                         tempTransferHandle, data, size,
+                                                         tempTransferHandle, 
+                                                         data, 
+                                                         size,
                                                          (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
                     u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
                 }
@@ -234,8 +238,6 @@ T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle          handle,
     }
     return u3vResult;
 }
-
-
 
 /********************************************************
 * Local function definitions
@@ -614,7 +616,8 @@ static USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_D
    switch (event)
    {
         case USB_HOST_DEVICE_EVENT_CONFIGURATION_SET:
-            /* This means the configuration was set. Update the instance variables to let the main state machine know. */
+            /* This means the configuration was set. Update the instance
+             * variables to let the main state machine know. */
             configSetEventData = (USB_HOST_DEVICE_EVENT_CONFIGURATION_SET_DATA *)(eventData);
             u3vInstance->hostRequestResult = configSetEventData->result;
             u3vInstance->hostRequestDone = true;
@@ -762,8 +765,10 @@ static void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
                      * controlTransferDone flag. This will be set in the device
                      * event handler when the configuration set event is received. */
                     u3vInstance->hostRequestDone = false;
-                    result = USB_HOST_DeviceConfigurationSet(u3vInstance->deviceClientHandle, &requestHandle,
-                                                             0, (uintptr_t)(u3vInstance));
+                    result = USB_HOST_DeviceConfigurationSet(u3vInstance->deviceClientHandle,
+                                                             &requestHandle,
+                                                             0,
+                                                             (uintptr_t)(u3vInstance));
 
                     if (result == USB_HOST_RESULT_SUCCESS)
                     {

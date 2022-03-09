@@ -6,6 +6,7 @@
 #include "UsbCamDrv_AppCallbacks.h"
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv_Config.h"
+#include "UsbCamDrv_U3V_Control_IF.h"
 
 
 
@@ -128,8 +129,18 @@ void UsbCamDrv_Tasks(void)
             {
                 /* The driver was opened successfully. Set the event handler and then go to the next state. */
                 USB_U3VHost_EventHandlerSet(UsbAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&UsbAppData);
-                UsbAppData.state = USB_APP_STATE_SET_LINE_CODING; //todo rework
+                UsbAppData.state = USB_APP_STATE_SETUP_U3V_CONTROL_IF; //todo rework
                 LED1_On();  // DEBUG XULT board
+            }
+            break;
+
+        case USB_APP_STATE_SETUP_U3V_CONTROL_IF:
+            /* Setting up the U3V device control function interface */
+            result = U3VCtrlIf_IntfCreate(UsbAppData.u3vObj);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                /* We wait for the set line coding to complete */
+                UsbAppData.state = USB_APP_STATE_SET_LINE_CODING;
             }
             break;
             
