@@ -98,7 +98,7 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_U3VHostObject u3vInstObj)
                                      &bytesRead,
                                      &maxResponse);
 
-    u3vResult = (bytesRead != U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE) ? USB_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
     
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -117,7 +117,7 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_U3VHostObject u3vInstObj)
                                      &bytesRead,
                                      &sbrmAddress);
 
-    u3vResult = (bytesRead != U3V_REG_SBRM_ADDRESS_SIZE) ? USB_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != U3V_REG_SBRM_ADDRESS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -134,7 +134,7 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_U3VHostObject u3vInstObj)
                                      &bytesRead,
                                      &cmdBfrSize);
 
-    u3vResult = (bytesRead != sizeof(uint32_t)) ? USB_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != sizeof(uint32_t)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -153,7 +153,7 @@ T_U3VHostResult U3VCtrlIf_IntfCreate(T_U3VHostObject u3vInstObj)
                                      &bytesRead,
                                      &ackBfrSize);
 
-    u3vResult = (bytesRead != sizeof(uint32_t)) ? -1 : u3vResult;
+    u3vResult = (bytesRead != sizeof(uint32_t)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
