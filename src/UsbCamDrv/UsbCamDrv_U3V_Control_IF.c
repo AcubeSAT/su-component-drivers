@@ -184,7 +184,7 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_UsbHostU3VInstanceObj *u3vInstance,
     USB_HOST_RESULT hostResult;
     uint32_t maxBytesPerRead = 0u;
     uint32_t totalBytesRead = 0u;
-    int32_t actual = 0;
+    // int32_t actual = 0;
     bool reqAcknowledged;
     T_U3V_CtrlAcknowledge *ack = NULL;
     T_U3V_CtrlPendingAckPayload *pendingAck = NULL;
@@ -252,7 +252,7 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_UsbHostU3VInstanceObj *u3vInstance,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
 
-        u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
+        u3vResult = USB_HostU3V_HostToU3VResultsMap(hostResult);
 
         if (u3vResult != USB_HOST_RESULT_TRUE)
         {
@@ -263,10 +263,10 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_UsbHostU3VInstanceObj *u3vInstance,
         reqAcknowledged = false;
         while (!reqAcknowledged)
         {
-            /* Reset. Ensure that we have enough room for a pending_ack_payload
+            /* Reset buffer. Ensure that we have enough room for a pending_ack_payload
              * (e.g. if we try to read only two bytes then we would not be able to 
              * receive a pending_ack_payload, which has a transfSize greater than 2 bytes). */
-            actual = 0;
+            // actual = 0;
             ackBufferSize = sizeof(T_U3V_CtrlAckHeader) + MAX((size_t)(bytesThisIteration), sizeof(T_U3V_CtrlPendingAckPayload));
             memset(ctrlIfobj->ackBuffer, 0, ackBufferSize);
 
@@ -276,7 +276,7 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_UsbHostU3VInstanceObj *u3vInstance,
                                                  ctrlIfobj->ackBuffer,
                                                  ackBufferSize,
                                                  (uintptr_t)(U3V_HOST_EVENT_READ_COMPLETE));
-            u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
+            u3vResult = USB_HostU3V_HostToU3VResultsMap(hostResult);
 
             if (u3vResult != U3V_HOST_RESULT_SUCCESS)
             {
@@ -285,12 +285,14 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_UsbHostU3VInstanceObj *u3vInstance,
                 return u3vResult;
             }
 
-            /* Validate that we read enough bytes to process the header and that this seems like a valid GenCP response */
-
             // if ((actual < sizeof(T_U3V_CtrlAckHeader)) ||
             //     (ack->header.prefix != U3V_CONTROL_PREFIX) ||
             //     (actual != (ack->header.length + sizeof(T_U3V_CtrlAckHeader))))
 
+            while (*ctrlIfobj->ackBuffer == 0);
+            {
+                // Wait for data to arrive in buffer
+            } 
             ack = (T_U3V_CtrlAcknowledge *)(ctrlIfobj->ackBuffer);
 
             /* Inspect the acknowledge buffer */
@@ -351,7 +353,7 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_UsbHostU3VInstanceObj *u3vInstance,
     USB_HOST_RESULT hostResult;
     uint32_t maxBytesPerWrite = 0u;
     uint32_t totalBytesWritten = 0u;
-    int32_t actual = 0;
+    // int32_t actual = 0;
     bool reqAcknowledged;
     T_U3V_CtrlAcknowledge *ack = NULL;
     T_U3V_CtrlPendingAckPayload *pendingAck = NULL;
@@ -432,7 +434,7 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_UsbHostU3VInstanceObj *u3vInstance,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
 
-        u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
+        u3vResult = USB_HostU3V_HostToU3VResultsMap(hostResult);
 
         if (u3vResult != USB_HOST_RESULT_TRUE)
         {
@@ -443,8 +445,8 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_UsbHostU3VInstanceObj *u3vInstance,
 		reqAcknowledged = false;
         while (!reqAcknowledged)
         {
-            /* reset */
-			actual = 0;
+            /* reset buffer */
+			// actual = 0;
 			memset(ctrlIfobj->ackBuffer, 0, ackBufferSize);
 
 			/* read the ack */
@@ -461,8 +463,12 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_UsbHostU3VInstanceObj *u3vInstance,
                                                  ackBufferSize,
                                                  (uintptr_t)(U3V_HOST_EVENT_READ_COMPLETE));
 
-            u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
+            u3vResult = USB_HostU3V_HostToU3VResultsMap(hostResult);
 
+            while (*ctrlIfobj->ackBuffer == 0);
+            {
+                // Wait for data to arrive in buffer
+            } 
             ack = (T_U3V_CtrlAcknowledge *)(ctrlIfobj->ackBuffer);
 
 			/* Validate that we read enough bytes to process the header and that this seems like a valid GenCP response */

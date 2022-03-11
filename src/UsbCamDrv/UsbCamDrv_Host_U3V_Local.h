@@ -138,7 +138,7 @@ static int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE
 
 static int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
 
-T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
+T_U3VHostResult USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 
 
 

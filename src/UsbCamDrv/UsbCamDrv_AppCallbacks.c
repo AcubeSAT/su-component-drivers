@@ -58,9 +58,9 @@ T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
     /* This function is called when a U3V Host event has occurred. A pointer to this function is 
      * registered after opening the device. See the call to USB_U3VHost_EventHandlerSet(). */
 
-    T_U3VHostEventWriteCompleteData                      *writeCompleteEventData;
-    T_U3VHostEventReadCompleteData                       *readCompleteEventData;
-    T_UsbAppData                                              *pUsbAppData;
+    T_U3VHostEventWriteCompleteData    *writeCompleteEventData;
+    T_U3VHostEventReadCompleteData     *readCompleteEventData;
+    T_UsbAppData                       *pUsbAppData;
 
     pUsbAppData = (T_UsbAppData*)context;
 

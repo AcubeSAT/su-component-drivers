@@ -76,7 +76,15 @@ T_U3VHostResult USB_U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler ev
 
 T_U3VHostDeviceObjHandle USB_U3VHost_DeviceObjectHandleGet(T_U3VHostObject u3vDeviceObj)
 {
-    //todo
+    USB_HOST_DEVICE_OBJ_HANDLE result = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
+    T_UsbHostU3VInstanceObj * u3vInstance;
+
+    if(u3vDeviceObj != 0)
+    {
+        u3vInstance = (T_UsbHostU3VInstanceObj *)u3vDeviceObj;
+        result = u3vInstance->deviceObjHandle;
+    }
+    return result;
 }
                                
 
@@ -172,7 +180,7 @@ T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle handle,
                                                          data,
                                                          size,
                                                          (uintptr_t)(U3V_HOST_EVENT_READ_COMPLETE));
-                    u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
+                    u3vResult = USB_HostU3V_HostToU3VResultsMap(hostResult);
                 }
             }
         }
@@ -231,13 +239,50 @@ T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
                                                          data, 
                                                          size,
                                                          (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
-                    u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
+                    u3vResult = USB_HostU3V_HostToU3VResultsMap(hostResult);
                 }
             }
         }
     }
     return u3vResult;
 }
+
+
+T_U3VHostResult USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
+{
+    T_U3VHostResult u3vResult;
+
+    switch (hostResult)
+    {
+        case USB_HOST_RESULT_SUCCESS:
+            u3vResult = U3V_HOST_RESULT_SUCCESS;
+            break;
+
+        case USB_HOST_RESULT_FAILURE:
+        case USB_HOST_RESULT_PARAMETER_INVALID:
+        case USB_HOST_RESULT_PIPE_HANDLE_INVALID:
+            u3vResult = U3V_HOST_RESULT_FAILURE;
+            break;
+
+        case USB_HOST_RESULT_REQUEST_BUSY:
+            u3vResult = U3V_HOST_RESULT_BUSY;
+            break;
+
+        case USB_HOST_RESULT_REQUEST_STALLED:
+            u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
+            break;
+
+        case USB_HOST_RESULT_TRANSFER_ABORTED:
+            u3vResult = U3V_HOST_RESULT_ABORTED;
+            break;
+
+        default:
+            u3vResult = U3V_HOST_RESULT_FAILURE;
+            break;
+    }
+    return u3vResult;
+}
+
 
 /********************************************************
 * Local function definitions
@@ -262,11 +307,11 @@ static void _USB_HostU3V_Initialize(void * data)
 
         u3vInstanceObj->eventIf.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
         u3vInstanceObj->eventIf.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
-        u3vInstanceObj->eventIf.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID; /* N/A */
+        u3vInstanceObj->eventIf.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;   /* N/A */
 
         u3vInstanceObj->streamIf.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
         u3vInstanceObj->streamIf.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
-        u3vInstanceObj->streamIf.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;   /* N/A */
+        u3vInstanceObj->streamIf.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;  /* N/A */
 
         u3vInstanceObj->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
     }
@@ -285,7 +330,7 @@ static void _USB_HostU3V_Reinitialize(void * msdInitData)
 }
 
 
-static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,         //todo rework
+static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,
                                          USB_HOST_DEVICE_OBJ_HANDLE        deviceObjHandle,
                                          size_t                            nInterfaces,
                                          uint8_t                          *descriptor)
@@ -463,10 +508,8 @@ static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *inter
                 /* All the pipes are opened. The client driver is ready */
                 u3vInstance->state = U3V_HOST_STATE_READY;
 
-                /* We know that the client driver is now ready. We can
-                 * let all the listeners know that the device has been
-                 * attached.  */
-
+                /* We know that the client driver is now ready. We can let 
+                 * all the listeners know that the device has be attached. */
                 for (iterator = 0u; iterator < USB_HOST_U3V_ATTACH_LISTENERS_NUMBER; iterator++)
                 {
                     if (gUSBHostU3VAttachListener[iterator].inUse)
@@ -560,15 +603,14 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandl
                                                                                    void *eventData,
                                                                                    uintptr_t context)
 {
-    int32_t u3vIndex;
-    T_UsbHostU3VInstanceObj *u3vInstance;
-    USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA * dataTransferEvent;
-    T_U3VHostEvent u3vEvent;
-    T_U3VHostEventWriteCompleteData u3vTransferCompleteData;
+    int32_t                                                 u3vIndex;
+    T_UsbHostU3VInstanceObj                                 *u3vInstance;
+    USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA  *dataTransferEvent;
+    T_U3VHostEvent                                          u3vEvent;
+    T_U3VHostEventWriteCompleteData                         u3vTransferCompleteData;
 
     /* Find out to which U3V Instance this interface belongs */
     u3vIndex = _USB_HostU3V_InterfaceHandleToInstance(interfaceHandle);
-
     u3vInstance = &gUSBHostU3VObj[u3vIndex];
     u3vEvent = (T_U3VHostEvent)(context);
 
@@ -578,7 +620,7 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandl
             /* This means a data transfer has completed */
             dataTransferEvent = (USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA *)(eventData);
             u3vTransferCompleteData.transferHandle = dataTransferEvent->transferHandle;
-            u3vTransferCompleteData.result = _USB_HostU3V_HostToU3VResultsMap(dataTransferEvent->result);
+            u3vTransferCompleteData.result = USB_HostU3V_HostToU3VResultsMap(dataTransferEvent->result);
             u3vTransferCompleteData.length = dataTransferEvent->length;
 
             if (u3vInstance->eventHandler != NULL)
@@ -886,38 +928,3 @@ static int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_
     return result;
 }
 
-
-T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
-{
-    T_U3VHostResult u3vResult;
-
-    switch (hostResult)
-    {
-        case USB_HOST_RESULT_SUCCESS:
-            u3vResult = U3V_HOST_RESULT_SUCCESS;
-            break;
-
-        case USB_HOST_RESULT_FAILURE:
-        case USB_HOST_RESULT_PARAMETER_INVALID:
-        case USB_HOST_RESULT_PIPE_HANDLE_INVALID:
-            u3vResult = U3V_HOST_RESULT_FAILURE;
-            break;
-
-        case USB_HOST_RESULT_REQUEST_BUSY:
-            u3vResult = U3V_HOST_RESULT_BUSY;
-            break;
-
-        case USB_HOST_RESULT_REQUEST_STALLED:
-            u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
-            break;
-
-        case USB_HOST_RESULT_TRANSFER_ABORTED:
-            u3vResult = U3V_HOST_RESULT_ABORTED;
-            break;
-
-        default:
-            u3vResult = U3V_HOST_RESULT_FAILURE;
-            break;
-    }
-    return u3vResult;
-}
