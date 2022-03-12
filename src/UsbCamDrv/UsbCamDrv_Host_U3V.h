@@ -6,7 +6,6 @@
 #define COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_H
 
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,9 +52,6 @@ typedef enum
     U3V_HOST_RESULT_SUCCESS             = 1
 } T_U3VHostResult;
 
-
-
-
 typedef struct
 {   
     T_U3VHostTransferHandle  transferHandle;      /* Transfer handle of this transfer */
@@ -71,22 +67,18 @@ typedef enum
     U3V_HOST_EVENT_DEVICE_DETACHED
 } T_U3VHostEvent;
 
-
 typedef enum
 {
     U3V_HOST_EVENT_RESPONE_NONE  = 0     /* This means no response is required */
 
 } T_U3VHostEventResponse;
 
-
 typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostObject u3vObjHandle, uintptr_t context);
-
 
 typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vHandle,
                                                         T_U3VHostEvent event,
                                                         void *eventData,
                                                         uintptr_t context);
-
 
 
 /********************************************************
@@ -127,6 +119,8 @@ T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
                                   T_U3VHostTransferHandle *transferHandle,
                                   void *data,
                                   size_t size);
+
+
 
 #ifdef __cplusplus
 }

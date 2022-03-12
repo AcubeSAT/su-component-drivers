@@ -136,7 +136,7 @@ void UsbCamDrv_Tasks(void)
 
         case USB_APP_STATE_SETUP_U3V_CONTROL_IF:
             /* Setting up the U3V device control function interface */
-            result = U3VCtrlIf_IntfCreate(UsbAppData.u3vObj);
+            result = U3VCtrlIf_IntfCreate(&UsbAppData.controlIfHandle, UsbAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 /* We wait for the set line coding to complete */

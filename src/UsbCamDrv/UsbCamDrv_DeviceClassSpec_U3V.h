@@ -5,7 +5,6 @@
 #ifndef COMPONENT_DRIVERS_USBCAMDRV_DEVCLASSU3V_H
 #define COMPONENT_DRIVERS_USBCAMDRV_DEVCLASSU3V_H
 
-#include "UsbCamDrv_App.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -13,6 +13,7 @@
 #include "definitions.h"
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv/UsbCamDrv_DeviceClassSpec_U3V.h"
+#include "UsbCamDrv_U3V_Control_IF.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,17 +72,16 @@ typedef struct
     uint8_t                     inDataArray[64];       /* First place to be aligned - Array to hold read data */
     T_UsbAppStates              state;                 /* The USB application's current state */
     T_U3VHostObject             u3vObj;                /* U3V Object */
-    bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        controlRequestDone;    /* True if control request is done */
     T_U3VHostResult             controlRequestResult;  /* Control Request Result */
-    // USB_CDC_LINE_CODING         cdcHostLineCoding;     /* A CDC Line Coding object */
-    // USB_CDC_CONTROL_LINE_STATE  controlLineState;      /* A Control Line State object*/
     T_U3VHostHandle             u3vHostHandle;         /* Handle to the U3V device. */
     T_U3VHostRequestHandle      requestHandle;         /* Handle to request */
-    bool                        writeTransferDone;     /* True when a write transfer has complete */
-    T_U3VHostResult             writeTransferResult;   /* Write Transfer Result */
+    T_U3VControlInterfHandle    controlIfHandle;       /* Handle to U3V Control IF */
     bool                        readTransferDone;      /* True when a read transfer has complete */
     T_U3VHostResult             readTransferResult;    /* Read Transfer Result */
+    bool                        writeTransferDone;     /* True when a write transfer has complete */
+    T_U3VHostResult             writeTransferResult;   /* Write Transfer Result */
+    bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        deviceWasDetached;     /* True if device was detached */
 } T_UsbAppData;     //todo rework
 

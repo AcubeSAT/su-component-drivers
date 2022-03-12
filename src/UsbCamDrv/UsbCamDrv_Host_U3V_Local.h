@@ -6,7 +6,6 @@
 #define COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_LOCAL_H
 
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,7 +13,6 @@ extern "C" {
 
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv_Config.h"
-#include "UsbCamDrv_U3V_IF_SharedTypes.h"
 
 
 /********************************************************
@@ -23,6 +21,7 @@ extern "C" {
 
 #define MAX(a, b)         (((a) > (b)) ? (a) : (b))
 #define MIN(a, b)         (((a) < (b)) ? (a) : (b))
+
 
 /********************************************************
 * Type definitions
@@ -44,7 +43,6 @@ typedef struct
     T_U3VHostEvent                      requestType;        /* The CDC Class Specific request type */
 } T_UsbHostU3VControlTransferObj;
 
-
 typedef struct
 {
     uint8_t                             idNum;              /* Number of interface */
@@ -60,7 +58,6 @@ typedef struct
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
     T_UsbHostU3VInterfaceHandle         controlIf;          /* U3V Control Interface obj handle */
-    T_U3V_ControlIntfStr                *controlIfData;     /* U3V Control Interface data */
     T_UsbHostU3VInterfaceHandle         eventIf;            /* U3V Event Interface obj handle */
     T_UsbHostU3VInterfaceHandle         streamIf;           /* U3V Stream Interface obj handle */
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
@@ -71,15 +68,12 @@ typedef struct
     USB_HOST_RESULT                     hostRequestResult;  /* Result of the host request */
 } T_UsbHostU3VInstanceObj;
 
-
-
 typedef struct
 {
     bool                                inUse;              /* This object is in use */
     T_U3VHostAttachEventHandler         eventHandler;       /* The attach event handler */
     uintptr_t                           context;            /* Client context */
 } T_UsbHostU3VAttachListenerObj;
-
 
 
 /********************************************************
@@ -92,7 +86,6 @@ typedef struct
 *********************************************************/
 
 extern T_UsbHostU3VInstanceObj gUSBHostU3VObj[USB_HOST_U3V_INSTANCES_NUMBER];
-
 
 
 /********************************************************
