@@ -346,7 +346,6 @@
         <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_Control_IF.c</itemPath>
         <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_Event_IF.c</itemPath>
         <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_Streaming_IF.c</itemPath>
-        <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_IF_SharedTypes.h</itemPath>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
       <itemPath>../src/app.c</itemPath>

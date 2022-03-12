@@ -130,7 +130,7 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_U3VControlInterfHandle u3vCtrlIf,
 									  uint32_t *bytesWritten,
 									  const void *buffer);
 
-void U3VCtrlIf_IntfDestroy(T_U3VControlInterfHandle u3vCtrlIf);
+void U3VCtrlIf_IntfDestroy(T_U3VControlInterfHandle *pU3vCtrlIf);
 
 
 
