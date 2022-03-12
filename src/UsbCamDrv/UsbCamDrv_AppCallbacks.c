@@ -83,8 +83,6 @@ T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
         case U3V_HOST_EVENT_DEVICE_DETACHED:
             /* The device was detached */
             pUsbU3VAppData->deviceWasDetached = true;
-			/* Switch off LED  */
-            LED1_Off(); // DEBUG XULT board
             break;
             
         default:
