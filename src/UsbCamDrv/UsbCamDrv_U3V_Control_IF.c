@@ -534,11 +534,11 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
 
 void U3VCtrlIf_IntfDestroy(T_U3VControlInterfHandle *pU3vCtrlIf)
 {
-    T_U3V_ControlInterfaceObj *ctrlIfobj = NULL;
+    T_U3V_ControlInterfaceObj *ctrlIfobj;
 
-    if (pU3vCtrlIf != NULL)
+    if ((pU3vCtrlIf != NULL) && (*pU3vCtrlIf != 0))
     {
-        ctrlIfobj = (T_U3V_ControlInterfaceObj*)(*pU3vCtrlIf);
+        ctrlIfobj = (T_U3V_ControlInterfaceObj *)(*pU3vCtrlIf);
 
         // wait_for_completion(&u3vInst->controlIf.ioctl_complete);
         // if (!u3vInst->stalling_disabled &&
@@ -546,13 +546,10 @@ void U3VCtrlIf_IntfDestroy(T_U3VControlInterfHandle *pU3vCtrlIf)
         // 	reset_pipe(u3vInst, &u3vInst->control_info);
 
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
-        ctrlIfobj = NULL;
         *pU3vCtrlIf = 0;
     }
     else
     {
         /* invalid handle */
-        return;
     }
 }
-
