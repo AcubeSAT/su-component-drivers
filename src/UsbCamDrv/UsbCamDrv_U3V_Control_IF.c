@@ -6,7 +6,7 @@
 #include "UsbCamDrv_U3V_Control_IF.h"
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv_Host_U3V_Local.h"
-
+#include "UsbCamDrv_Config.h"
 
 
 /********************************************************
@@ -273,10 +273,13 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
         reqAcknowledged = false;
         while (!reqAcknowledged)
         {
+            uint32_t readRetryCnt = 0u;
+
             /* Reset buffer. Ensure that we have enough room for a pending_ack_payload
              * (e.g. if we try to read only two bytes then we would not be able to 
              * receive a pending_ack_payload, which has a transfSize greater than 2 bytes). */
-            ackBufferSize = sizeof(T_U3V_CtrlAckHeader) + MAX((size_t)(bytesThisIteration), sizeof(T_U3V_CtrlPendingAckPayload));
+            ackBufferSize = sizeof(T_U3V_CtrlAckHeader) + MAX((size_t)(bytesThisIteration),
+                                                              sizeof(T_U3V_CtrlPendingAckPayload));
             memset(ctrlIfInst->ackBuffer, 0, ackBufferSize);
 
             /* read the ack */
@@ -300,8 +303,17 @@ T_U3VHostResult U3VCtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
 
             while (*ctrlIfInst->ackBuffer == 0);
             {
-                // Wait for data to arrive in buffer
-            } 
+                /* Wait for write request to complete with retry limit */
+                readRetryCnt++;
+                if (readRetryCnt > U3V_REQ_READWRITE_RETRY_TIMES_LMT)
+                {
+                    /* write failed */
+                    OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
+                    u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
+                    return u3vResult;
+                }
+            }
+
             ack = (T_U3V_CtrlAcknowledge *)(ctrlIfInst->ackBuffer);
 
             /* Inspect the acknowledge buffer */
@@ -368,13 +380,14 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
     T_U3V_CtrlPendingAckPayload *pendingAck = NULL;
     T_U3V_CtrlWriteMemAckPayload *writeMemAck = NULL;
     size_t cmdBufferSize = sizeof(T_U3V_CtrlCmdHeader) + sizeof(T_U3V_CtrlReadMemCmdPayload);
-    size_t ackBufferSize = sizeof(T_U3V_CtrlAckHeader) + MAX(sizeof(T_U3V_CtrlWriteMemAckPayload), sizeof(T_U3V_CtrlPendingAckPayload));
+    size_t ackBufferSize = sizeof(T_U3V_CtrlAckHeader) + MAX(sizeof(T_U3V_CtrlWriteMemAckPayload),
+                                                             sizeof(T_U3V_CtrlPendingAckPayload));
 
     /* check input argument errors */
-    u3vResult = (bytesWritten  == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (buffer        == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (transfSize    == 0u)   ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (ctrlIfObj  == 0)       ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (bytesWritten == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (buffer       == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (transfSize   == 0u)   ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (ctrlIfObj    == 0)    ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -495,9 +508,11 @@ T_U3VHostResult U3VCtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
             if (((ack->header.cmd != U3V_CTRL_WRITEMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
                 (ack->header.status != U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlIfInst->requestId) ||
-                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3V_CtrlWriteMemAckPayload)) && (ack->header.length != 0)) ||
+                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) &&
+                 (ack->header.length != sizeof(T_U3V_CtrlWriteMemAckPayload)) && (ack->header.length != 0)) ||
                 ((ack->header.cmd == U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3V_CtrlPendingAckPayload))) ||
-                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlWriteMemAckPayload)) && (writeMemAck->bytesWritten != bytesThisIteration)))
+                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlWriteMemAckPayload)) &&
+                 (writeMemAck->bytesWritten != bytesThisIteration)))
             {
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_FAILURE;

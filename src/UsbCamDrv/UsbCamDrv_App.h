@@ -83,7 +83,7 @@ typedef struct
     T_U3VHostResult             writeTransferResult;   /* Write Transfer Result */
     bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        deviceWasDetached;     /* True if device was detached */
-} T_UsbAppData;     //todo rework
+} T_UsbU3VAppData;     //todo rework
 
 
 typedef enum

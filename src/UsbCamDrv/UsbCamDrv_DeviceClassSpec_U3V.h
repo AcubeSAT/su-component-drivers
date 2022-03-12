@@ -34,8 +34,6 @@ extern "C" {
 #define U3V_INFO_IS_DEVICEINFO                    0x01     /* U3V descriptor data = info type*/
 #define U3V_INFO_MIN_LENGTH_STR                   20u      /* U3V descriptor data min length */
 #define U3V_MAX_DESCR_STR_LENGTH                  64u      /* U3V descriptor data buffer size */
-#define U3V_REQ_TIMEOUT                           5000u
-
 #define U3V_ERR_NO_ERROR				          0
 
 

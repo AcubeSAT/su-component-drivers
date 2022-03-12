@@ -32,7 +32,7 @@ static inline T_U3VCamIDValid CamPIDisValid(void);
 
 T_U3VCamDriverInitStatus UsbCamDrv_InitStatus = U3V_DRV_NOT_INITIALZD;
 
-T_UsbAppData USB_ALIGN UsbU3VAppData;
+T_UsbU3VAppData USB_ALIGN UsbU3VAppData;
 
 USB_ALIGN uint8_t prompt[8]  = "\r\nLED : ";       /* debug / to remove */
 
@@ -86,6 +86,9 @@ void UsbCamDrv_Tasks(void)
         UsbU3VAppData.deviceWasDetached    = false;
 
         U3VCtrlIf_IntfDestroy(&UsbU3VAppData.controlIfHandle);
+
+        /* Switch off LED  */
+        LED1_Off(); // DEBUG XULT board
     }
 
     switch (UsbU3VAppData.state)
