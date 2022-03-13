@@ -42,11 +42,23 @@ void _USBHostU3VAttachEventListenerCbk(T_U3VHostObject u3vObj, uintptr_t context
 {
     /* This function gets called when the U3V device is attached. Update the application data 
      * structure to let the application know that this device is attached. */
-    T_UsbU3VAppData *pUsbAppData;
-    pUsbAppData = (T_UsbU3VAppData*)context;
+    T_UsbU3VAppData *pUsbU3VAppData;
+    pUsbU3VAppData = (T_UsbU3VAppData*)context;
 
-    pUsbAppData->deviceIsAttached = true;
-    pUsbAppData->u3vObj = u3vObj;
+    pUsbU3VAppData->deviceIsAttached = true;
+    pUsbU3VAppData->u3vObj = u3vObj;
+}
+
+
+void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t context)
+{
+    /* This function gets called when the U3V device is detached. Update the application data 
+     * structure to let the application know that this device is detached. */
+
+    T_UsbU3VAppData *pUsbU3VAppData;
+    pUsbU3VAppData = (T_UsbU3VAppData*)context;
+
+    pUsbU3VAppData->deviceWasDetached = true;
 }
 
 
@@ -78,11 +90,6 @@ T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
             pUsbU3VAppData->readTransferDone = true;
             readCompleteEventData = (T_U3VHostEventReadCompleteData *)(pEventData);
             pUsbU3VAppData->readTransferResult = readCompleteEventData->result;
-            break;
-            
-        case U3V_HOST_EVENT_DEVICE_DETACHED:
-            /* The device was detached */
-            pUsbU3VAppData->deviceWasDetached = true;
             break;
             
         default:

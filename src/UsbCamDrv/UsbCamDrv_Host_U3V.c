@@ -129,6 +129,23 @@ T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
 }
 
 
+T_U3VHostResult USB_U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle,
+                                                  T_U3VHostDetachEventHandler detachEventHandler,
+                                                  uintptr_t context)
+{
+    T_U3VHostResult result = U3V_HOST_RESULT_HANDLE_INVALID;
+    T_UsbHostU3VInstanceObj *u3vInstance = (T_UsbHostU3VInstanceObj *)(handle);
+
+    if (u3vInstance != NULL)
+    {
+        u3vInstance->detachEventHandler = detachEventHandler;
+        u3vInstance->context = context;
+        result = U3V_HOST_RESULT_SUCCESS;
+    }
+    return result;
+}
+
+
 T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle handle,
                                  T_U3VHostTransferHandle *transferHandle,
                                  void *data,
@@ -580,16 +597,15 @@ static void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE inter
                 u3vInstance->streamIf.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
             }
 
-            if(u3vInstance->eventHandler != NULL)
+            if(u3vInstance->detachEventHandler != NULL)
             {
                 /* Let the client know that the device is detached */
-                u3vInstance->eventHandler((T_U3VHostHandle)(u3vInstance),
-                                          U3V_HOST_EVENT_DEVICE_DETACHED,
-                                          NULL,
-                                          u3vInstance->context);
+                u3vInstance->detachEventHandler((T_U3VHostHandle)(u3vInstance),
+                                                u3vInstance->context);
             }
 
             /* Release the object */
+            u3vInstance->detachEventHandler = NULL;
             u3vInstance->eventHandler = NULL;
             u3vInstance->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
             u3vInstance->deviceClientHandle = USB_HOST_DEVICE_CLIENT_HANDLE_INVALID;
@@ -762,16 +778,15 @@ static void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandl
             u3vInstance->streamIf.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
-        if (u3vInstance->eventHandler != NULL)
+        if (u3vInstance->detachEventHandler != NULL)
         {
             /* Let the client know that the device is detached */
-            u3vInstance->eventHandler((T_U3VHostHandle)(u3vInstance),
-                                      U3V_HOST_EVENT_DEVICE_DETACHED,
-                                      NULL, 
-                                      u3vInstance->context);
+            u3vInstance->detachEventHandler((T_U3VHostHandle)(u3vInstance),
+                                            u3vInstance->context);
         }
 
         /* Release the object */
+        u3vInstance->detachEventHandler = NULL;
         u3vInstance->eventHandler = NULL;
         u3vInstance->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
         u3vInstance->deviceClientHandle = USB_HOST_DEVICE_CLIENT_HANDLE_INVALID;

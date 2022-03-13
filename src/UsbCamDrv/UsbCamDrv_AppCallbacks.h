@@ -42,6 +42,8 @@ USB_HOST_EVENT_RESPONSE _USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEve
 
 void _USBHostU3VAttachEventListenerCbk(T_U3VHostObject u3vObj, uintptr_t context);
 
+void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t context);
+
 T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
                                                   T_U3VHostEvent event,
                                                   void *pEventData,

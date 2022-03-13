@@ -63,8 +63,7 @@ typedef struct
 typedef enum
 {
     U3V_HOST_EVENT_READ_COMPLETE,
-    U3V_HOST_EVENT_WRITE_COMPLETE,
-    U3V_HOST_EVENT_DEVICE_DETACHED
+    U3V_HOST_EVENT_WRITE_COMPLETE
 } T_U3VHostEvent;
 
 typedef enum
@@ -75,11 +74,12 @@ typedef enum
 
 typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostObject u3vObjHandle, uintptr_t context);
 
+typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vHandle, uintptr_t context);
+
 typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vHandle,
                                                         T_U3VHostEvent event,
                                                         void *eventData,
                                                         uintptr_t context);
-
 
 /********************************************************
 * Constant declarations
@@ -98,6 +98,10 @@ extern USB_HOST_CLIENT_DRIVER   gUSBHostU3VClientDriver;
 *********************************************************/
 
 T_U3VHostResult USB_U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventHandler,
+                                                  uintptr_t context);
+
+T_U3VHostResult USB_U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle,
+                                                  T_U3VHostDetachEventHandler detachEventHandler,
                                                   uintptr_t context);
 
 T_U3VHostDeviceObjHandle USB_U3VHost_DeviceObjectHandleGet(T_U3VHostObject u3vDeviceObj);  //to review return type

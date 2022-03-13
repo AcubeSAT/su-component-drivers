@@ -119,6 +119,7 @@ void UsbCamDrv_Tasks(void)
             UsbU3VAppData.u3vHostHandle = USB_U3VHost_Open(UsbU3VAppData.u3vObj);
             if(UsbU3VAppData.u3vHostHandle != U3V_HOST_HANDLE_INVALID)
             {
+                USB_U3VHost_DetachEventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VDetachEventListenerCbk, (uintptr_t)&UsbU3VAppData);
                 USB_U3VHost_EventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&UsbU3VAppData);
                 UsbU3VAppData.state = USB_APP_STATE_SETUP_U3V_CONTROL_IF;
                 LED1_On();  // DEBUG XULT board

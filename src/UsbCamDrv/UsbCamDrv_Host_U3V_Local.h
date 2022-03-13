@@ -41,7 +41,7 @@ typedef struct
 {
     bool                                inUse;              /* True if the object is in use */
     T_U3VHostEvent                      requestType;        /* The CDC Class Specific request type */
-} T_UsbHostU3VControlTransferObj;
+} T_UsbHostU3VControlTransferObj; //todo review
 
 typedef struct
 {
@@ -63,6 +63,7 @@ typedef struct
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     uintptr_t                           context;            /* Application defined context */
     T_U3VHostEventHandler               eventHandler;       /* Application callback */
+    T_U3VHostDetachEventHandler         detachEventHandler; /* Detach event app callback */
     T_U3VHostState                      state;              /* U3V instance state */
     bool                                hostRequestDone;    /* True if an ongoing host request is done */
     USB_HOST_RESULT                     hostRequestResult;  /* Result of the host request */
