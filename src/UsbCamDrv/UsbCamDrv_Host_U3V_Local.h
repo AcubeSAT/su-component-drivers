@@ -12,6 +12,7 @@ extern "C" {
 
 
 #include "UsbCamDrv_Host_U3V.h"
+#include "UsbCamDrv_U3V_Control_IF_local.h"
 #include "UsbCamDrv_Config.h"
 
 
@@ -49,7 +50,7 @@ typedef struct
     USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
     USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
     USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
-} T_UsbHostU3VInterfaceHandle;
+} T_U3VHostInterfaceHandle;
 
 typedef struct
 {
@@ -57,9 +58,9 @@ typedef struct
     USB_HOST_DEVICE_CLIENT_HANDLE       deviceClientHandle; /* Device client handle */
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
-    T_UsbHostU3VInterfaceHandle         controlIf;          /* U3V Control Interface obj handle */
-    T_UsbHostU3VInterfaceHandle         eventIf;            /* U3V Event Interface obj handle */
-    T_UsbHostU3VInterfaceHandle         streamIf;           /* U3V Stream Interface obj handle */
+    T_U3VHostInterfaceHandle            controlIfHandle;    /* U3V Control Interface obj handle */
+    T_U3VHostInterfaceHandle            eventIfHandle;      /* U3V Event Interface obj handle */
+    T_U3VHostInterfaceHandle            streamIfHandle;     /* U3V Stream Interface obj handle */
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     uintptr_t                           context;            /* Application defined context */
     T_U3VHostEventHandler               eventHandler;       /* Application callback */
@@ -67,7 +68,7 @@ typedef struct
     T_U3VHostState                      state;              /* U3V instance state */
     bool                                hostRequestDone;    /* True if an ongoing host request is done */
     USB_HOST_RESULT                     hostRequestResult;  /* Result of the host request */
-} T_UsbHostU3VInstanceObj;
+} T_U3VHostInstanceObj;
 
 typedef struct
 {
@@ -86,7 +87,7 @@ typedef struct
 * Variable declarations
 *********************************************************/
 
-extern T_UsbHostU3VInstanceObj gUSBHostU3VObj[USB_HOST_U3V_INSTANCES_NUMBER];
+extern T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 
 
 /********************************************************
@@ -132,7 +133,7 @@ static int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE
 
 static int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
 
-T_U3VHostResult USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
+T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 
 
 

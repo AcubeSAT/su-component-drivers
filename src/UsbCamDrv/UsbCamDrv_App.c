@@ -85,7 +85,7 @@ void UsbCamDrv_Tasks(void)
         UsbU3VAppData.controlRequestDone   = false;
         UsbU3VAppData.deviceWasDetached    = false;
 
-        U3VCtrlIf_IntfDestroy(&UsbU3VAppData.controlIfHandle);
+        U3VHost_CtrlIf_InterfaceDestroy(&UsbU3VAppData.controlIfHandle);
 
         /* Switch off LED  */
         LED1_Off(); // DEBUG XULT board
@@ -127,7 +127,7 @@ void UsbCamDrv_Tasks(void)
             break;
 
         case USB_APP_STATE_SETUP_U3V_CONTROL_IF:
-            result = U3VCtrlIf_IntfCreate(&UsbU3VAppData.controlIfHandle, UsbU3VAppData.u3vObj);
+            result = U3VHost_CtrlIf_InterfaceCreate(&UsbU3VAppData.controlIfHandle, UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbU3VAppData.state = USB_APP_STATE_SET_LINE_CODING; //todo rework

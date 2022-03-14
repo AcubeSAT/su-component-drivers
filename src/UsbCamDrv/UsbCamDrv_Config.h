@@ -15,8 +15,8 @@ extern "C" {
 * Macros Definitions
 *********************************************************/
 
-#define USB_HOST_U3V_INSTANCES_NUMBER               1u
-#define USB_HOST_U3V_ATTACH_LISTENERS_NUMBER        1u
+#define U3V_HOST_INSTANCES_NUMBER                   1u
+#define U3V_HOST_ATTACH_LISTENERS_NUMBER            1u
 
 #define U3V_ENDIANNESS                              LITTLE_ENDIAN
 #define U3V_PIXEL_FORMAT                            _RGB8
@@ -24,7 +24,7 @@ extern "C" {
 
 #define U3V_IN_BUFFER_MAX_SIZE                      512u
 #define U3V_REQ_TIMEOUT                             5000u
-#define U3V_REQ_READWRITE_RETRY_TIMES_LMT           1000u
+#define U3V_REQ_READWRITE_RETRY_TIMES_LMT           4800u
 
 
 // DEBUG XULT board
