@@ -24,7 +24,7 @@ extern "C" {
 
 #define U3V_IN_BUFFER_MAX_SIZE                      512u
 #define U3V_REQ_TIMEOUT                             5000u
-#define U3V_REQ_READWRITE_RETRY_TIMES_LMT           4800u
+#define U3V_REQ_READWRITE_RETRY_TIMES_LMT           5000u
 
 
 // DEBUG XULT board

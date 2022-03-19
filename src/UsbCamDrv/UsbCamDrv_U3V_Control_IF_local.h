@@ -28,20 +28,7 @@ extern "C" {
 * Type definitions
 *********************************************************/
 
-typedef struct 
-{
-	T_U3VHostObject 				u3vInstObj;				/* uintptr_t to the device object where Control IF belongs to */
-	OSAL_MUTEX_DECLARE				(readWriteLock);  		/* Mutex lock/unlock */
-	uint8_t 						*ackBuffer;
-	uint32_t						maxAckTransfSize;
-	uint8_t 						*cmdBuffer;
-	uint32_t 						maxCmdTransfSize;
-	uint16_t 						requestId;
-	uint16_t 						maxRequestId;  			/* Maximum id value before loop back around */
-	uint32_t 						u3vTimeout;    			/* Maximum device response time in ms */
-	// T_U3VHostEventReadCompleteData 	readReqSts;
-	// T_U3VHostEventWriteCompleteData writeReqSts;
-} T_U3VControlInterfaceObj;
+typedef void (*T_U3VCtrlIfTransfCompleteHandler)(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
 
 typedef struct
 {
@@ -98,6 +85,22 @@ typedef struct
 	uint16_t bytesWritten;
 } T_U3V_CtrlWriteMemAckPayload;
 
+typedef struct 
+{
+	T_U3VHostObject 				u3vInstObj;				/* uintptr_t to the device object where Control IF belongs to */
+	OSAL_MUTEX_DECLARE				(readWriteLock);  		/* Mutex lock/unlock */
+	uint8_t 						*ackBuffer;				/* Acknowledge buffer pointer (alloc) */
+	uint32_t						maxAckTransfSize;		/* Max acknowledge transfer size */
+	uint8_t 						*cmdBuffer;				/* Command buffer pointer (alloc) */
+	uint32_t 						maxCmdTransfSize;		/* Max command transfer size */
+	uint16_t 						requestId;				/* Request ID */
+	uint16_t 						maxRequestId;  			/* Maximum id value before loop back around */
+	uint32_t 						u3vTimeout;    			/* Maximum device response time in ms */
+	T_U3VCtrlIfTransfCompleteHandler transReqCompleteCbk;	/* Transfer event complete callback */
+	T_U3VHostEventReadCompleteData 	readReqSts;				/* Read request transfer status */
+	T_U3VHostEventWriteCompleteData writeReqSts;			/* Write request transfer status */
+} T_U3VControlInterfaceObj;
+
 
 /********************************************************
 * Constant declarations
@@ -112,6 +115,8 @@ typedef struct
 /********************************************************
 * Function declarations
 *********************************************************/
+
+void _U3VHost_CtrlIf_TransferReqCompleteCbk(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
 
 
 

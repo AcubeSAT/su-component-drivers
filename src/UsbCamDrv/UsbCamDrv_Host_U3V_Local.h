@@ -58,9 +58,10 @@ typedef struct
     USB_HOST_DEVICE_CLIENT_HANDLE       deviceClientHandle; /* Device client handle */
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
-    T_U3VHostInterfaceHandle            controlIfHandle;    /* U3V Control Interface obj handle */
-    T_U3VHostInterfaceHandle            eventIfHandle;      /* U3V Event Interface obj handle */
-    T_U3VHostInterfaceHandle            streamIfHandle;     /* U3V Stream Interface obj handle */
+    T_U3VHostInterfaceHandle            controlIfHandle;    /* U3V Control Interface handle */
+    T_U3VControlInterfaceObj            *controlIfObj;      /* U3V Control Interface object data */
+    T_U3VHostInterfaceHandle            eventIfHandle;      /* U3V Event Interface handle */
+    T_U3VHostInterfaceHandle            streamIfHandle;     /* U3V Stream Interface handle */
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     uintptr_t                           context;            /* Application defined context */
     T_U3VHostEventHandler               eventHandler;       /* Application callback */

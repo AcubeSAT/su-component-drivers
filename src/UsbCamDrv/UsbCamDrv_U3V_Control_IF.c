@@ -71,10 +71,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
         return u3vResult;
     }
 
-    /* store permanently the location of U3V device instance 
-     * (as uintptr_t) in Control IF data for future use */
-    ctrlIfobj->u3vInstObj = (T_U3VHostObject)u3vInstance;
-
     ctrlIfobj->u3vTimeout = U3V_REQ_TIMEOUT;
     ctrlIfobj->maxAckTransfSize = MIN((1 << 16) + sizeof(T_U3VCtrlIfAckHeader), (size_t)(0xFFFFFFFF));
     ctrlIfobj->maxCmdTransfSize = MIN((1 << 16) + sizeof(T_U3VCtrlIfCmdHeader), (size_t)(0xFFFFFFFF));
@@ -82,6 +78,7 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
     /* requestId, maxRequestId are preincremented, with overflow will start again from 0 */
     ctrlIfobj->requestId = -1; 
     ctrlIfobj->maxRequestId = -1;
+    ctrlIfobj->transReqCompleteCbk = _U3VHost_CtrlIf_TransferReqCompleteCbk;
 
     /* allocate buffer space */
     ctrlIfobj->ackBuffer = OSAL_Malloc(ctrlIfobj->maxAckTransfSize);
@@ -97,16 +94,21 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
         return u3vResult;
     }
 
+    /* copy Ctrl If pointer to U3V instance */
+    u3vInstance->controlIfObj = ctrlIfobj;
+    /* copy U3V obj handle of U3V inst to Ctrl IF */
+    ctrlIfobj->u3vInstObj = u3vInstObj;
+
     /* get from ABRM -> max device response time */
     u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfobj,
-                                     NULL,
-                                     U3V_ABRM_MAX_DEV_RESPONSE_TIME_MS_OFS,
-                                     U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE,
-                                     &bytesRead,
-                                     &maxResponse);
+                                          NULL,
+                                          U3V_ABRM_MAX_DEV_RESPONSE_TIME_MS_OFS,
+                                          U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE,
+                                          &bytesRead,
+                                          &maxResponse);
 
     u3vResult = (bytesRead != U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
-    
+
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
@@ -118,11 +120,11 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
 
     /* get from ABRM -> SBRM address */
     u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfobj,
-                                     NULL,
-                                     U3V_ABRM_SBRM_ADDRESS_OFS,
-                                     U3V_REG_SBRM_ADDRESS_SIZE,
-                                     &bytesRead,
-                                     &sbrmAddress);
+                                          NULL,
+                                          U3V_ABRM_SBRM_ADDRESS_OFS,
+                                          U3V_REG_SBRM_ADDRESS_SIZE,
+                                          &bytesRead,
+                                          &sbrmAddress);
 
     u3vResult = (bytesRead != U3V_REG_SBRM_ADDRESS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
@@ -135,11 +137,11 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
 
     /* get from SBRM -> max command buffer size */
     u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfobj,
-                                     NULL,
-                                     sbrmAddress + U3V_SBRM_MAX_CMD_TRANSFER_OFS,
-                                     sizeof(uint32_t),
-                                     &bytesRead,
-                                     &cmdBfrSize);
+                                          NULL,
+                                          sbrmAddress + U3V_SBRM_MAX_CMD_TRANSFER_OFS,
+                                          sizeof(uint32_t),
+                                          &bytesRead,
+                                          &cmdBfrSize);
 
     u3vResult = (bytesRead != sizeof(uint32_t)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
@@ -154,11 +156,11 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
 
     /* get from SBRM -> max acknowledge buffer size */
     u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfobj,
-                                     NULL,
-                                     sbrmAddress + U3V_SBRM_MAX_ACK_TRANSFER_OFS,
-                                     sizeof(uint32_t),
-                                     &bytesRead,
-                                     &ackBfrSize);
+                                          NULL,
+                                          sbrmAddress + U3V_SBRM_MAX_ACK_TRANSFER_OFS,
+                                          sizeof(uint32_t),
+                                          &bytesRead,
+                                          &ackBfrSize);
 
     u3vResult = (bytesRead != sizeof(uint32_t)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
@@ -181,13 +183,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtr
 }
 
 
-
 T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
-                                     T_U3VHostTransferHandle *transferHandle,
-                                     uint32_t memAddress,
-                                     size_t transfSize,
-                                     uint32_t *bytesRead,
-                                     void *buffer)
+                                          T_U3VHostTransferHandle *transferHandle,
+                                          uint32_t memAddress,
+                                          size_t transfSize,
+                                          uint32_t *bytesRead,
+                                          void *buffer)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VControlInterfaceObj *ctrlIfInst = NULL;
@@ -244,9 +245,9 @@ T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
         T_U3VCtrlIfReadMemCmdPayload *payload = (T_U3VCtrlIfReadMemCmdPayload *)(command->payload);
         uint32_t writeRetryCnt = 0u;
 
-        // ctrlIfInst->readReqSts.length = 0u;
-        // ctrlIfInst->readReqSts.result = U3V_HOST_RESULT_FAILURE;
-        // ctrlIfInst->readReqSts.transferHandle = 0u;
+        ctrlIfInst->writeReqSts.length = 0u;
+        ctrlIfInst->writeReqSts.result = U3V_HOST_RESULT_FAILURE;
+        ctrlIfInst->writeReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
 
         command->header.prefix = (uint32_t)(U3V_CONTROL_PREFIX);
         command->header.flags  = (uint16_t)(U3V_CTRL_REQ_ACK);
@@ -271,35 +272,35 @@ T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
 
         u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
 
-        if (u3vResult != USB_HOST_RESULT_TRUE)
+        if (u3vResult != U3V_HOST_RESULT_SUCCESS)
         {
             OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
             return u3vResult;
         }
 
-        // while ((ctrlIfInst->writeReqSts.length != cmdBufferSize) ||
-        //        (ctrlIfInst->writeReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
-        //        (ctrlIfInst->writeReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
-        // {
-        //     /* Wait for read request to complete with retry limit */
-        //     writeRetryCnt++;
-        //     if (writeRetryCnt > U3V_REQ_READWRITE_RETRY_TIMES_LMT)
-        //     {
-        //         /* write failed */
-        //         OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
-        //         u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
-        //         return u3vResult;
-        //     }
-        // }
+        while ((ctrlIfInst->writeReqSts.length != cmdBufferSize) ||
+               (ctrlIfInst->writeReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
+               (ctrlIfInst->writeReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
+        {
+            /* Wait for write request to complete with retry limit */
+            writeRetryCnt++;
+            if (writeRetryCnt > U3V_REQ_READWRITE_RETRY_TIMES_LMT)
+            {
+                /* write failed */
+                OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
+                u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
+                return u3vResult;
+            }
+        }
 
         reqAcknowledged = false;
         while (!reqAcknowledged)
         {
             uint32_t readRetryCnt = 0u;
 
-            // ctrlIfInst->readReqSts.length = 0u;
-            // ctrlIfInst->readReqSts.result = U3V_HOST_RESULT_FAILURE;
-            // ctrlIfInst->readReqSts.transferHandle = 0u;
+            ctrlIfInst->readReqSts.length = 0u;
+            ctrlIfInst->readReqSts.result = U3V_HOST_RESULT_FAILURE;
+            ctrlIfInst->readReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
 
             /* Reset buffer. Ensure that we have enough room for a pending_ack_payload
              * (e.g. if we try to read only two bytes then we would not be able to 
@@ -323,20 +324,16 @@ T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
                 return u3vResult;
             }
 
-            // if ((actual < sizeof(T_U3VCtrlIfAckHeader)) ||
-            //     (ack->header.prefix != U3V_CONTROL_PREFIX) ||
-            //     (actual != (ack->header.length + sizeof(T_U3VCtrlIfAckHeader))))
 
-            // while ((ctrlIfInst->readReqSts.length != ackBufferSize) ||
-            //        (ctrlIfInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
-            //        (ctrlIfInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
-            while (*ctrlIfInst->ackBuffer == 0)
+            while ((ctrlIfInst->readReqSts.length != ackBufferSize) ||
+                   (ctrlIfInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
+                   (ctrlIfInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
                 if (readRetryCnt > U3V_REQ_READWRITE_RETRY_TIMES_LMT)
                 {
-                    /* write failed */
+                    /* read failed */
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
@@ -389,13 +386,12 @@ T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
     return u3vResult;
 }
 
-
 T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
-                                      T_U3VHostTransferHandle *transferHandle,
-                                      uint32_t memAddress,
-                                      size_t transfSize,
-                                      uint32_t *bytesWritten,
-                                      const void *buffer)
+                                           T_U3VHostTransferHandle *transferHandle,
+                                           uint32_t memAddress,
+                                           size_t transfSize,
+                                           uint32_t *bytesWritten,
+                                           const void *buffer)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VControlInterfaceObj *ctrlIfInst = NULL;
@@ -475,7 +471,7 @@ T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
         memcpy(payload->data, (uint8_t *)(buffer + totalBytesWritten), bytesThisIteration);
 
         hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlIfHandle.bulkOutPipeHandle,
-                                             tempTransferHandle, 
+                                             tempTransferHandle,
                                              ctrlIfInst->cmdBuffer,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
@@ -595,5 +591,30 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VControlInterfHandle *pU3vCtrlIf)
     else
     {
         /* invalid handle */
+    }
+}
+
+
+void _U3VHost_CtrlIf_TransferReqCompleteCbk(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData)
+{
+    T_U3VHostInstanceObj *u3vInst;
+    T_U3VHostEventWriteCompleteData *writeCompleteEventData;
+    T_U3VHostEventReadCompleteData *readCompleteEventData;
+    u3vInst = (T_U3VHostInstanceObj*) u3vObj;
+
+    switch (transfEvent)
+    {
+        case U3V_HOST_EVENT_READ_COMPLETE:
+            readCompleteEventData = (T_U3VHostEventReadCompleteData *)transfData;
+            u3vInst->controlIfObj->readReqSts = *readCompleteEventData;
+            break;
+
+        case U3V_HOST_EVENT_WRITE_COMPLETE:
+            writeCompleteEventData = (T_U3VHostEventWriteCompleteData *)transfData;
+            u3vInst->controlIfObj->writeReqSts = *writeCompleteEventData;
+            break;
+
+        default:
+            break;
     }
 }

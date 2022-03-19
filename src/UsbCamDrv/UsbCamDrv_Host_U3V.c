@@ -7,6 +7,7 @@
 #include "UsbCamDrv_Config.h"
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
 #include "UsbCamDrv_U3V_Control_IF.h"
+#include "UsbCamDrv_U3V_Control_IF_local.h"
 
 /********************************************************
 * Local function declarations
@@ -600,8 +601,7 @@ static void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE inter
             if(u3vInstance->detachEventHandler != NULL)
             {
                 /* Let the client know that the device is detached */
-                u3vInstance->detachEventHandler((T_U3VHostHandle)(u3vInstance),
-                                                u3vInstance->context);
+                u3vInstance->detachEventHandler((T_U3VHostHandle)(u3vInstance), u3vInstance->context);
             }
 
             /* Release the object */
@@ -620,7 +620,7 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandl
                                                                                    uintptr_t context)
 {
     int32_t                                                 u3vIndex;
-    T_U3VHostInstanceObj                                 *u3vInstance;
+    T_U3VHostInstanceObj                                    *u3vInstance;
     USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA  *dataTransferEvent;
     T_U3VHostEvent                                          u3vEvent;
     T_U3VHostEventWriteCompleteData                         u3vTransferCompleteData;
@@ -639,9 +639,14 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandl
             u3vTransferCompleteData.result = _USB_HostU3V_HostToU3VResultsMap(dataTransferEvent->result);
             u3vTransferCompleteData.length = dataTransferEvent->length;
 
+            /* update Control IF transf status indicators */
+            u3vInstance->controlIfObj->transReqCompleteCbk((T_U3VHostHandle)u3vInstance,
+                                                           u3vEvent,
+                                                           &u3vTransferCompleteData);
+
             if (u3vInstance->eventHandler != NULL)
             {
-                u3vInstance->eventHandler((T_U3VHostHandle)(u3vInstance),
+                u3vInstance->eventHandler((T_U3VHostHandle)u3vInstance,
                                           u3vEvent,
                                           &u3vTransferCompleteData,
                                           u3vInstance->context);
