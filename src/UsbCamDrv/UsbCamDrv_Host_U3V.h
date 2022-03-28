@@ -124,6 +124,8 @@ T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
                                   void *data,
                                   size_t size);
 
+T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
+
 
 
 #ifdef __cplusplus

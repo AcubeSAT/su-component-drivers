@@ -301,6 +301,94 @@ T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
     return u3vResult;
 }
 
+T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlInterfaceObj    *ctrlIfInstance;
+
+	uint64_t sbrmAddress;
+	uint64_t u3vCapability;
+    uint64_t sirmAddress;
+    uint32_t siInfo;
+	uint32_t deviceByteAlignment;
+	int32_t  bytesRead;
+
+    u3vResult = (u3vDeviceObj == 0u)                         ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlIfInstance = u3vInstance->controlIfObj;
+
+    u3vResult = (ctrlIfInstance == NULL)                     ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfInstance,
+                                          NULL,
+                                          U3V_ABRM_SBRM_ADDRESS_OFS,
+                                          sizeof(sbrmAddress),
+                                          &bytesRead,
+                                          &sbrmAddress);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfInstance,
+                                          NULL,
+                                          sbrmAddress + U3V_SBRM_U3VCP_CAPABILITY_OFS,
+                                          sizeof(u3vCapability),
+                                          &bytesRead,
+                                          &u3vCapability);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    if (u3vCapability & U3V_SIRM_AVAILABLE_MASK)
+    {
+        u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfInstance,
+                                              NULL,
+                                              sbrmAddress + U3V_SBRM_SIRM_ADDRESS_OFS,
+                                              sizeof(sirmAddress),
+                                              &bytesRead,
+                                              &sirmAddress);
+
+        if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+        {
+            return u3vResult;
+        }
+
+        u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfInstance,
+                                              NULL,
+                                              sirmAddress + U3V_SIRM_INFO_OFS,
+                                              sizeof(siInfo),
+                                              &bytesRead,
+                                              &siInfo); /* this req may take up to 620us to complete */
+
+        if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+        {
+            return u3vResult;
+        }
+
+        deviceByteAlignment = 1 << ((siInfo & U3V_SIRM_INFO_ALIGNMENT_MASK) >> U3V_SIRM_INFO_ALIGNMENT_SHIFT);
+    }
+
+    //todo
+
+    return u3vResult;
+}
+
 
 /********************************************************
 * Local function definitions

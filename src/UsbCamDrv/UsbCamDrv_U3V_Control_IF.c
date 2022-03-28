@@ -324,7 +324,6 @@ T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
                 return u3vResult;
             }
 
-
             while ((ctrlIfInst->readReqSts.length != ackBufferSize) ||
                    (ctrlIfInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
                    (ctrlIfInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))

@@ -130,6 +130,14 @@ void UsbCamDrv_Tasks(void)
             result = U3VHost_CtrlIf_InterfaceCreate(&UsbU3VAppData.controlIfHandle, UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
+                UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES; //todo rework
+            }
+            break;
+
+        case USB_APP_STATE_GET_STREAM_CAPABILITIES:
+            result = USB_U3VHost_GetStreamCapabilities(UsbU3VAppData.u3vObj);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
                 UsbU3VAppData.state = USB_APP_STATE_SET_LINE_CODING; //todo rework
             }
             break;
