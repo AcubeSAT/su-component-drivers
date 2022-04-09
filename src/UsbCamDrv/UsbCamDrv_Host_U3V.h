@@ -14,6 +14,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include "usb/usb_host_client_driver.h"
+#include "UsbCamDrv_DeviceClassSpec_U3V.h"
 
 
 /********************************************************
@@ -80,6 +81,30 @@ typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vHandl
                                                         T_U3VHostEvent event,
                                                         void *eventData,
                                                         uintptr_t context);
+
+typedef struct 
+{
+	uint32_t    genCpVersion;                               //todo remove
+	uint32_t    u3vVersion;                                 //todo remove
+	char        deviceGuid[U3V_MAX_DESCR_STR_LENGTH];       //todo remove
+	char        vendorName[U3V_MAX_DESCR_STR_LENGTH];       //todo remove
+	char        modelName[U3V_MAX_DESCR_STR_LENGTH];        //todo remove
+	char        familyName[U3V_MAX_DESCR_STR_LENGTH];       //todo remove
+	char        deviceVersion[U3V_MAX_DESCR_STR_LENGTH];    //todo remove
+	char        manufacturerInfo[U3V_MAX_DESCR_STR_LENGTH]; //todo remove
+	char        serialNumberU3v[U3V_MAX_DESCR_STR_LENGTH];
+	char        userDefinedName[U3V_MAX_DESCR_STR_LENGTH];  //todo remove
+	uint8_t     speedSupport;                               //todo remove
+	uint8_t     previouslyInitialized;
+	uint32_t    hostByteAlignment;
+	uint32_t    osMaxTransferSize;
+	uint64_t    sirmAddr;
+	uint32_t    transferAlignment;
+	uint32_t    segmentedXferSupported;
+	uint32_t    segmentedXferEnabled;
+	uint32_t    legacyCtrlEpStallEnabled;
+}T_U3VDeviceInfo;
+
 
 /********************************************************
 * Constant declarations

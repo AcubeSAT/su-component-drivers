@@ -13,6 +13,31 @@
 * Local function declarations
 *********************************************************/
 
+static inline uint32_t _LCMui32(uint32_t n1, uint32_t n2) /* least common multiplier calc restricted to 32bit size max */
+{
+    uint32_t lcm;
+
+    lcm = (n1 > n2) ? n1 : n2;
+
+    /* check if any of inputs is 0 */
+    if (n1 == 0u || n2 == 0u)
+    {
+        lcm = 0u;
+    }
+    else
+    {
+        while (lcm < 0xFFFFFFFF)
+        {
+            if (lcm % n1 == 0 && lcm % n2 == 0)
+            {
+                break;
+            }
+            ++lcm;
+        }
+    }
+
+    return lcm;
+};
 
 /********************************************************
 * Constant & Variable declarations
@@ -314,7 +339,7 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
 	uint32_t deviceByteAlignment;
 	int32_t  bytesRead;
 
-    u3vResult = (u3vDeviceObj == 0u)                         ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -324,7 +349,7 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
     u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
     ctrlIfInstance = u3vInstance->controlIfObj;
 
-    u3vResult = (ctrlIfInstance == NULL)                     ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -368,6 +393,10 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
         {
             return u3vResult;
         }
+        else
+        {
+            u3vInstance->u3vDevInfo.sirmAddr = sirmAddress;
+        }
 
         u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlInterfHandle)ctrlIfInstance,
                                               NULL,
@@ -380,11 +409,14 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
         {
             return u3vResult;
         }
-
-        deviceByteAlignment = 1 << ((siInfo & U3V_SIRM_INFO_ALIGNMENT_MASK) >> U3V_SIRM_INFO_ALIGNMENT_SHIFT);
+        else
+        {
+            deviceByteAlignment = 1 << ((siInfo & U3V_SIRM_INFO_ALIGNMENT_MASK) >> U3V_SIRM_INFO_ALIGNMENT_SHIFT);
+            u3vInstance->u3vDevInfo.transferAlignment = _LCMui32(deviceByteAlignment, u3vInstance->u3vDevInfo.hostByteAlignment);
+        }
+        
     }
 
-    //todo
 
     return u3vResult;
 }

@@ -519,7 +519,7 @@ T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
                 return u3vResult;
             }
 
-            /* Fix for broken Basler cameras where they can get in a state where there is an extra bogus response on the
+            /* Fix for broken Basler cameras where they can get in a state where there is an extra bonus response on the
 			 * pipe that needs to be thrown away. We just submit another read in that case. */
             if (ack->header.ackId == (ctrlIfInst->requestId - 1u))
             {
