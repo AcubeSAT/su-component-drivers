@@ -385,6 +385,7 @@ T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle ctrlIfObj,
     return u3vResult;
 }
 
+
 T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
                                            T_U3VHostTransferHandle *transferHandle,
                                            uint32_t memAddress,
@@ -449,9 +450,9 @@ T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
     while (totalBytesWritten < transfSize)
     {
         uint32_t bytesThisIteration = MIN((uint32_t)(transfSize - totalBytesWritten), maxBytesPerWrite);
-
-        T_U3VCtrlIfCommand*command = (T_U3VCtrlIfCommand *)(ctrlIfInst->cmdBuffer);
+        T_U3VCtrlIfCommand *command = (T_U3VCtrlIfCommand *)(ctrlIfInst->cmdBuffer);
         T_U3VCtrlIfWriteMemCmdPayload *payload = (T_U3VCtrlIfWriteMemCmdPayload *)(command->payload);
+        uint32_t writeRetryCnt = 0u;
 
         command->header.prefix = (uint32_t)(U3V_CONTROL_PREFIX);
 		command->header.flags = (uint16_t)(U3V_CTRL_REQ_ACK);
@@ -483,9 +484,26 @@ T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
             return u3vResult;
         }
 
-		reqAcknowledged = false;
+        while ((ctrlIfInst->writeReqSts.length != cmdBufferSize) ||
+               (ctrlIfInst->writeReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
+               (ctrlIfInst->writeReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
+        {
+            /* Wait for write request to complete with retry limit */
+            writeRetryCnt++;
+            if (writeRetryCnt > U3V_REQ_READWRITE_RETRY_TIMES_LMT)
+            {
+                /* write failed */
+                OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
+                u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
+                return u3vResult;
+            }
+        }
+
+        reqAcknowledged = false;
         while (!reqAcknowledged)
         {
+            uint32_t readRetryCnt = 0u;
+
             /* reset buffer */
 			memset(ctrlIfInst->ackBuffer, 0, ackBufferSize);
 
@@ -498,10 +516,21 @@ T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle ctrlIfObj,
 
             u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
 
-            while (*ctrlIfInst->ackBuffer == 0);
+            while ((ctrlIfInst->readReqSts.length != ackBufferSize) ||
+                   (ctrlIfInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
+                   (ctrlIfInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
             {
-                // Wait for data to arrive in buffer
-            } 
+                /* Wait for read request to complete with retry limit */
+                readRetryCnt++;
+                if (readRetryCnt > U3V_REQ_READWRITE_RETRY_TIMES_LMT)
+                {
+                    /* read failed */
+                    OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
+                    u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
+                    return u3vResult;
+                }
+            }
+
             ack = (T_U3VCtrlIfAcknowledge *)(ctrlIfInst->ackBuffer);
 
 			/* Validate that we read enough bytes to process the header and that this seems like a valid GenCP response */
