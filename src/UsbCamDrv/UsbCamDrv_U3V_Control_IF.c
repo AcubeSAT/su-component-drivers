@@ -177,7 +177,7 @@ T_U3VHostResult U3VHost_CtrlCh_InterfaceCreate(T_U3VControlChannelHandle *pU3vCt
     *pU3vCtrlCh = (T_U3VControlChannelHandle)ctrlChobj;
 
     /* keep data visible for monitor debug */
-    controlIfObjData = ctrlChobj; 
+    controlIfObjData = ctrlChobj; // DEBUG
 
     return u3vResult;
 }
@@ -602,19 +602,28 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
 
 void U3VHost_CtrlCh_InterfaceDestroy(T_U3VControlChannelHandle *pU3vCtrlCh)
 {
-    T_U3VControlChannelObj *ctrlChobj;
+    T_U3VControlChannelObj *ctrlChobj = NULL;
+    T_U3VHostInstanceObj   *u3vDev = NULL;
 
     if ((pU3vCtrlCh != NULL) && (*pU3vCtrlCh != 0))
     {
         ctrlChobj = (T_U3VControlChannelObj *)(*pU3vCtrlCh);
-
+        u3vDev = (T_U3VHostInstanceObj *)(ctrlChobj->u3vInstObj);
         // wait_for_completion(&u3vInst->controlChHandle.ioctl_complete);
         // if (!u3vInst->stalling_disabled &&
         //     u3vInst->u3v_info->legacy_ctrl_ep_stall_enabled)
         // 	reset_pipe(u3vInst, &u3vInst->control_info);
 
         _FreeCtrlChObjAllocSpace(ctrlChobj);
+
+        if (u3vDev != NULL)
+        {
+            u3vDev->controlChHandle.chanObj = NULL;
+        }
+
         *pU3vCtrlCh = 0;
+
+        controlIfObjData = NULL; // DEBUG
     }
     else
     {
