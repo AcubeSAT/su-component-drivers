@@ -50,7 +50,16 @@ typedef struct
     USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
     USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
     USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
-} T_U3VHostInterfaceHandle;
+} T_U3VHostChannelHandle;
+
+typedef struct
+{
+    uint8_t                             idNum;              /* Number of interface */
+    USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
+    USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
+    USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
+    T_U3VControlChannelObj              *chanObj;           /* Control channel object data */
+} T_U3VHostControlChannelHandle;
 
 typedef struct
 {
@@ -59,10 +68,9 @@ typedef struct
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
     T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
-    T_U3VHostInterfaceHandle            controlIfHandle;    /* U3V Control Interface handle */
-    T_U3VControlInterfaceObj            *controlIfObj;      /* U3V Control Interface object data */
-    T_U3VHostInterfaceHandle            eventIfHandle;      /* U3V Event Interface handle */
-    T_U3VHostInterfaceHandle            streamIfHandle;     /* U3V Stream Interface handle */
+    T_U3VHostControlChannelHandle       controlChHandle;    /* U3V Control Channel handle */
+    T_U3VHostChannelHandle              eventChHandle;      /* U3V Event Channel handle */
+    T_U3VHostChannelHandle              streamChHandle;     /* U3V Stream Channel handle */
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     uintptr_t                           context;            /* Application defined context */
     T_U3VHostEventHandler               eventHandler;       /* Application callback */

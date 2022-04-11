@@ -28,7 +28,7 @@ extern "C" {
 * Type definitions
 *********************************************************/
 
-typedef uintptr_t T_U3VControlInterfHandle; 		/* uintptr_t for ControlInterfaceObj */
+typedef uintptr_t T_U3VControlChannelHandle; 		/* uintptr_t for U3VControlChannelObj */
 
 
 
@@ -46,23 +46,23 @@ typedef uintptr_t T_U3VControlInterfHandle; 		/* uintptr_t for ControlInterfaceO
 * Function declarations
 *********************************************************/
 
-T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlInterfHandle *pU3vCtrlIf, T_U3VHostObject u3vInstObj);
+T_U3VHostResult U3VHost_CtrlCh_InterfaceCreate(T_U3VControlChannelHandle *pU3vCtrlCh, T_U3VHostObject u3vInstObj);
 
-T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlInterfHandle u3vCtrlIf,
+T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle u3vCtrlCh,
 										  T_U3VHostTransferHandle *transferHandle,
 										  uint32_t memAddress,
 										  size_t transfSize,
 										  uint32_t *bytesRead,
 										  void *buffer);
 
-T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlInterfHandle u3vCtrlIf,
+T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle u3vCtrlCh,
 										   T_U3VHostTransferHandle *transferHandle,
 										   uint32_t memAddress,
 										   size_t transfSize,
 										   uint32_t *bytesWritten,
 										   const void *buffer);
 
-void U3VHost_CtrlIf_InterfaceDestroy(T_U3VControlInterfHandle *pU3vCtrlIf);
+void U3VHost_CtrlCh_InterfaceDestroy(T_U3VControlChannelHandle *pU3vCtrlCh);
 
 
 

@@ -77,7 +77,7 @@ typedef struct
     T_U3VHostResult             controlRequestResult;  /* Control Request Result */
     T_U3VHostHandle             u3vHostHandle;         /* Handle to the U3V device. */
     T_U3VHostRequestHandle      requestHandle;         /* Handle to request */
-    T_U3VControlInterfHandle    controlIfHandle;       /* Handle to U3V Control IF */
+    T_U3VControlChannelHandle   controlChHandle;       /* Handle to U3V Control Channel */
     bool                        readTransferDone;      /* True when a read transfer has complete */
     T_U3VHostResult             readTransferResult;    /* Read Transfer Result */
     bool                        writeTransferDone;     /* True when a write transfer has complete */

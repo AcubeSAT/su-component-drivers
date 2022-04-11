@@ -28,7 +28,7 @@ extern "C" {
 * Type definitions
 *********************************************************/
 
-typedef void (*T_U3VCtrlIfTransfCompleteHandler)(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
+typedef void (*T_U3VCtrlChTransfCompleteHandler)(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
 
 typedef struct
 {
@@ -37,19 +37,19 @@ typedef struct
 	uint16_t cmd;
 	uint16_t length;
 	uint16_t ackId;
-} T_U3VCtrlIfAckHeader;
+} T_U3VCtrlChAckHeader;
 
 typedef struct
 {
-	T_U3VCtrlIfAckHeader header;
+	T_U3VCtrlChAckHeader header;
 	uint8_t payload[0];
-} T_U3VCtrlIfAcknowledge;
+} T_U3VCtrlChAcknowledge;
 
 typedef struct
 {
 	uint16_t reserved;
 	uint16_t timeout;
-} T_U3VCtrlIfPendingAckPayload;
+} T_U3VCtrlChPendingAckPayload;
 
 typedef struct
 {
@@ -58,36 +58,36 @@ typedef struct
 	uint16_t cmd;
 	uint16_t length;
 	uint16_t requestId;
-} T_U3VCtrlIfCmdHeader;
+} T_U3VCtrlChCmdHeader;
 
 typedef struct
 {
-	T_U3VCtrlIfCmdHeader header;
+	T_U3VCtrlChCmdHeader header;
 	uint8_t payload[0];
-} T_U3VCtrlIfCommand;
+} T_U3VCtrlChCommand;
 
 typedef struct 
 {
 	uint64_t address;
 	uint16_t reserved;
 	uint16_t byteCount;
-} T_U3VCtrlIfReadMemCmdPayload;
+} T_U3VCtrlChReadMemCmdPayload;
 
 typedef struct
 {
 	uint64_t address;
 	uint8_t  data[0];
-} T_U3VCtrlIfWriteMemCmdPayload;
+} T_U3VCtrlChWriteMemCmdPayload;
 
 typedef struct
 {
 	uint16_t reserved;
 	uint16_t bytesWritten;
-} T_U3V_CtrlWriteMemAckPayload;
+} T_U3V_CtrlChWriteMemAckPayload;
 
 typedef struct 
 {
-	T_U3VHostObject 				u3vInstObj;				/* uintptr_t to the device object where Control IF belongs to */
+	T_U3VHostObject 				u3vInstObj;				/* uintptr_t to the device object where Control Channel belongs to */
 	OSAL_MUTEX_DECLARE				(readWriteLock);  		/* Mutex lock/unlock */
 	uint8_t 						*ackBuffer;				/* Acknowledge buffer pointer (alloc) */
 	uint32_t						maxAckTransfSize;		/* Max acknowledge transfer size */
@@ -96,10 +96,10 @@ typedef struct
 	uint16_t 						requestId;				/* Request ID */
 	uint16_t 						maxRequestId;  			/* Maximum id value before loop back around */
 	uint32_t 						u3vTimeout;    			/* Maximum device response time in ms */
-	T_U3VCtrlIfTransfCompleteHandler transReqCompleteCbk;	/* Transfer event complete callback */
+	T_U3VCtrlChTransfCompleteHandler transReqCompleteCbk;	/* Transfer event complete callback */
 	T_U3VHostEventReadCompleteData 	readReqSts;				/* Read request transfer status */
 	T_U3VHostEventWriteCompleteData writeReqSts;			/* Write request transfer status */
-} T_U3VControlInterfaceObj;
+} T_U3VControlChannelObj;
 
 
 /********************************************************
@@ -116,7 +116,7 @@ typedef struct
 * Function declarations
 *********************************************************/
 
-void _U3VHost_CtrlIf_TransferReqCompleteCbk(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
+void _U3VHost_CtrlCh_TransferReqCompleteCbk(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
 
 
 
