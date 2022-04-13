@@ -2,6 +2,7 @@
 // Created by mojo on 04/02/22.
 //
 
+#include <string.h>
 #include "UsbCamDrv_Host_U3V.h"
 #include "UsbCamDrv_Host_U3V_Local.h"
 #include "UsbCamDrv_Config.h"
@@ -418,6 +419,47 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
     }
 
 
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr) /* buffer size must be 64bytes long */
+{
+    T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj *u3vInstance;
+    T_U3VControlChannelObj *ctrlChInstance;
+    uint32_t bytesRead;
+    char tmpBfr[U3V_REG_SERIAL_NUMBER_SIZE];
+
+    /* Single client only */
+    if (u3vDeviceObj != 0)
+    {
+        u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+        ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+        if ((u3vInstance->inUse) && (u3vInstance->state == U3V_HOST_STATE_READY) && (ctrlChInstance != NULL))
+        {
+            u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                                  NULL,
+                                                  U3V_ABRM_SERIAL_NUMBER_OFS,
+                                                  U3V_REG_SERIAL_NUMBER_SIZE,
+                                                  &bytesRead,
+                                                  tmpBfr);
+
+            if (u3vResult == U3V_HOST_RESULT_SUCCESS && bytesRead == U3V_REG_SERIAL_NUMBER_SIZE)
+            {
+                memcpy((void*)bfr, (void*)tmpBfr, U3V_REG_SERIAL_NUMBER_SIZE);
+            }
+        }
+        else
+        {
+            u3vResult = U3V_HOST_RESULT_FAILURE;
+        }
+    }
+    else
+    {
+        u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
+    }
+    
     return u3vResult;
 }
 
