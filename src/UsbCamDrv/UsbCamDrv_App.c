@@ -193,7 +193,7 @@ void UsbCamDrv_Tasks(void)
             
         case USB_APP_STATE_SEND_PROMPT_TO_DEVICE:
             UsbU3VAppData.writeTransferDone = false;
-            result = USB_U3VHost_Write(UsbU3VAppData.u3vHostHandle, NULL, (void *)prompt, 8);
+            // result = USB_U3VHost_Write(UsbU3VAppData.u3vHostHandle, NULL, (void *)prompt, 8);
 
             if(result == U3V_HOST_RESULT_SUCCESS)
             {
@@ -217,7 +217,7 @@ void UsbCamDrv_Tasks(void)
             
         case USB_APP_STATE_GET_DATA_FROM_DEVICE:
             UsbU3VAppData.readTransferDone = false;
-            result = USB_U3VHost_Read(UsbU3VAppData.u3vHostHandle, NULL, UsbU3VAppData.inDataArray, 8);
+            // result = USB_U3VHost_Read(UsbU3VAppData.u3vHostHandle, NULL, UsbU3VAppData.inDataArray, 8);
             if(result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbU3VAppData.state = USB_APP_STATE_WAIT_FOR_DATA_FROM_DEVICE;

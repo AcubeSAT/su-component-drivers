@@ -173,125 +173,6 @@ T_U3VHostResult USB_U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle,
 }
 
 
-T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle handle,
-                                 T_U3VHostTransferHandle *transferHandle,
-                                 void *data,
-                                 size_t size)
-{
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VHostTransferHandle *tempTransferHandle, localTransferHandle;
-    T_U3VHostResult u3vResult = U3V_HOST_RESULT_FAILURE;
-    USB_HOST_RESULT hostResult;
-
-    u3vInstance = (T_U3VHostInstanceObj *)handle;
-
-    if (u3vInstance == NULL)
-    {
-        u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
-    }
-    else
-    {
-        /* Check if the specified transfer handle holder is NULL, if so use a local transfer handle holder */
-        tempTransferHandle = (transferHandle == NULL) ? &localTransferHandle : transferHandle;
-
-        if (!u3vInstance->inUse)
-        {
-            /* This object is not valid */
-            u3vResult = U3V_HOST_RESULT_DEVICE_UNKNOWN;
-        }
-        else
-        {
-            if (u3vInstance->state != U3V_HOST_STATE_READY)
-            {
-                /* The instance is not ready for requests */
-                u3vResult = U3V_HOST_RESULT_BUSY;
-            }
-            else
-            {
-                if((size != 0) && (data == NULL))
-                {
-                    /* Input parameters are not valid */
-                    u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
-                }
-                else
-                {
-                    /* The context for the transfer is the event that needs to
-                     * be sent to the application. In this case the event to be
-                     * sent to the application when the transfer completes is
-                     * USB_HOST_U3V_EVENT_READ_COMPLETE */
-                    hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlChHandle.bulkInPipeHandle,
-                                                         tempTransferHandle,
-                                                         data,
-                                                         size,
-                                                         (uintptr_t)(U3V_HOST_EVENT_READ_COMPLETE));
-                    u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
-                }
-            }
-        }
-    }
-    return u3vResult;
-}
-
-T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
-                                  T_U3VHostTransferHandle *transferHandle,
-                                  void *data,
-                                  size_t size)
-{
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VHostTransferHandle *tempTransferHandle, localTransferHandle;
-    T_U3VHostResult u3vResult = U3V_HOST_RESULT_FAILURE;
-    USB_HOST_RESULT hostResult;
-
-    u3vInstance = (T_U3VHostInstanceObj *)handle;
-
-    if (u3vInstance == NULL)
-    {
-        u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
-    }
-    else
-    {
-        /* Check if the specified transfer handle holder is NULL, if so use a local transfer handle holder */
-        tempTransferHandle = (transferHandle == NULL) ? &localTransferHandle : transferHandle;
-
-        if (!u3vInstance->inUse)
-        {
-            /* This object is not valid */
-            u3vResult = U3V_HOST_RESULT_DEVICE_UNKNOWN;
-        }
-        else
-        {
-            if (u3vInstance->state != U3V_HOST_STATE_READY)
-            {
-                /* The instance is not ready for requests */
-                u3vResult = U3V_HOST_RESULT_BUSY;
-            }
-            else
-            {
-                if ((size != 0u) && (data == NULL))
-                {
-                    /* Input parameters are not valid */
-                    u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
-                }
-                else
-                {
-                    /* The context for the transfer is the event that needs to
-                     * be sent to the application. In this case the event to be
-                     * sent to the application when the transfer completes is
-                     * U3V_HOST_EVENT_WRITE_COMPLETE */
-                    hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlChHandle.bulkOutPipeHandle,
-                                                         tempTransferHandle, 
-                                                         data, 
-                                                         size,
-                                                         (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
-                    u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
-                }
-            }
-        }
-    }
-    return u3vResult;
-}
-
-
 T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
 {
     T_U3VHostResult u3vResult;
@@ -326,6 +207,7 @@ T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
     }
     return u3vResult;
 }
+
 
 T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
 {
@@ -423,7 +305,7 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
 }
 
 
-T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr) /* buffer size must be 64bytes long */
+T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -517,9 +399,9 @@ static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *inter
 {
     int32_t                             u3vInstanceIndex;
     uint32_t                            iterator;
-    T_U3VHostInstanceObj            *u3vInstance = NULL;
-    USB_INTERFACE_DESCRIPTOR           *interfaceDescriptor;
-    USB_ENDPOINT_DESCRIPTOR            *endpointDescriptor;
+    T_U3VHostInstanceObj                *u3vInstance = NULL;
+    USB_INTERFACE_DESCRIPTOR            *interfaceDescriptor;
+    USB_ENDPOINT_DESCRIPTOR             *endpointDescriptor;
     USB_HOST_ENDPOINT_DESCRIPTOR_QUERY  endpointDescriptorQuery;
     USB_HOST_INTERFACE_DESCRIPTOR_QUERY interfaceDescriptorQuery;
 

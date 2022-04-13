@@ -139,19 +139,9 @@ T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
                                             T_U3VHostEventHandler eventHandler,
                                             uintptr_t context);
 
-T_U3VHostResult USB_U3VHost_Read(T_U3VHostHandle handle,
-                                 T_U3VHostTransferHandle *transferHandle,
-                                 void *data,
-                                 size_t size);
-
-T_U3VHostResult USB_U3VHost_Write(T_U3VHostHandle handle,
-                                  T_U3VHostTransferHandle *transferHandle,
-                                  void *data,
-                                  size_t size);
-
 T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr); /* buffer size must be at least 64bytes long */
+T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
 
 
 #ifdef __cplusplus
