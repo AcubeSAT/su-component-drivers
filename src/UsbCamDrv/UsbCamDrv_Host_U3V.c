@@ -346,6 +346,47 @@ T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj, 
 }
 
 
+T_U3VHostResult USB_U3VHost_GetDeviceFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
+{
+    T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj *u3vInstance;
+    T_U3VControlChannelObj *ctrlChInstance;
+    uint32_t bytesRead;
+    char tmpBfr[U3V_REG_DEVICE_VERSION_SIZE];
+
+    /* Single client only */
+    if (u3vDeviceObj != 0)
+    {
+        u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+        ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+        if ((u3vInstance->inUse) && (u3vInstance->state == U3V_HOST_STATE_READY) && (ctrlChInstance != NULL))
+        {
+            u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                                  NULL,
+                                                  U3V_ABRM_DEVICE_VERSION_OFS,
+                                                  U3V_REG_DEVICE_VERSION_SIZE,
+                                                  &bytesRead,
+                                                  tmpBfr);
+
+            if (u3vResult == U3V_HOST_RESULT_SUCCESS && bytesRead == U3V_REG_DEVICE_VERSION_SIZE)
+            {
+                memcpy((void*)bfr, (void*)tmpBfr, U3V_REG_DEVICE_VERSION_SIZE);
+            }
+        }
+        else
+        {
+            u3vResult = U3V_HOST_RESULT_FAILURE;
+        }
+    }
+    else
+    {
+        u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
+    }
+    
+    return u3vResult;
+}
+
+
 /********************************************************
 * Local function definitions
 *********************************************************/
