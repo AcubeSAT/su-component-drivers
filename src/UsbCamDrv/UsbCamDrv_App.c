@@ -30,12 +30,9 @@ static inline T_U3VCamIDValid CamPIDisValid(void);
 * Constant & Variable declarations
 *********************************************************/
 
-T_U3VCamDriverInitStatus UsbCamDrv_InitStatus = U3V_DRV_NOT_INITIALZD;
+T_U3VCamDriverInitStatus UsbCamDrv_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
 T_UsbU3VAppData USB_ALIGN UsbU3VAppData;
-
-USB_ALIGN uint8_t prompt[8]  = "\r\nLED : ";       /* debug / to remove */
-
 
 
 
@@ -45,7 +42,7 @@ USB_ALIGN uint8_t prompt[8]  = "\r\nLED : ";       /* debug / to remove */
 
 void UsbCamDrv_Initialize(void)
 {
-    T_U3VCamDriverInitStatus DrvSts = U3V_DRV_INITIALZN_OK;
+    T_U3VCamDriverInitStatus DrvSts = U3V_DRV_INITIALIZATION_OK;
 
     /* DEBUG XULT - Disable VBUS power */
     VBUS_HOST_EN_PowerDisable();
@@ -61,7 +58,6 @@ void UsbCamDrv_Initialize(void)
     UsbU3VAppData.deviceWasDetached                = false;
     UsbU3VAppData.readTransferDone                 = false;
     UsbU3VAppData.writeTransferDone                = false;
-    UsbU3VAppData.controlRequestDone               = false;
 
     UsbCamDrv_InitStatus = DrvSts;
 }
@@ -82,7 +78,6 @@ void UsbCamDrv_Tasks(void)
         UsbU3VAppData.state                = USB_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
         UsbU3VAppData.readTransferDone     = false;
         UsbU3VAppData.writeTransferDone    = false;
-        UsbU3VAppData.controlRequestDone   = false;
         UsbU3VAppData.deviceWasDetached    = false;
 
         U3VHost_CtrlCh_InterfaceDestroy(&UsbU3VAppData.controlChHandle);
@@ -121,16 +116,24 @@ void UsbCamDrv_Tasks(void)
             {
                 USB_U3VHost_DetachEventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VDetachEventListenerCbk, (uintptr_t)&UsbU3VAppData);
                 USB_U3VHost_EventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&UsbU3VAppData);
-                UsbU3VAppData.state = USB_APP_STATE_SETUP_U3V_CONTROL_IF;
+                UsbU3VAppData.state = USB_APP_STATE_SETUP_U3V_CONTROL_CH;
                 LED1_On();  // DEBUG XULT board
             }
             break;
 
-        case USB_APP_STATE_SETUP_U3V_CONTROL_IF:
+        case USB_APP_STATE_SETUP_U3V_CONTROL_CH:
             result = U3VHost_CtrlCh_InterfaceCreate(&UsbU3VAppData.controlChHandle, UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
-                UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES; //todo rework
+                UsbU3VAppData.state = USB_APP_STATE_GET_U3V_MANIFEST;
+            }
+            break;
+
+        case USB_APP_STATE_GET_U3V_MANIFEST:
+            result = U3V_HOST_RESULT_SUCCESS;       //todo: impl GetManifest function
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;
             }
             break;
 
@@ -138,108 +141,13 @@ void UsbCamDrv_Tasks(void)
             result = USB_U3VHost_GetStreamCapabilities(UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
-                UsbU3VAppData.state = USB_APP_STATE_SET_LINE_CODING; //todo rework
+                UsbU3VAppData.state = USB_APP_STATE_WAIT;
             }
             break;
-            
-        case USB_APP_STATE_SET_LINE_CODING:
-            UsbU3VAppData.controlRequestDone = false;
-            // result = USB_HOST_CDC_ACM_LineCodingSet(UsbU3VAppData.u3vHostHandle, NULL, &UsbU3VAppData.cdcHostLineCoding);  //todo rework
-            
-            if(result == U3V_HOST_RESULT_SUCCESS)
-            {
-                UsbU3VAppData.state = USB_APP_STATE_WAIT_FOR_SET_LINE_CODING;
-            }
-            break;
-            
-        case USB_APP_STATE_WAIT_FOR_SET_LINE_CODING:
-            
-            if(UsbU3VAppData.controlRequestDone)
-            {
-                if(UsbU3VAppData.controlRequestResult != U3V_HOST_RESULT_SUCCESS)
-                {
-                    UsbU3VAppData.state = USB_APP_STATE_ERROR;
-                }
-                else
-                {
-                    UsbU3VAppData.state = USB_APP_STATE_SEND_SET_CONTROL_LINE_STATE;
-                }
-            }
-            break;
-            
-        case USB_APP_STATE_SEND_SET_CONTROL_LINE_STATE:
-            UsbU3VAppData.controlRequestDone = false;
-            // result = USB_HOST_CDC_ACM_ControlLineStateSet(UsbU3VAppData.u3vHostHandle, NULL, &UsbU3VAppData.controlLineState);    //todo rework
 
-            if(result == U3V_HOST_RESULT_SUCCESS)
-            {
-                UsbU3VAppData.state = USB_APP_STATE_WAIT_FOR_SET_CONTROL_LINE_STATE;
-            }
-            break;
-            
-        case USB_APP_STATE_WAIT_FOR_SET_CONTROL_LINE_STATE:
-            if(UsbU3VAppData.controlRequestDone)
-            {
-                if(UsbU3VAppData.controlRequestResult != U3V_HOST_RESULT_SUCCESS)
-                {
-                    UsbU3VAppData.state = USB_APP_STATE_ERROR;
-                }
-                else
-                {
-                    UsbU3VAppData.state = USB_APP_STATE_SEND_PROMPT_TO_DEVICE;
-                }
-            }
-            break;
-            
-        case USB_APP_STATE_SEND_PROMPT_TO_DEVICE:
-            UsbU3VAppData.writeTransferDone = false;
-            // result = USB_U3VHost_Write(UsbU3VAppData.u3vHostHandle, NULL, (void *)prompt, 8);
-
-            if(result == U3V_HOST_RESULT_SUCCESS)
-            {
-                UsbU3VAppData.state = USB_APP_STATE_WAIT_FOR_PROMPT_SEND_COMPLETE;
-            }
-            break;
-            
-        case USB_APP_STATE_WAIT_FOR_PROMPT_SEND_COMPLETE:
-            if(UsbU3VAppData.writeTransferDone)
-            {
-                if(UsbU3VAppData.writeTransferResult == U3V_HOST_RESULT_SUCCESS)
-                {
-                    UsbU3VAppData.state = USB_APP_STATE_GET_DATA_FROM_DEVICE;
-                }
-                else
-                {
-                    UsbU3VAppData.state = USB_APP_STATE_SEND_PROMPT_TO_DEVICE;
-                }
-            }
-            break;
-            
-        case USB_APP_STATE_GET_DATA_FROM_DEVICE:
-            UsbU3VAppData.readTransferDone = false;
-            // result = USB_U3VHost_Read(UsbU3VAppData.u3vHostHandle, NULL, UsbU3VAppData.inDataArray, 8);
-            if(result == U3V_HOST_RESULT_SUCCESS)
-            {
-                UsbU3VAppData.state = USB_APP_STATE_WAIT_FOR_DATA_FROM_DEVICE;
-            }
-            break;
-           
-        case USB_APP_STATE_WAIT_FOR_DATA_FROM_DEVICE:
-            if(UsbU3VAppData.readTransferDone)
-            {
-                if(UsbU3VAppData.readTransferResult == U3V_HOST_RESULT_SUCCESS)
-                {
-                   if ( UsbU3VAppData.inDataArray[0] == '1')
-                   {
-                       LED1_On();   // DEBUG XULT board
-                   }
-                   else
-                   {
-                       LED1_Off();  // DEBUG XULT board
-                   }
-                    UsbU3VAppData.state = USB_APP_STATE_SEND_PROMPT_TO_DEVICE;
-                }
-            }
+        case USB_APP_STATE_WAIT:
+            //debug state, do nothing...
+            result = result;
             break;
 
         case USB_APP_STATE_ERROR:
@@ -257,7 +165,7 @@ T_U3VCamDriverStatus UsbCamDrv_AcquireNewImage(void *params)
 {
     T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
 
-    DrvSts = (UsbCamDrv_DrvInitStatus()          == U3V_DRV_INITIALZN_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
+    DrvSts = (UsbCamDrv_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
     DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED) ? DrvSts : U3V_CAM_DRV_ERROR;
 
     //todo
