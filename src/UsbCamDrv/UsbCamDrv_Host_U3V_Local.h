@@ -40,12 +40,6 @@ typedef enum
 
 typedef struct
 {
-    bool                                inUse;              /* True if the object is in use */
-    T_U3VHostEvent                      requestType;        /* The CDC Class Specific request type */
-} T_UsbHostU3VControlTransferObj; //todo review
-
-typedef struct
-{
     uint8_t                             idNum;              /* Number of interface */
     USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
     USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
