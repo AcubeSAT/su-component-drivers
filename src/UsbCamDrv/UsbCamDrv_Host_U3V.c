@@ -9,6 +9,8 @@
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
 #include "UsbCamDrv_U3V_Control_IF.h"
 #include "UsbCamDrv_U3V_Control_IF_local.h"
+#include "osal/osal.h"
+
 
 /********************************************************
 * Local function declarations
@@ -40,6 +42,7 @@ static inline uint32_t _LCMui32(uint32_t n1, uint32_t n2) /* least common multip
     return lcm;
 };
 
+
 /********************************************************
 * Constant & Variable declarations
 *********************************************************/
@@ -62,7 +65,6 @@ USB_HOST_CLIENT_DRIVER gUSBHostU3VClientDriver =
     .deviceRelease          = _USB_HostU3V_DeviceRelease,
     .deviceTasks            = _USB_HostU3V_DeviceTasks
 };
-
 
 
 /********************************************************
@@ -300,6 +302,100 @@ T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj)
         
     }
 
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+
+	uint64_t manifestAdr;
+    T_U3VManifestEntry manifestEntry;
+    T_U3VManifestSchema manifestSchema;
+    uint8_t *manifestData = NULL;
+	int32_t  bytesRead;
+    uint32_t bytesRemaining, bytesRequest, itertr;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                          NULL,
+                                          U3V_ABRM_MANIFEST_TABLE_ADDRESS_OFS,
+                                          sizeof(manifestAdr),
+                                          &bytesRead,
+                                          &manifestAdr);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                          NULL,
+                                          manifestAdr + 0x08,
+                                          sizeof(manifestEntry),
+                                          &bytesRead,
+                                          &manifestEntry);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    manifestSchema = (T_U3VManifestSchema)((manifestEntry.schema >> 10) & 0x0000001f);
+    manifestData = OSAL_Malloc((size_t)manifestEntry.size);
+
+    if (manifestData != NULL)
+    {
+        bytesRemaining = manifestEntry.size;
+        itertr = 0u;
+
+        while (bytesRemaining > 0u)
+        {
+            bytesRequest = (bytesRemaining > 64u) ? 64u : bytesRemaining;
+
+            u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                                  NULL,
+                                                  manifestEntry.address + (64u * itertr),
+                                                  bytesRequest,
+                                                  &bytesRead,
+                                                  manifestData + (64u * itertr));
+
+            if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+            {
+                return u3vResult;
+            }
+
+            bytesRemaining -= bytesRequest;
+            itertr++;
+        }
+        
+        u3vInstance->u3vManifestData = manifestData;
+    }
+
+
+    OSAL_Free(manifestData);
+
+    //todo parse manifest data before freeing heap space
 
     return u3vResult;
 }

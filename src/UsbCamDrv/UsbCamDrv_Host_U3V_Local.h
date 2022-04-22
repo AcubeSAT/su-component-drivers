@@ -62,6 +62,7 @@ typedef struct
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
     T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
+    char                                *u3vManifestData;   /* U3V Manifest */
     T_U3VHostControlChannelHandle       controlChHandle;    /* U3V Control Channel handle */
     T_U3VHostChannelHandle              eventChHandle;      /* U3V Event Channel handle */
     T_U3VHostChannelHandle              streamChHandle;     /* U3V Stream Channel handle */
@@ -81,6 +82,26 @@ typedef struct
     uintptr_t                           context;            /* Client context */
 } T_UsbHostU3VAttachListenerObj;
 
+typedef struct 
+{
+	uint16_t fileVersionSubminor;
+	uint8_t  fileVersionMinor;
+	uint8_t  fileVersionMajor;
+	uint32_t schema;
+	uint64_t address;
+	uint64_t size;
+	uint64_t unknown3;
+	uint64_t unknown4;
+	uint64_t unknown5;
+	uint64_t unknown6;
+	uint64_t unknown7;
+} T_U3VManifestEntry;
+
+typedef enum 
+{
+    U3V_MANIFEST_SCHEMA_RAW = 0x00,
+    U3V_MANIFEST_SCHEMA_ZIP = 0x01
+} T_U3VManifestSchema;
 
 /********************************************************
 * Constant declarations

@@ -130,7 +130,7 @@ void UsbCamDrv_Tasks(void)
             break;
 
         case USB_APP_STATE_GET_U3V_MANIFEST:
-            result = U3V_HOST_RESULT_SUCCESS;       //todo: impl GetManifest function
+            result = USB_U3VHost_GetManifestFile(UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;

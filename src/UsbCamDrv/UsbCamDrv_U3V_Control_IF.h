@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "UsbCamDrv_Host_U3V.h"
-#include "osal/osal.h"
+
 
 #ifdef __cplusplus
 extern "C" {

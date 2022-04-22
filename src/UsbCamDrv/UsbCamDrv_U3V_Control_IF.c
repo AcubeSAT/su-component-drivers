@@ -178,7 +178,6 @@ T_U3VHostResult U3VHost_CtrlCh_InterfaceCreate(T_U3VControlChannelHandle *pU3vCt
 
     /* keep data visible for monitor debug */
     controlIfObjData = ctrlChobj; // DEBUG
-
     return u3vResult;
 }
 
@@ -193,7 +192,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VControlChannelObj *ctrlChInst = NULL;
     T_U3VHostInstanceObj *u3vInstance = NULL;
-    T_U3VHostTransferHandle *tempTransferHandle, localTransferHandle;
+    T_U3VHostTransferHandle tempTransferHandle;
     USB_HOST_RESULT hostResult;
     uint32_t maxBytesPerRead = 0u;
     uint32_t totalBytesRead = 0u;
@@ -229,7 +228,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
         return u3vResult;
     }
 
-    tempTransferHandle = (transferHandle == NULL) ? &localTransferHandle : transferHandle;
+    tempTransferHandle = (transferHandle != NULL) ? *transferHandle : tempTransferHandle;
     *bytesRead = 0u;
 
     if(OSAL_MUTEX_Lock(&(ctrlChInst->readWriteLock), OSAL_WAIT_FOREVER) != OSAL_RESULT_TRUE)
@@ -265,7 +264,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
         payload->byteCount = (uint16_t)(bytesThisIteration);
 
         hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlChHandle.bulkOutPipeHandle,
-                                             tempTransferHandle,
+                                             &tempTransferHandle,
                                              ctrlChInst->cmdBuffer,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
@@ -310,7 +309,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
 
             /* read the ack */
             hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlChHandle.bulkInPipeHandle,
-                                                 tempTransferHandle,
+                                                 &tempTransferHandle,
                                                  ctrlChInst->ackBuffer,
                                                  ackBufferSize,
                                                  (uintptr_t)(U3V_HOST_EVENT_READ_COMPLETE));
@@ -396,7 +395,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VControlChannelObj *ctrlChInst = NULL;
     T_U3VHostInstanceObj *u3vInstance = NULL;
-    T_U3VHostTransferHandle *tempTransferHandle, localTransferHandle;
+    T_U3VHostTransferHandle tempTransferHandle;
     USB_HOST_RESULT hostResult;
     uint32_t maxBytesPerWrite = 0u;
     uint32_t totalBytesWritten = 0u;
@@ -434,7 +433,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
         return u3vResult;
     }
 
-    tempTransferHandle = (transferHandle == NULL) ? &localTransferHandle : transferHandle;
+    tempTransferHandle = (transferHandle != NULL) ? *transferHandle : tempTransferHandle;
     *bytesWritten = 0u;
 
     /* The context for the transfer is the event that needs to be sent to the application. 
@@ -471,7 +470,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
         memcpy(payload->data, (uint8_t *)(buffer + totalBytesWritten), bytesThisIteration);
 
         hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlChHandle.bulkOutPipeHandle,
-                                             tempTransferHandle,
+                                             &tempTransferHandle,
                                              ctrlChInst->cmdBuffer,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
@@ -509,7 +508,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
 
 			/* read the ack */
             hostResult = USB_HOST_DeviceTransfer(u3vInstance->controlChHandle.bulkInPipeHandle,
-                                                 tempTransferHandle,
+                                                 &tempTransferHandle,
                                                  ctrlChInst->ackBuffer,
                                                  ackBufferSize,
                                                  (uintptr_t)(U3V_HOST_EVENT_READ_COMPLETE));

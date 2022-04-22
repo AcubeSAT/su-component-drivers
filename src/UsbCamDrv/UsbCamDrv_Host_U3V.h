@@ -139,6 +139,8 @@ T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
                                             T_U3VHostEventHandler eventHandler,
                                             uintptr_t context);
 
+T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj);
+
 T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
 
 T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
