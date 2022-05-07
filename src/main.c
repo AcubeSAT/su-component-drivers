@@ -42,20 +42,8 @@
 // *****************************************************************************
 // *****************************************************************************
 
-volatile uint8_t pinval = 0;
-volatile int xTask1 = 1;
 
 void xTask1Code(void *pvParameters)
-{
-    for(;;)
-    {
-        //SEGGER_RTT_printf(0, "Hello World");
-        //vTaskDelay(pdMS_TO_TICKS(500));
-    }
-
-};
-
-void xTask2Code(void *pvParameters)
 {
     for(;;)
     {
@@ -72,7 +60,7 @@ void xTaskUsbHostTasks(void *pvParameters)
     {
         /* USB Host layer Task Routine */
         USB_HOST_Tasks(sysObj.usbHostObject0);
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
 
@@ -82,7 +70,7 @@ void xTaskDrvUsbHsV1Tasks(void *pvParameters)
     {
         /* USB HS Driver Task Routine */
         DRV_USBHSV1_Tasks(sysObj.drvUSBHSV1Object);
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
 
@@ -92,7 +80,7 @@ void xTaskUsbCamDrvTasks(void *pvParameters)
     {
         /* USB Camera Driver Task Routine */
         UsbCamDrv_Tasks();
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
 
@@ -102,9 +90,7 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
-
-    xTaskCreate(xTask1Code, "Task1",100, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(xTask2Code, "Task2",100, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(xTask1Code, "Task1_LED_Blink",100, NULL, tskIDLE_PRIORITY + 1, NULL);
 
     xTaskCreate(xTaskUsbHostTasks, "USB_HOST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(xTaskDrvUsbHsV1Tasks, "DRV_USBHSV1_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
@@ -114,8 +100,6 @@ int main ( void )
 
     while ( true )
     {
-
-
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
     }
