@@ -10,6 +10,8 @@
 #include "UsbCamDrv_U3V_Control_IF.h"
 #include "UsbCamDrv_U3V_Control_IF_local.h"
 #include "osal/osal.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 
 /********************************************************
@@ -371,14 +373,14 @@ T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj)
 
         while (bytesRemaining > 0u)
         {
-            bytesRequest = (bytesRemaining > 64u) ? 64u : bytesRemaining;
+            bytesRequest = (bytesRemaining > 500) ? 500 : bytesRemaining;
 
             u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
                                                   NULL,
-                                                  manifestEntry.address + (64u * itertr),
+                                                  manifestEntry.address + (500 * itertr),
                                                   bytesRequest,
                                                   &bytesRead,
-                                                  manifestData + (64u * itertr));
+                                                  manifestData + (500 * itertr));
 
             if (u3vResult != U3V_HOST_RESULT_SUCCESS)
             {
@@ -387,6 +389,7 @@ T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj)
 
             bytesRemaining -= bytesRequest;
             itertr++;
+            vTaskDelay(1);
         }
         
         u3vInstance->u3vManifestData = manifestData;

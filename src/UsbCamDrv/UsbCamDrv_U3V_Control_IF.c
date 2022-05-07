@@ -9,6 +9,8 @@
 #include "UsbCamDrv_Host_U3V_Local.h"
 #include "UsbCamDrv_Config.h"
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
+// #include "FreeRTOS.h"
+// #include "task.h"
 
 
 /********************************************************
@@ -290,6 +292,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
+            // vTaskDelay(pdMS_TO_TICKS(1));
         }
 
         reqAcknowledged = false;
@@ -336,6 +339,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
+                // vTaskDelay(pdMS_TO_TICKS(1));
             }
 
             ack = (T_U3VCtrlChAcknowledge *)(ctrlChInst->ackBuffer);
@@ -496,6 +500,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
+            // vTaskDelay(pdMS_TO_TICKS(1));
         }
 
         reqAcknowledged = false;
@@ -528,6 +533,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
+                // vTaskDelay(pdMS_TO_TICKS(1));
             }
 
             ack = (T_U3VCtrlChAcknowledge *)(ctrlChInst->ackBuffer);
