@@ -1,0 +1,165 @@
+||||||||||||||||||||||||||||||||
+||         USB 2.0 notes      ||
+||||||||||||||||||||||||||||||||
+
+
+********************************
+4-wires:
+********************************
+Vcc ----
+D+  ----
+D-  ----
+GND ----
+****************
+
+
+********************************
+Power drawn from device:
+********************************
+100mA
+or
+500mA
+****************
+
+
+********************************
+Data rates:
+********************************
+Low  speed (LS) :   1.5 Mb/s (pull-up on D-)
+Full speed (FS) :   12  Mb/s (pull-up on D+)(HS starts as FS and then upgrades)
+High speed (HS) :   480 Mb/s (pull-up on D+)
+****************
+
+
+********************************
+Data exchange types:
+********************************
+Control          (enumeration, device configuration) (3 stages)
+Interrupt        (HID: keyboard, mouse, other, CDC) (latency critical)  [64 byte LS/FS | 1024 byte HS]
+Bulk             (MSD: storage data, CDC)     (scheduled on bandwidth)  [64 byte FS    | 512  byte HS] 
+Isochronous      (streaming, video, audio)
+****************
+
+
+********************************
+Endpoint (EP) types:
+********************************
+IN EP  (buffer on a device to store data to sent to host)
+OUT EP (buffer on a device to store data received from host)
+
+EP0 IN / EP0 OUT - every device has -> used during enumeration -> CAN ACCEPT CONTROL TRANSFER REQUESTS
+EPx with x>0 grouped in IFaces will be accessible after enumeration and used for comm.
+-- an interface is a set of non-0 EPs --
+****************
+
+
+********************************
+Packet types:
+********************************
+TOKEN:
+    - IN, OUT, SETUP (to start transaction
+    - SOF (start of frame) used as a timebase / Keep-Alive on bus
+
+DATA:
+    - DATA0, DATA1  (alternated during a transfer)
+
+HANDSHAKE:
+    - ACK, NACK, STALL (report outcome of transaction)
+
+SPECIAL (HS):
+    - SSPLIT, CSPLIT (used for split transactions)
+    - PING, NYET (used by bulk transfers)
+
+-- all packet types (except NYET) have CRC protection --
+****************
+
+
+
+********************************
+Control data type details:
+********************************
+Consists of 3 stages:
+
+    - Setup stage
+        > 1 transaction SETUP (indicate request, sent from host)
+        > SETUP (h) > DATA0 (h) > ACK (d)
+
+    - Data stage (optional)
+        > IN (h) > DATA1 / NACK / STALL (d) > ACK (h)
+                        (EP n/r) (EP halt)
+
+    - Status stage
+        > 1 transaction
+        > (if previous IN)
+            OUT (h) > DATA1 0byte (h) > ACK / NACK / STALL (d)
+        > (if previous OUT)
+            IN (h) > DATA1 0byte / NACK / STAll (d) > ACK (h)
+
+
+****************
+
+
+
+********************************
+Device enumeration steps:
+********************************
+Device is connected to downstream protection
+
+Detects Vbus and asserts pull-up resistor on D+ or D- according to speed
+
+The Hub detects the pull-up and starts signaling the device to reset and
+establish device speed
+
+At this point EP0 are enabled and host uses control transfer requests
+    > To read the communication and power requirements
+    > Either to assign a unique address and to accept the device's
+      requirements if sustainable - the interface(s) gets enabled and 
+      communication can start
+
+All the enumeration information are stored in device data structures called descriptors
+    > Standard descriptors are common to every device
+    > Class descriptors are device class specific
+
+****************
+
+
+********************************
+Device descriptors:
+********************************
+Standard descriptors are
+    > Device (only one per device)
+        > Configuration (at least one per device)
+            > Interface (at least one per configuration)
+                > Endpoint (at least one per interface)
+    > Optional string descriptors can provide human readable info (e.g. serial number)
+
+Device descriptor
+    > bDeviceClass: The USB-IF device class code (0 if class specified in interface descriptor)
+    > bMaxPacketSize0: max packet size for EP0
+    > idVendor: VID
+    > idProduct: PID
+    > bNumConfigurations: number of configurations for this device
+
+Configuration descriptor
+    > bNumInterfaces: number of configurations for this configuration
+    > bConfigurationValue: value used by the host to select this configuration
+    > bmAttributes: Self or Bus powered, remote wakeup enabled
+    > bMaxPower: max current drawn from Vbus after configuration
+
+Interface descriptor
+    > bInterfaceNumber: number of this interface
+    > bNumEndpoints: number of endpoints for this configuration (not including EP0)
+    > bInterfaceClass: the USB-IF interface class code
+
+Endpoint descriptor
+    > bEndpointAddress: endpoint number and direction
+    > bmAttributes: transfer type used by the endpoint (Interrupt/Bulk/Isochronous)
+    > wMaxPacketSize: max data packet size
+    > bInterval: endpoint access period in (micro)frames
+
+
+*** if wValue = 0, this means the host found no sustainable configuration (enumeration failed) ***
+*** device's communication interfaces are enabled only after successful enumeration ***
+*** devices can implement more than one class ***
+****************
+
