@@ -50,14 +50,14 @@ T_U3VHostResult U3VHost_CtrlCh_InterfaceCreate(T_U3VControlChannelHandle *pU3vCt
 
 T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle u3vCtrlCh,
 										  T_U3VHostTransferHandle *transferHandle,
-										  uint32_t memAddress,
+										  uint64_t memAddress,
 										  size_t transfSize,
 										  uint32_t *bytesRead,
 										  void *buffer);
 
 T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle u3vCtrlCh,
 										   T_U3VHostTransferHandle *transferHandle,
-										   uint32_t memAddress,
+										   uint64_t memAddress,
 										   size_t transfSize,
 										   uint32_t *bytesWritten,
 										   const void *buffer);

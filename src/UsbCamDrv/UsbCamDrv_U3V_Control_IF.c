@@ -186,7 +186,7 @@ T_U3VHostResult U3VHost_CtrlCh_InterfaceCreate(T_U3VControlChannelHandle *pU3vCt
 
 T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
                                           T_U3VHostTransferHandle *transferHandle,
-                                          uint32_t memAddress,
+                                          uint64_t memAddress,
                                           size_t transfSize,
                                           uint32_t *bytesRead,
                                           void *buffer)
@@ -261,7 +261,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
         }
 
         command->header.requestId = (uint16_t)(++(ctrlChInst->requestId));
-        payload->address = memAddress + totalBytesRead;
+        payload->address = memAddress + (uint64_t)totalBytesRead;
         payload->reserved = 0u;
         payload->byteCount = (uint16_t)(bytesThisIteration);
 
@@ -391,7 +391,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
 
 T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                                            T_U3VHostTransferHandle *transferHandle,
-                                           uint32_t memAddress,
+                                           uint64_t memAddress,
                                            size_t transfSize,
                                            uint32_t *bytesWritten,
                                            const void *buffer)
@@ -468,7 +468,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
         }
 
         command->header.requestId = (uint16_t)(++(ctrlChInst->requestId));
-		payload->address = (uint64_t)(memAddress + totalBytesWritten);
+		payload->address = memAddress + (uint64_t)totalBytesWritten;
         cmdBufferSize = sizeof(T_U3VCtrlChCmdHeader) + sizeof(T_U3VCtrlChWriteMemCmdPayload) + bytesThisIteration;
 
         memcpy(payload->data, (uint8_t *)(buffer + totalBytesWritten), bytesThisIteration);

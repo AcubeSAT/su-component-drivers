@@ -39,7 +39,7 @@ extern "C" {
 
 /*** U3V Control IF Codes ***/
 #define U3V_CTRL_REQ_ACK                          0x4000
-#define U3V_CONTROL_PREFIX                        0x43563355
+#define U3V_CONTROL_PREFIX                        0x43563355  /*reverse char order of: "U3VC" */
 #define U3V_CTRL_READMEM_CMD	                  0x0800
 #define	U3V_CTRL_READMEM_ACK	                  0x0801
 #define	U3V_CTRL_WRITEMEM_CMD	                  0x0802
