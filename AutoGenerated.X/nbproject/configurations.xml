@@ -341,6 +341,7 @@
         <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_Control_IF.c</itemPath>
         <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_Event_IF.c</itemPath>
         <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_Streaming_IF.c</itemPath>
+        <itemPath>../src/UsbCamDrv/UsbCamDrv_U3V_CamRegLUT.c</itemPath>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
       <itemPath>../src/app.c</itemPath>

@@ -5,6 +5,8 @@
 #ifndef COMPONENT_DRIVERS_USBCAMDRV_CONFIG_H
 #define COMPONENT_DRIVERS_USBCAMDRV_CONFIG_H
 
+#include "UsbCamDrv_U3V_CamRegLUT.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,6 +16,8 @@ extern "C" {
 /********************************************************
 * Macros Definitions
 *********************************************************/
+
+#define U3V_CAM_MODEL_ACTV                          U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY
 
 #define U3V_HOST_INSTANCES_NUMBER                   1u
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER            1u
