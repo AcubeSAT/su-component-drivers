@@ -1,0 +1,26 @@
+1) install aravis on linux machine
+2) you will need the arv-tool this task
+3) connect the USB3 Vision camera to any USB port
+4) open a command terminal
+5) type arv-tool-0.8 genicam (note that the 0.8 refers to the Aravis version and might differ on your machine)
+6) the retrieved manifest file appears in xml form in the console window
+7) copy the entire text (might be thousands of lines and possibly 300KB in size)
+8) if the first line is not a valid xml line, simply delete it
+9) PointGrey-01267892 (USB3) (<-delete this)
+10) <?xml version="1.0" encoding="UTF-8"?> (this is how an xml should start)
+11) paste the text in an emtpy text file and save it with the xml suffix, with the name manifest_<camera_model>.xml
+
+
+note:
+if the tool cannot start, try creating a file named "aravis.rules" in the path: "/etc/udev/rules.d/" and copy the contents below in that file:
+
+# Basler
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2676", MODE:="0666", TAG+="uaccess", TAG+="udev-acl"
+# The Imaging Source
+SUBSYSTEM=="usb", ATTRS{idVendor}=="199e", MODE:="0666", TAG+="uaccess", TAG+="udev-acl"
+# Point Grey Research
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1e10", MODE:="0666", TAG+="uaccess", TAG+="udev-acl"
+# Daheng Imaging
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2ba2", MODE:="0666", TAG+="uaccess", TAG+="udev-acl"
+# Dahua Technology
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2e03", MODE:="0666", TAG+="uaccess", TAG+="udev-acl"

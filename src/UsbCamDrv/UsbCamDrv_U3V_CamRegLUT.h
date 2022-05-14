@@ -35,6 +35,10 @@ typedef struct
     uint64_t SBRMOffset;
     uint64_t ColorCodingID_Reg;
     uint64_t DeviceReset_Reg;
+    uint64_t SingleFrameAcquisitionMode_Reg;
+    uint64_t AcquisitionMode_Reg;
+    uint64_t AcquisitionStart_Reg;
+    uint64_t AcquisitionStop_Reg;
 
 } UsbCamDrv_U3V_CamRegLuTable;
 

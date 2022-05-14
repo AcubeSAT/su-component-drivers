@@ -16,22 +16,28 @@
 
 const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2] =
 {
-    /* #0 FLIR Chameleon3 CM3-U3-13S2C Manifest Entry */
+    /* #0 U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY */
     {
-        .CamRegBaseAddress  = 0xFFFFF0F00000,
-        .SBRMOffset         = 0x200000,
-        .ColorCodingID_Reg  = 0x4070,
-        .DeviceReset_Reg    = 0x400c
-
+        .CamRegBaseAddress              = 0xFFFFF0F00000ull,
+        .SBRMOffset                     = 0x200000ull,
+        .ColorCodingID_Reg              = 0x4070ull,
+        .DeviceReset_Reg                = 0x400cull,
+        .SingleFrameAcquisitionMode_Reg = 0x638ull,
+        .AcquisitionMode_Reg            = 0x4028ull,
+        .AcquisitionStart_Reg           = 0x4030ull,
+        .AcquisitionStop_Reg            = 0x614ull
     },
 
-    /* #1 XIMEA xiQ MQ013CG-E2 Manifest Entry */
+    /* #1 U3V_XIMEA_XIQ_MQ013CG_E2_LUT_ENTRY */
     {
-        .CamRegBaseAddress  = 0x0,  //tbd
-        .SBRMOffset         = 0x0,  //tbd
-        .ColorCodingID_Reg  = 0x0,  //tbd
-        .DeviceReset_Reg    = 0x0   //tbd
-
+        .CamRegBaseAddress              = 0x0ull,   //tbd
+        .SBRMOffset                     = 0x0ull,   //tbd
+        .ColorCodingID_Reg              = 0x0ull,   //tbd
+        .DeviceReset_Reg                = 0x0ull,   //tbd
+        .SingleFrameAcquisitionMode_Reg = 0x0ull,   //tbd
+        .AcquisitionMode_Reg            = 0x0ull,   //tbd
+        .AcquisitionStart_Reg           = 0x0ull,   //tbd
+        .AcquisitionStop_Reg            = 0x0ull    //tbd
     }
 };
 
