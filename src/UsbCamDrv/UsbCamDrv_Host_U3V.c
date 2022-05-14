@@ -9,6 +9,7 @@
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
 #include "UsbCamDrv_U3V_Control_IF.h"
 #include "UsbCamDrv_U3V_Control_IF_local.h"
+#include "math.h"
 #include "osal/osal.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -482,6 +483,53 @@ T_U3VHostResult USB_U3VHost_GetDeviceFirmwareVersion(T_U3VHostObject u3vDeviceOb
         u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
     }
     
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *pCamTemp)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+    int32_t bytesRead;
+    uint64_t tempRegAdr = U3V_CamRegAdrLUT[U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY].CamRegBaseAddress +
+                          U3V_CamRegAdrLUT[U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY].Temperature_Reg;
+    uint32_t camTempK10;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+    u3vResult = (pCamTemp == NULL)          ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                          NULL,
+                                          tempRegAdr,
+                                          sizeof(camTempK10),
+                                          &bytesRead,
+                                          &camTempK10);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    /* Calculate temperature in Celcius rounded to 2 decimals */
+    *pCamTemp = roundf(((float)((camTempK10 & 0xFFF) / 10) - 273.15f) * 100) / 100;
+
     return u3vResult;
 }
 

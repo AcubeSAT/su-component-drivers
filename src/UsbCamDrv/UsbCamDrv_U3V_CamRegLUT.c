@@ -20,6 +20,7 @@ const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2] =
     {
         .CamRegBaseAddress              = 0xFFFFF0F00000ull,
         .SBRMOffset                     = 0x200000ull,
+        .Temperature_Reg                = 0x82Cull,
         .ColorCodingID_Reg              = 0x4070ull,
         .DeviceReset_Reg                = 0x400cull,
         .SingleFrameAcquisitionMode_Reg = 0x638ull,
@@ -32,6 +33,7 @@ const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2] =
     {
         .CamRegBaseAddress              = 0x0ull,   //tbd
         .SBRMOffset                     = 0x0ull,   //tbd
+        .Temperature_Reg                = 0x0ull,   //tbd
         .ColorCodingID_Reg              = 0x0ull,   //tbd
         .DeviceReset_Reg                = 0x0ull,   //tbd
         .SingleFrameAcquisitionMode_Reg = 0x0ull,   //tbd

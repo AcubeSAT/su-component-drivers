@@ -33,6 +33,7 @@ typedef struct
 {
     uint64_t CamRegBaseAddress;
     uint64_t SBRMOffset;
+    uint64_t Temperature_Reg;
     uint64_t ColorCodingID_Reg;
     uint64_t DeviceReset_Reg;
     uint64_t SingleFrameAcquisitionMode_Reg;
