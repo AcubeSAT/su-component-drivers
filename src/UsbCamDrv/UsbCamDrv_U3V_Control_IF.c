@@ -221,9 +221,9 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
 
     u3vResult = (cmdBufferSize > ctrlChInst->maxCmdTransfSize)  ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
     u3vResult = (maxBytesPerRead == 0u)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (u3vInstance == NULL)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-    u3vResult = (!u3vInstance->inUse)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-    u3vResult = (u3vInstance->state != U3V_HOST_STATE_READY)    ? U3V_HOST_RESULT_BUSY : u3vResult;
+    u3vResult = (u3vInstance == NULL)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (!u3vInstance->inUse)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (u3vInstance->state != U3V_HOST_STATE_READY)    ? U3V_HOST_RESULT_BUSY              : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -255,7 +255,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
         command->header.cmd    = (uint16_t)(U3V_CTRL_READMEM_CMD);
         command->header.length = (uint16_t)sizeof(T_U3VCtrlChReadMemCmdPayload);
 
-        if ((ctrlChInst->requestId + 1u) == ctrlChInst->maxRequestId)
+        if ((ctrlChInst->requestId + 1u) >= ctrlChInst->maxRequestId)
         {
             ctrlChInst->requestId = 0u;
         }
@@ -304,9 +304,6 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
             ctrlChInst->readReqSts.result = U3V_HOST_RESULT_FAILURE;
             ctrlChInst->readReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
 
-            /* Reset buffer. Ensure that we have enough room for a pending_ack_payload
-             * (e.g. if we try to read only two bytes then we would not be able to 
-             * receive a pending_ack_payload, which has a transfSize greater than 2 bytes). */
             ackBufferSize = sizeof(T_U3VCtrlChAckHeader) + MAX((size_t)(bytesThisIteration), sizeof(T_U3VCtrlChPendingAckPayload));
             memset(ctrlChInst->ackBuffer, 0, ackBufferSize);
 
@@ -407,9 +404,9 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
     T_U3VCtrlChAcknowledge *ack = NULL;
     T_U3VCtrlChPendingAckPayload *pendingAck = NULL;
     T_U3V_CtrlChWriteMemAckPayload *writeMemAck = NULL;
-    size_t cmdBufferSize = sizeof(T_U3VCtrlChCmdHeader) + sizeof(T_U3VCtrlChReadMemCmdPayload);
+    size_t cmdBufferSize = sizeof(T_U3VCtrlChCmdHeader) + sizeof(T_U3VCtrlChWriteMemCmdPayload);
     size_t ackBufferSize = sizeof(T_U3VCtrlChAckHeader) + MAX(sizeof(T_U3V_CtrlChWriteMemAckPayload),
-                                                             sizeof(T_U3VCtrlChPendingAckPayload));
+                                                              sizeof(T_U3VCtrlChPendingAckPayload));
 
     /* check input argument errors */
     u3vResult = (bytesWritten == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
@@ -427,10 +424,10 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
     maxBytesPerWrite = ctrlChInst->maxAckTransfSize - sizeof(T_U3VCtrlChAckHeader);
 
     u3vResult = (cmdBufferSize > ctrlChInst->maxCmdTransfSize)  ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (maxBytesPerWrite = 0u)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (u3vInstance == NULL)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-    u3vResult = (!u3vInstance->inUse)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-    u3vResult = (u3vInstance->state != U3V_HOST_STATE_READY)    ? U3V_HOST_RESULT_BUSY : u3vResult;
+    u3vResult = (maxBytesPerWrite == 0u)                        ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (u3vInstance == NULL)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (!u3vInstance->inUse)                           ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (u3vInstance->state != U3V_HOST_STATE_READY)    ? U3V_HOST_RESULT_BUSY              : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -439,10 +436,6 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
 
     tempTransferHandle = (transferHandle != NULL) ? *transferHandle : tempTransferHandle;
     *bytesWritten = 0u;
-
-    /* The context for the transfer is the event that needs to be sent to the application. 
-     * In this case the event to be sent to the application when the transfer completes is
-     * U3V_HOST_EVENT_WRITE_COMPLETE */
  
     if(OSAL_MUTEX_Lock(&(ctrlChInst->readWriteLock), OSAL_WAIT_FOREVER) != OSAL_RESULT_TRUE)
     {   
@@ -462,7 +455,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
 		command->header.cmd = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
         command->header.length = (uint16_t)(sizeof(T_U3VCtrlChWriteMemCmdPayload) + bytesThisIteration);
 
-        if (ctrlChInst->requestId + 1u == ctrlChInst->maxRequestId)
+        if ((ctrlChInst->requestId + 1u) >= ctrlChInst->maxRequestId)
         {
             ctrlChInst->requestId = 0u;
         }
@@ -537,8 +530,6 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
             }
 
             ack = (T_U3VCtrlChAcknowledge *)(ctrlChInst->ackBuffer);
-
-			/* Validate that we read enough bytes to process the header and that this seems like a valid GenCP response */
 
             /* Inspect the acknowledge buffer */
             if (((ack->header.cmd != U3V_CTRL_READMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
