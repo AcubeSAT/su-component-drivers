@@ -17,7 +17,7 @@ extern "C" {
 * Macros Definitions
 *********************************************************/
 
-#define U3V_CAM_MODEL_ACTV                          U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY
+#define U3V_CAM_MODEL_SEL                           U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY
 
 #define U3V_HOST_INSTANCES_NUMBER                   1u
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER            1u
