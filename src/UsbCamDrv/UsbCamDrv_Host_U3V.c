@@ -405,7 +405,98 @@ T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj)
 }
 
 
-T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
+T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *pixelCoding)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+
+	int32_t  bytesRead;
+    uint32_t colorCdId;
+    uint64_t colorCdIdRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].CamRegBaseAddress +
+                               U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].ColorCodingID_Reg;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+    u3vResult = (pixelCoding == NULL)          ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+    
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                          NULL,
+                                          colorCdIdRegAdr,
+                                          sizeof(colorCdId),
+                                          &bytesRead,
+                                          &colorCdId);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    /* value is held in hiher byte (bits 24 to 31) */
+    *pixelCoding = (colorCdId >> 24) & 0xFF;
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t pixelCodingVal)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+
+	int32_t  bytesWritten;
+    uint64_t colorCdIdRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].CamRegBaseAddress +
+                               U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].ColorCodingID_Reg;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlCh_WriteMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                           NULL,
+                                           colorCdIdRegAdr,
+                                           sizeof(pixelCodingVal),
+                                           &bytesWritten,
+                                           &pixelCodingVal);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_GetCamSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -446,7 +537,7 @@ T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj, 
 }
 
 
-T_U3VHostResult USB_U3VHost_GetDeviceFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
+T_U3VHostResult USB_U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -493,8 +584,8 @@ T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, floa
     T_U3VHostInstanceObj        *u3vInstance;
     T_U3VControlChannelObj      *ctrlChInstance;
     int32_t bytesRead;
-    uint64_t tempRegAdr = U3V_CamRegAdrLUT[U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY].CamRegBaseAddress +
-                          U3V_CamRegAdrLUT[U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY].Temperature_Reg;
+    uint64_t tempRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].CamRegBaseAddress +
+                          U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].Temperature_Reg;
     uint32_t camTempK10;
 
     u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
@@ -528,7 +619,7 @@ T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, floa
     }
 
     /* Calculate temperature in Celcius rounded to 2 decimals */
-    *pCamTemp = roundf(((float)((camTempK10 & 0xFFF) / 10) - 273.15f) * 100) / 100;
+    *pCamTemp = roundf(((float)((camTempK10 & 0xFFFul) / 10ul) - 273.15f) * 100) / 100;
 
     return u3vResult;
 }
@@ -873,8 +964,8 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandl
 
             /* update Control IF transf status indicators */
             u3vInstance->controlChHandle.chanObj->transReqCompleteCbk((T_U3VHostHandle)u3vInstance,
-                                                           u3vEvent,
-                                                           &u3vTransferCompleteData);
+                                                                      u3vEvent,
+                                                                      &u3vTransferCompleteData);
 
             if (u3vInstance->eventHandler != NULL)
             {

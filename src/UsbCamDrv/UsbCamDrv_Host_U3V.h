@@ -141,11 +141,15 @@ T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
 
 T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj);
 
+T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *pixelCoding);
+
+T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t pixelCodingVal);
+
 T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_GetDeviceSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
+T_U3VHostResult USB_U3VHost_GetCamSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
 
-T_U3VHostResult USB_U3VHost_GetDeviceFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr);     /* buffer size must be at least 64bytes long */
+T_U3VHostResult USB_U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr);     /* buffer size must be at least 64bytes long */
 
 T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *pCamTemp);
 
