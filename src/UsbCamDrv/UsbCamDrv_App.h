@@ -53,6 +53,8 @@ typedef enum
     USB_APP_STATE_OPEN_DEVICE,                          /* USB U3V Device is Attached */
     USB_APP_STATE_SETUP_U3V_CONTROL_CH,                 /* USB Application sets up the Control Channel */
     USB_APP_STATE_GET_U3V_MANIFEST,                     /* USB Application retrieves U3V Manifest file from device */
+    USB_APP_STATE_GET_CAM_TEMPERATURE,          
+    USB_APP_STATE_SETUP_CAM_PARAMS,                     
     USB_APP_STATE_GET_STREAM_CAPABILITIES,              /* USB Application retrieves Stream Channel capabilities */
 
     USB_APP_STATE_WAIT,                                 //todo: add missing states, this one is only for debug
@@ -74,6 +76,9 @@ typedef struct
     T_U3VHostResult             writeTransferResult;   /* Write Transfer Result */
     bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        deviceWasDetached;     /* True if device was detached */
+    uint32_t                    pixelFormat;
+    float                       camTemperature;
+    
 } T_UsbU3VAppData;      //in work
 
 

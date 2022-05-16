@@ -133,6 +133,28 @@ void UsbCamDrv_Tasks(void)
             result = USB_U3VHost_GetManifestFile(UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
+                UsbU3VAppData.state = USB_APP_STATE_GET_CAM_TEMPERATURE;
+            }
+            break;
+
+        case USB_APP_STATE_GET_CAM_TEMPERATURE:
+            result = USB_U3VHost_GetCamTemperature(UsbU3VAppData.u3vObj, &UsbU3VAppData.camTemperature);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                UsbU3VAppData.state = USB_APP_STATE_SETUP_CAM_PARAMS;
+            }
+            break;
+        
+        case USB_APP_STATE_SETUP_CAM_PARAMS:
+            result = USB_U3VHost_GetPixelFormat(UsbU3VAppData.u3vObj, &UsbU3VAppData.pixelFormat);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                if (UsbU3VAppData.pixelFormat != U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].PixelFormatCtrlVal_RGB8)
+                {
+                    //set correct pixel format
+                    UsbU3VAppData.pixelFormat = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].PixelFormatCtrlVal_RGB8;
+
+                }
                 UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;
             }
             break;
