@@ -31,16 +31,16 @@ extern "C" {
 
 typedef struct
 {
-    uint64_t CamRegBaseAddress;
+    uint64_t camRegBaseAddress;
     uint64_t SBRMOffset;
-    uint64_t Temperature_Reg;
-    uint64_t DeviceReset_Reg;
-    uint64_t SingleFrameAcquisitionMode_Reg;
-    uint64_t AcquisitionMode_Reg;
-    uint64_t AcquisitionStart_Reg;
-    uint64_t AcquisitionStop_Reg;
-    uint64_t ColorCodingID_Reg;
-    uint32_t PixelFormatCtrlVal_RGB8;
+    uint64_t temperature_Reg;
+    uint64_t deviceReset_Reg;
+    uint64_t singleFrameAcquisitionMode_Reg;
+    uint64_t acquisitionMode_Reg;
+    uint64_t acquisitionStart_Reg;
+    uint64_t acquisitionStop_Reg;
+    uint64_t colorCodingID_Reg;
+    uint32_t pixelFormatCtrlVal_Int_Sel;
 
 } UsbCamDrv_U3V_CamRegLuTable;
 

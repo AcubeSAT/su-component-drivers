@@ -149,13 +149,20 @@ void UsbCamDrv_Tasks(void)
             result = USB_U3VHost_GetPixelFormat(UsbU3VAppData.u3vObj, &UsbU3VAppData.pixelFormat);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
-                if (UsbU3VAppData.pixelFormat != U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].PixelFormatCtrlVal_RGB8)
+                if (UsbU3VAppData.pixelFormat != U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
                 {
-                    //set correct pixel format
-                    UsbU3VAppData.pixelFormat = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].PixelFormatCtrlVal_RGB8;
-
+                    /* set correct pixel format */
+                    result = USB_U3VHost_SetPixelFormat(UsbU3VAppData.u3vObj, U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
+                    if (result == U3V_HOST_RESULT_SUCCESS)
+                    {
+                        /* do nothing, check active pixel format on next cycle */
+                        break;
+                    }
                 }
-                UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;
+                else
+                {
+                    UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;
+                }
             }
             break;
 

@@ -405,7 +405,7 @@ T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj)
 }
 
 
-T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *pixelCoding)
+T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *const pixelCoding)
 {
     T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj        *u3vInstance;
@@ -413,8 +413,8 @@ T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_
 
 	int32_t  bytesRead;
     uint32_t colorCdId;
-    uint64_t colorCdIdRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].CamRegBaseAddress +
-                               U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].ColorCodingID_Reg;
+    uint64_t colorCdIdRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                               U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].colorCodingID_Reg;
 
     u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
     u3vResult = (pixelCoding == NULL)          ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
@@ -446,22 +446,23 @@ T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_
         return u3vResult;
     }
 
-    /* value is held in hiher byte (bits 24 to 31) */
-    *pixelCoding = (colorCdId >> 24) & 0xFF;
+    /* value is stored in higher byte (bits 24 to 31) */
+    *pixelCoding = (colorCdId >> 24) & 0xFFul;
 
     return u3vResult;
 }
 
 
-T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t pixelCodingVal)
+T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, const uint32_t pixelCodingVal)
 {
     T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj        *u3vInstance;
     T_U3VControlChannelObj      *ctrlChInstance;
 
 	int32_t  bytesWritten;
-    uint64_t colorCdIdRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].CamRegBaseAddress +
-                               U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].ColorCodingID_Reg;
+    uint32_t colorCdId;
+    uint64_t colorCdIdRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                               U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].colorCodingID_Reg;
 
     u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -480,12 +481,15 @@ T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_
         return u3vResult;
     }
 
+    /* value is stored in higher byte (bits 24 to 31) */
+    colorCdId = (pixelCodingVal << 24) & 0xFF000000ul;
+
     u3vResult = U3VHost_CtrlCh_WriteMemory((T_U3VControlChannelHandle)ctrlChInstance,
                                            NULL,
                                            colorCdIdRegAdr,
-                                           sizeof(pixelCodingVal),
+                                           sizeof(colorCdId),
                                            &bytesWritten,
-                                           &pixelCodingVal);
+                                           &colorCdId);
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -578,14 +582,14 @@ T_U3VHostResult USB_U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj, 
 }
 
 
-T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *pCamTemp)
+T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *const pCamTemp)
 {
     T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj        *u3vInstance;
     T_U3VControlChannelObj      *ctrlChInstance;
     int32_t bytesRead;
-    uint64_t tempRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].CamRegBaseAddress +
-                          U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].Temperature_Reg;
+    uint64_t tempRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].temperature_Reg;
     uint32_t camTempK10;
 
     u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
