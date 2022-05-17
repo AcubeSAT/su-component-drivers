@@ -9,8 +9,8 @@
 #include "UsbCamDrv_Host_U3V_Local.h"
 #include "UsbCamDrv_Config.h"
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
-// #include "FreeRTOS.h"
-// #include "task.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 
 /********************************************************
@@ -493,7 +493,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
-            // vTaskDelay(pdMS_TO_TICKS(1));
+            vTaskDelay(pdMS_TO_TICKS(1));
         }
 
         reqAcknowledged = false;
@@ -513,9 +513,13 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
 
             u3vResult = _USB_HostU3V_HostToU3VResultsMap(hostResult);
 
+            ack = (T_U3VCtrlChAcknowledge *)(ctrlChInst->ackBuffer);
+            writeMemAck = (T_U3V_CtrlChWriteMemAckPayload *)(ack->payload);
+
             while ((ctrlChInst->readReqSts.length != ackBufferSize) ||
                    (ctrlChInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
-                   (ctrlChInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
+                   (ctrlChInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID) ||
+                   (ack->header.prefix != U3V_CONTROL_PREFIX))
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
@@ -526,19 +530,8 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                // vTaskDelay(pdMS_TO_TICKS(1));
+                vTaskDelay(pdMS_TO_TICKS(1));
             }
-
-            ack = (T_U3VCtrlChAcknowledge *)(ctrlChInst->ackBuffer);
-
-            /* Fix for broken Basler cameras where they can get in a state where there is an extra bonus response on the
-             * pipe that needs to be thrown away. We just submit another read in that case. */
-            if (ack->header.ackId == (ctrlChInst->requestId - 1u))
-            {
-                continue;
-            }
-
-            writeMemAck = (T_U3V_CtrlChWriteMemAckPayload *)(ack->payload);
             
             /* Inspect the acknowledge buffer */
             if (((ack->header.cmd != U3V_CTRL_WRITEMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
