@@ -531,37 +531,23 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
 
             ack = (T_U3VCtrlChAcknowledge *)(ctrlChInst->ackBuffer);
 
-            /* Inspect the acknowledge buffer */
-            if (((ack->header.cmd != U3V_CTRL_READMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
-                (ack->header.prefix != U3V_CONTROL_PREFIX) ||
-                (ack->header.status != U3V_ERR_NO_ERROR) ||
-                (ack->header.ackId != ctrlChInst->requestId) ||
-                ((ack->header.cmd == U3V_CTRL_READMEM_ACK) && (ack->header.length != bytesThisIteration)) ||
-                ((ack->header.cmd == U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlChPendingAckPayload))))
-            {
-                OSAL_MUTEX_Unlock(&(ctrlChInst->readWriteLock));
-                u3vResult = U3V_HOST_RESULT_FAILURE;
-                return u3vResult;
-            }
-
             /* Fix for broken Basler cameras where they can get in a state where there is an extra bonus response on the
-			 * pipe that needs to be thrown away. We just submit another read in that case. */
+             * pipe that needs to be thrown away. We just submit another read in that case. */
             if (ack->header.ackId == (ctrlChInst->requestId - 1u))
             {
                 continue;
             }
 
             writeMemAck = (T_U3V_CtrlChWriteMemAckPayload *)(ack->payload);
-
+            
             /* Inspect the acknowledge buffer */
             if (((ack->header.cmd != U3V_CTRL_WRITEMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
+                (ack->header.prefix != U3V_CONTROL_PREFIX) ||
                 (ack->header.status != U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlChInst->requestId) ||
-                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) &&
-                 (ack->header.length != sizeof(T_U3V_CtrlChWriteMemAckPayload)) && (ack->header.length != 0)) ||
-                ((ack->header.cmd == U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlChPendingAckPayload))) ||
-                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlChWriteMemAckPayload)) &&
-                 (writeMemAck->bytesWritten != bytesThisIteration)))
+                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3V_CtrlChWriteMemAckPayload)) && (ack->header.length != 0u)) ||
+                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlChWriteMemAckPayload)) && (writeMemAck->bytesWritten != bytesThisIteration)) ||
+                ((ack->header.cmd == U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlChPendingAckPayload))))
             {
                 OSAL_MUTEX_Unlock(&(ctrlChInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_FAILURE;
