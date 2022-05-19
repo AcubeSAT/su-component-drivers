@@ -73,6 +73,13 @@ typedef enum
 
 } T_U3VHostEventResponse;
 
+typedef enum
+{
+    U3V_ACQUISITION_MODE_CONTINUOUS   = 0x0,
+    U3V_ACQUISITION_MODE_SINGLE_FRAME = 0x1,
+    U3V_ACQUISITION_MODE_MULTI_FRAME  = 0x2
+} T_U3VHostAcquisitionMode;
+
 typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostObject u3vObjHandle, uintptr_t context);
 
 typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vHandle, uintptr_t context);
@@ -144,6 +151,10 @@ T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj);
 T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *const pixelCoding);
 
 T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, const uint32_t pixelCodingVal);
+
+T_U3VHostResult USB_U3VHost_GetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode *acqMode);
+
+T_U3VHostResult USB_U3VHost_SetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode acqMode);
 
 T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
 

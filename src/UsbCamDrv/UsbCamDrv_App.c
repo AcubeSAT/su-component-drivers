@@ -141,23 +141,34 @@ void UsbCamDrv_Tasks(void)
             result = USB_U3VHost_GetCamTemperature(UsbU3VAppData.u3vObj, &UsbU3VAppData.camTemperature);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
-                UsbU3VAppData.state = USB_APP_STATE_SETUP_CAM_PARAMS;
+                UsbU3VAppData.state = USB_APP_STATE_SETUP_PIXEL_FORMAT;
             }
             break;
         
-        case USB_APP_STATE_SETUP_CAM_PARAMS:
+        case USB_APP_STATE_SETUP_PIXEL_FORMAT:
             result = USB_U3VHost_GetPixelFormat(UsbU3VAppData.u3vObj, &UsbU3VAppData.pixelFormat);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 if (UsbU3VAppData.pixelFormat != U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
                 {
                     /* set correct pixel format */
-                    result = USB_U3VHost_SetPixelFormat(UsbU3VAppData.u3vObj, U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
-                    if (result == U3V_HOST_RESULT_SUCCESS)
-                    {
-                        /* do nothing, check active pixel format on next cycle */
-                        break;
-                    }
+                    (void)USB_U3VHost_SetPixelFormat(UsbU3VAppData.u3vObj, U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
+                }
+                else
+                {
+                    UsbU3VAppData.state = USB_APP_STATE_SETUP_ACQUISITION_MODE;
+                }
+            }
+            break;
+
+        case USB_APP_STATE_SETUP_ACQUISITION_MODE:
+            result = USB_U3VHost_GetAcquisitionMode(UsbU3VAppData.u3vObj, &UsbU3VAppData.acquisitionMode);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                if (UsbU3VAppData.acquisitionMode != U3V_ACQUISITION_MODE_SINGLE_FRAME)
+                {
+                    /* set correct acquisition mode */
+                    (void)USB_U3VHost_SetAcquisitionMode(UsbU3VAppData.u3vObj, U3V_ACQUISITION_MODE_SINGLE_FRAME);
                 }
                 else
                 {
