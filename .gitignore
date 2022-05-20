@@ -88,6 +88,6 @@ __pycache__
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 .idea/**/markdown-*
-
+.idea/
 # Other IDEs
 .vscode

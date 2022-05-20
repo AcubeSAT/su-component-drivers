@@ -1,0 +1,10 @@
+#ifndef COMPONENT_DRIVERS_DRIVER_H
+#define COMPONENT_DRIVERS_DRIVER_H
+
+
+class Driver {
+
+};
+
+
+#endif //COMPONENT_DRIVERS_DRIVER_H
