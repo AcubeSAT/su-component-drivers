@@ -164,6 +164,10 @@ T_U3VHostResult USB_U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj, 
 
 T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *const pCamTemp);
 
+T_U3VHostResult USB_U3VHost_AcquisitionStart(T_U3VHostObject u3vDeviceObj);
+
+T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj);
+
 
 #ifdef __cplusplus
 }

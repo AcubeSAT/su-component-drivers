@@ -542,8 +542,6 @@ T_U3VHostResult USB_U3VHost_GetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U
         return u3vResult;
     }
 
-    // /* value is stored in higher byte (bits 24 to 31) */
-    // *acqMode = (T_U3VHostAcquisitionMode)(acquisnMode >> 24) & 0xFFul;.
     *acqMode = (T_U3VHostAcquisitionMode)acquisnMode;
 
     return u3vResult;
@@ -578,8 +576,6 @@ T_U3VHostResult USB_U3VHost_SetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U
         return u3vResult;
     }
 
-    // /* value is stored in higher byte (bits 24 to 31) */
-    // acquisnMode = (uint32_t)(acqMode << 24) & 0xFF000000ul;
     acquisnMode = (uint32_t)acqMode;
 
     u3vResult = U3VHost_CtrlCh_WriteMemory((T_U3VControlChannelHandle)ctrlChInstance,
@@ -722,6 +718,98 @@ T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, floa
 
     /* Calculate temperature in Celcius rounded to 2 decimals */
     *pCamTemp = roundf(((float)((camTempK10 & 0xFFFul) / 10ul) - 273.15f) * 100) / 100;
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_AcquisitionStart(T_U3VHostObject u3vDeviceObj)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+
+	int32_t  bytesWritten;
+    uint32_t acquisnStartCmdVal;
+    uint64_t acquisStartRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                                 U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].acquisitionStart_Reg;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    acquisnStartCmdVal = (0x80U << 24);
+
+    u3vResult = U3VHost_CtrlCh_WriteMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                           NULL,
+                                           acquisStartRegAdr,
+                                           sizeof(acquisnStartCmdVal),
+                                           &bytesWritten,
+                                           &acquisnStartCmdVal);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+
+	int32_t  bytesWritten;
+    uint32_t acquisnStopCmdVal;
+    uint64_t acquisStopRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                                U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].acquisitionStop_Reg;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    acquisnStopCmdVal = 0x0000000UL;
+
+    u3vResult = U3VHost_CtrlCh_WriteMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                           NULL,
+                                           acquisStopRegAdr,
+                                           sizeof(acquisnStopCmdVal),
+                                           &bytesWritten,
+                                           &acquisnStopCmdVal);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
 
     return u3vResult;
 }
