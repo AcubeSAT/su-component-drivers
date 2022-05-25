@@ -141,6 +141,14 @@ void UsbCamDrv_Tasks(void)
             result = USB_U3VHost_GetCamTemperature(UsbU3VAppData.u3vObj, &UsbU3VAppData.camTemperature);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
+                UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;
+            }
+            break;
+
+        case USB_APP_STATE_GET_STREAM_CAPABILITIES:
+            result = USB_U3VHost_GetStreamCapabilities(UsbU3VAppData.u3vObj);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
                 UsbU3VAppData.state = USB_APP_STATE_SETUP_PIXEL_FORMAT;
             }
             break;
@@ -172,20 +180,32 @@ void UsbCamDrv_Tasks(void)
                 }
                 else
                 {
-                    UsbU3VAppData.state = USB_APP_STATE_GET_STREAM_CAPABILITIES;
+                    UsbU3VAppData.state = USB_APP_STATE_READY_TO_START_IMG_ACQUISITION;
                 }
             }
             break;
 
-        case USB_APP_STATE_GET_STREAM_CAPABILITIES:
-            result = USB_U3VHost_GetStreamCapabilities(UsbU3VAppData.u3vObj);
-            if (result == U3V_HOST_RESULT_SUCCESS)
+        case USB_APP_STATE_READY_TO_START_IMG_ACQUISITION:
+            if (UsbU3VAppData.acquisitionRequested)
             {
-                UsbU3VAppData.state = USB_APP_STATE_WAIT;
+                result = USB_U3VHost_AcquisitionStart(UsbU3VAppData.u3vObj);
+                if (result == U3V_HOST_RESULT_SUCCESS)
+                {
+                    UsbU3VAppData.acquisitionRequested = false;
+                    UsbU3VAppData.state = USB_APP_STATE_WAIT_TO_ACQUIRE_IMAGE;
+                }
             }
             break;
 
-        case USB_APP_STATE_WAIT:
+        case USB_APP_STATE_WAIT_TO_ACQUIRE_IMAGE:
+            result = USB_U3VHost_AcquisitionStop(UsbU3VAppData.u3vObj);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                UsbU3VAppData.state = USB_APP_STATE_UNSPECIFIED;
+            }
+            break;
+
+        case USB_APP_STATE_UNSPECIFIED:
             //debug state, do nothing...
             result = result;
             break;
@@ -206,9 +226,17 @@ T_U3VCamDriverStatus UsbCamDrv_AcquireNewImage(void *params)
     T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
 
     DrvSts = (UsbCamDrv_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
-    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED) ? DrvSts : U3V_CAM_DRV_ERROR;
-
-    //todo
+    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
+    
+    if (UsbU3VAppData.state == USB_APP_STATE_READY_TO_START_IMG_ACQUISITION)
+    {
+        UsbU3VAppData.acquisitionRequested = true;
+    }
+    else
+    {
+        DrvSts = U3V_CAM_DRV_NOT_INITD;
+    }
+    //todo: investigate if more needed
 
     return DrvSts;
 }

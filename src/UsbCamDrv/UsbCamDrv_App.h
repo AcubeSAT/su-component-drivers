@@ -54,11 +54,13 @@ typedef enum
     USB_APP_STATE_SETUP_U3V_CONTROL_CH,                 /* USB Application sets up the Control Channel */
     USB_APP_STATE_GET_U3V_MANIFEST,                     /* USB Application retrieves U3V Manifest file from device */
     USB_APP_STATE_GET_CAM_TEMPERATURE,                  /* USB Application get cam Temperature in Celcius */
+    USB_APP_STATE_GET_STREAM_CAPABILITIES,              /* USB Application retrieves Stream Channel capabilities */
     USB_APP_STATE_SETUP_PIXEL_FORMAT,                   /* USB Application setup Pixel format */
     USB_APP_STATE_SETUP_ACQUISITION_MODE,               /* USB Application setup Acquisition mode */
-    USB_APP_STATE_GET_STREAM_CAPABILITIES,              /* USB Application retrieves Stream Channel capabilities */
+    USB_APP_STATE_READY_TO_START_IMG_ACQUISITION,       /* USB Application is ready to receive image acquisition request */
+    USB_APP_STATE_WAIT_TO_ACQUIRE_IMAGE,                /* USB Application is waiting to acquire image */
 
-    USB_APP_STATE_WAIT,                                 //todo: add missing states, this one is only for debug
+    USB_APP_STATE_UNSPECIFIED,  //todo: add missing states, this one is only for debug
 
     USB_APP_STATE_ERROR
 } T_UsbU3vAppStates;    //in work
@@ -80,6 +82,7 @@ typedef struct
     uint32_t                    pixelFormat;           /* Active Pixel Format value (PixelFormatCtrlVal_Int)*/
     float                       camTemperature;        /* Cam temperature in Celcius */
     T_U3VHostAcquisitionMode    acquisitionMode;       /* Acquisition mode */
+    bool                        acquisitionRequested;  /* Image Acquisition Requested */
     
 } T_UsbU3VAppData;      //in work
 
