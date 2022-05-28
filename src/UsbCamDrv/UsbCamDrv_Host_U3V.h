@@ -168,6 +168,8 @@ T_U3VHostResult USB_U3VHost_AcquisitionStart(T_U3VHostObject u3vDeviceObj);
 
 T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj);
 
+T_U3VHostResult USB_U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj);
+
 
 #ifdef __cplusplus
 }

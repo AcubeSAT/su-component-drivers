@@ -83,6 +83,7 @@ typedef struct
     float                       camTemperature;        /* Cam temperature in Celcius */
     T_U3VHostAcquisitionMode    acquisitionMode;       /* Acquisition mode */
     bool                        acquisitionRequested;  /* Image Acquisition Requested */
+    bool                        camSwResetRequested;   /* Cam SW reset requested */
     
 } T_UsbU3VAppData;      //in work
 
@@ -124,6 +125,8 @@ void UsbCamDrv_Initialize(void);
 void UsbCamDrv_Tasks(void); 
 
 T_U3VCamDriverStatus UsbCamDrv_AcquireNewImage(void *params);
+
+T_U3VCamDriverStatus UsbCamDrv_CamSwReset(void);
 
 
 #ifdef __cplusplus

@@ -815,6 +815,52 @@ T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj)
 }
 
 
+T_U3VHostResult USB_U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+
+	int32_t  bytesWritten;
+    uint32_t devResetCmdVal;
+    uint64_t devResetRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                              U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].deviceReset_Reg;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    devResetCmdVal = 0x00000001UL;
+
+    u3vResult = U3VHost_CtrlCh_WriteMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                           NULL,
+                                           devResetRegAdr,
+                                           sizeof(devResetCmdVal),
+                                           &bytesWritten,
+                                           &devResetCmdVal);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    return u3vResult;
+}
+
+
 /********************************************************
 * Local function definitions
 *********************************************************/

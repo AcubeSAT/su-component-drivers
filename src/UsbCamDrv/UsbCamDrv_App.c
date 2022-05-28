@@ -73,6 +73,16 @@ void UsbCamDrv_Tasks(void)
 {
     T_U3VHostResult result;
 
+    if (UsbU3VAppData.camSwResetRequested)
+    {
+        if ((UsbCamDrv_InitStatus == U3V_DRV_INITIALIZATION_OK) && (UsbU3VAppData.state > USB_APP_STATE_SETUP_U3V_CONTROL_CH))
+        {
+            UsbU3VAppData.camSwResetRequested = false;
+            result = USB_U3VHost_CamSwReset(UsbU3VAppData.u3vObj);
+            UsbU3VAppData.deviceWasDetached = true;
+        }
+    }
+
     if (UsbU3VAppData.deviceWasDetached)
     {
         UsbU3VAppData.state                = USB_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
@@ -228,15 +238,30 @@ T_U3VCamDriverStatus UsbCamDrv_AcquireNewImage(void *params)
     DrvSts = (UsbCamDrv_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
     DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
     
-    if (UsbU3VAppData.state == USB_APP_STATE_READY_TO_START_IMG_ACQUISITION)
-    {
-        UsbU3VAppData.acquisitionRequested = true;
-    }
-    else
-    {
-        DrvSts = U3V_CAM_DRV_NOT_INITD;
-    }
-    //todo: investigate if more needed
+    // if (UsbU3VAppData.state == USB_APP_STATE_READY_TO_START_IMG_ACQUISITION)
+    // {
+    //     UsbU3VAppData.acquisitionRequested = true;
+    // }
+    // else
+    // {
+    //     DrvSts = U3V_CAM_DRV_NOT_INITD;
+    // }
+    // //todo: investigate if more needed
+
+    UsbU3VAppData.acquisitionRequested = true;
+
+    return DrvSts;
+}
+
+
+T_U3VCamDriverStatus UsbCamDrv_CamSwReset(void)
+{
+       T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
+
+    DrvSts = (UsbCamDrv_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
+    DrvSts = (UsbCamDrv_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
+
+    UsbU3VAppData.camSwResetRequested = true;
 
     return DrvSts;
 }
