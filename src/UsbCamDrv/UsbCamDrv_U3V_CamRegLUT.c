@@ -18,16 +18,17 @@ const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2] =
 {
     /* #0 U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY */
     {
-        .camRegBaseAddress              = 0xFFFFF0F00000ull,
-        .SBRMOffset                     = 0x200000ull,
-        .temperature_Reg                = 0x82Cull,
-        .deviceReset_Reg                = 0x400cull,
-        .singleFrameAcquisitionMode_Reg = 0x638ull,
-        .acquisitionMode_Reg            = 0x4028ull,
-        .acquisitionStart_Reg           = 0x4030ull,
-        .acquisitionStop_Reg            = 0x614ull,
-        .colorCodingID_Reg              = 0x4070ull,
-        .pixelFormatCtrlVal_Int_Sel     = 0x04ul          /* U3V_PFNC_RGB8 = 0x02180014 -> 04 (from PixelFormatCtrlVal_Int in Manifest xml)*/
+        .camRegBaseAddress              = 0xFFFFF0F00000ULL,
+        .SBRMOffset                     = 0x200000ULL,
+        .temperature_Reg                = 0x82CULL,
+        .deviceReset_Reg                = 0x400cULL,
+        .singleFrameAcquisitionMode_Reg = 0x638ULL,
+        .acquisitionMode_Reg            = 0x4028ULL,
+        .acquisitionStart_Reg           = 0x4030ULL,
+        .acquisitionStop_Reg            = 0x614ULL,
+        .colorCodingID_Reg              = 0x4070ULL,
+        .payloadSizeVal_Reg             = 0x5410ULL,
+        .pixelFormatCtrlVal_Int_Sel     = 0x04UL          /* U3V_PFNC_RGB8 = 0x02180014 -> 04 (from PixelFormatCtrlVal_Int in Manifest xml)*/
     },
 
     /* #1 U3V_XIMEA_XIQ_MQ013CG_E2_LUT_ENTRY */

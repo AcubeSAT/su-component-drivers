@@ -861,6 +861,52 @@ T_U3VHostResult USB_U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj)
 }
 
 
+T_U3VHostResult USB_U3VHost_GetImgPayloadSize(T_U3VHostObject u3vDeviceObj, uint32_t *pldSize)
+{
+    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj        *u3vInstance;
+    T_U3VControlChannelObj      *ctrlChInstance;
+    int32_t bytesRead;
+    uint64_t pldSizeRegAdr = U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                             U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].payloadSizeVal_Reg;
+    uint32_t pldSizeVal;
+
+    u3vResult = (u3vDeviceObj == 0u)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+    u3vResult = (pldSize == NULL)           ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlChInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (ctrlChInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlCh_ReadMemory((T_U3VControlChannelHandle)ctrlChInstance,
+                                          NULL,
+                                          pldSizeRegAdr,
+                                          sizeof(pldSizeVal),
+                                          &bytesRead,
+                                          &pldSizeVal);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    *pldSize = pldSizeVal;
+
+    return u3vResult;
+}
+
+
 /********************************************************
 * Local function definitions
 *********************************************************/

@@ -57,6 +57,7 @@ typedef enum
     USB_APP_STATE_GET_STREAM_CAPABILITIES,              /* USB Application retrieves Stream Channel capabilities */
     USB_APP_STATE_SETUP_PIXEL_FORMAT,                   /* USB Application setup Pixel format */
     USB_APP_STATE_SETUP_ACQUISITION_MODE,               /* USB Application setup Acquisition mode */
+    USB_APP_STATE_SETUP_STREAM,
     USB_APP_STATE_READY_TO_START_IMG_ACQUISITION,       /* USB Application is ready to receive image acquisition request */
     USB_APP_STATE_WAIT_TO_ACQUIRE_IMAGE,                /* USB Application is waiting to acquire image */
 
@@ -80,6 +81,7 @@ typedef struct
     bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        deviceWasDetached;     /* True if device was detached */
     uint32_t                    pixelFormat;           /* Active Pixel Format value (PixelFormatCtrlVal_Int)*/
+    uint32_t                    payloadSize;           /* Image payload size */
     float                       camTemperature;        /* Cam temperature in Celcius */
     T_U3VHostAcquisitionMode    acquisitionMode;       /* Acquisition mode */
     bool                        acquisitionRequested;  /* Image Acquisition Requested */

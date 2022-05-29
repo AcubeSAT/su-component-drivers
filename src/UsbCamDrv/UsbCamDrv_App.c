@@ -190,8 +190,16 @@ void UsbCamDrv_Tasks(void)
                 }
                 else
                 {
-                    UsbU3VAppData.state = USB_APP_STATE_READY_TO_START_IMG_ACQUISITION;
+                    UsbU3VAppData.state = USB_APP_STATE_SETUP_STREAM;
                 }
+            }
+            break;
+        
+        case USB_APP_STATE_SETUP_STREAM:
+            result = USB_U3VHost_GetImgPayloadSize(UsbU3VAppData.u3vObj, &UsbU3VAppData.payloadSize);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                UsbU3VAppData.state = USB_APP_STATE_READY_TO_START_IMG_ACQUISITION;
             }
             break;
 

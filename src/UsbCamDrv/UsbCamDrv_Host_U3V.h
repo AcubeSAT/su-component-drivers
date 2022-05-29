@@ -170,6 +170,8 @@ T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj);
 
 T_U3VHostResult USB_U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj);
 
+T_U3VHostResult USB_U3VHost_GetImgPayloadSize(T_U3VHostObject u3vDeviceObj, uint32_t *pldSize);
+
 
 #ifdef __cplusplus
 }
