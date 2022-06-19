@@ -15,6 +15,8 @@ extern "C" {
 #include <stdbool.h>
 #include "usb/usb_host_client_driver.h"
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
+#include "UsbCamDrv_U3V_Streaming_IF.h"
+#include "UsbCamDrv_Config.h"
 
 
 /********************************************************
@@ -63,8 +65,9 @@ typedef struct
 
 typedef enum
 {
-    U3V_HOST_EVENT_READ_COMPLETE,
-    U3V_HOST_EVENT_WRITE_COMPLETE
+    U3V_HOST_EVENT_READ_COMPLETE = 0x10,
+    U3V_HOST_EVENT_WRITE_COMPLETE,
+    U3V_HOST_EVENT_IMG_PLD_RECEIVED,
 } T_U3VHostEvent;
 
 typedef enum
@@ -110,7 +113,8 @@ typedef struct
 	uint32_t    segmentedXferSupported;
 	uint32_t    segmentedXferEnabled;
 	uint32_t    legacyCtrlEpStallEnabled;
-}T_U3VDeviceInfo;
+} T_U3VDeviceInfo;
+
 
 
 /********************************************************
@@ -142,9 +146,7 @@ T_U3VHostHandle USB_U3VHost_Open(T_U3VHostObject u3vDeviceObj);
 
 void USB_U3VHost_Close(T_U3VHostHandle u3vDeviceHandle);
 
-T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle,
-                                            T_U3VHostEventHandler eventHandler,
-                                            uintptr_t context);
+T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
 
 T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj);
 
@@ -157,6 +159,12 @@ T_U3VHostResult USB_U3VHost_GetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U
 T_U3VHostResult USB_U3VHost_SetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode acqMode);
 
 T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
+
+T_U3VHostResult USB_U3VHost_ResetStreamCh(T_U3VHostObject u3vDeviceObj);
+
+T_U3VHostResult USB_U3VHost_SetupStreamTransferParams(T_U3VHostObject u3vDeviceObj, T_U3VStreamConfig *streamConfig);
+
+T_U3VHostResult USB_U3VHost_StreamChControl(T_U3VHostObject u3vDeviceObj, bool enable);
 
 T_U3VHostResult USB_U3VHost_GetCamSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
 
@@ -171,6 +179,8 @@ T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj);
 T_U3VHostResult USB_U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj);
 
 T_U3VHostResult USB_U3VHost_GetImgPayloadSize(T_U3VHostObject u3vDeviceObj, uint32_t *pldSize);
+
+T_U3VHostResult USB_U3VHost_StartImgPayldTransfer(T_U3VHostObject u3vDeviceObj, void *imgBfr, size_t size, T_U3VHostEvent transfEventType);
 
 
 #ifdef __cplusplus

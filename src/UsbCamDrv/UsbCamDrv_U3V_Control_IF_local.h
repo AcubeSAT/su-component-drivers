@@ -30,6 +30,8 @@ extern "C" {
 
 typedef void (*T_U3VCtrlChTransfCompleteHandler)(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
 
+#pragma pack(push, 1)
+
 typedef struct
 {
 	uint32_t prefix;
@@ -84,6 +86,8 @@ typedef struct
 	uint16_t reserved;
 	uint16_t bytesWritten;
 } T_U3V_CtrlChWriteMemAckPayload;
+
+#pragma pack(pop)
 
 typedef struct 
 {

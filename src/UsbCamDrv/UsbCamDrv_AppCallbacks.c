@@ -65,33 +65,42 @@ void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t cont
 T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
                                                   T_U3VHostEvent event,
                                                   void *pEventData,
-                                                  uintptr_t context) // todo rework
+                                                  uintptr_t context)
 {
-    /* This function is called when a U3V Host event has occurred. A pointer to this function is 
-     * registered after opening the device. See the call to USB_U3VHost_EventHandlerSet(). */
-
-    T_U3VHostEventWriteCompleteData    *writeCompleteEventData;
-    T_U3VHostEventReadCompleteData     *readCompleteEventData;
-    T_UsbU3VAppData                    *pUsbU3VAppData;
+    T_U3VHostEventReadCompleteData  *readCompleteEventData;
+    T_UsbU3VAppData                 *pUsbU3VAppData;
+    T_U3VSiGenericPacket            *pckLeaderOrTrailer;
+    T_U3VHostResult                 result;
+    size_t                          length;
 
     pUsbU3VAppData = (T_UsbU3VAppData*)context;
+    readCompleteEventData = (T_U3VHostEventReadCompleteData *)(pEventData);
 
     switch (event)
     {
+        case U3V_HOST_EVENT_IMG_PLD_RECEIVED:
+            pckLeaderOrTrailer = (T_U3VSiGenericPacket*)pUsbU3VAppData->imgPayloadContainer.imgPldBfr1;
+            result = readCompleteEventData->result; //TODO: remove
+            length = readCompleteEventData->length; //TODO: remove
+
+            if (pckLeaderOrTrailer->magicKey == U3V_LEADER_MGK_PREFIX)
+            {
+                /* Img Leader packet received */
+                pUsbU3VAppData->imgPayloadContainer.imgPldTransfSt = SI_IMG_TRANSF_STATE_LEADER_COMPLETE;
+            }
+            else if (pckLeaderOrTrailer->magicKey == U3V_TRAILER_MGK_PREFIX)
+            {
+                /* Img Trailer packet received, end of transfer */
+                pUsbU3VAppData->imgPayloadContainer.imgPldTransfSt = SI_IMG_TRANSF_STATE_TRAILER_COMPLETE;
+            }
+            else
+            {
+                /* Img Payload block with Image data */
+                //TODO: block counter, recall & initiate DMA transf
+            }
+
         case U3V_HOST_EVENT_WRITE_COMPLETE:
-            /* This means an application requested write has completed */
-            pUsbU3VAppData->writeTransferDone = true;
-            writeCompleteEventData = (T_U3VHostEventWriteCompleteData *)(pEventData);
-            pUsbU3VAppData->writeTransferResult = writeCompleteEventData->result;
-            break;
-            
         case U3V_HOST_EVENT_READ_COMPLETE:
-            /* This means an application requested write has completed */
-            pUsbU3VAppData->readTransferDone = true;
-            readCompleteEventData = (T_U3VHostEventReadCompleteData *)(pEventData);
-            pUsbU3VAppData->readTransferResult = readCompleteEventData->result;
-            break;
-            
         default:
             break;
     }

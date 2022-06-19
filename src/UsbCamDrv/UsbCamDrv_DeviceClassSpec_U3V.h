@@ -33,11 +33,15 @@ extern "C" {
 #define U3V_INFO_IS_DEVICEINFO                  0x01     /* U3V descriptor data = info type*/
 #define U3V_INFO_MIN_LENGTH_STR                 20u      /* U3V descriptor data min length */
 #define U3V_MAX_DESCR_STR_LENGTH                64u      /* U3V descriptor data buffer size */
-#define U3V_ERR_NO_ERROR				        0
+#define U3V_ERR_NO_ERROR				        0x0000
+
+/*** U3V magic key codes ***/
+#define U3V_CONTROL_MGK_PREFIX                  0x43563355  /* magic key "U3VC" in ASCII */
+#define U3V_LEADER_MGK_PREFIX	                0x4C563355  /* magic key "U3VL" in ASCII */
+#define U3V_TRAILER_MGK_PREFIX	                0x54563355  /* magic key "U3VT" in ASCII */
 
 /*** U3V Control IF Codes ***/
 #define U3V_CTRL_REQ_ACK                        0x4000
-#define U3V_CONTROL_PREFIX                      0x43563355  /*reverse char order of: "U3VC" */
 #define U3V_CTRL_READMEM_CMD	                0x0800
 #define	U3V_CTRL_READMEM_ACK	                0x0801
 #define	U3V_CTRL_WRITEMEM_CMD	                0x0802

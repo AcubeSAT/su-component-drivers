@@ -30,6 +30,7 @@ extern "C" {
 #define U3V_REQ_TIMEOUT                             5000u
 #define U3V_REQ_READWRITE_RETRY_TIMES_LMT           50000u
 
+#define TARGET_ARCH_BYTE_ALIGNMENT                  8U      /* Byte alignment / padding for MCU architecture */
 
 // DEBUG XULT board
 /*** LED Macros for LED0 ***/

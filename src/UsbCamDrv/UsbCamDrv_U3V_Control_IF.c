@@ -9,8 +9,8 @@
 #include "UsbCamDrv_Host_U3V_Local.h"
 #include "UsbCamDrv_Config.h"
 #include "UsbCamDrv_DeviceClassSpec_U3V.h"
-#include "FreeRTOS.h"
-#include "task.h"
+// #include "FreeRTOS.h"
+// #include "task.h"
 
 
 /********************************************************
@@ -250,7 +250,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
         ctrlChInst->writeReqSts.result = U3V_HOST_RESULT_FAILURE;
         ctrlChInst->writeReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
 
-        command->header.prefix = (uint32_t)(U3V_CONTROL_PREFIX);
+        command->header.prefix = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
         command->header.flags  = (uint16_t)(U3V_CTRL_REQ_ACK);
         command->header.cmd    = (uint16_t)(U3V_CTRL_READMEM_CMD);
         command->header.length = (uint16_t)sizeof(T_U3VCtrlChReadMemCmdPayload);
@@ -343,7 +343,7 @@ T_U3VHostResult U3VHost_CtrlCh_ReadMemory(T_U3VControlChannelHandle ctrlChObj,
 
             /* Inspect the acknowledge buffer */
             if (((ack->header.cmd != U3V_CTRL_READMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
-                (ack->header.prefix != U3V_CONTROL_PREFIX) ||
+                (ack->header.prefix != U3V_CONTROL_MGK_PREFIX) ||
                 (ack->header.status != U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlChInst->requestId) ||
                 ((ack->header.cmd == U3V_CTRL_READMEM_ACK) && (ack->header.length != bytesThisIteration)) ||
@@ -450,7 +450,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
         T_U3VCtrlChWriteMemCmdPayload *payload = (T_U3VCtrlChWriteMemCmdPayload *)(command->payload);
         uint32_t writeRetryCnt = 0u;
 
-        command->header.prefix = (uint32_t)(U3V_CONTROL_PREFIX);
+        command->header.prefix = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
 		command->header.flags = (uint16_t)(U3V_CTRL_REQ_ACK);
 		command->header.cmd = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
         command->header.length = (uint16_t)(sizeof(T_U3VCtrlChWriteMemCmdPayload) + bytesThisIteration);
@@ -493,7 +493,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
-            vTaskDelay(pdMS_TO_TICKS(1));
+            // vTaskDelay(pdMS_TO_TICKS(1));
         }
 
         reqAcknowledged = false;
@@ -519,7 +519,7 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
             while ((ctrlChInst->readReqSts.length != ackBufferSize) ||
                    (ctrlChInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
                    (ctrlChInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID) ||
-                   (ack->header.prefix != U3V_CONTROL_PREFIX))
+                   (ack->header.prefix != U3V_CONTROL_MGK_PREFIX))
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
@@ -530,12 +530,12 @@ T_U3VHostResult U3VHost_CtrlCh_WriteMemory(T_U3VControlChannelHandle ctrlChObj,
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                vTaskDelay(pdMS_TO_TICKS(1));
+                // vTaskDelay(pdMS_TO_TICKS(1));
             }
             
             /* Inspect the acknowledge buffer */
             if (((ack->header.cmd != U3V_CTRL_WRITEMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
-                (ack->header.prefix != U3V_CONTROL_PREFIX) ||
+                (ack->header.prefix != U3V_CONTROL_MGK_PREFIX) ||
                 (ack->header.status != U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlChInst->requestId) ||
                 ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3V_CtrlChWriteMemAckPayload)) && (ack->header.length != 0u)) ||

@@ -60,7 +60,7 @@ void xTaskUsbHostTasks(void *pvParameters)
     {
         /* USB Host layer Task Routine */
         USB_HOST_Tasks(sysObj.usbHostObject0);
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
 
@@ -70,7 +70,7 @@ void xTaskDrvUsbHsV1Tasks(void *pvParameters)
     {
         /* USB HS Driver Task Routine */
         DRV_USBHSV1_Tasks(sysObj.drvUSBHSV1Object);
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
 
@@ -80,7 +80,7 @@ void xTaskUsbCamDrvTasks(void *pvParameters)
     {
         /* USB Camera Driver Task Routine */
         UsbCamDrv_Tasks();
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
 

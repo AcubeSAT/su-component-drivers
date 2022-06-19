@@ -34,7 +34,7 @@ T_U3VCamDriverInitStatus UsbCamDrv_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
 T_UsbU3VAppData USB_ALIGN UsbU3VAppData;
 
-
+T_U3VStreamConfig streamConfigVals;
 
 /********************************************************
 * Function definitions
@@ -53,11 +53,8 @@ void UsbCamDrv_Initialize(void)
 
     /* Initialize the USB application state machine elements */
     UsbU3VAppData.state                            = USB_APP_STATE_BUS_ENABLE;
-
     UsbU3VAppData.deviceIsAttached                 = false;
     UsbU3VAppData.deviceWasDetached                = false;
-    UsbU3VAppData.readTransferDone                 = false;
-    UsbU3VAppData.writeTransferDone                = false;
 
     UsbCamDrv_InitStatus = DrvSts;
 }
@@ -86,8 +83,6 @@ void UsbCamDrv_Tasks(void)
     if (UsbU3VAppData.deviceWasDetached)
     {
         UsbU3VAppData.state                = USB_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
-        UsbU3VAppData.readTransferDone     = false;
-        UsbU3VAppData.writeTransferDone    = false;
         UsbU3VAppData.deviceWasDetached    = false;
 
         U3VHost_CtrlCh_InterfaceDestroy(&UsbU3VAppData.controlChHandle);
@@ -125,7 +120,7 @@ void UsbCamDrv_Tasks(void)
             if(UsbU3VAppData.u3vHostHandle != U3V_HOST_HANDLE_INVALID)
             {
                 USB_U3VHost_DetachEventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VDetachEventListenerCbk, (uintptr_t)&UsbU3VAppData);
-                USB_U3VHost_EventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&UsbU3VAppData);
+                USB_U3VHost_EventHandlerSet(UsbU3VAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk , (uintptr_t)&UsbU3VAppData);
                 UsbU3VAppData.state = USB_APP_STATE_SETUP_U3V_CONTROL_CH;
                 LED1_On();  // DEBUG XULT board
             }
@@ -139,9 +134,9 @@ void UsbCamDrv_Tasks(void)
             }
             break;
 
-        case USB_APP_STATE_GET_U3V_MANIFEST:
-            result = USB_U3VHost_GetManifestFile(UsbU3VAppData.u3vObj);
-            if (result == U3V_HOST_RESULT_SUCCESS)
+        case USB_APP_STATE_GET_U3V_MANIFEST: //TODO: remove, Manifest is imported as fixed params
+            // result = USB_U3VHost_GetManifestFile(UsbU3VAppData.u3vObj);
+            // if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbU3VAppData.state = USB_APP_STATE_GET_CAM_TEMPERATURE;
             }
@@ -170,7 +165,8 @@ void UsbCamDrv_Tasks(void)
                 if (UsbU3VAppData.pixelFormat != U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
                 {
                     /* set correct pixel format */
-                    (void)USB_U3VHost_SetPixelFormat(UsbU3VAppData.u3vObj, U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
+                    result = USB_U3VHost_SetPixelFormat(UsbU3VAppData.u3vObj,
+                                                        U3V_CamRegAdrLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
                 }
                 else
                 {
@@ -195,8 +191,15 @@ void UsbCamDrv_Tasks(void)
             }
             break;
         
-        case USB_APP_STATE_SETUP_STREAM:
+        case USB_APP_STATE_SETUP_STREAM:    //TODO: find bug of spinlocking
             result = USB_U3VHost_GetImgPayloadSize(UsbU3VAppData.u3vObj, &UsbU3VAppData.payloadSize);
+            streamConfigVals.imageSize = UsbU3VAppData.payloadSize;
+            streamConfigVals.blockPadding = 8U;
+            streamConfigVals.blockSize = 512U;
+            streamConfigVals.maxLeaderSize = 256U;
+            streamConfigVals.maxTrailerSize = 256U;
+            result |= USB_U3VHost_SetupStreamTransferParams(UsbU3VAppData.u3vObj, &streamConfigVals);
+            // result |= USB_U3VHost_ResetStreamCh(UsbU3VAppData.u3vObj);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 UsbU3VAppData.state = USB_APP_STATE_READY_TO_START_IMG_ACQUISITION;
@@ -206,24 +209,54 @@ void UsbCamDrv_Tasks(void)
         case USB_APP_STATE_READY_TO_START_IMG_ACQUISITION:
             if (UsbU3VAppData.acquisitionRequested)
             {
-                result = USB_U3VHost_AcquisitionStart(UsbU3VAppData.u3vObj);
+                result = USB_U3VHost_StreamChControl(UsbU3VAppData.u3vObj, true);
+                result |= USB_U3VHost_AcquisitionStart(UsbU3VAppData.u3vObj);
                 if (result == U3V_HOST_RESULT_SUCCESS)
                 {
                     UsbU3VAppData.acquisitionRequested = false;
                     UsbU3VAppData.state = USB_APP_STATE_WAIT_TO_ACQUIRE_IMAGE;
+                    UsbU3VAppData.imgPayloadContainer.imgPldTransfSt = SI_IMG_TRANSF_STATE_START;
                 }
             }
             break;
 
         case USB_APP_STATE_WAIT_TO_ACQUIRE_IMAGE:
-            result = USB_U3VHost_AcquisitionStop(UsbU3VAppData.u3vObj);
-            if (result == U3V_HOST_RESULT_SUCCESS)
+            if ((UsbU3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_START)||
+                (UsbU3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_LEADER_COMPLETE)||
+                (UsbU3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE))
             {
-                UsbU3VAppData.state = USB_APP_STATE_UNSPECIFIED;
+                result = USB_U3VHost_StartImgPayldTransfer(UsbU3VAppData.u3vObj,
+                                                           (void *)&UsbU3VAppData.imgPayloadContainer.imgPldBfr1,
+                                                           (size_t)U3V_IN_BUFFER_MAX_SIZE,
+                                                           U3V_HOST_EVENT_IMG_PLD_RECEIVED);
+            }    
+            else if (UsbU3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_TRAILER_COMPLETE)
+            {
+                UsbU3VAppData.state = USB_APP_STATE_STOP_IMAGE_ACQ;
             }
+            else
+            {
+                /* error, unspecified state */
+            }
+
+            // if (result == U3V_HOST_RESULT_SUCCESS)
+            // {
+            //     // UsbU3VAppData.state = USB_APP_STATE_NOP;
+            //     // result = USB_U3VHost_AcquisitionStop(UsbU3VAppData.u3vObj);
+            // }
             break;
 
-        case USB_APP_STATE_UNSPECIFIED:
+        case USB_APP_STATE_STOP_IMAGE_ACQ:
+            result = USB_U3VHost_AcquisitionStop(UsbU3VAppData.u3vObj); //TODO: fix bug of host busy
+            result |= USB_U3VHost_StreamChControl(UsbU3VAppData.u3vObj, false); //TODO: >>
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                // UsbU3VAppData.state = USB_APP_STATE_READY_TO_START_IMG_ACQUISITION;
+                UsbU3VAppData.state = USB_APP_STATE_NOP; //debug temporary state
+                //TODO: return on USB_APP_STATE_READY_TO_START_IMG_ACQUISITION or close power and end?
+            }
+
+        case USB_APP_STATE_NOP:
             //debug state, do nothing...
             result = result;
             break;
