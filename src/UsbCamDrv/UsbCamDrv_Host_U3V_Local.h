@@ -119,11 +119,11 @@ extern T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 * Function declarations
 *********************************************************/
 
-static void _USB_HostU3V_Initialize(void * data);
- 
+static void _USB_HostU3V_Initialize(void *data);
+
 static void _USB_HostU3V_Deinitialize(void);
- 
-static void _USB_HostU3V_Reinitialize(void * msdInitData);
+
+static void _USB_HostU3V_Reinitialize(void *msdInitData);
 
 static void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
                                       USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,

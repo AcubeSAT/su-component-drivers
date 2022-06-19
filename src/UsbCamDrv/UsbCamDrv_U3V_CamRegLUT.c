@@ -14,7 +14,7 @@
  * Constant & Variable declarations
  *********************************************************/
 
-const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2] =
+const T_U3VCamRegLUTable U3V_CamRegAdrLUT[2U] =
 {
     /* #0 U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY */
     {
@@ -33,16 +33,16 @@ const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2] =
 
     /* #1 U3V_XIMEA_XIQ_MQ013CG_E2_LUT_ENTRY */
     {
-        .camRegBaseAddress              = 0x0ull,   //tbd
-        .SBRMOffset                     = 0x0ull,   //tbd
-        .temperature_Reg                = 0x0ull,   //tbd
-        .deviceReset_Reg                = 0x0ull,   //tbd
-        .singleFrameAcquisitionMode_Reg = 0x0ull,   //tbd
-        .acquisitionMode_Reg            = 0x0ull,   //tbd
-        .acquisitionStart_Reg           = 0x0ull,   //tbd
-        .acquisitionStop_Reg            = 0x0ull,   //tbd
-        .colorCodingID_Reg              = 0x0ull,   //tbd
-        .pixelFormatCtrlVal_Int_Sel     = 0x0ul
+        .camRegBaseAddress              = 0x0ULL,   //tbd
+        .SBRMOffset                     = 0x0ULL,   //tbd
+        .temperature_Reg                = 0x0ULL,   //tbd
+        .deviceReset_Reg                = 0x0ULL,   //tbd
+        .singleFrameAcquisitionMode_Reg = 0x0ULL,   //tbd
+        .acquisitionMode_Reg            = 0x0ULL,   //tbd
+        .acquisitionStart_Reg           = 0x0ULL,   //tbd
+        .acquisitionStop_Reg            = 0x0ULL,   //tbd
+        .colorCodingID_Reg              = 0x0ULL,   //tbd
+        .pixelFormatCtrlVal_Int_Sel     = 0x0UL
     }
 };
 

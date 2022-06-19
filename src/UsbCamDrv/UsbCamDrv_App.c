@@ -236,8 +236,8 @@ void UsbCamDrv_Tasks(void)
             {
                 result = USB_U3VHost_StartImgPayldTransfer(UsbU3VAppData.u3vObj,
                                                            (void *)&UsbU3VAppData.imgPayloadContainer.imgPldBfr1,
-                                                           (size_t)U3V_IN_BUFFER_MAX_SIZE,
-                                                           U3V_HOST_EVENT_IMG_PLD_RECEIVED);
+                                                           (size_t)U3V_IN_BUFFER_MAX_SIZE);
+                //TODO: check result and react when not OK
             }    
             else if (UsbU3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_TRAILER_COMPLETE)
             {
@@ -248,11 +248,6 @@ void UsbCamDrv_Tasks(void)
                 /* error, unspecified state */
             }
 
-            // if (result == U3V_HOST_RESULT_SUCCESS)
-            // {
-            //     // UsbU3VAppData.state = USB_APP_STATE_NOP;
-            //     // result = USB_U3VHost_AcquisitionStop(UsbU3VAppData.u3vObj);
-            // }
             break;
 
         case USB_APP_STATE_STOP_IMAGE_ACQ:
@@ -440,6 +435,7 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
                 /* Img Payload block with Image data */
                 //TODO: block counter, recall & initiate DMA transf
             }
+            break;
 
         case U3V_HOST_EVENT_WRITE_COMPLETE:
         case U3V_HOST_EVENT_READ_COMPLETE:

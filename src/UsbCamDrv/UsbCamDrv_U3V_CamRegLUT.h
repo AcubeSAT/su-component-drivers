@@ -42,8 +42,7 @@ typedef struct
     uint64_t colorCodingID_Reg;                     /* length = 4 */
     uint64_t payloadSizeVal_Reg;                    /* length = 4 */
     uint32_t pixelFormatCtrlVal_Int_Sel;
-
-} UsbCamDrv_U3V_CamRegLuTable;
+} T_U3VCamRegLUTable;
 
 
 /********************************************************
@@ -55,7 +54,7 @@ typedef struct
 * Variable declarations
 *********************************************************/
 
-extern const UsbCamDrv_U3V_CamRegLuTable U3V_CamRegAdrLUT[2];
+extern const T_U3VCamRegLUTable U3V_CamRegAdrLUT[2U];
 
 
 /********************************************************

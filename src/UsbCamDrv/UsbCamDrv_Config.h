@@ -19,20 +19,17 @@ extern "C" {
 
 #define U3V_CAM_MODEL_SEL                           U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY
 
-#define U3V_HOST_INSTANCES_NUMBER                   1u
-#define U3V_HOST_ATTACH_LISTENERS_NUMBER            1u
+#define U3V_HOST_INSTANCES_NUMBER                   1U
+#define U3V_HOST_ATTACH_LISTENERS_NUMBER            1U
 
-#define U3V_ENDIANNESS                              LITTLE_ENDIAN
-#define U3V_PIXEL_FORMAT                            _RGB8
-#define U3V_PIXEL_BITSIZE                           24u
-
-#define U3V_IN_BUFFER_MAX_SIZE                      512u
-#define U3V_REQ_TIMEOUT                             5000u
-#define U3V_REQ_READWRITE_RETRY_TIMES_LMT           50000u
+#define U3V_IN_BUFFER_MAX_SIZE                      512U
+#define U3V_REQ_TIMEOUT                             5000U
+#define U3V_REQ_READWRITE_RETRY_TIMES_LMT           50000U
 
 #define TARGET_ARCH_BYTE_ALIGNMENT                  8U      /* Byte alignment / padding for MCU architecture */
 
-// DEBUG XULT board
+
+//TODO: remove or replace before integration - DEBUG XULT board specific definitions
 /*** LED Macros for LED0 ***/
 #define LED0_Toggle()                               (PIOA_REGS->PIO_ODSR ^= (1<<23))
 #define LED0_On()                                   (PIOA_REGS->PIO_CODR = (1<<23))
