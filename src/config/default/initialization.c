@@ -261,7 +261,7 @@ void SYS_Initialize ( void* data )
     /* Initialize USB Driver */
     sysObj.drvUSBHSV1Object = DRV_USBHSV1_Initialize(DRV_USBHSV1_INDEX_0, (SYS_MODULE_INIT *) &drvUSBInit);
 
-    UsbCamDrv_Initialize();
+    U3VCamDriver_Initialize();
 
     APP_Initialize();
 

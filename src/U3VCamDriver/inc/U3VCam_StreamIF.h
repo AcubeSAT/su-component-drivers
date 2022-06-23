@@ -1,17 +1,14 @@
 //
-// Created by mojo on 17/02/22.
+// Created by fomarko on 17/02/22.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_U3V_STREAMING_IF_H
-#define COMPONENT_DRIVERS_USBCAMDRV_U3V_STREAMING_IF_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_STREAMIF_H
+#define COMPONENT_DRIVERS_U3VCAM_STREAMIF_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
 
-#include "UsbCamDrv_DeviceClassSpec_U3V.h"
-#include "UsbCamDrv_Config.h"
+// #include "U3VCam_DeviceClassSpecs.h"
+#include "U3VCam_Config.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,21 +56,21 @@ typedef struct
     uint32_t        offsetY;
     uint16_t        paddingX;
     uint16_t        reserved2;          /* Set 0 on Tx, ignore on Rx */
-} T_U3VSiImageLeader;
+} T_U3VStrmIfImageLeader;
 
 
-// typedef T_U3VSiImageLeader T_U3VSiImageExtChunkLeader;  /* payloadType = 0x4001 for Image Extended Chunk */
+// typedef T_U3VStrmIfImageLeader T_U3VSiImageExtChunkLeader;  /* payloadType = 0x4001 for Image Extended Chunk */
 
-// typedef struct
-// {
-//     uint32_t        magicKey;           /* "U3VL" for Leader */
-// 	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
-// 	uint16_t        leaderSize;
-// 	uint64_t        blockID;
-// 	uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
-// 	uint16_t        payloadType;        /* 0x4000 for Chunk */
-//     uint64_t        timestamp;
-// } T_U3VSiChunkLeader;
+typedef struct
+{
+    uint32_t        magicKey;           /* "U3VL" for Leader */
+	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        leaderSize;
+	uint64_t        blockID;
+	uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        payloadType;        /* 0x4000 for Chunk */
+    uint64_t        timestamp;
+} T_U3VSiChunkLeader;
 
 
 typedef struct
@@ -86,7 +83,7 @@ typedef struct
     uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
     uint64_t        validPayloadSize;
     uint32_t        sizeY;
-} T_U3VSiImageTrailer;
+} T_U3VStrmIfImageTrailer;
 
 // typedef struct
 // {
@@ -124,7 +121,7 @@ typedef struct
 	uint64_t blockSize;
 	uint32_t maxLeaderSize;
 	uint32_t maxTrailerSize;
-} T_U3VStreamConfig;
+} T_U3VStreamIfConfig;
 
 typedef enum
 {
@@ -146,8 +143,8 @@ typedef enum
 typedef struct
 {
     T_U3VImgPayldTransfState    imgPldTransfSt;
-    // T_U3VSiImageLeader          siLeader;
-    // T_U3VSiImageTrailer         siTrailer;
+    // T_U3VStrmIfImageLeader      siLeader;
+    // T_U3VStrmIfImageTrailer     siTrailer;
     uint8_t                     imgPldBfr1[U3V_IN_BUFFER_MAX_SIZE];
     T_U3VImgPayldBfrState       imgPldBfr1St;
     // uint8_t                     imgPldBfr2[U3V_IN_BUFFER_MAX_SIZE];
@@ -175,4 +172,4 @@ typedef struct
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_U3V_STREAMING_IF_H
+#endif //COMPONENT_DRIVERS_U3VCAM_STREAMIF_H

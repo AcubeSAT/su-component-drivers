@@ -1,9 +1,9 @@
 //
-// Created by mojo on 11/05/22.
+// Created by fomarko on 11/05/22.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_U3V_CAMREGLUT_H
-#define COMPONENT_DRIVERS_USBCAMDRV_U3V_CAMREGLUT_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_REGISTERLUT_H
+#define COMPONENT_DRIVERS_U3VCAM_REGISTERLUT_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -42,7 +42,7 @@ typedef struct
     uint64_t colorCodingID_Reg;                     /* length = 4 */
     uint64_t payloadSizeVal_Reg;                    /* length = 4 */
     uint32_t pixelFormatCtrlVal_Int_Sel;
-} T_U3VCamRegLUTable;
+} T_U3VCamRegisterLUT;
 
 
 /********************************************************
@@ -54,7 +54,7 @@ typedef struct
 * Variable declarations
 *********************************************************/
 
-extern const T_U3VCamRegLUTable U3V_CamRegAdrLUT[2U];
+extern const T_U3VCamRegisterLUT U3VCamRegisterLUT[2U];
 
 
 /********************************************************
@@ -67,4 +67,4 @@ extern const T_U3VCamRegLUTable U3V_CamRegAdrLUT[2U];
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_U3V_CAMREGLUT_H
+#endif //COMPONENT_DRIVERS_U3VCAM_REGISTERLUT_H

@@ -1,9 +1,9 @@
 //
-// Created by mojo on 04/02/22.
+// Created by fomarko on 04/02/22.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_H
-#define COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_HOST_H
+#define COMPONENT_DRIVERS_U3VCAM_HOST_H
 
 
 #ifdef __cplusplus
@@ -11,12 +11,14 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 #include "usb/usb_host_client_driver.h"
-#include "UsbCamDrv_DeviceClassSpec_U3V.h"
-#include "UsbCamDrv_U3V_Streaming_IF.h"
-#include "UsbCamDrv_Config.h"
+#include "U3VCam_DeviceClassSpecs.h"
+#include "U3VCam_Config.h"
+#include "U3VCam_StreamIF.h"
 
 
 /********************************************************
@@ -42,7 +44,6 @@ typedef uintptr_t T_U3VHostRequestHandle;
 typedef uintptr_t T_U3VHostObject;
 typedef USB_HOST_DEVICE_OBJ_HANDLE T_U3VHostDeviceObjHandle;  /* Inherited type from usb_host.h */
 
-
 typedef enum
 {
     U3V_HOST_RESULT_FAILURE             = U3V_HOST_RESULT_MIN,
@@ -60,8 +61,7 @@ typedef struct
     T_U3VHostTransferHandle  transferHandle;      /* Transfer handle of this transfer */
     T_U3VHostResult          result;              /* Termination transfer status */
     size_t                   length;              /* Size of the data transferred in the request */
-} T_U3VHostEventReadCompleteData,
-    T_U3VHostEventWriteCompleteData;
+} T_U3VHostEventReadCompleteData, T_U3VHostEventWriteCompleteData;
 
 typedef enum
 {
@@ -73,7 +73,6 @@ typedef enum
 typedef enum
 {
     U3V_HOST_EVENT_RESPONE_NONE  = 0     /* This means no response is required */
-
 } T_U3VHostEventResponse;
 
 typedef enum
@@ -116,7 +115,6 @@ typedef struct
 } T_U3VDeviceInfo;
 
 
-
 /********************************************************
 * Constant declarations
 *********************************************************/
@@ -133,58 +131,57 @@ extern USB_HOST_CLIENT_DRIVER   gUSBHostU3VClientDriver;
 * Function declarations
 *********************************************************/
 
-T_U3VHostResult USB_U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventHandler,
-                                                  uintptr_t context);
+T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventHandler, uintptr_t context);
 
-T_U3VHostResult USB_U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle,
-                                                  T_U3VHostDetachEventHandler detachEventHandler,
-                                                  uintptr_t context);
+T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle,
+                                              T_U3VHostDetachEventHandler detachEventHandler,
+                                              uintptr_t context);
 
-T_U3VHostDeviceObjHandle USB_U3VHost_DeviceObjectHandleGet(T_U3VHostObject u3vDeviceObj);  //to review return type
+T_U3VHostDeviceObjHandle U3VHost_DeviceObjectHandleGet(T_U3VHostObject u3vDeviceObj);  //TODO: review return type
 
-T_U3VHostHandle USB_U3VHost_Open(T_U3VHostObject u3vDeviceObj);
+T_U3VHostHandle U3VHost_Open(T_U3VHostObject u3vDeviceObj);
 
-void USB_U3VHost_Close(T_U3VHostHandle u3vDeviceHandle);
+void U3VHost_Close(T_U3VHostHandle u3vDeviceHandle);
 
-T_U3VHostResult USB_U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
+T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
 
-T_U3VHostResult USB_U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj);
+T_U3VHostResult U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *const pixelCoding);
+T_U3VHostResult U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *const pixelCoding);
 
-T_U3VHostResult USB_U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, const uint32_t pixelCodingVal);
+T_U3VHostResult U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, const uint32_t pixelCodingVal);
 
-T_U3VHostResult USB_U3VHost_GetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode *acqMode);
+T_U3VHostResult U3VHost_GetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode *acqMode);
 
-T_U3VHostResult USB_U3VHost_SetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode acqMode);
+T_U3VHostResult U3VHost_SetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode acqMode);
 
-T_U3VHostResult USB_U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
+T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_ResetStreamCh(T_U3VHostObject u3vDeviceObj);
+T_U3VHostResult U3VHost_ResetStreamCh(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_SetupStreamTransferParams(T_U3VHostObject u3vDeviceObj, T_U3VStreamConfig *streamConfig);
+T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostObject u3vDeviceObj, T_U3VStreamIfConfig *streamConfig);
 
-T_U3VHostResult USB_U3VHost_StreamChControl(T_U3VHostObject u3vDeviceObj, bool enable);
+T_U3VHostResult U3VHost_StreamChControl(T_U3VHostObject u3vDeviceObj, bool enable);
 
-T_U3VHostResult USB_U3VHost_GetCamSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
+T_U3VHostResult U3VHost_GetCamSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr);    /* buffer size must be at least 64bytes long */
 
-T_U3VHostResult USB_U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr);     /* buffer size must be at least 64bytes long */
+T_U3VHostResult U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr);     /* buffer size must be at least 64bytes long */
 
-T_U3VHostResult USB_U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *const pCamTemp);
+T_U3VHostResult U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *const pCamTemp);
 
-T_U3VHostResult USB_U3VHost_AcquisitionStart(T_U3VHostObject u3vDeviceObj);
+T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj);
+T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj);
+T_U3VHostResult U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj);
 
-T_U3VHostResult USB_U3VHost_GetImgPayloadSize(T_U3VHostObject u3vDeviceObj, uint32_t *pldSize);
+T_U3VHostResult U3VHost_GetImgPayloadSize(T_U3VHostObject u3vDeviceObj, uint32_t *pldSize);
 
-T_U3VHostResult USB_U3VHost_StartImgPayldTransfer(T_U3VHostObject u3vDeviceObj, void *imgBfr, size_t size);
+T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostObject u3vDeviceObj, void *imgBfr, size_t size);
 
 
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_H
+#endif //COMPONENT_DRIVERS_U3VCAM_HOST_H

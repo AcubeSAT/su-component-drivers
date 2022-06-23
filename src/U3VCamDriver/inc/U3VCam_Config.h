@@ -1,11 +1,12 @@
 //
-// Created by mojo on 8/12/21.
+// Created by fomarko on 8/12/21.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_CONFIG_H
-#define COMPONENT_DRIVERS_USBCAMDRV_CONFIG_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_CONFIG_H
+#define COMPONENT_DRIVERS_U3VCAM_CONFIG_H
 
-#include "UsbCamDrv_U3V_CamRegLUT.h"
+
+#include "U3VCam_RegisterLUT.h"
 
 
 #ifdef __cplusplus
@@ -26,7 +27,7 @@ extern "C" {
 #define U3V_REQ_TIMEOUT                             5000U
 #define U3V_REQ_READWRITE_RETRY_TIMES_LMT           50000U
 
-#define TARGET_ARCH_BYTE_ALIGNMENT                  8U      /* Byte alignment / padding for MCU architecture */
+#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U      /* Byte alignment / padding for MCU architecture */
 
 
 //TODO: remove or replace before integration - DEBUG XULT board specific definitions
@@ -60,4 +61,4 @@ extern "C" {
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_CONFIG_H
+#endif //COMPONENT_DRIVERS_U3VCAM_CONFIG_H

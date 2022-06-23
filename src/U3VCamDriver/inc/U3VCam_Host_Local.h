@@ -1,9 +1,9 @@
 //
-// Created by mojo on 04/02/22.
+// Created by fomarko on 04/02/22.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_LOCAL_H
-#define COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_LOCAL_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
+#define COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
 
 
 #ifdef __cplusplus
@@ -11,9 +11,9 @@ extern "C" {
 #endif
 
 
-#include "UsbCamDrv_Host_U3V.h"
-#include "UsbCamDrv_U3V_Control_IF_local.h"
-#include "UsbCamDrv_Config.h"
+#include "U3VCam_Host.h"
+#include "U3VCam_ControlIF_Local.h"
+#include "U3VCam_Config.h"
 
 
 /********************************************************
@@ -52,7 +52,7 @@ typedef struct
     USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
     USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
     USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
-    T_U3VControlChannelObj              *chanObj;           /* Control channel object data */
+    T_U3VControlIfObj                   *chanObj;           /* Control channel object data */
 } T_U3VHostControlChannelHandle;
 
 typedef struct
@@ -84,17 +84,17 @@ typedef struct
 
 typedef struct 
 {
-	uint16_t fileVersionSubminor;
-	uint8_t  fileVersionMinor;
-	uint8_t  fileVersionMajor;
-	uint32_t schema;
-	uint64_t address;
-	uint64_t size;
-	uint64_t unknown3;
-	uint64_t unknown4;
-	uint64_t unknown5;
-	uint64_t unknown6;
-	uint64_t unknown7;
+	uint16_t    fileVersionSubminor;
+	uint8_t     fileVersionMinor;
+	uint8_t     fileVersionMajor;
+	uint32_t    schema;
+	uint64_t    address;
+	uint64_t    size;
+	uint64_t    unknown3;
+	uint64_t    unknown4;
+	uint64_t    unknown5;
+	uint64_t    unknown6;
+	uint64_t    unknown7;
 } T_U3VManifestEntry;
 
 typedef enum 
@@ -102,6 +102,7 @@ typedef enum
     U3V_MANIFEST_SCHEMA_RAW = 0x00,
     U3V_MANIFEST_SCHEMA_ZIP = 0x01
 } T_U3VManifestSchema;
+
 
 /********************************************************
 * Constant declarations
@@ -119,46 +120,7 @@ extern T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 * Function declarations
 *********************************************************/
 
-static void _USB_HostU3V_Initialize(void *data);
-
-static void _USB_HostU3V_Deinitialize(void);
-
-static void _USB_HostU3V_Reinitialize(void *msdInitData);
-
-static void _USB_HostU3V_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
-                                      USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
-                                      USB_DEVICE_DESCRIPTOR *deviceDescriptor);
-
-static void _USB_HostU3V_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle);
-
-static void _USB_HostU3V_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle);
-
-static void _USB_HostU3V_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,
-                                         USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
-                                         size_t nInterfaces,
-                                         uint8_t *descriptor);
-
-static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _USB_HostU3V_InterfaceEventHandler(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
-                                                                                   USB_HOST_DEVICE_INTERFACE_EVENT event,
-                                                                                   void *eventData,
-                                                                                   uintptr_t context);
-
-static void _USB_HostU3V_InterfaceTasks(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
-
-static void _USB_HostU3V_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
-
-static USB_HOST_DEVICE_EVENT_RESPONSE _USB_HostU3V_DeviceEventHandler(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
-                                                                      USB_HOST_DEVICE_EVENT event,
-                                                                      void *eventData,
-                                                                      uintptr_t context);
-
-static int32_t _USB_HostU3V_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE deviceClientHandle);
-
-static int32_t _USB_HostU3V_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle);
-
-static int32_t _USB_HostU3V_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle);
-
-T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
+T_U3VHostResult _U3VHost_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 
 
 
@@ -166,4 +128,4 @@ T_U3VHostResult _USB_HostU3V_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_HOST_U3V_LOCAL_H
+#endif //COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H

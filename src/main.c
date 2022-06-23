@@ -74,12 +74,12 @@ void xTaskDrvUsbHsV1Tasks(void *pvParameters)
     }
 };
 
-void xTaskUsbCamDrvTasks(void *pvParameters)
+void xTaskU3VCamDriverTasks(void *pvParameters)
 {
     for(;;)
     {
         /* USB Camera Driver Task Routine */
-        UsbCamDrv_Tasks();
+        U3VCamDriver_Tasks();
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 };
@@ -93,7 +93,7 @@ int main ( void )
     xTaskCreate(xTaskLedBlink, "Task1_LED_Blink", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(xTaskUsbHostTasks, "USB_HOST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(xTaskDrvUsbHsV1Tasks, "DRV_USBHSV1_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(xTaskUsbCamDrvTasks, "USB_CAM_DRV_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(xTaskU3VCamDriverTasks, "USB_CAM_DRV_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
 
     vTaskStartScheduler(); // never exits
 

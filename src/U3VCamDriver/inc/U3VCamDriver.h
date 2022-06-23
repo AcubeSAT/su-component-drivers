@@ -1,11 +1,13 @@
 //
-// Created by mojo on 8/12/21.
+// Created by fomarko on 8/12/21.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_H
-#define COMPONENT_DRIVERS_USBCAMDRV_H
+#ifndef COMPONENT_DRIVERS_U3VCAMDRIVER_H
+#define COMPONENT_DRIVERS_U3VCAMDRIVER_H
 
-#include "UsbCamDrv_App.h"
+
+#include "U3VCam_App.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,4 +44,4 @@ extern "C" {
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_H
+#endif //COMPONENT_DRIVERS_U3VCAMDRIVER_H

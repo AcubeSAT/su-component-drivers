@@ -1,8 +1,8 @@
 //
-// Created by mojo on 11/05/22.
+// Created by fomarko on 11/05/22.
 //
 
-#include "UsbCamDrv_U3V_CamRegLUT.h"
+#include "U3VCam_RegisterLUT.h"
 
 
 
@@ -14,7 +14,7 @@
  * Constant & Variable declarations
  *********************************************************/
 
-const T_U3VCamRegLUTable U3V_CamRegAdrLUT[2U] =
+const T_U3VCamRegisterLUT U3VCamRegisterLUT[2U] =
 {
     /* #0 U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY */
     {

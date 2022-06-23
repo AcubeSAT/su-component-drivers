@@ -66,7 +66,7 @@
 #include "system/debug/sys_debug.h"
 #include "driver/i2c/drv_i2c.h"
 #include "app.h"
-#include "UsbCamDrv/UsbCamDrv.h"
+#include "U3VCamDriver/inc/U3VCamDriver.h"
 
 
 

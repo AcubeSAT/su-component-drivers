@@ -1,16 +1,13 @@
 //
-// Created by mojo on 17/02/22.
+// Created by fomarko on 17/02/22.
 //
 
-#ifndef COMPONENT_DRIVERS_USBCAMDRV_U3V_EVENT_IF_H
-#define COMPONENT_DRIVERS_USBCAMDRV_U3V_EVENT_IF_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_EVENTIF_H
+#define COMPONENT_DRIVERS_U3VCAM_EVENTIF_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
 
-#include "UsbCamDrv_DeviceClassSpec_U3V.h"
+#include "U3VCam_DeviceClassSpecs.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,4 +45,4 @@ extern "C" {
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_USBCAMDRV_U3V_EVENT_IF_H
+#endif //COMPONENT_DRIVERS_U3VCAM_EVENTIF_H
