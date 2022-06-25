@@ -53,6 +53,10 @@
                 <itemPath>../src/config/default/peripheral/twihs/master/plib_twihs0_master.h</itemPath>
               </logicalFolder>
             </logicalFolder>
+            <logicalFolder name="f7" displayName="xdmac" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/xdmac/plib_xdmac_common.h</itemPath>
+              <itemPath>../src/config/default/peripheral/xdmac/plib_xdmac.h</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f2" displayName="system" projectFiles="true">
             <logicalFolder name="f2" displayName="cache" projectFiles="true">
@@ -60,6 +64,10 @@
             </logicalFolder>
             <logicalFolder name="f3" displayName="debug" projectFiles="true">
               <itemPath>../src/config/default/system/debug/sys_debug.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f5" displayName="dma" projectFiles="true">
+              <itemPath>../src/config/default/system/dma/sys_dma.h</itemPath>
+              <itemPath>../src/config/default/system/dma/sys_dma_mapping.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f1" displayName="int" projectFiles="true">
               <itemPath>../src/config/default/system/int/sys_int.h</itemPath>
@@ -274,6 +282,9 @@
                 <itemPath>../src/config/default/peripheral/twihs/master/plib_twihs0_master.c</itemPath>
               </logicalFolder>
             </logicalFolder>
+            <logicalFolder name="f7" displayName="xdmac" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/xdmac/plib_xdmac.c</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f1" displayName="stdio" projectFiles="true">
             <itemPath>../src/config/default/stdio/gcc_monitor.c</itemPath>
@@ -282,6 +293,9 @@
           <logicalFolder name="f3" displayName="system" projectFiles="true">
             <logicalFolder name="f2" displayName="cache" projectFiles="true">
               <itemPath>../src/config/default/system/cache/sys_cache.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f4" displayName="dma" projectFiles="true">
+              <itemPath>../src/config/default/system/dma/sys_dma.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f1" displayName="int" projectFiles="true">
               <itemPath>../src/config/default/system/int/src/sys_int.c</itemPath>
@@ -372,7 +386,6 @@
       </logicalFolder>
       <itemPath>Makefile</itemPath>
       <itemPath>../src/config/default/harmony-manifest-success.yml</itemPath>
-      <itemPath>../src/config/default/harmony-manifest-failure.yml</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -395,8 +408,8 @@
         <platform>2</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMV71_DFP" vendor="Microchip" version="4.6.90"/>
         <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
+        <pack name="SAMV71_DFP" vendor="Microchip" version="4.6.90"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -474,7 +487,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../;../src/config;../src/config/default;../src/FreeRTOS/Source/include;../src/FreeRTOS/Source/portable/GCC/SAM/CM7;../src/U3VCamDriver;../src/U3VCamDriver/inc"/>
+                  value="../;../src;../src/FreeRTOS/Source/include;../src/FreeRTOS/Source/portable/GCC/SAM/CM7;../src/U3VCamDriver;../src/U3VCamDriver/inc;../src/config;../src/config/default;../src/packs/ATSAMV71Q21B_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
@@ -571,7 +584,8 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exceptions" value="true"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="../src;../src/config/default;../src/packs/ATSAMV71Q21B_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>

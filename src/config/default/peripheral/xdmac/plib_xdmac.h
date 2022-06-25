@@ -1,23 +1,21 @@
 /*******************************************************************************
-  DMA System Service Mapping File
+  XDMAC PLIB
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    sys_dma_mapping.h
+    plib_xdmac.h
 
   Summary:
-    DMA System Service mapping file.
+    XDMAC PLIB Header File
 
   Description:
-    This header file contains the mapping of the APIs defined in the API header
-    to either the function implementations or macro implementation or the
-    specific variant implementation.
+    None
+
 *******************************************************************************/
 
-//DOM-IGNORE-BEGIN
-/******************************************************************************
+/*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
@@ -39,26 +37,64 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
-//DOM-IGNORE-END
 
-#ifndef SYS_DMA_MAPPING_H
-#define SYS_DMA_MAPPING_H
+#ifndef PLIB_XDMAC_H
+#define PLIB_XDMAC_H
 
+#include <stddef.h>
+#include <stdbool.h>
+#include "plib_xdmac_common.h"
+
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    extern "C" {
+
+#endif
+// DOM-IGNORE-END
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: DMA System Service Mapping
+// Section: Interface
 // *****************************************************************************
 // *****************************************************************************
 
-#include "peripheral/xdmac/plib_xdmac.h"
+/****************************** XDMAC Data Types ******************************/
+/* XDMAC Channels */
+typedef enum {
+    XDMAC_CHANNEL_0 = 0,
+} XDMAC_CHANNEL;
 
-#define SYS_DMA_ChannelCallbackRegister(channel, eventHandler, context)  XDMAC_ChannelCallbackRegister((XDMAC_CHANNEL)channel, (XDMAC_CHANNEL_CALLBACK)eventHandler, context)
 
-#define SYS_DMA_ChannelTransfer(channel, srcAddr, destAddr, blockSize)  XDMAC_ChannelTransfer((XDMAC_CHANNEL)channel, srcAddr, destAddr, blockSize)
+/****************************** XDMAC API *********************************/
 
-#define SYS_DMA_ChannelIsBusy(channel)  XDMAC_ChannelIsBusy((XDMAC_CHANNEL)channel)
+void XDMAC_Initialize( void );
 
-#define SYS_DMA_ChannelDisable(channel)  XDMAC_ChannelDisable((XDMAC_CHANNEL)channel)
+void XDMAC_ChannelCallbackRegister( XDMAC_CHANNEL channel, const XDMAC_CHANNEL_CALLBACK eventHandler, const uintptr_t contextHandle );
 
-#endif // SYS_DMA_MAPPING_H
+bool XDMAC_ChannelTransfer( XDMAC_CHANNEL channel, const void *srcAddr, const void *destAddr, size_t blockSize );
+
+bool XDMAC_ChannelIsBusy (XDMAC_CHANNEL channel);
+
+void XDMAC_ChannelDisable (XDMAC_CHANNEL channel);
+
+XDMAC_CHANNEL_CONFIG XDMAC_ChannelSettingsGet (XDMAC_CHANNEL channel);
+
+bool XDMAC_ChannelSettingsSet (XDMAC_CHANNEL channel, XDMAC_CHANNEL_CONFIG setting);
+
+void XDMAC_ChannelBlockLengthSet (XDMAC_CHANNEL channel, uint16_t length);
+
+void XDMAC_ChannelSuspend (XDMAC_CHANNEL channel);
+
+void XDMAC_ChannelResume (XDMAC_CHANNEL channel);
+
+XDMAC_TRANSFER_EVENT XDMAC_ChannelTransferStatusGet(XDMAC_CHANNEL channel);
+
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    }
+
+#endif
+// DOM-IGNORE-END
+#endif // PLIB_XDMAC_H

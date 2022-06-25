@@ -237,7 +237,7 @@ void SYS_Initialize ( void* data )
     CLOCK_Initialize();
     PIO_Initialize();
 
-
+    XDMAC_Initialize();
 
 //	SYSTICK_TimerInitialize();
 
