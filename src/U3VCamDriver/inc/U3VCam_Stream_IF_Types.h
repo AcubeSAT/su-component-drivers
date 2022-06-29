@@ -2,12 +2,11 @@
 // Created by fomarko on 17/02/22.
 //
 
-#ifndef COMPONENT_DRIVERS_U3VCAM_STREAMIF_H
-#define COMPONENT_DRIVERS_U3VCAM_STREAMIF_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_STREAM_IF_TYPES_H
+#define COMPONENT_DRIVERS_U3VCAM_STREAM_IF_TYPES_H
 
 
-// #include "U3VCam_DeviceClassSpecs.h"
-#include "U3VCam_Config.h"
+#include "stdint.h"
 
 
 #ifdef __cplusplus
@@ -58,7 +57,6 @@ typedef struct
     uint16_t        reserved2;          /* Set 0 on Tx, ignore on Rx */
 } T_U3VStrmIfImageLeader;
 
-
 // typedef T_U3VStrmIfImageLeader T_U3VSiImageExtChunkLeader;  /* payloadType = 0x4001 for Image Extended Chunk */
 
 typedef struct
@@ -71,7 +69,6 @@ typedef struct
 	uint16_t        payloadType;        /* 0x4000 for Chunk */
     uint64_t        timestamp;
 } T_U3VSiChunkLeader;
-
 
 typedef struct
 {
@@ -112,64 +109,10 @@ typedef struct
 
 #pragma pack(pop)
 
-typedef struct 
-{
-	uint64_t imageSize;
-	uint64_t chunkDataSize;
-	uint32_t maxBlockSize;
-	uint32_t blockPadding;
-	uint64_t blockSize;
-	uint32_t maxLeaderSize;
-	uint32_t maxTrailerSize;
-} T_U3VStreamIfConfig;
-
-typedef enum
-{
-    IMG_PLD_BFR_READY_TO_WRITE,
-    IMG_PLD_BFR_WRITE_STATE_ACTV,
-    IMG_PLD_BFR_READY_TO_READ,
-    IMG_PLD_BFR_READ_STATE_ACTV,
-} T_U3VImgPayldBfrState;
-
-typedef enum
-{
-    SI_IMG_TRANSF_STATE_START,
-    SI_IMG_TRANSF_STATE_LEADER_COMPLETE,
-    SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE,
-    SI_IMG_TRANSF_STATE_TRAILER_COMPLETE,
-    SI_IMG_TRANSF_STATE_ERROR
-} T_U3VImgPayldTransfState;
-
-typedef struct
-{
-    T_U3VImgPayldTransfState    imgPldTransfSt;
-    // T_U3VStrmIfImageLeader      siLeader;
-    // T_U3VStrmIfImageTrailer     siTrailer;
-    uint8_t                     imgPldBfr1[U3V_IN_BUFFER_MAX_SIZE];
-    T_U3VImgPayldBfrState       imgPldBfr1St;
-    // uint8_t                     imgPldBfr2[U3V_IN_BUFFER_MAX_SIZE];
-    // T_U3VImgPayldBfrState       imgPldBfr2St;
-} T_U3VImgPayloadContainer;
-
-
-/********************************************************
-* Constant declarations
-*********************************************************/
-
-
-/********************************************************
-* Variable declarations
-*********************************************************/
-
-
-/********************************************************
-* Function declarations
-*********************************************************/
-
 
 
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_STREAMIF_H
+#endif //COMPONENT_DRIVERS_U3VCAM_STREAM_IF_TYPES_H

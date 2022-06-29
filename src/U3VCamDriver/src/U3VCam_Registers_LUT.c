@@ -2,7 +2,7 @@
 // Created by fomarko on 11/05/22.
 //
 
-#include "U3VCam_RegisterLUT.h"
+#include "U3VCam_Registers_LUT.h"
 
 
 

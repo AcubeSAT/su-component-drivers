@@ -5,9 +5,7 @@
 #include <string.h>
 #include "U3VCam_Host.h"
 #include "U3VCam_Host_Local.h"
-#include "U3VCam_DeviceClassSpecs.h"
-#include "U3VCam_ControlIF.h"
-#include "U3VCam_ControlIF_Local.h"
+#include "U3VCam_Device_Class_Specs.h"
 #include "math.h"
 
 

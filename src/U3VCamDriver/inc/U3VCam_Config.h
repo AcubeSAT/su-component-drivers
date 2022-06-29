@@ -6,7 +6,7 @@
 #define COMPONENT_DRIVERS_U3VCAM_CONFIG_H
 
 
-#include "U3VCam_RegisterLUT.h"
+#include "U3VCam_Registers_LUT.h"
 
 
 #ifdef __cplusplus

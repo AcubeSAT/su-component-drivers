@@ -2,11 +2,11 @@
 // Created by fomarko on 17/02/22.
 //
 
-#ifndef COMPONENT_DRIVERS_U3VCAM_EVENTIF_H
-#define COMPONENT_DRIVERS_U3VCAM_EVENTIF_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_EVENT_IF_TYPES_H
+#define COMPONENT_DRIVERS_U3VCAM_EVENT_IF_TYPES_H
 
 
-#include "U3VCam_DeviceClassSpecs.h"
+#include "stdint.h"
 
 
 #ifdef __cplusplus
@@ -45,4 +45,4 @@ extern "C" {
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_EVENTIF_H
+#endif //COMPONENT_DRIVERS_U3VCAM_EVENT_IF_TYPES_H

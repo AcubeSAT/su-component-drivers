@@ -2,12 +2,12 @@
 // Created by fomarko on 17/02/22.
 //
 
-#include "U3VCam_ControlIF.h"
-#include "U3VCam_ControlIF_Local.h"
+// #include "U3VCam_ControlIF.h"
+// #include "U3VCam_ControlIF_Local.h"
 #include "U3VCam_Host.h"
 #include "U3VCam_Host_Local.h"
-#include "U3VCam_Config.h"
-#include "U3VCam_DeviceClassSpecs.h"
+// #include "U3VCam_Config.h"
+// #include "U3VCam_Device_Class_Specs.h"
 // #include "FreeRTOS.h"
 // #include "task.h"
 
@@ -30,7 +30,6 @@ static inline void _FreeCtrlIfObjAllocSpace(T_U3VControlIfObj *pCtrlIfObj)
 * Constant & Variable declarations
 *********************************************************/
 
-T_U3VControlIfObj *controlIfObjData; // DEBUG - monitor data
 
 
 /********************************************************
@@ -179,8 +178,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VControlIfHandle *pU3vCtrlIf,
     /* copy address of allocated Control IF to input pU3vCtrlIf handle */
     *pU3vCtrlIf = (T_U3VControlIfHandle)ctrlIfobj;
 
-    /* keep data visible for monitor debug */
-    controlIfObjData = ctrlIfobj; // DEBUG
     return u3vResult;
 }
 
@@ -531,7 +528,6 @@ T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlIfHandle ctrlIfObj,
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                // vTaskDelay(pdMS_TO_TICKS(1));
             }
             
             /* Inspect the acknowledge buffer */
@@ -585,10 +581,6 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VControlIfHandle *pU3vCtrlIf)
     {
         ctrlIfobj = (T_U3VControlIfObj *)(*pU3vCtrlIf);
         u3vDev = (T_U3VHostInstanceObj *)(ctrlIfobj->u3vInstObj);
-        // wait_for_completion(&u3vInst->controlChHandle.ioctl_complete);
-        // if (!u3vInst->stalling_disabled &&
-        //     u3vInst->u3v_info->legacy_ctrl_ep_stall_enabled)
-        // 	reset_pipe(u3vInst, &u3vInst->control_info);
 
         _FreeCtrlIfObjAllocSpace(ctrlIfobj);
 
@@ -598,8 +590,6 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VControlIfHandle *pU3vCtrlIf)
         }
 
         *pU3vCtrlIf = 0;
-
-        controlIfObjData = NULL; // DEBUG
     }
     else
     {

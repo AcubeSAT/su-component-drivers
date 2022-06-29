@@ -13,8 +13,8 @@
 #include "configuration.h"
 // #include "definitions.h"
 #include "U3VCam_Host.h"
-#include "U3VCam_DeviceClassSpecs.h"
-#include "U3VCam_ControlIF.h"
+#include "U3VCam_Device_Class_Specs.h"
+// #include "U3VCam_ControlIF.h"
 
 
 #ifdef __cplusplus

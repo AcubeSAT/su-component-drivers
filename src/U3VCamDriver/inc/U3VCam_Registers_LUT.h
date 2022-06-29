@@ -2,13 +2,11 @@
 // Created by fomarko on 11/05/22.
 //
 
-#ifndef COMPONENT_DRIVERS_U3VCAM_REGISTERLUT_H
-#define COMPONENT_DRIVERS_U3VCAM_REGISTERLUT_H
+#ifndef COMPONENT_DRIVERS_U3VCAM_REGISTERS_LUT_H
+#define COMPONENT_DRIVERS_U3VCAM_REGISTERS_LUT_H
+
 
 #include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
 
 
 #ifdef __cplusplus
@@ -67,4 +65,4 @@ extern const T_U3VCamRegisterLUT U3VCamRegisterLUT[2U];
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_REGISTERLUT_H
+#endif //COMPONENT_DRIVERS_U3VCAM_REGISTERS_LUT_H

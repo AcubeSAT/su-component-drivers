@@ -5,7 +5,7 @@
 #include "U3VCam_App.h"
 #include "U3VCam_Host.h"
 #include "U3VCam_Config.h"
-#include "U3VCam_ControlIF.h"
+// #include "U3VCam_ControlIF.h"
 
 
 
