@@ -72,7 +72,7 @@ typedef struct
     T_U3VAppState               state;                 /* The U3V application's current state */
     T_U3VHostObject             u3vObj;                /* U3V Object */
     T_U3VHostHandle             u3vHostHandle;         /* Handle to the U3V device. */
-    T_U3VControlIfHandle   controlChHandle;       /* Handle to U3V Control Channel */
+    T_U3VControlIfHandle        controlChHandle;       /* Handle to U3V Control Channel */
     bool                        deviceIsAttached;      /* True if a device is attached */
     bool                        deviceWasDetached;     /* True if device was detached */
     float                       camTemperature;        /* Cam temperature in Celcius */

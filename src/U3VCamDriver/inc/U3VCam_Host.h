@@ -155,7 +155,7 @@ typedef struct
     // T_U3VStrmIfImageTrailer     siTrailer;
     uint8_t                     imgPldBfr1[U3V_IN_BUFFER_MAX_SIZE];
     T_U3VImgPayldBfrState       imgPldBfr1St;
-    // uint8_t                     imgPldBfr2[U3V_IN_BUFFER_MAX_SIZE];
+    // uint8_t                     imgPldBfr2[U3V_IN_BUFFER_MAX_SIZE]; //TODO: remove (temp dbg)
     // T_U3VImgPayldBfrState       imgPldBfr2St;
 } T_U3VImgPayloadContainer;
 

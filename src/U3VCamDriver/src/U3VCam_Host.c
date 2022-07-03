@@ -1138,14 +1138,17 @@ T_U3VHostResult U3VHost_ResetStreamCh(T_U3VHostObject u3vDeviceObj)
     USB_HOST_RESULT         hostResult;
     T_U3VHostResult         u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj    *u3vInstance;
-    T_U3VControlIfObj  *ctrlIfInstance;
+    T_U3VControlIfObj       *ctrlIfInstance;
+
+    USB_HOST_REQUEST_HANDLE tempReqHandle;
 
     u3vResult = (u3vDeviceObj == 0U)    ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         return u3vResult;
     }
-    hostResult = USB_HOST_DevicePipeHaltClear(u3vInstance->streamChHandle.bulkInPipeHandle, NULL, 0U);
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    hostResult = USB_HOST_DevicePipeHaltClear(u3vInstance->streamChHandle.bulkInPipeHandle, &tempReqHandle, 0U);
     u3vResult = _U3VHost_HostToU3VResultsMap(hostResult);
 
     return u3vResult;

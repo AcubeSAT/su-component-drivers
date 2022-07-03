@@ -27,8 +27,9 @@ extern "C" {
 #define U3V_REQ_TIMEOUT                             5000U
 #define U3V_REQ_READWRITE_RETRY_TIMES_LMT           50000U
 
-#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U      /* Byte alignment / padding for MCU architecture */
+#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding for MCU architecture */
 
+#define U3V_DMA_CH_SEL                              SYS_DMA_CHANNEL_0   /* SYS_DMA_SOURCE_ADDRESSING_MODE type */
 
 //TODO: remove or replace before integration - DEBUG XULT board specific definitions
 /*** LED Macros for LED0 ***/

@@ -6,6 +6,7 @@
 #include "U3VCam_Host.h"
 #include "U3VCam_Config.h"
 // #include "U3VCam_ControlIF.h"
+#include "system/dma/sys_dma.h"
 
 
 
@@ -35,6 +36,8 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
                                                          void *pEventData,
                                                          uintptr_t context);
 
+static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT dmaEvent, uintptr_t context);
+
 /********************************************************
 * Constant & Variable declarations
 *********************************************************/
@@ -44,6 +47,8 @@ T_U3VCamDriverInitStatus U3VCamDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
 T_U3VAppData USB_ALIGN U3VAppData;
 
 T_U3VStreamIfConfig streamConfigVals;
+
+uint8_t     imgBfrDst[U3V_IN_BUFFER_MAX_SIZE]; //TODO: debug remove
 
 /********************************************************
 * Function definitions
@@ -66,6 +71,12 @@ void U3VCamDriver_Initialize(void)
     U3VAppData.deviceWasDetached                = false;
 
     U3VCamDriver_InitStatus = DrvSts;
+
+    SYS_DMA_DataWidthSetup(U3V_DMA_CH_SEL, SYS_DMA_WIDTH_8_BIT);
+    SYS_DMA_AddressingModeSetup(U3V_DMA_CH_SEL,
+                                SYS_DMA_SOURCE_ADDRESSING_MODE_INCREMENTED, 
+                                SYS_DMA_DESTINATION_ADDRESSING_MODE_INCREMENTED);
+    SYS_DMA_ChannelCallbackRegister(U3V_DMA_CH_SEL, _USBHostU3VDmaTransfCbk, 0);
 }
 
 
@@ -235,8 +246,8 @@ void U3VCamDriver_Tasks(void)
                 (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE))
             {
                 result = U3VHost_StartImgPayldTransfer(U3VAppData.u3vObj,
-                                                           (void *)&U3VAppData.imgPayloadContainer.imgPldBfr1,
-                                                           (size_t)U3V_IN_BUFFER_MAX_SIZE);
+                                                       (void *)&U3VAppData.imgPayloadContainer.imgPldBfr1,
+                                                       (size_t)U3V_IN_BUFFER_MAX_SIZE);
                 //TODO: check result and react when not OK
             }    
             else if (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_TRAILER_COMPLETE)
@@ -434,6 +445,20 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
             {
                 /* Img Payload block with Image data */
                 //TODO: block counter, recall & initiate DMA transf
+                if (!SYS_DMA_ChannelIsBusy(U3V_DMA_CH_SEL))
+                {
+                    if (SYS_DMA_ChannelTransfer(U3V_DMA_CH_SEL,
+                                                pUsbU3VAppData->imgPayloadContainer.imgPldBfr1,
+                                                imgBfrDst, //TODO: add target dest addr ifaceW
+                                                readCompleteEventData->length))
+                    {
+                        pUsbU3VAppData->imgPayloadContainer.imgPldBfr1St = IMG_PLD_BFR_READ_STATE_ACTV;
+                    }
+                }
+                else
+                {
+                    pUsbU3VAppData->imgPayloadContainer.imgPldBfr1St = IMG_PLD_BFR_WRITE_STATE_ACTV;
+                }
             }
             break;
 
@@ -443,4 +468,10 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
             break;
     }
     return U3V_HOST_EVENT_RESPONE_NONE;
+}
+
+static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT dmaEvent, uintptr_t context)
+{
+    SYS_DMA_TRANSFER_EVENT event = dmaEvent;
+    //TODO sync with request?
 }
