@@ -437,324 +437,312 @@ T_U3VHostResult U3VHost_GetManifestFile(T_U3VHostObject u3vDeviceObj)
 }
 
 
-T_U3VHostResult U3VHost_GetPixelFormat(T_U3VHostObject u3vDeviceObj, uint32_t *const pixelCoding)
+T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostObject u3vDeviceObj, T_U3VMemRegInteger integerReg, uint32_t *const pReadValue)
 {
     T_U3VHostResult         u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj    *u3vInstance;
     T_U3VControlIfObj       *ctrlIfInstance;
 	uint32_t                bytesRead;
-    uint32_t                colorCdId;
-    uint64_t                colorCdIdRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)    ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    u3vResult = (pixelCoding == NULL)   ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
+    uint32_t                regValue;
+    uint64_t                regAddr;
 
     u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
     ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
 
-    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-    
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    u3vResult = (u3vDeviceObj == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (integerReg == 0U)       ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (pReadValue == NULL)     ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+
+    if (u3vResult == U3V_HOST_RESULT_SUCCESS)
     {
-        return u3vResult;
-    }
+        switch (integerReg)
+        {
+            case U3V_MEM_REG_INT_PIXELFORMAT:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].colorCodingID_Reg;
+                u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
+                                                      NULL,
+                                                      regAddr,
+                                                      sizeof(regValue),
+                                                      &bytesRead,
+                                                      (void *)&regValue);
+                /* value is stored on high byte (bits 24 to 31) */
+                regValue = (regValue >> 24U) & 0xFFUL;
+                break;
 
-    colorCdIdRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                      U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].colorCodingID_Reg;
+            case U3V_MEM_REG_INT_PAYLOAD_SIZE:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].payloadSizeVal_Reg;
+                u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
+                                                      NULL,
+                                                      regAddr,
+                                                      sizeof(regValue),
+                                                      &bytesRead,
+                                                      (void *)&regValue);
+                /* redundant assignment */
+                regValue = regValue;
+                break;
 
-    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                          NULL,
-                                          colorCdIdRegAdr,
-                                          sizeof(colorCdId),
-                                          &bytesRead,
-                                          (void *)&colorCdId);
+            case U3V_MEM_REG_INT_ACQUISITION_MODE:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].acquisitionMode_Reg;
+                u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
+                                                      NULL,
+                                                      regAddr,
+                                                      sizeof(regValue),
+                                                      &bytesRead,
+                                                      (void *)&regValue);
+                /* redundant assignment */
+                regValue = regValue;
+                break;
 
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
+            case U3V_MEM_REG_INT_DEVICE_RESET:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].deviceReset_Reg;
+                u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
+                                                      NULL,
+                                                      regAddr,
+                                                      sizeof(regValue),
+                                                      &bytesRead,
+                                                      (void *)&regValue);
+                /* value is stored in MSB (bit 31) */
+                regValue = (regValue >> 31U) & 0xFFUL;
+                break;
 
-    /* value is stored in higher byte (bits 24 to 31) */
-    *pixelCoding = (colorCdId >> 24U) & 0xFFUL;
+            default:
+                u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
+                break;
+        }
 
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_SetPixelFormat(T_U3VHostObject u3vDeviceObj, const uint32_t pixelCodingVal)
-{
-    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj        *u3vInstance;
-    T_U3VControlIfObj      *ctrlIfInstance;
-	uint32_t                    bytesWritten;
-    uint32_t                    colorCdId;
-    uint64_t                    colorCdIdRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    colorCdIdRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                      U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].colorCodingID_Reg;
-
-    /* value is stored in higher byte (bits 24 to 31) */
-    colorCdId = (pixelCodingVal << 24U) & 0xFF000000UL;
-
-    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                           NULL,
-                                           colorCdIdRegAdr,
-                                           sizeof(colorCdId),
-                                           &bytesWritten,
-                                           (void *)&colorCdId);
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_GetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode *acqMode)
-{
-    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj        *u3vInstance;
-    T_U3VControlIfObj      *ctrlIfInstance;
-	uint32_t                    bytesRead;
-    uint32_t                    acquisnMode;
-    uint64_t                    acquisModeRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    u3vResult = (acqMode == NULL)           ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-    
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    acquisModeRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                       U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].acquisitionMode_Reg;
-
-    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                          NULL,
-                                          acquisModeRegAdr,
-                                          sizeof(acquisnMode),
-                                          &bytesRead,
-                                          (void *)&acquisnMode);
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    *acqMode = (T_U3VHostAcquisitionMode)acquisnMode;
-
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_SetAcquisitionMode(T_U3VHostObject u3vDeviceObj, T_U3VHostAcquisitionMode acqMode)
-{
-    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj        *u3vInstance;
-    T_U3VControlIfObj      *ctrlIfInstance;
-	uint32_t                    bytesWritten;
-    uint32_t                    acquisnMode;
-    uint64_t                    acquisModeRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    acquisModeRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                       U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].acquisitionMode_Reg;
-
-    acquisnMode = (uint32_t)acqMode;
-
-    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                           NULL,
-                                           acquisModeRegAdr,
-                                           sizeof(acquisnMode),
-                                           &bytesWritten,
-                                           (void *)&acquisnMode);
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
+        if (u3vResult == U3V_HOST_RESULT_SUCCESS)
+        {
+            if (bytesRead = sizeof(regValue))
+            {
+                *pReadValue = regValue;
+            }
+            else
+            {
+                u3vResult = U3V_HOST_RESULT_ABORTED;
+            }
+        }
     }
 
     return u3vResult;
 }
 
 
-T_U3VHostResult U3VHost_GetCamSerialNumber(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
+T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostObject u3vDeviceObj, T_U3VMemRegInteger integerReg, uint32_t regVal)
 {
-    T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
-    uint32_t bytesRead;
-    char tmpBfr[U3V_REG_SERIAL_NUMBER_SIZE];
+    T_U3VHostResult         u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj    *u3vInstance;
+    T_U3VControlIfObj       *ctrlIfInstance;
+	uint32_t                bytesWritten;
+    uint32_t                regValue;
+    uint64_t                regAddr;
 
-    /* Single client only */
-    if (u3vDeviceObj != 0U)
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (u3vDeviceObj == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (integerReg == 0U)       ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+
+    if (u3vResult == U3V_HOST_RESULT_SUCCESS)
     {
-        u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-        ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-        if ((u3vInstance->inUse) && (u3vInstance->state == U3V_HOST_STATE_READY) && (ctrlIfInstance != NULL))
+        switch (integerReg)
+        {
+            case U3V_MEM_REG_INT_PIXELFORMAT:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].colorCodingID_Reg;
+                /* value is stored on high byte (bits 24 to 31) */
+                regValue = (regVal << 24U) & 0xFF000000UL;
+                break;
+
+            case U3V_MEM_REG_INT_PAYLOAD_SIZE:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].payloadSizeVal_Reg;
+                regValue = regVal;
+                break;
+
+            case U3V_MEM_REG_INT_ACQUISITION_MODE:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].acquisitionMode_Reg;
+                regValue = regVal;
+                break;
+
+            case U3V_MEM_REG_INT_DEVICE_RESET:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].deviceReset_Reg;
+                regValue = regVal;
+                break;
+
+            default:
+                u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
+                break;
+        }
+
+        if (u3vResult == U3V_HOST_RESULT_SUCCESS)
+        {
+            u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfHandle)ctrlIfInstance,
+                                                   NULL,
+                                                   regAddr,
+                                                   sizeof(regValue),
+                                                   &bytesWritten,
+                                                   (void *)&regValue);
+            if (bytesWritten != sizeof(regValue))
+            {
+                u3vResult = U3V_HOST_RESULT_ABORTED;
+            }
+        }
+    }
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostObject u3vDeviceObj, T_U3VMemRegFloat floatReg, float *const pReadValue)
+{
+    T_U3VHostResult         u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj    *u3vInstance;
+    T_U3VControlIfObj       *ctrlIfInstance;
+	uint32_t                bytesRead;
+    uint32_t                regValue;
+    float                   floatRetVal;
+    uint64_t                regAddr;
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (u3vDeviceObj == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (floatReg == 0U)         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (pReadValue == NULL)     ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+
+    if (u3vResult == U3V_HOST_RESULT_SUCCESS)
+    {
+        switch (floatReg)
+        {
+            case U3V_MEM_REG_FLOAT_TEMPERATURE:
+                regAddr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
+                          U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].temperature_Reg;
+                u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
+                                                      NULL,
+                                                      regAddr,
+                                                      sizeof(regValue),
+                                                      &bytesRead,
+                                                      (void *)&regValue);
+                                                      
+                /* Calculate temperature in Celcius rounded to 2 decimals */
+                floatRetVal = roundf(((float)((regValue & 0xFFFUL) / 10UL) - 273.15F) * 100) / 100;
+                break;
+
+            default:
+                u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
+                break;
+        }
+
+        if (u3vResult == U3V_HOST_RESULT_SUCCESS)
+        {
+            if (bytesRead = sizeof(regValue))
+            {
+                *pReadValue = floatRetVal;
+            }
+            else
+            {
+                u3vResult = U3V_HOST_RESULT_ABORTED;
+            }
+        }
+    }
+
+    return u3vResult;
+}
+
+
+T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostObject u3vDeviceObj, T_U3VMemRegString stringReg, char *const pReadBfr)
+{
+    T_U3VHostResult         u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj    *u3vInstance;
+    T_U3VControlIfObj       *ctrlIfInstance;
+	uint32_t                bytesRead;
+    uint32_t                stringSize;
+    char                    stringBfr[64u];
+    uint64_t                regAddr;
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
+    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
+
+    u3vResult = (u3vDeviceObj == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (stringReg == 0U)        ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (pReadBfr == NULL)       ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+
+    if (u3vResult == U3V_HOST_RESULT_SUCCESS)
+    {
+        switch (stringReg)
+        {            
+            case U3V_MEM_REG_STRING_MANUFACTURER_NAME:
+                regAddr = U3V_ABRM_MANUFACTURER_NAME_OFS;
+                stringSize = U3V_REG_MANUFACTURER_NAME_SIZE;
+                break;
+
+            case U3V_MEM_REG_STRING_MODEL_NAME:
+                regAddr = U3V_ABRM_MODEL_NAME_OFS;
+                stringSize = U3V_REG_MODEL_NAME_SIZE;
+                break;
+
+            case U3V_MEM_REG_STRING_FAMILY_NAME:
+                regAddr = U3V_ABRM_FAMILY_NAME_OFS;
+                stringSize = U3V_REG_FAMILY_NAME_SIZE;
+                break;
+
+            case U3V_MEM_REG_STRING_DEVICE_VERSION:
+                regAddr = U3V_ABRM_DEVICE_VERSION_OFS;
+                stringSize = U3V_REG_DEVICE_VERSION_SIZE;
+                break;
+
+            case U3V_MEM_REG_STRING_MANUFACTURER_INFO:
+                regAddr = U3V_ABRM_MANUFACTURER_INFO_OFS;
+                stringSize = U3V_REG_MANUFACTURER_INFO_SIZE;
+                break;
+
+            case U3V_MEM_REG_STRING_SERIAL_NUMBER:
+                regAddr = U3V_ABRM_SERIAL_NUMBER_OFS;
+                stringSize = U3V_REG_SERIAL_NUMBER_SIZE;
+                break;
+
+            case U3V_MEM_REG_STRING_USER_DEFINED_NAME:
+                regAddr = U3V_ABRM_USER_DEFINED_NAME_OFS;
+                stringSize = U3V_REG_USER_DEFINED_NAME_SIZE;
+                break;
+
+            default:
+                u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
+                break;
+        }
+
+        if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
             u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
                                                   NULL,
-                                                  U3V_ABRM_SERIAL_NUMBER_OFS,
-                                                  U3V_REG_SERIAL_NUMBER_SIZE,
+                                                  regAddr,
+                                                  stringSize,
                                                   &bytesRead,
-                                                  (void *)tmpBfr);
+                                                  (void *)stringBfr);
 
-            if (u3vResult == U3V_HOST_RESULT_SUCCESS && bytesRead == U3V_REG_SERIAL_NUMBER_SIZE)
+            if (u3vResult == U3V_HOST_RESULT_SUCCESS)
             {
-                memcpy((void*)bfr, (void*)tmpBfr, U3V_REG_SERIAL_NUMBER_SIZE);
+                if (bytesRead = stringSize)
+                {
+                    memcpy((void *)pReadBfr, (void *)stringBfr, stringSize);
+                }
+                else
+                {
+                    u3vResult = U3V_HOST_RESULT_ABORTED;
+                }
             }
         }
-        else
-        {
-            u3vResult = U3V_HOST_RESULT_FAILURE;
-        }
     }
-    else
-    {
-        u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
-    }
-    
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_GetCamFirmwareVersion(T_U3VHostObject u3vDeviceObj,  void *bfr)     /* buffer size must be at least 64bytes long */
-{
-    T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
-    uint32_t bytesRead;
-    char tmpBfr[U3V_REG_DEVICE_VERSION_SIZE];
-
-    /* Single client only */
-    if (u3vDeviceObj != 0U)
-    {
-        u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-        ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-        if ((u3vInstance->inUse) && (u3vInstance->state == U3V_HOST_STATE_READY) && (ctrlIfInstance != NULL))
-        {
-            u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                                  NULL,
-                                                  U3V_ABRM_DEVICE_VERSION_OFS,
-                                                  U3V_REG_DEVICE_VERSION_SIZE,
-                                                  &bytesRead,
-                                                  (void *)tmpBfr);
-
-            if (u3vResult == U3V_HOST_RESULT_SUCCESS && bytesRead == U3V_REG_DEVICE_VERSION_SIZE)
-            {
-                memcpy((void*)bfr, (void*)tmpBfr, U3V_REG_DEVICE_VERSION_SIZE);
-            }
-        }
-        else
-        {
-            u3vResult = U3V_HOST_RESULT_FAILURE;
-        }
-    }
-    else
-    {
-        u3vResult = U3V_HOST_RESULT_HANDLE_INVALID;
-    }
-    
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_GetCamTemperature(T_U3VHostObject u3vDeviceObj, float *const pCamTemp)
-{
-    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj        *u3vInstance;
-    T_U3VControlIfObj      *ctrlIfInstance;
-    uint32_t                    bytesRead;
-    uint32_t                    camTempK10;
-    uint64_t                    tempRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    u3vResult = (pCamTemp == NULL)          ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    tempRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                 U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].temperature_Reg;
-
-    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                          NULL,
-                                          tempRegAdr,
-                                          sizeof(camTempK10),
-                                          &bytesRead,
-                                          (void *)&camTempK10);
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    /* Calculate temperature in Celcius rounded to 2 decimals */
-    *pCamTemp = roundf(((float)((camTempK10 & 0xFFFUL) / 10UL) - 273.15F) * 100) / 100;
 
     return u3vResult;
 }
@@ -849,101 +837,6 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostObject u3vDeviceObj)
     {
         return u3vResult;
     }
-
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_CamSwReset(T_U3VHostObject u3vDeviceObj)
-{
-    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj        *u3vInstance;
-    T_U3VControlIfObj      *ctrlIfInstance;
-	uint32_t                    bytesWritten;
-    uint32_t                    devResetCmdVal;
-    uint64_t                    devResetRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    devResetRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                     U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].deviceReset_Reg;
-    
-    devResetCmdVal = 0x00000001UL;
-
-    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                           NULL,
-                                           devResetRegAdr,
-                                           sizeof(devResetCmdVal),
-                                           &bytesWritten,
-                                           (void *)&devResetCmdVal);
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    return u3vResult;
-}
-
-
-T_U3VHostResult U3VHost_GetImgPayloadSize(T_U3VHostObject u3vDeviceObj, uint32_t *pldSize)
-{
-    T_U3VHostResult             u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj        *u3vInstance;
-    T_U3VControlIfObj      *ctrlIfInstance;
-    uint32_t                    bytesRead;
-    uint32_t                    pldSizeVal;
-    uint64_t                    pldSizeRegAdr;
-
-    u3vResult = (u3vDeviceObj == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    u3vResult = (pldSize == NULL)           ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vDeviceObj;
-    ctrlIfInstance = u3vInstance->controlChHandle.chanObj;
-
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    pldSizeRegAdr = U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].camRegBaseAddress +
-                    U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].payloadSizeVal_Reg;
-
-    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfHandle)ctrlIfInstance,
-                                          NULL,
-                                          pldSizeRegAdr,
-                                          sizeof(pldSizeVal),
-                                          &bytesRead,
-                                          (void *)&pldSizeVal);
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    *pldSize = pldSizeVal;
 
     return u3vResult;
 }

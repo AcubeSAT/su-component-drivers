@@ -5,7 +5,6 @@
 #include "U3VCam_App.h"
 #include "U3VCam_Host.h"
 #include "U3VCam_Config.h"
-// #include "U3VCam_ControlIF.h"
 #include "system/dma/sys_dma.h"
 
 
@@ -95,7 +94,7 @@ void U3VCamDriver_Tasks(void)
         if ((U3VCamDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (U3VAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_CH))
         {
             U3VAppData.camSwResetRequested = false;
-            result = U3VHost_CamSwReset(U3VAppData.u3vObj);
+            result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_DEVICE_RESET, 0x1UL);
             U3VAppData.deviceWasDetached = true;
         }
     }
@@ -163,7 +162,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_GET_CAM_TEMPERATURE:
-            result = U3VHost_GetCamTemperature(U3VAppData.u3vObj, &U3VAppData.camTemperature);
+            result = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vObj, U3V_MEM_REG_FLOAT_TEMPERATURE, &U3VAppData.camTemperature);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_GET_STREAM_CAPABILITIES;
@@ -179,14 +178,14 @@ void U3VCamDriver_Tasks(void)
             break;
         
         case U3V_APP_STATE_SETUP_PIXEL_FORMAT:
-            result = U3VHost_GetPixelFormat(U3VAppData.u3vObj, &U3VAppData.pixelFormat);
+            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_PIXELFORMAT, &U3VAppData.pixelFormat);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 if (U3VAppData.pixelFormat != U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
                 {
                     /* set correct pixel format */
-                    result = U3VHost_SetPixelFormat(U3VAppData.u3vObj,
-                                                        U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
+                    result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_PIXELFORMAT,
+                                                             U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
                 }
                 else
                 {
@@ -196,13 +195,15 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
-            result = U3VHost_GetAcquisitionMode(U3VAppData.u3vObj, &U3VAppData.acquisitionMode);
+            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_ACQUISITION_MODE,
+                                                    &U3VAppData.acquisitionMode);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 if (U3VAppData.acquisitionMode != U3V_ACQUISITION_MODE_SINGLE_FRAME)
                 {
                     /* set correct acquisition mode */
-                    (void)U3VHost_SetAcquisitionMode(U3VAppData.u3vObj, U3V_ACQUISITION_MODE_SINGLE_FRAME);
+                    result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_ACQUISITION_MODE,
+                                                             U3V_ACQUISITION_MODE_SINGLE_FRAME);
                 }
                 else
                 {
@@ -212,7 +213,7 @@ void U3VCamDriver_Tasks(void)
             break;
         
         case U3V_APP_STATE_SETUP_STREAM:    //TODO: find bug of spinlocking
-            result = U3VHost_GetImgPayloadSize(U3VAppData.u3vObj, &U3VAppData.payloadSize);
+            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_PAYLOAD_SIZE, &U3VAppData.payloadSize);
             streamConfigVals.imageSize = U3VAppData.payloadSize;
             streamConfigVals.blockPadding = 8U;
             streamConfigVals.blockSize = 512U;

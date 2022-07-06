@@ -151,6 +151,10 @@ extern "C" {
 #define U3V_PFNC_RGB16                          0x02300033 /* Red-Green-Blue 16-bit */
 #define U3V_PFNC_RGB16_Planar                   0x02300024 /* Red-Green-Blue 16-bit planar */
 
+#define U3V_ACQUISITION_MODE_CONTINUOUS         0x0
+#define U3V_ACQUISITION_MODE_SINGLE_FRAME       0x1
+#define U3V_ACQUISITION_MODE_MULTI_FRAME        0x2
+
 
 /********************************************************
  * Type definitions

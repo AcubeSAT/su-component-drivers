@@ -18,12 +18,7 @@
 
 static void _U3VHost_CtrlIf_TransferReqCompleteCbk(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
 
-static inline void _FreeCtrlIfObjAllocSpace(T_U3VControlIfObj *pCtrlIfObj)
-{
-    OSAL_Free(pCtrlIfObj->ackBuffer);
-    OSAL_Free(pCtrlIfObj->cmdBuffer);
-    OSAL_Free(pCtrlIfObj);
-};
+static inline void _FreeCtrlIfObjAllocSpace(T_U3VControlIfObj *pCtrlIfObj);
 
 
 /********************************************************
@@ -621,4 +616,11 @@ static void _U3VHost_CtrlIf_TransferReqCompleteCbk(T_U3VHostHandle u3vObj, T_U3V
         default:
             break;
     }
+}
+
+static inline void _FreeCtrlIfObjAllocSpace(T_U3VControlIfObj *pCtrlIfObj)
+{
+    OSAL_Free(pCtrlIfObj->ackBuffer);
+    OSAL_Free(pCtrlIfObj->cmdBuffer);
+    OSAL_Free(pCtrlIfObj);
 }

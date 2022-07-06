@@ -140,7 +140,19 @@ extern T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 
 T_U3VHostResult _U3VHost_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 
+T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlIfHandle u3vCtrlIf,
+										  T_U3VHostTransferHandle *transferHandle,
+										  uint64_t memAddress,
+										  size_t transfSize,
+										  uint32_t *bytesRead,
+										  void *buffer);
 
+T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlIfHandle u3vCtrlIf,
+										   T_U3VHostTransferHandle *transferHandle,
+										   uint64_t memAddress,
+										   size_t transfSize,
+										   uint32_t *bytesWritten,
+										   const void *buffer);
 
 #ifdef __cplusplus
 }

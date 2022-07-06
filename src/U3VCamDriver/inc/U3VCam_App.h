@@ -14,7 +14,6 @@
 // #include "definitions.h"
 #include "U3VCam_Host.h"
 #include "U3VCam_Device_Class_Specs.h"
-// #include "U3VCam_ControlIF.h"
 
 
 #ifdef __cplusplus
@@ -78,7 +77,7 @@ typedef struct
     float                       camTemperature;        /* Cam temperature in Celcius */
     uint32_t                    pixelFormat;           /* Active Pixel Format value (PixelFormatCtrlVal_Int)*/
     uint32_t                    payloadSize;           /* Image payload size */
-    T_U3VHostAcquisitionMode    acquisitionMode;       /* Acquisition mode */
+    uint32_t                    acquisitionMode;       /* Acquisition mode */
     bool                        acquisitionRequested;  /* Image Acquisition Requested */
     bool                        camSwResetRequested;   /* Cam SW reset requested */
     T_U3VImgPayloadContainer    imgPayloadContainer;
