@@ -26,11 +26,11 @@ static inline T_U3VCamIDValid CamPIDisValid(void);
 /*** App Callbacks ***/
 static USB_HOST_EVENT_RESPONSE _USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context);
 
-static void _USBHostU3VAttachEventListenerCbk(T_U3VHostObject u3vObj, uintptr_t context);
+static void _USBHostU3VAttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context);
 
-static void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t context);
+static void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context);
 
-static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
+static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vObjHandle,
                                                          T_U3VHostEvent event,
                                                          void *pEventData,
                                                          uintptr_t context);
@@ -94,7 +94,7 @@ void U3VCamDriver_Tasks(void)
         if ((U3VCamDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (U3VAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_CH))
         {
             U3VAppData.camSwResetRequested = false;
-            result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_DEVICE_RESET, 0x1UL);
+            result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_INT_DEVICE_RESET, 0x1UL);
             U3VAppData.deviceWasDetached = true;
         }
     }
@@ -104,7 +104,7 @@ void U3VCamDriver_Tasks(void)
         U3VAppData.state                = U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
         U3VAppData.deviceWasDetached    = false;
 
-        U3VHost_CtrlIf_InterfaceDestroy(&U3VAppData.controlChHandle);
+        U3VHost_CtrlIf_InterfaceDestroy(U3VAppData.u3vHostHandle);
 
         /* Switch off LED  */
         LED1_Off(); // DEBUG XULT board
@@ -135,7 +135,7 @@ void U3VCamDriver_Tasks(void)
             break;
             
         case U3V_APP_STATE_OPEN_DEVICE:
-            U3VAppData.u3vHostHandle = U3VHost_Open(U3VAppData.u3vObj);
+            U3VAppData.u3vHostHandle = U3VHost_Open(U3VAppData.u3vHostHandle);
             if(U3VAppData.u3vHostHandle != U3V_HOST_HANDLE_INVALID)
             {
                 U3VHost_DetachEventHandlerSet(U3VAppData.u3vHostHandle, _USBHostU3VDetachEventListenerCbk, (uintptr_t)&U3VAppData);
@@ -146,7 +146,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_U3V_CONTROL_CH:
-            result = U3VHost_CtrlIf_InterfaceCreate(&U3VAppData.controlChHandle, U3VAppData.u3vObj);
+            result = U3VHost_CtrlIf_InterfaceCreate(U3VAppData.u3vHostHandle);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_GET_U3V_MANIFEST;
@@ -154,7 +154,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_GET_U3V_MANIFEST: //TODO: remove, Manifest is imported as fixed params
-            // result = U3VHost_GetManifestFile(UsbU3VAppData.u3vObj);
+            // result = U3VHost_GetManifestFile(UsbU3VAppData.u3vHostHandle);
             // if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_GET_CAM_TEMPERATURE;
@@ -162,7 +162,9 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_GET_CAM_TEMPERATURE:
-            result = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vObj, U3V_MEM_REG_FLOAT_TEMPERATURE, &U3VAppData.camTemperature);
+            result = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle,
+                                                  U3V_MEM_REG_FLOAT_TEMPERATURE,
+                                                  &U3VAppData.camTemperature);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_GET_STREAM_CAPABILITIES;
@@ -170,7 +172,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_GET_STREAM_CAPABILITIES:
-            result = U3VHost_GetStreamCapabilities(U3VAppData.u3vObj);
+            result = U3VHost_GetStreamCapabilities(U3VAppData.u3vHostHandle);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_SETUP_PIXEL_FORMAT;
@@ -178,13 +180,16 @@ void U3VCamDriver_Tasks(void)
             break;
         
         case U3V_APP_STATE_SETUP_PIXEL_FORMAT:
-            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_PIXELFORMAT, &U3VAppData.pixelFormat);
+            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_INT_PIXELFORMAT,
+                                                    &U3VAppData.pixelFormat);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 if (U3VAppData.pixelFormat != U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
                 {
                     /* set correct pixel format */
-                    result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_PIXELFORMAT,
+                    result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle,
+                                                             U3V_MEM_REG_INT_PIXELFORMAT,
                                                              U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
                 }
                 else
@@ -195,14 +200,16 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
-            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_ACQUISITION_MODE,
+            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_INT_ACQUISITION_MODE,
                                                     &U3VAppData.acquisitionMode);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 if (U3VAppData.acquisitionMode != U3V_ACQUISITION_MODE_SINGLE_FRAME)
                 {
                     /* set correct acquisition mode */
-                    result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_ACQUISITION_MODE,
+                    result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle,
+                                                             U3V_MEM_REG_INT_ACQUISITION_MODE,
                                                              U3V_ACQUISITION_MODE_SINGLE_FRAME);
                 }
                 else
@@ -213,14 +220,16 @@ void U3VCamDriver_Tasks(void)
             break;
         
         case U3V_APP_STATE_SETUP_STREAM:    //TODO: find bug of spinlocking
-            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vObj, U3V_MEM_REG_INT_PAYLOAD_SIZE, &U3VAppData.payloadSize);
+            result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_INT_PAYLOAD_SIZE,
+                                                    &U3VAppData.payloadSize);
             streamConfigVals.imageSize = U3VAppData.payloadSize;
             streamConfigVals.blockPadding = 8U;
             streamConfigVals.blockSize = 512U;
             streamConfigVals.maxLeaderSize = 256U;
             streamConfigVals.maxTrailerSize = 256U;
-            result |= U3VHost_SetupStreamTransferParams(U3VAppData.u3vObj, &streamConfigVals);
-            // result |= U3VHost_ResetStreamCh(U3VAppData.u3vObj);
+            result |= U3VHost_SetupStreamTransferParams(U3VAppData.u3vHostHandle, &streamConfigVals);
+            // result |= U3VHost_ResetStreamCh(U3VAppData.u3vHostHandle);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION;
@@ -230,8 +239,8 @@ void U3VCamDriver_Tasks(void)
         case U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION:
             if (U3VAppData.acquisitionRequested)
             {
-                result = U3VHost_StreamChControl(U3VAppData.u3vObj, true);
-                result |= U3VHost_AcquisitionStart(U3VAppData.u3vObj);
+                result = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, true);
+                result |= U3VHost_AcquisitionStart(U3VAppData.u3vHostHandle);
                 if (result == U3V_HOST_RESULT_SUCCESS)
                 {
                     U3VAppData.acquisitionRequested = false;
@@ -246,7 +255,7 @@ void U3VCamDriver_Tasks(void)
                 (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_LEADER_COMPLETE)||
                 (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE))
             {
-                result = U3VHost_StartImgPayldTransfer(U3VAppData.u3vObj,
+                result = U3VHost_StartImgPayldTransfer(U3VAppData.u3vHostHandle,
                                                        (void *)&U3VAppData.imgPayloadContainer.imgPldBfr1,
                                                        (size_t)U3V_IN_BUFFER_MAX_SIZE);
                 //TODO: check result and react when not OK
@@ -263,8 +272,8 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
-            result = U3VHost_AcquisitionStop(U3VAppData.u3vObj); //TODO: fix bug of host busy
-            result |= U3VHost_StreamChControl(U3VAppData.u3vObj, false); //TODO: >>
+            result = U3VHost_AcquisitionStop(U3VAppData.u3vHostHandle); //TODO: fix bug of host busy
+            result |= U3VHost_StreamChControl(U3VAppData.u3vHostHandle, false); //TODO: >>
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 // U3VAppData.state = U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION;
@@ -387,7 +396,7 @@ static USB_HOST_EVENT_RESPONSE _USBHostEventHandlerCbk(USB_HOST_EVENT event, voi
 }
 
 
-static void _USBHostU3VAttachEventListenerCbk(T_U3VHostObject u3vObj, uintptr_t context)
+static void _USBHostU3VAttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context)
 {
     /* This function gets called when the U3V device is attached. Update the application data 
      * structure to let the application know that this device is attached. */
@@ -395,7 +404,7 @@ static void _USBHostU3VAttachEventListenerCbk(T_U3VHostObject u3vObj, uintptr_t 
     pUsbU3VAppData = (T_U3VAppData*)context;
 
     pUsbU3VAppData->deviceIsAttached = true;
-    pUsbU3VAppData->u3vObj = u3vObj;
+    pUsbU3VAppData->u3vHostHandle = u3vObjHandle;
 }
 
 
@@ -403,10 +412,8 @@ static void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr
 {
     /* This function gets called when the U3V device is detached. Update the application data 
      * structure to let the application know that this device is detached. */
-
     T_U3VAppData *pUsbU3VAppData;
     pUsbU3VAppData = (T_U3VAppData*)context;
-
     pUsbU3VAppData->deviceWasDetached = true;
 }
 
@@ -417,7 +424,7 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
                                                          uintptr_t context)
 {
     T_U3VHostEventReadCompleteData  *readCompleteEventData;
-    T_U3VAppData                 *pUsbU3VAppData;
+    T_U3VAppData                    *pUsbU3VAppData;
     T_U3VSiGenericPacket            *pckLeaderOrTrailer;
     T_U3VHostResult                 result;
     size_t                          length;
@@ -471,8 +478,10 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
     return U3V_HOST_EVENT_RESPONE_NONE;
 }
 
+
 static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT dmaEvent, uintptr_t context)
 {
     SYS_DMA_TRANSFER_EVENT event = dmaEvent;
     //TODO sync with request?
 }
+

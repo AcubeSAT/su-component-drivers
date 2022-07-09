@@ -12,6 +12,7 @@ extern "C" {
 
 
 #include "U3VCam_Host.h"
+#include "U3VCam_Control_IF_Types.h"
 #include "U3VCam_Config.h"
 #include "osal/osal.h"
 
@@ -27,8 +28,7 @@ extern "C" {
 /********************************************************
 * Type definitions
 *********************************************************/
-
-typedef void (*T_U3VCtrlIfTransfCompleteHandler)(T_U3VHostHandle u3vObj, T_U3VHostEvent transfEvent, void *transfData);
+typedef void (*T_U3VHostTransfCompleteHandler)(T_U3VHostHandle ctrlIfObj, T_U3VHostEvent transfEvent, void *transfData);
 
 typedef enum
 {
@@ -46,32 +46,23 @@ typedef struct
     USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
     USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
     USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
-} T_U3VHostChannelHandle;
+} T_U3VHostInterfHandle;
 
 typedef struct 
 {
-	T_U3VHostObject 					u3vInstObj;				/* uintptr_t to the device object where Control Channel belongs to */
+    T_U3VHostInterfHandle               *ctrlIntfHandle;        /* Pointer to Control Interface Handle */
 	OSAL_MUTEX_DECLARE					(readWriteLock);  		/* Mutex lock/unlock */
-	uint8_t 							*ackBuffer;				/* Acknowledge buffer pointer (alloc) */
+	uint8_t 							ackBuffer[256UL + sizeof(T_U3VCtrlIfCmdHeader)]; /* Acknowledge buffer */
 	uint32_t							maxAckTransfSize;		/* Max acknowledge transfer size */
-	uint8_t 							*cmdBuffer;				/* Command buffer pointer (alloc) */
+	uint8_t 							cmdBuffer[256UL + sizeof(T_U3VCtrlIfCmdHeader)]; /* Command buffer */
 	uint32_t 							maxCmdTransfSize;		/* Max command transfer size */
 	uint16_t 							requestId;				/* Request ID */
 	uint16_t 							maxRequestId;  			/* Maximum id value before loop back around */
 	uint32_t 							u3vTimeout;    			/* Maximum device response time in ms */
-	T_U3VCtrlIfTransfCompleteHandler	transReqCompleteCbk;	/* Transfer event complete callback */
+    T_U3VHostTransfCompleteHandler      transfReqCompleteCbk;   /* Transfer request callback */
 	T_U3VHostEventReadCompleteData 		readReqSts;				/* Read request transfer status */
 	T_U3VHostEventWriteCompleteData 	writeReqSts;			/* Write request transfer status */
 } T_U3VControlIfObj;
-
-typedef struct
-{
-    uint8_t                             idNum;              /* Number of interface */
-    USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
-    USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
-    USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
-    T_U3VControlIfObj                   *chanObj;           /* Control channel object data */
-} T_U3VHostControlChannelHandle;
 
 typedef struct
 {
@@ -81,9 +72,10 @@ typedef struct
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
     T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
     char                                *u3vManifestData;   /* U3V Manifest */
-    T_U3VHostControlChannelHandle       controlChHandle;    /* U3V Control Channel handle */
-    T_U3VHostChannelHandle              eventChHandle;      /* U3V Event Channel handle */
-    T_U3VHostChannelHandle              streamChHandle;     /* U3V Stream Channel handle */
+    T_U3VHostInterfHandle               controlIfHandle;    /* U3V Control Interface handle */
+    T_U3VControlIfObj                   controlIfObj;       /* U3V Control Interface object */
+    T_U3VHostInterfHandle               eventIfHandle;      /* U3V Event Interface handle */
+    T_U3VHostInterfHandle               streamIfHandle;     /* U3V Stream Interface handle */
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     uintptr_t                           context;            /* Application defined context */
     T_U3VHostEventHandler               eventHandler;       /* Application callback */
@@ -140,14 +132,14 @@ extern T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 
 T_U3VHostResult _U3VHost_HostToU3VResultsMap(USB_HOST_RESULT hostResult);
 
-T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlIfHandle u3vCtrlIf,
+T_U3VHostResult U3VHost_CtrlIf_ReadMemory(T_U3VControlIfObjHandle u3vCtrlIf,
 										  T_U3VHostTransferHandle *transferHandle,
 										  uint64_t memAddress,
 										  size_t transfSize,
 										  uint32_t *bytesRead,
 										  void *buffer);
 
-T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlIfHandle u3vCtrlIf,
+T_U3VHostResult U3VHost_CtrlIf_WriteMemory(T_U3VControlIfObjHandle u3vCtrlIf,
 										   T_U3VHostTransferHandle *transferHandle,
 										   uint64_t memAddress,
 										   size_t transfSize,
