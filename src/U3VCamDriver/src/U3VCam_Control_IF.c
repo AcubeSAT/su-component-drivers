@@ -59,8 +59,8 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
     ctrlIfInst->transfReqCompleteCbk = _U3VHost_CtrlIf_TransferReqCompleteCbk;
 
     ctrlIfInst->u3vTimeout = U3V_REQ_TIMEOUT;
-    ctrlIfInst->maxAckTransfSize = (256UL + sizeof(T_U3VCtrlIfAckHeader));
-    ctrlIfInst->maxCmdTransfSize = (256UL + sizeof(T_U3VCtrlIfCmdHeader));
+    ctrlIfInst->maxAckTransfSize = sizeof(ctrlIfInst->ackBuffer);
+    ctrlIfInst->maxCmdTransfSize = sizeof(ctrlIfInst->cmdBuffer);
 
     /* requestId, maxRequestId are preincremented, with overflow will start again from 0 */
     ctrlIfInst->requestId = -1;

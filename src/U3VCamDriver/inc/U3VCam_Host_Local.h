@@ -52,9 +52,9 @@ typedef struct
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;        /* Pointer to Control Interface Handle */
 	OSAL_MUTEX_DECLARE					(readWriteLock);  		/* Mutex lock/unlock */
-	uint8_t 							ackBuffer[256UL + sizeof(T_U3VCtrlIfCmdHeader)]; /* Acknowledge buffer */
+	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)]; /* Acknowledge buffer */
 	uint32_t							maxAckTransfSize;		/* Max acknowledge transfer size */
-	uint8_t 							cmdBuffer[256UL + sizeof(T_U3VCtrlIfCmdHeader)]; /* Command buffer */
+	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)]; /* Command buffer */
 	uint32_t 							maxCmdTransfSize;		/* Max command transfer size */
 	uint16_t 							requestId;				/* Request ID */
 	uint16_t 							maxRequestId;  			/* Maximum id value before loop back around */
@@ -70,17 +70,17 @@ typedef struct
     USB_HOST_DEVICE_CLIENT_HANDLE       deviceClientHandle; /* Device client handle */
     USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
     USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
+    USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
+    T_U3VHostState                      state;              /* U3V instance state */
     T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
     char                                *u3vManifestData;   /* U3V Manifest */
     T_U3VHostInterfHandle               controlIfHandle;    /* U3V Control Interface handle */
     T_U3VControlIfObj                   controlIfObj;       /* U3V Control Interface object */
     T_U3VHostInterfHandle               eventIfHandle;      /* U3V Event Interface handle */
     T_U3VHostInterfHandle               streamIfHandle;     /* U3V Stream Interface handle */
-    USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     uintptr_t                           context;            /* Application defined context */
     T_U3VHostEventHandler               eventHandler;       /* Application callback */
     T_U3VHostDetachEventHandler         detachEventHandler; /* Detach event app callback */
-    T_U3VHostState                      state;              /* U3V instance state */
     bool                                hostRequestDone;    /* True if an ongoing host request is done */
     USB_HOST_RESULT                     hostRequestResult;  /* Result of the host request */
 } T_U3VHostInstanceObj;

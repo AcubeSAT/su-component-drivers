@@ -1108,6 +1108,8 @@ static void _U3VHost_Initialize(void * data)
         u3vInstanceObj = &gUSBHostU3VObj[iterator];
 
         u3vInstanceObj->deviceClientHandle = USB_HOST_DEVICE_CLIENT_HANDLE_INVALID;
+        u3vInstanceObj->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
+        u3vInstanceObj->controlPipeHandle = USB_HOST_CONTROL_PIPE_HANDLE_INVALID;
 
         u3vInstanceObj->controlIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
         u3vInstanceObj->controlIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
@@ -1121,7 +1123,6 @@ static void _U3VHost_Initialize(void * data)
         u3vInstanceObj->streamIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         u3vInstanceObj->streamIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;  /* N/A */
 
-        u3vInstanceObj->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
     }
 }
 
@@ -1197,7 +1198,8 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                     /* Control Interface */
                     if ((interfaceDescriptor->bInterfaceClass == U3V_DEVICE_CLASS_MISC) &&
                         (interfaceDescriptor->bInterfaceSubClass == U3V_INTERFACE_U3V_SUBLCASS) &&
-                        (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_CONTROL))
+                        (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_CONTROL) &&
+                        (interfaceDescriptor->bDescriptorType == U3V_DESCRIPTOR_TYPE_INTERFACE))
                     {
                         /* We found the communication class */
                         u3vInstance->controlIfHandle.idNum = interfaceDescriptor->bInterfaceNumber;
@@ -1242,7 +1244,8 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                     /* Event Interface*/
                     else if ((interfaceDescriptor->bInterfaceClass == U3V_DEVICE_CLASS_MISC) &&
                              (interfaceDescriptor->bInterfaceSubClass == U3V_INTERFACE_U3V_SUBLCASS) &&
-                             (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_EVENT))
+                             (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_EVENT) &&
+                             (interfaceDescriptor->bDescriptorType == U3V_DESCRIPTOR_TYPE_INTERFACE))
                     {
                         /* We found the data class */
 
@@ -1271,7 +1274,8 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                     /* Data Streaming Interface */
                     else if ((interfaceDescriptor->bInterfaceClass == U3V_DEVICE_CLASS_MISC) &&
                              (interfaceDescriptor->bInterfaceSubClass == U3V_INTERFACE_U3V_SUBLCASS) &&
-                             (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_DATASTREAM))
+                             (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_DATASTREAM) &&
+                             (interfaceDescriptor->bDescriptorType == U3V_DESCRIPTOR_TYPE_INTERFACE))
                     {
                         /* We found the data class */
 

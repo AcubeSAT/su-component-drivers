@@ -42,11 +42,10 @@
 const USB_HOST_TPL_ENTRY USBTPList[1] = 
 {
   /* USB3 Vision target */
-  TPL_INTERFACE_CLASS_SUBCLASS_PROTOCOL(U3V_DEVICE_CLASS_MISC, 
-                                        U3V_INTERFACE_U3V_SUBLCASS,
-                                        U3V_INTERFACE_CONTROL,
-                                        NULL, 
-                                        U3V_INTERFACE)
+  TPL_INTERFACE_CLASS_SUBCLASS(U3V_DEVICE_CLASS_MISC, 
+                               U3V_INTERFACE_U3V_SUBLCASS,
+                               NULL, 
+                               U3V_INTERFACE)
 
 };
 
