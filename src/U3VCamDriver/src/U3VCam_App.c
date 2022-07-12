@@ -149,14 +149,6 @@ void U3VCamDriver_Tasks(void)
             result = U3VHost_CtrlIf_InterfaceCreate(U3VAppData.u3vHostHandle);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
-                U3VAppData.state = U3V_APP_STATE_GET_U3V_MANIFEST;
-            }
-            break;
-
-        case U3V_APP_STATE_GET_U3V_MANIFEST: //TODO: remove, Manifest is imported as fixed params
-            // result = U3VHost_GetManifestFile(UsbU3VAppData.u3vHostHandle);
-            // if (result == U3V_HOST_RESULT_SUCCESS)
-            {
                 U3VAppData.state = U3V_APP_STATE_GET_CAM_TEMPERATURE;
             }
             break;

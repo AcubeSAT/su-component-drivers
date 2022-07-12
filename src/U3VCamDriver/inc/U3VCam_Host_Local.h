@@ -73,7 +73,6 @@ typedef struct
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     T_U3VHostState                      state;              /* U3V instance state */
     T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
-    char                                *u3vManifestData;   /* U3V Manifest */
     T_U3VHostInterfHandle               controlIfHandle;    /* U3V Control Interface handle */
     T_U3VControlIfObj                   controlIfObj;       /* U3V Control Interface object */
     T_U3VHostInterfHandle               eventIfHandle;      /* U3V Event Interface handle */

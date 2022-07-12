@@ -205,8 +205,6 @@ void U3VHost_Close(T_U3VHostHandle u3vDeviceHandle);
 
 T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
 
-T_U3VHostResult U3VHost_GetManifestFile(T_U3VHostHandle u3vObjHandle);
-
 T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle);
 
 T_U3VHostResult U3VHost_ResetStreamCh(T_U3VHostHandle u3vObjHandle);

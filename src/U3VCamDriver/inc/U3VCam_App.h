@@ -52,7 +52,6 @@ typedef enum
     U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH,           /* U3V Application waits for U3V Device Attach */
     U3V_APP_STATE_OPEN_DEVICE,                      /* U3V Device is Attached */
     U3V_APP_STATE_SETUP_U3V_CONTROL_CH,             /* U3V Application sets up the Control Channel */
-    U3V_APP_STATE_GET_U3V_MANIFEST,                 /* U3V Application retrieves U3V Manifest file from device */
     U3V_APP_STATE_GET_CAM_TEMPERATURE,              /* U3V Application get cam Temperature in Celcius */
     U3V_APP_STATE_GET_STREAM_CAPABILITIES,          /* U3V Application retrieves Stream Channel capabilities */
     U3V_APP_STATE_SETUP_PIXEL_FORMAT,               /* U3V Application setup Pixel format */
