@@ -91,7 +91,7 @@ void U3VCamDriver_Tasks(void)
 
     if (U3VAppData.camSwResetRequested)
     {
-        if ((U3VCamDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (U3VAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_CH))
+        if ((U3VCamDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (U3VAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_IF))
         {
             U3VAppData.camSwResetRequested = false;
             result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_INT_DEVICE_RESET, 0x1UL);
@@ -140,23 +140,13 @@ void U3VCamDriver_Tasks(void)
             {
                 U3VHost_DetachEventHandlerSet(U3VAppData.u3vHostHandle, _USBHostU3VDetachEventListenerCbk, (uintptr_t)&U3VAppData);
                 U3VHost_EventHandlerSet(U3VAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk , (uintptr_t)&U3VAppData);
-                U3VAppData.state = U3V_APP_STATE_SETUP_U3V_CONTROL_CH;
+                U3VAppData.state = U3V_APP_STATE_SETUP_U3V_CONTROL_IF;
                 LED1_On();  // DEBUG XULT board
             }
             break;
 
-        case U3V_APP_STATE_SETUP_U3V_CONTROL_CH:
+        case U3V_APP_STATE_SETUP_U3V_CONTROL_IF:
             result = U3VHost_CtrlIf_InterfaceCreate(U3VAppData.u3vHostHandle);
-            if (result == U3V_HOST_RESULT_SUCCESS)
-            {
-                U3VAppData.state = U3V_APP_STATE_GET_CAM_TEMPERATURE;
-            }
-            break;
-
-        case U3V_APP_STATE_GET_CAM_TEMPERATURE:
-            result = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle,
-                                                  U3V_MEM_REG_FLOAT_TEMPERATURE,
-                                                  &U3VAppData.camTemperature);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_GET_STREAM_CAPABILITIES;
@@ -206,12 +196,12 @@ void U3VCamDriver_Tasks(void)
                 }
                 else
                 {
-                    U3VAppData.state = U3V_APP_STATE_SETUP_STREAM;
+                    U3VAppData.state = U3V_APP_STATE_SETUP_U3V_STREAM_IF;
                 }
             }
             break;
         
-        case U3V_APP_STATE_SETUP_STREAM:    //TODO: find bug of spinlocking
+        case U3V_APP_STATE_SETUP_U3V_STREAM_IF:    //TODO: find bug of spinlocking
             result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_PAYLOAD_SIZE,
                                                     &U3VAppData.payloadSize);
@@ -222,6 +212,16 @@ void U3VCamDriver_Tasks(void)
             streamConfigVals.maxTrailerSize = 256U;
             result |= U3VHost_SetupStreamTransferParams(U3VAppData.u3vHostHandle, &streamConfigVals);
             // result |= U3VHost_ResetStreamCh(U3VAppData.u3vHostHandle);
+            if (result == U3V_HOST_RESULT_SUCCESS)
+            {
+                U3VAppData.state = U3V_APP_STATE_GET_CAM_TEMPERATURE;
+            }
+            break;
+
+        case U3V_APP_STATE_GET_CAM_TEMPERATURE:
+            result = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle,
+                                                  U3V_MEM_REG_FLOAT_TEMPERATURE,
+                                                  &U3VAppData.camTemperature);
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION;

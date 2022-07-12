@@ -51,12 +51,12 @@ typedef enum
     U3V_APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE,     /* U3V Application waits for bus to be enabled */
     U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH,           /* U3V Application waits for U3V Device Attach */
     U3V_APP_STATE_OPEN_DEVICE,                      /* U3V Device is Attached */
-    U3V_APP_STATE_SETUP_U3V_CONTROL_CH,             /* U3V Application sets up the Control Channel */
-    U3V_APP_STATE_GET_CAM_TEMPERATURE,              /* U3V Application get cam Temperature in Celcius */
-    U3V_APP_STATE_GET_STREAM_CAPABILITIES,          /* U3V Application retrieves Stream Channel capabilities */
+    U3V_APP_STATE_SETUP_U3V_CONTROL_IF,             /* U3V Application sets up the Control Interface */
+    U3V_APP_STATE_GET_STREAM_CAPABILITIES,          /* U3V Application retrieves Stream Interface capabilities */
     U3V_APP_STATE_SETUP_PIXEL_FORMAT,               /* U3V Application setup Pixel format */
     U3V_APP_STATE_SETUP_ACQUISITION_MODE,           /* U3V Application setup Acquisition mode */
-    U3V_APP_STATE_SETUP_STREAM,
+    U3V_APP_STATE_SETUP_U3V_STREAM_IF,              /* U3V Application setup Stream Interface */
+    U3V_APP_STATE_GET_CAM_TEMPERATURE,              /* U3V Application get cam Temperature in Celcius */
     U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION,   /* U3V Application is ready to receive image acquisition request */
     U3V_APP_STATE_WAIT_TO_ACQUIRE_IMAGE,            /* U3V Application is waiting to acquire image */
     U3V_APP_STATE_STOP_IMAGE_ACQ,
