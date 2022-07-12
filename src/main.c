@@ -90,10 +90,10 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
-    xTaskCreate(xTaskLedBlink, "Task1_LED_Blink", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(xTaskUsbHostTasks, "USB_HOST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(xTaskDrvUsbHsV1Tasks, "DRV_USBHSV1_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(xTaskU3VCamDriverTasks, "USB_CAM_DRV_TASKS", 1024, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(xTaskLedBlink, "Task1_LED_Blink", 256, NULL, tskIDLE_PRIORITY + 10, NULL);
+    xTaskCreate(xTaskUsbHostTasks, "USB_HOST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 3, NULL);
+    xTaskCreate(xTaskDrvUsbHsV1Tasks, "DRV_USBHSV1_TASKS", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
+    xTaskCreate(xTaskU3VCamDriverTasks, "USB_CAM_DRV_TASKS", 1024, NULL, tskIDLE_PRIORITY + 4, NULL);
 
     vTaskStartScheduler(); // never exits
 
