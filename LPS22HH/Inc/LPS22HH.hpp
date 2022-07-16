@@ -49,6 +49,16 @@ private:
     static const uint8_t temperatureSensitivity = 100;
 
     /**
+     * The temperature measurement
+     */
+    float temperatureValue;
+
+    /**
+     * The pressure measurement
+     */
+    float pressureValue;
+
+    /**
      * Chip select pin of the SPI peripheral.
      */
     PIO_PIN ssn;
@@ -72,6 +82,12 @@ private:
      */
     uint8_t getStatus();
 
+public:
+    /**
+     * @param ssn is the chip select pin of the SPI peripheral.
+     */
+    LPS22HH(PIO_PIN ssn);
+
     /**
      * Checks if a new temperature data is generated.
      */
@@ -82,22 +98,32 @@ private:
      */
     bool pressureDataAvailableCheck();
 
-public:
     /**
-     * @param ssn is the chip select pin of the SPI peripheral.
+     * Read the current pressure measurement.
+     * @return the calculated pressure value.
      */
-    LPS22HH(PIO_PIN ssn);
+    void readPressure();
+
+    /**
+     * Read the current temperature measurement.
+     * @return the calculated temperature value.
+     */
+    void readTemperature();
 
     /**
      * Get the current pressure measurement.
      * @return the calculated pressure value.
      */
-    float getPressure();
+    float getPressure(){
+        return pressureValue;
+    }
 
     /**
      * Get the current temperature measurement.
      * @return the calculated temperature value.
      */
-    float getTemperature();
+    float getTemperature(){
+        return temperatureValue;
+    }
 
 };
