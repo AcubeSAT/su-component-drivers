@@ -64,6 +64,11 @@ private:
     PIO_PIN ssn;
 
     /**
+     * Maximum number of bytes that are written kin registers.
+     */
+    static const uint8_t maxWriteBytes = 3;
+
+    /**
      * Reads from a specific register of the ADXRS453 device.
      * @param registerAddress is the value of a register address.
      */
@@ -74,7 +79,7 @@ private:
      * @param registerAddress is the specific address in which a byte is going to be written.
      * @param data is the byte which will be written to the specific register.
      */
-    void writeToRegister(uint8_t registerAddress, uint8_t data);
+    void writeToRegister(uint8_t registerAddress, etl::array<uint8_t, maxWriteBytes> data);
 
     /**
      * Get the STATUS of the sensor.

@@ -13,13 +13,12 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress){
     return rxData;
 }
 
-// TODO: Change argument to array
-void LPS22HH::writeToRegister(uint8_t registerAddress, uint8_t txData){
+void LPS22HH::writeToRegister(uint8_t registerAddress, etl::array<uint8_t, LPS22HH::maxWriteBytes> txData){
 
     PIO_PinWrite(ssn, false);
 
     SPI_WriteRead(&registerAddress, 1, nullptr, 0);
-    SPI_WriteRead(&txData, 1, nullptr, 0);
+    SPI_WriteRead(&txData, txData.size(), nullptr, 0);
 
     PIO_PinWrite(ssn, true);
 }
