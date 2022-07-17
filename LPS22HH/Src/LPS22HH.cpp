@@ -68,19 +68,19 @@ void LPS22HH::setODRBits(OutputDataRate rate){
     writeToRegister(CTRL_REG1, rate;
 }
 
-void setStopOnWTM(bool stopOnWTM){
+void LPS22HH::setStopOnWTM(bool stopOnWTM){
     uint8_t registerData = readFromRegister(FIFO_CTRL);
     registerData = registerData | (stopOnWTM << 3);
     writeToRegister(FIFO_CTRL, registerData);
 }
 
-void setTrigModes(bool trigMode){
+void LPS22HH::setTrigModes(bool trigMode){
     uint8_t registerData = readFromRegister(FIFO_CTRL);
     registerData = registerData | (trigMode << 2);
     writeToRegister(FIFO_CTRL, registerData);
 }
 
-void setFIFOMode(FIFOModes mode){
+void LPS22HH::setFIFOMode(FIFOModes mode){
     uint8_t registerData = readFromRegister(FIFO_CTRL);
     registerData = registerData | mode;
     writeToRegister(FIFO_CTRL, registerData);
