@@ -34,7 +34,7 @@ bool LPS22HH::temperatureDataAvailableCheck(){
 
 bool LPS22HH::pressureDataAvailableCheck(){
     uint8_t status = getStatus();
-    return (status | 0b00000010);
+    return (status | 0b00000001);
 }
 
 LPS22HH::LPS22HH(PIO_PIN ssn) : ssn(ssn){
