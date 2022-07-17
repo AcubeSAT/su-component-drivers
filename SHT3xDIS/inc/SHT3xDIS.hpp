@@ -20,13 +20,13 @@ public:
 	     LOW_DISABLED = 0x2416    
 	};
 	
-	void readMeasurments(uint8_t address);
+	uint16_t* readMeasurments(uint8_t address);
 
 	void writeRegister(Address address, uint16_t data);
 
-	float getTemperature(float);
+	uint16_t getTemperature(float);
 
-	float getHumidity(float);
+	uint16_t getHumidity(float);
 
 }
 
