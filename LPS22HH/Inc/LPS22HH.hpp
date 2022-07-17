@@ -39,6 +39,29 @@ private:
     };
 
     /**
+     * The output data rate (Hz) set in Control Register 1
+     */
+    enum OutputDataRate : uint8_t {
+        ONE_SHOT = 0x0,
+        1 = 0x1,
+        10 = 0x2,
+        25 = 0x3,
+        50 = 0x4,
+        75 = 0x5,
+        100 = 0x6,
+        200 = 0x7,
+    };
+
+    enum FIFOModes : uint8_t {
+        BYPASS = 0x0,
+        FIFO = 0x1,
+        CONTINUOUS = 0x2,
+        BYPASS_TO_FIFO = 0x1,
+        BYPASS_TO_CONTINUOUS = 0x2,
+        CONTINUOUS_TO_FIFO = 0x3,
+    };
+
+    /**
      * The pressure sensitivity value according to the datasheet. It is used to calculate the pressure.
      */
     static const uint16_t pressureSensitivity = 4096;
@@ -79,7 +102,7 @@ private:
      * @param registerAddress is the specific address in which a byte is going to be written.
      * @param data is the byte which will be written to the specific register.
      */
-    void writeToRegister(uint8_t registerAddress, etl::array<uint8_t, maxWriteBytes> data);
+    void writeToRegister(uint8_t registerAddress, uint8_t data);
 
     /**
      * Get the STATUS of the sensor.
@@ -94,41 +117,38 @@ public:
     LPS22HH(PIO_PIN ssn);
 
     /**
-     * Checks if a new temperature data is generated.
-     */
-    bool temperatureDataAvailableCheck();
-
-    /**
-     * Checks if a new pressure data is generated.
-     */
-    bool pressureDataAvailableCheck();
-
-    /**
      * Read the current pressure measurement.
      * @return the calculated pressure value.
      */
-    void readPressure();
+    float readPressure();
 
     /**
      * Read the current temperature measurement.
      * @return the calculated temperature value.
      */
-    void readTemperature();
+    float readTemperature();
 
     /**
-     * Get the current pressure measurement.
-     * @return the calculated pressure value.
+     * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
+     * @param ODR bits
      */
-    float getPressure(){
-        return pressureValue;
-    }
+     void setODRBits(OutputDataRate rate);
+
+     /**
+      * Sets the bit that defines the use of the FIFO watermark level in the FIFO Control Register (FIFO_CTRL(13h))
+      * @param stopOnWTM flag to enable the mode or not
+      */
+     void setStopOnWTM(bool stopOnWTM);
 
     /**
-     * Get the current temperature measurement.
-     * @return the calculated temperature value.
+     * Sets the bit that enables triggered FIFO modes in the FIFO Control Register (FIFO_CTRL(13h))
+     * @param trigMode flag to enable trigger mode or not
      */
-    float getTemperature(){
-        return temperatureValue;
-    }
+    void setTrigModes(bool trigMode);
+
+    /**
+     * Sets the FIFO mode in the FIFO Control Register (FIFO_CTRL(13h))
+     */
+    void setFIFOMode(FIFOModes mode);
 
 };
