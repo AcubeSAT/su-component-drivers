@@ -1,40 +1,32 @@
 #include "SHT3xDIS.hpp"
 
-void SHT3xDIS::writeRegister(Address address, uint16_t data){
+void SHT3xDIS::writeCommandtoRegister(Register register, Command command){
     uint8_t txData[] = {
-            address,
-            static_cast<uint8_t>(data >> 8),
-            static_cast<uint8_t>(data & 0x00FF)
+            register,
+            static_cast<uint8_t>(command >> 8),
+            static_cast<uint8_t>(command & 0x00FF)
     };
 
     uint8_t ackData = 0;
 
-    if (TWIHS2_Write(address, &ackData, 1)) {
+    if (TWIHS2_Write(register, &ackData, 1)) {
     while (TWIHS2_IsBusy());
     error = TWIHS2_ErrorGet();
     }
 
-    if (TWIHS2_Write(address, txData, 1)) {
+    if (TWIHS2_Write(register, txData, 3)) {
     while (TWIHS2_IsBusy());
     error = TWIHS2_ErrorGet();
     }
 }
 
-uint16_t* SHT3xDIS::readMeasurments(Address address){
+etl::array<float, 2> SHT3xDIS::readMeasurements(Register register){
     uint8_t data[6];
-    uint16_t measurments[2];
-    uint8_t ackData = 0;
+    etl::array<float,2> measurements = {};
     uint16_t rawTemperature;
     uint16_t rawHumidity; 
 
-    //intializing the connection, not sure if its necessary
-    if (TWIHS2_Write(address, &ackData, 1)) {
-        while (TWIHS2_IsBusy());
-        error = TWIHS2_ErrorGet();
-    }
-
-    //reading the measurments
-    if (TWIHS2_Read(address, data, 6)) {
+    if (TWIHS2_Read(register, data, 6)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
         
@@ -45,19 +37,8 @@ uint16_t* SHT3xDIS::readMeasurments(Address address){
         return 0;
     }
 
-    measurments[0] = getTemperature(rawTemperature);
-    measurments[1] = getHumidity(rawHumidity);
+    measurements[0] = getTemperature(rawTemperature);
+    measurements[1] = getHumidity(rawHumidity);
 
-    return measurments;
-
-}
-
-uint16_t SHT3xDIS::getTemperature(float ST)
-{
-	return  175 * (ST / 65535) - 45;
-}
-
-uint16_t SHT3xDIS::getHumidity(float SRH)
-{
-	return 100 * (SRH / 65535);
+    return measurements;
 }
