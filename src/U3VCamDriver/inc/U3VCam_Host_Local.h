@@ -52,7 +52,7 @@ typedef struct
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;        /* Pointer to Control Interface Handle */
 	OSAL_MUTEX_DECLARE					(readWriteLock);  		/* Mutex lock/unlock */
-	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)]; /* Acknowledge buffer */
+	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)]; /* Acknowledge buffer */
 	uint32_t							maxAckTransfSize;		/* Max acknowledge transfer size */
 	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)]; /* Command buffer */
 	uint32_t 							maxCmdTransfSize;		/* Max command transfer size */

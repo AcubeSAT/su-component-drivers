@@ -36,7 +36,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 #include "configuration.h"
-#include "definitions.h" 
+#include "definitions.h"
+#include "U3VCam_App.h"
 
 
 const USB_HOST_TPL_ENTRY USBTPList[1] = 

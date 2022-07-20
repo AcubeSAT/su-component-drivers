@@ -30,12 +30,12 @@ extern "C" {
 * Type definitions
 *********************************************************/
 
-typedef enum
-{
-    U3V_CAM_DRV_NOT_INITD   = -2,
-    U3V_CAM_DRV_ERROR       = -1,
-    U3V_CAM_DRV_OK          =  0
-} T_U3VCamDriverStatus;
+// typedef enum
+// {
+//     U3V_CAM_DRV_NOT_INITD   = -2,
+//     U3V_CAM_DRV_ERROR       = -1,
+//     U3V_CAM_DRV_OK          =  0
+// } T_U3VCamDriverStatus;
 
 
 typedef enum
@@ -43,7 +43,7 @@ typedef enum
     U3V_DRV_INITIALIZATION_FAIL = -1,
     U3V_DRV_NOT_INITIALIZED     =  0,
     U3V_DRV_INITIALIZATION_OK   =  1
-} T_U3VCamDriverInitStatus;
+} T_U3VDriverInitStatus;
 
 typedef enum
 {
@@ -113,13 +113,10 @@ typedef bool T_U3VCamIDValid;
 * Function declarations
 *********************************************************/
 
-void U3VCamDriver_Initialize(void);
-
-void U3VCamDriver_Tasks(void); 
-
-T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params);
-
-T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
+// void U3VCamDriver_Initialize(void);
+// void U3VCamDriver_Tasks(void); 
+// T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params);
+// T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
 
 
 #ifdef __cplusplus

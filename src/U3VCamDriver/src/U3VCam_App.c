@@ -6,6 +6,7 @@
 #include "U3VCam_Host.h"
 #include "U3VCam_Config.h"
 #include "system/dma/sys_dma.h"
+#include "U3VCamDriver.h"
 
 
 
@@ -13,7 +14,7 @@
 * Local function declarations
 *********************************************************/
 
-T_U3VCamDriverInitStatus U3VCamDriver_DrvInitStatus(void);
+T_U3VDriverInitStatus U3VCamDriver_DrvInitStatus(void);
 
 T_U3VCamConnectStatus U3VCamDriver_GetCamConnectionStatus(void);
 
@@ -41,7 +42,7 @@ static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT d
 * Constant & Variable declarations
 *********************************************************/
 
-T_U3VCamDriverInitStatus U3VCamDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
+T_U3VDriverInitStatus U3VDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
 T_U3VAppData USB_ALIGN U3VAppData;
 
@@ -55,7 +56,7 @@ uint8_t     imgBfrDst[U3V_IN_BUFFER_MAX_SIZE]; //TODO: debug remove
 
 void U3VCamDriver_Initialize(void)
 {
-    T_U3VCamDriverInitStatus DrvSts = U3V_DRV_INITIALIZATION_OK;
+    T_U3VDriverInitStatus DrvSts = U3V_DRV_INITIALIZATION_OK;
 
     /* DEBUG XULT - Disable VBUS power */
     VBUS_HOST_EN_PowerDisable();
@@ -69,7 +70,7 @@ void U3VCamDriver_Initialize(void)
     U3VAppData.deviceIsAttached                 = false;
     U3VAppData.deviceWasDetached                = false;
 
-    U3VCamDriver_InitStatus = DrvSts;
+    U3VDriver_InitStatus = DrvSts;
 
     SYS_DMA_DataWidthSetup(U3V_DMA_CH_SEL, SYS_DMA_WIDTH_8_BIT);
     SYS_DMA_AddressingModeSetup(U3V_DMA_CH_SEL,
@@ -79,9 +80,9 @@ void U3VCamDriver_Initialize(void)
 }
 
 
-T_U3VCamDriverInitStatus U3VCamDriver_DrvInitStatus(void)
+T_U3VDriverInitStatus U3VCamDriver_DrvInitStatus(void)
 {
-    return U3VCamDriver_InitStatus;
+    return U3VDriver_InitStatus;
 }
 
 
@@ -91,7 +92,7 @@ void U3VCamDriver_Tasks(void)
 
     if (U3VAppData.camSwResetRequested)
     {
-        if ((U3VCamDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (U3VAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_IF))
+        if ((U3VDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (U3VAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_IF))
         {
             U3VAppData.camSwResetRequested = false;
             result = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_INT_DEVICE_RESET, 0x1UL);
@@ -103,6 +104,12 @@ void U3VCamDriver_Tasks(void)
     {
         U3VAppData.state                = U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
         U3VAppData.deviceWasDetached    = false;
+        U3VAppData.camTemperature       = 0.F;
+        U3VAppData.pixelFormat          = 0UL;
+        U3VAppData.payloadSize          = 0UL;
+        U3VAppData.acquisitionMode      = 0UL;
+        U3VAppData.acquisitionRequested = false;
+        U3VAppData.camSwResetRequested  = false;
 
         U3VHost_CtrlIf_InterfaceDestroy(U3VAppData.u3vHostHandle);
 
@@ -150,6 +157,11 @@ void U3VCamDriver_Tasks(void)
             if (result == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_GET_STREAM_CAPABILITIES;
+            }
+            else
+            {
+                //remain in state
+                U3VAppData.state = U3V_APP_STATE_SETUP_U3V_CONTROL_IF;
             }
             break;
 
@@ -201,7 +213,7 @@ void U3VCamDriver_Tasks(void)
             }
             break;
         
-        case U3V_APP_STATE_SETUP_U3V_STREAM_IF:    //TODO: find bug of spinlocking
+        case U3V_APP_STATE_SETUP_U3V_STREAM_IF:    //TODO: solve bug of transfer stalling
             result = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_PAYLOAD_SIZE,
                                                     &U3VAppData.payloadSize);
@@ -280,7 +292,7 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_ERROR:
             /* An error has occurred */
-            // error handling...?
+            //TODO: error handling...?
             break;
             
         default:
