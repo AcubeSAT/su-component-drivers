@@ -65,7 +65,7 @@ float LPS22HH::readTemperature(){
 }
 
 void LPS22HH::setODRBits(OutputDataRate rate){
-    writeToRegister(CTRL_REG1, rate;
+    writeToRegister(CTRL_REG1, rate);
 }
 
 void LPS22HH::setStopOnWTM(bool stopOnWTM){

@@ -43,13 +43,13 @@ private:
      */
     enum OutputDataRate : uint8_t {
         ONE_SHOT = 0x0,
-        1 = 0x1,
-        10 = 0x2,
-        25 = 0x3,
-        50 = 0x4,
-        75 = 0x5,
-        100 = 0x6,
-        200 = 0x7,
+        HZ1 = 0x1,
+        HZ10 = 0x2,
+        HZ25 = 0x3,
+        HZ50 = 0x4,
+        HZ75 = 0x5,
+        HZ100 = 0x6,
+        HZ200 = 0x7,
     };
 
     enum FIFOModes : uint8_t {
