@@ -30,11 +30,8 @@ etl::array<float, 2> SHT3xDIS::readMeasurements(Register register){
 
         measurements[0] = getTemperature(rawTemperature);
         measurements[1] = getHumidity(rawHumidity);
-
-        return measurements;
-    } else {
-        return NULL;
     }
+    return measurements;
 }
 
 void setMeasurement(Register register, SHT3xDIS::Measurement command){
@@ -59,11 +56,8 @@ etl::array<uint16_t, 2> SHT3xDIS::readStatusRegister(Register register){
 
         status[0] = data[1];
         status[1] = data[2];
-
-        return status;
-    } else {
-        return NULL;
     }
+    return status;
 }
 
 void setSoftReset(Register register){
