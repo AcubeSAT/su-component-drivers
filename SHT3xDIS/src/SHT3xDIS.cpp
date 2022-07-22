@@ -1,12 +1,7 @@
 #include "SHT3xDIS.hpp"
 
 void SHT3xDIS::writeCommandtoRegister(Register register, uint16_t command){
-    uint8_t txData[] = {
-            register,
-            static_cast<uint8_t>(command >> 8),
-            static_cast<uint8_t>(command & 0x00FF)
-    };
-
+    uint8_t txData[] = { register, static_cast<uint8_t>(command >> 8), static_cast<uint8_t>(command & 0x00FF) };
     uint8_t ackData = 0;
 
     if (TWIHS2_Write(register, &ackData, 1)) {
@@ -42,7 +37,7 @@ etl::array<float, 2> SHT3xDIS::readMeasurements(Register register){
     }
 }
 
-void setMeasurement(Register register, SHT3xDIS::Measurment command){
+void setMeasurement(Register register, SHT3xDIS::Measurement command){
     writeCommandtoRegister(register, command);
 }
 

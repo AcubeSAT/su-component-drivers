@@ -13,7 +13,7 @@ private:
  	/**
 	 * All the available commands for the single shoot mode.
 	 */
-	enum Measurment {
+	enum Measurement {
 	     HIGH_ENABLED = 0x2C06, 
 	     MEDIUM_ENABLED = 0x2C0D,  
 	     LOW_ENABLED = 0x2C10,
@@ -35,8 +35,8 @@ private:
 	 */
 	enum StatusRegister
 	{
-		READ_STATUS_REGISTER = 0xF32D;
-		CLEAR_STATUS_REGISTER = 0x3041;
+		READ_STATUS_REGISTER = 0xF32D,
+		CLEAR_STATUS_REGISTER = 0x3041
 	};
 
 	/**
@@ -59,7 +59,7 @@ public:
 	/**
 	 * Sets the type of measurement the sensor will execute.
 	 */
-	void setMeasurement(Register register, Measurment command);
+	void setMeasurement(Register register, Measurement command);
 
 	/**
 	 * Sets the heater(On/Off).
@@ -69,12 +69,12 @@ public:
 	/**
 	 * Writs a command to the Status register so it reads from it or clears it.
 	 */
-	void setStatusRegisterCommand(Register register, SHT3xDIS::StatusRegister command);
+	void setStatusRegisterCommand(Register register, StatusRegister command);
 
 	/**
 	 * Reads the data sent by the status register.
 	 */
-	etl::array<uint16_t, 2> readStatusRegister(Register register)
+	etl::array<uint16_t, 2> readStatusRegister(Register register);
 
 	/**
 	 * Performs a soft reset to the sensor.
