@@ -89,7 +89,7 @@ private:
     /**
      * Maximum number of bytes that are written kin registers.
      */
-    static const uint8_t maxWriteBytes = 3;
+    static const uint8_t MaxWriteBytes = 3;
 
     /**
      * Reads from a specific register of the ADXRS453 device.
