@@ -45,7 +45,6 @@ typedef uintptr_t T_U3VHostHandle;
 typedef uintptr_t T_U3VHostTransferHandle;
 typedef uintptr_t T_U3VHostRequestHandle;
 typedef USB_HOST_DEVICE_OBJ_HANDLE T_U3VHostDeviceObjHandle;  /* Inherited type from usb_host.h */
-typedef uintptr_t T_U3VControlIfObjHandle; 		/* uintptr_t for U3VControlIfObj */
 
 typedef enum
 {
@@ -220,27 +219,34 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
 T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void *imgBfr, size_t size);
 
 T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle);
+
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
 
 T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle,
                                                T_U3VMemRegInteger integerReg,
                                                uint32_t *const pReadValue);
+
 T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle,
                                              T_U3VMemRegFloat floatReg,
                                              float *const pReadValue);
+
 T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle,
                                               T_U3VMemRegString stringReg,
                                               char *const pReadBfr); /* string buffer size must be 64bytes long (at least) */
+                                              
 
 T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle,
                                                 T_U3VMemRegInteger integerReg,
                                                 uint32_t writeValue);
+                                                
 T_U3VHostResult U3VHost_WriteMemRegFloatValue(T_U3VHostHandle u3vObjHandle,
                                               T_U3VMemRegFloat integerReg,
                                               float writeValue);
+
 T_U3VHostResult U3VHost_WriteMemRegStringValue(T_U3VHostHandle u3vObjHandle,
                                                T_U3VMemRegString integerReg,
                                                const char *pWriteBfr); /* string buffer size must be 64bytes long (at least) */
+
 
 
 #ifdef __cplusplus
