@@ -13,7 +13,7 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress){
     return rxData;
 }
 
-void LPS22HH::writeToRegister(uint8_t registerAddress, uint8_t txData){
+void LPS22HH::writeToRegister(RegisterAddress registerAddress, uint8_t txData){
 
     PIO_PinWrite(ssn, false);
 

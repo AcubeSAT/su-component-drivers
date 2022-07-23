@@ -102,7 +102,7 @@ private:
      * @param registerAddress is the specific address in which a byte is going to be written.
      * @param data is the byte which will be written to the specific register.
      */
-    void writeToRegister(uint8_t registerAddress, uint8_t data);
+    void writeToRegister(RegisterAddress registerAddress, uint8_t data);
 
     /**
      * Get the STATUS of the sensor.
