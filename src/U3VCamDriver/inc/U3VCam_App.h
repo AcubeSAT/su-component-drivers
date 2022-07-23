@@ -35,8 +35,7 @@ extern "C" {
 //     U3V_CAM_DRV_NOT_INITD   = -2,
 //     U3V_CAM_DRV_ERROR       = -1,
 //     U3V_CAM_DRV_OK          =  0
-// } T_U3VCamDriverStatus;
-
+// } T_U3VCamDriverStatus;          //TODO: remove, this is included in ext header
 
 typedef enum
 {
@@ -59,10 +58,10 @@ typedef enum
     U3V_APP_STATE_GET_CAM_TEMPERATURE,              /* U3V Application get cam Temperature in Celcius */
     U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION,   /* U3V Application is ready to receive image acquisition request */
     U3V_APP_STATE_WAIT_TO_ACQUIRE_IMAGE,            /* U3V Application is waiting to acquire image */
-    U3V_APP_STATE_STOP_IMAGE_ACQ,
-    U3V_APP_STATE_NOP, // todo: review states stable-flow/on-request
+    U3V_APP_STATE_STOP_IMAGE_ACQ,                   /* U3V Applicatiion request to stop image acquisition*/
+    U3V_APP_STATE_ERROR,                            /* U3V Application error state */
 
-    U3V_APP_STATE_ERROR
+    U3V_APP_STATE_NOP //TODO: remove, debug state
 } T_U3VAppState;
 
 typedef struct
@@ -80,7 +79,6 @@ typedef struct
     T_U3VImgPayloadContainer    imgPayloadContainer;
 } T_U3VAppData;
 
-
 typedef enum
 {
     U3V_CAM_DISCONNECTED     = -1,
@@ -88,13 +86,11 @@ typedef enum
     U3V_CAM_CONNECTED        =  1
 } T_U3VCamConnectStatus;
 
-
 typedef enum
 {
     U3V_CAM_DEV_ID_ERROR     = 0,
     U3V_CAM_DEV_ID_OK        = 1
 } T_U3VCamDevIDStatus;
-
 
 typedef bool T_U3VCamIDValid;
 

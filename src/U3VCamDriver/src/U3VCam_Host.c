@@ -8,7 +8,8 @@
 #include "U3VCam_Device_Class_Specs.h"
 #include "math.h"
 
-
+#include "FreeRTOS.h"
+#include "task.h"
 
 /********************************************************
 * Local function declarations
@@ -338,6 +339,80 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
         }
         
     }
+
+    return u3vResult;
+}
+
+ 
+T_U3VHostResult U3VHost_GetDeviceInfo(T_U3VHostHandle u3vObjHandle)
+{
+    T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj *u3vInstance;
+    T_U3VControlIfObj *ctrlIfInstance;
+    uint32_t bytesRead;
+
+    u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    ctrlIfInstance = &u3vInstance->controlIfObj;
+
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+                                          NULL,
+                                          U3V_ABRM_MANUFACTURER_NAME_OFS,
+                                          U3V_REG_MANUFACTURER_NAME_SIZE,
+                                          &bytesRead,
+                                          (void *)u3vInstance->u3vDevInfo.vendorName);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+                                          NULL,
+                                          U3V_ABRM_MODEL_NAME_OFS,
+                                          U3V_REG_MODEL_NAME_SIZE,
+                                          &bytesRead,
+                                          (void *)u3vInstance->u3vDevInfo.modelName);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+                                          NULL,
+                                          U3V_ABRM_DEVICE_VERSION_OFS,
+                                          U3V_REG_DEVICE_VERSION_SIZE,
+                                          &bytesRead,
+                                          (void *)u3vInstance->u3vDevInfo.deviceVersion);
+
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+                                          NULL,
+                                          U3V_ABRM_SERIAL_NUMBER_OFS,
+                                          U3V_REG_SERIAL_NUMBER_SIZE,
+                                          &bytesRead,
+                                          (void *)u3vInstance->u3vDevInfo.serialNumberU3v);
 
     return u3vResult;
 }
@@ -816,24 +891,37 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
                                           &bytesRead,
                                           (void *)&siRequiredLeaderSize);
 
-    u3vResult |= U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                            NULL,
                                            sirmAddress + U3V_SIRM_REQ_PAYLOAD_SIZE_OFS,
                                            sizeof(siRequiredPayloadSize),
                                            &bytesRead,
                                            (void *)&siRequiredPayloadSize);
 
-    u3vResult |= U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_ReadMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                            NULL,
                                            sirmAddress + U3V_SIRM_REQ_TRAILER_SIZE_OFS,
                                            sizeof(siRequiredTrailerSize),
                                            &bytesRead,
                                            (void *)&siRequiredTrailerSize);
-
+    
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         return u3vResult;
     }
+    vTaskDelay(pdMS_TO_TICKS(10));
 
     if (((uint32_t)siRequiredPayloadSize != u32ImageSize) ||
         (siRequiredLeaderSize > siMaxLeaderSize) ||
@@ -850,35 +938,65 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
                                            &bytesRead,
                                            (void *)&siMaxLeaderSize);
 
-    u3vResult |= U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                             NULL,
                                             sirmAddress + U3V_SIRM_MAX_TRAILER_SIZE_OFS,
                                             sizeof(siMaxTrailerSize),
                                             &bytesRead,
                                             (void *)&siMaxTrailerSize);
 
-    u3vResult |= U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                             NULL,
                                             sirmAddress + U3V_SIRM_PAYLOAD_SIZE_OFS,
                                             sizeof(siPayloadTransfSize),
                                             &bytesRead,
                                             (void *)&siPayloadTransfSize);
 
-    u3vResult |= U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                             NULL,
                                             sirmAddress + U3V_SIRM_PAYLOAD_COUNT_OFS,
                                             sizeof(siPayloadTransfCount),
                                             &bytesRead,
                                             (void *)&siPayloadTransfCount);
 
-    u3vResult |= U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                             NULL,
                                             sirmAddress + U3V_SIRM_TRANSFER1_SIZE_OFS,
                                             sizeof(siPayloadFinalTransf1Size),
                                             &bytesRead,
                                             (void *)&siPayloadFinalTransf1Size);
 
-    u3vResult |= U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
+    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+    {
+        return u3vResult;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    u3vResult = U3VHost_CtrlIf_WriteMemory((T_U3VControlIfObjHandle)ctrlIfInstance,
                                             NULL,
                                             sirmAddress + U3V_SIRM_TRANSFER2_SIZE_OFS,
                                             sizeof(siPayloadFinalTransf2Size),
@@ -889,6 +1007,8 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
+    vTaskDelay(pdMS_TO_TICKS(10));
+
 
     return u3vResult;
 }
