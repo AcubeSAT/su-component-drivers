@@ -28,6 +28,13 @@ typedef enum
     U3V_CAM_DRV_OK          =  0
 } T_U3VCamDriverStatus;
 
+typedef enum
+{
+    U3V_CAM_DRV_GET_TEXT_SERIAL_NUMBER,
+    U3V_CAM_DRV_GET_TEXT_MANUFACTURER_NAME,
+    U3V_CAM_DRV_GET_TEXT_MODEL_NAME,
+    U3V_CAM_DRV_GET_TEXT_DEVICE_VERSION,
+} T_U3VCamDriverDevDescrTextType;
 
 /********************************************************
 * Constant declarations
@@ -47,9 +54,14 @@ void U3VCamDriver_Initialize(void);
 
 void U3VCamDriver_Tasks(void); 
 
-T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params);
+T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params); //TODO: maybe add callback with MEMR interfcace with data bfr + size args
+
+T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDevDescrTextType textType, void *buffer); //buffer size must be 64bytes at least
+
+T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC); //temperatureC in celcius with 2 decimals resolution
 
 T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
+
 
 
 #ifdef __cplusplus

@@ -113,25 +113,25 @@ typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vObjHa
 
 typedef struct 
 {
-// 	uint32_t    genCpVersion;                                       //TODO: remove if never used
-// 	uint32_t    u3vVersion;                                         //TODO: remove if never used
-// 	char        deviceGuid[U3V_MAX_DESCR_STR_LENGTH];               //TODO: remove if never used
-	char        vendorName[U3V_REG_MANUFACTURER_NAME_SIZE];
-	char        modelName[U3V_REG_MODEL_NAME_SIZE];
-// 	char        familyName[U3V_REG_FAMILY_NAME_SIZE];               //TODO: remove if never used
-	char        deviceVersion[U3V_REG_DEVICE_VERSION_SIZE];         //TODO: remove if never used
-// 	char        manufacturerInfo[U3V_REG_MANUFACTURER_INFO_SIZE];   //TODO: remove if never used
-	char        serialNumberU3v[U3V_REG_SERIAL_NUMBER_SIZE];
-// 	char        userDefinedName[U3V_REG_USER_DEFINED_NAME_SIZE];    //TODO: remove if never used
-// 	uint8_t     speedSupport;                                       //TODO: remove if never used
-	// uint8_t     previouslyInitialized;                           //TODO: remove if never used
+	// uint32_t    genCpVersion;                                        //TODO: remove if never used
+	// uint32_t    u3vVersion;                                          //TODO: remove if never used
+	// char        deviceGuid[U3V_MAX_DESCR_STR_LENGTH];                //TODO: remove if never used
+	// char        vendorName[U3V_REG_MANUFACTURER_NAME_SIZE];          //TODO: remove if never used
+	// char        modelName[U3V_REG_MODEL_NAME_SIZE];                  //TODO: remove if never used
+	// char        familyName[U3V_REG_FAMILY_NAME_SIZE];                //TODO: remove if never used
+	// char        deviceVersion[U3V_REG_DEVICE_VERSION_SIZE];          //TODO: remove if never used
+	// char        manufacturerInfo[U3V_REG_MANUFACTURER_INFO_SIZE];    //TODO: remove if never used
+	// char        serialNumberU3v[U3V_REG_SERIAL_NUMBER_SIZE];         //TODO: remove if never used
+	// char        userDefinedName[U3V_REG_USER_DEFINED_NAME_SIZE];     //TODO: remove if never used
+	// uint8_t     speedSupport;                                        //TODO: remove if never used
+    // uint8_t     previouslyInitialized;                               //TODO: remove if never used
 	uint32_t    hostByteAlignment;
-	// uint32_t    osMaxTransferSize;                               //TODO: remove if never used
+	// uint32_t    osMaxTransferSize;                                   //TODO: remove if never used
 	uint64_t    sirmAddr;
 	uint32_t    transferAlignment;
-	// uint32_t    segmentedXferSupported;                          //TODO: remove if never used
-	// uint32_t    segmentedXferEnabled;                            //TODO: remove if never used
-	// uint32_t    legacyCtrlEpStallEnabled;                        //TODO: remove if never used
+	// uint32_t    segmentedXferSupported;                              //TODO: remove if never used
+	// uint32_t    segmentedXferEnabled;                                //TODO: remove if never used
+	// uint32_t    legacyCtrlEpStallEnabled;                            //TODO: remove if never used
 } T_U3VDeviceInfo;
 
 
@@ -206,8 +206,6 @@ void U3VHost_Close(T_U3VHostHandle u3vDeviceHandle);
 T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
 
 T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle);
-
-T_U3VHostResult U3VHost_GetDeviceInfo(T_U3VHostHandle u3vObjHandle);
 
 T_U3VHostResult U3VHost_ResetStreamCh(T_U3VHostHandle u3vObjHandle);
 

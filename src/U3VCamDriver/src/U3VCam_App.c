@@ -192,6 +192,31 @@ void U3VCamDriver_Tasks(void)
             result1 = U3VHost_CtrlIf_InterfaceCreate(U3VAppData.u3vHostHandle);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
+                U3VAppData.state = U3V_APP_STATE_READ_DEVICE_TEXT_DESCR;
+            }
+            else
+            {
+                U3VAppData.state = U3V_APP_STATE_ERROR;
+            }
+            break;
+
+        case U3V_APP_STATE_READ_DEVICE_TEXT_DESCR:
+            u3vAppStMchStepbits |= 0x0020UL;
+            result1 = U3VHost_ReadMemRegStringValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_STRING_MANUFACTURER_NAME,
+                                                    U3VAppData.camTextDescr.vendorName);
+            result1 |= U3VHost_ReadMemRegStringValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_STRING_MODEL_NAME,
+                                                    U3VAppData.camTextDescr.modelName);
+            result2 = U3VHost_ReadMemRegStringValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_STRING_DEVICE_VERSION,
+                                                    U3VAppData.camTextDescr.deviceVersion);
+            result2 |= U3VHost_ReadMemRegStringValue(U3VAppData.u3vHostHandle,
+                                                    U3V_MEM_REG_STRING_SERIAL_NUMBER,
+                                                    U3VAppData.camTextDescr.serialNumber);
+
+            if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
+            {
                 U3VAppData.state = U3V_APP_STATE_GET_STREAM_CAPABILITIES;
             }
             else
@@ -201,11 +226,10 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_GET_STREAM_CAPABILITIES:
-            u3vAppStMchStepbits |= 0x0020UL;
+            u3vAppStMchStepbits |= 0x0040UL;
             result1 = U3VHost_GetStreamCapabilities(U3VAppData.u3vHostHandle);
             vTaskDelay(pdMS_TO_TICKS(10));
-            result2 = U3VHost_GetDeviceInfo(U3VAppData.u3vHostHandle);
-            if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
+            if ((result1 == U3V_HOST_RESULT_SUCCESS))
             {
                 U3VAppData.state = U3V_APP_STATE_SETUP_PIXEL_FORMAT;
             }
@@ -216,7 +240,7 @@ void U3VCamDriver_Tasks(void)
             break;
         
         case U3V_APP_STATE_SETUP_PIXEL_FORMAT:
-            u3vAppStMchStepbits |= 0x0040UL;
+            u3vAppStMchStepbits |= 0x0080UL;
             result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_PIXELFORMAT,
                                                     &U3VAppData.pixelFormat);
@@ -242,7 +266,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
-            u3vAppStMchStepbits |= 0x0080UL;
+            u3vAppStMchStepbits |= 0x0100UL;
             result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_ACQUISITION_MODE,
                                                     &U3VAppData.acquisitionMode);
@@ -268,7 +292,7 @@ void U3VCamDriver_Tasks(void)
             break;
         
         case U3V_APP_STATE_SETUP_U3V_STREAM_IF:    //TODO: solve bug of transfer stalling
-            u3vAppStMchStepbits |= 0x0100UL;
+            u3vAppStMchStepbits |= 0x0200UL;
             result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_PAYLOAD_SIZE,
                                                     &U3VAppData.payloadSize);
@@ -294,7 +318,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_GET_CAM_TEMPERATURE:
-            u3vAppStMchStepbits |= 0x0200UL;
+            u3vAppStMchStepbits |= 0x0400UL;
             vTaskDelay(pdMS_TO_TICKS(50)); //temperature needs a few ms to be sampled
             result1 = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle,
                                                   U3V_MEM_REG_FLOAT_TEMPERATURE,
@@ -310,7 +334,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION:
-            u3vAppStMchStepbits |= 0x0400UL;
+            u3vAppStMchStepbits |= 0x0800UL;
             if (U3VAppData.acquisitionRequested)
             {
                 result1 = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, true);
@@ -331,7 +355,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_WAIT_TO_ACQUIRE_IMAGE:
-            u3vAppStMchStepbits |= 0x0800UL;
+            u3vAppStMchStepbits |= 0x1000UL;
             if ((U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_START)||
                 (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_LEADER_COMPLETE)||
                 (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE))
@@ -356,7 +380,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
-            u3vAppStMchStepbits |= 0x1000UL;
+            u3vAppStMchStepbits |= 0x2000UL;
             result1 = U3VHost_AcquisitionStop(U3VAppData.u3vHostHandle); //TODO: fix bug of host busy
             vTaskDelay(pdMS_TO_TICKS(10));
             result2 = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, false);
@@ -392,7 +416,7 @@ T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params)
     T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
 
     DrvSts = (U3VCamDriver_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
-    DrvSts = (U3VCamDriver_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
+    // DrvSts = (U3VCamDriver_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
     
     // if (U3VAppData.state == U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION)
     // {
@@ -410,12 +434,73 @@ T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params)
 }
 
 
-T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
+T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDevDescrTextType textType, void *buffer)
 {
-       T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
+    T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
+    char *lclBuffer;
+    size_t size;
 
     DrvSts = (U3VCamDriver_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
-    DrvSts = (U3VCamDriver_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
+    // DrvSts = (U3VCamDriver_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
+
+    switch (textType)
+    {
+        case U3V_CAM_DRV_GET_TEXT_SERIAL_NUMBER:
+            lclBuffer = U3VAppData.camTextDescr.serialNumber;
+            size = (size_t)U3V_REG_SERIAL_NUMBER_SIZE;
+            break;
+
+        case U3V_CAM_DRV_GET_TEXT_MANUFACTURER_NAME:
+            lclBuffer = U3VAppData.camTextDescr.vendorName;
+            size = (size_t)U3V_REG_MANUFACTURER_NAME_SIZE;
+            break;
+
+        case U3V_CAM_DRV_GET_TEXT_MODEL_NAME:
+            lclBuffer = U3VAppData.camTextDescr.modelName;
+            size = (size_t)U3V_REG_MODEL_NAME_SIZE;
+            break;
+
+        case U3V_CAM_DRV_GET_TEXT_DEVICE_VERSION:
+            lclBuffer = U3VAppData.camTextDescr.deviceVersion;
+            size = (size_t)U3V_REG_DEVICE_VERSION_SIZE;
+            break;
+
+        default:
+            lclBuffer = NULL;
+            size = (size_t)0U;
+            break;
+    }
+    if ((buffer != NULL) && (lclBuffer != NULL))
+    {
+        memcpy((void *)buffer, (void *)lclBuffer, size);
+    }
+
+    return DrvSts;
+}
+
+
+T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC)
+{
+    T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
+
+    DrvSts = (U3VCamDriver_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
+    // DrvSts = (U3VCamDriver_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
+
+    if (temperatureC != NULL)
+    {
+        *temperatureC = U3VAppData.camTemperature;
+    }
+
+    return DrvSts;
+}
+
+
+T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
+{
+    T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
+
+    DrvSts = (U3VCamDriver_DrvInitStatus()          == U3V_DRV_INITIALIZATION_OK)  ? DrvSts : U3V_CAM_DRV_NOT_INITD;
+    // DrvSts = (U3VCamDriver_GetCamConnectionStatus() == U3V_CAM_CONNECTED)          ? DrvSts : U3V_CAM_DRV_ERROR;
 
     U3VAppData.camSwResetRequested = true;
 
