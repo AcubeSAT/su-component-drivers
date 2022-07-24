@@ -120,8 +120,8 @@ void U3VCamDriver_Tasks(void)
         U3VAppData.pixelFormat          = 0UL;
         U3VAppData.payloadSize          = 0UL;
         U3VAppData.acquisitionMode      = 0UL;
-        U3VAppData.acquisitionRequested = false;
         U3VAppData.camSwResetRequested  = false;
+        // U3VAppData.acquisitionRequested = false;
 
         U3VHost_CtrlIf_InterfaceDestroy(U3VAppData.u3vHostHandle);
 
@@ -178,7 +178,6 @@ void U3VCamDriver_Tasks(void)
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
                     U3VAppData.state = U3V_APP_STATE_SETUP_U3V_CONTROL_IF;
-                    LED1_On(); // DEBUG XULT board
                 }
                 else
                 {
@@ -291,7 +290,7 @@ void U3VCamDriver_Tasks(void)
             }
             break;
         
-        case U3V_APP_STATE_SETUP_U3V_STREAM_IF:    //TODO: solve bug of transfer stalling
+        case U3V_APP_STATE_SETUP_U3V_STREAM_IF:
             u3vAppStMchStepbits |= 0x0200UL;
             result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_PAYLOAD_SIZE,
@@ -326,6 +325,7 @@ void U3VCamDriver_Tasks(void)
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION;
+                LED1_On(); // DEBUG XULT board - LED1 ON to show cam is ready for image acq
             }
             else
             {
@@ -343,7 +343,7 @@ void U3VCamDriver_Tasks(void)
 
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
-                    U3VAppData.acquisitionRequested = false;
+                    // U3VAppData.acquisitionRequested = false;
                     U3VAppData.imgPayloadContainer.imgPldTransfSt = SI_IMG_TRANSF_STATE_START;
                     U3VAppData.state = U3V_APP_STATE_WAIT_TO_ACQUIRE_IMAGE;
                 }
@@ -370,6 +370,7 @@ void U3VCamDriver_Tasks(void)
             }    
             else if (U3VAppData.imgPayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_TRAILER_COMPLETE)
             {
+                U3VAppData.acquisitionRequested = false;
                 U3VAppData.state = U3V_APP_STATE_STOP_IMAGE_ACQ;
             }
             else
@@ -381,7 +382,7 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
             u3vAppStMchStepbits |= 0x2000UL;
-            result1 = U3VHost_AcquisitionStop(U3VAppData.u3vHostHandle); //TODO: fix bug of host busy
+            result1 = U3VHost_AcquisitionStop(U3VAppData.u3vHostHandle);
             vTaskDelay(pdMS_TO_TICKS(10));
             result2 = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, false);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))

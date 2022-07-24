@@ -780,7 +780,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                           NULL,
@@ -793,7 +792,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                           NULL,
@@ -806,7 +804,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     if (((uint32_t)siRequiredPayloadSize != u32ImageSize) ||
         (siRequiredLeaderSize > siMaxLeaderSize) ||
@@ -827,7 +824,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                            NULL,
@@ -840,7 +836,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                            NULL,
@@ -853,7 +848,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                            NULL,
@@ -866,7 +860,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                            NULL,
@@ -879,7 +872,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
     u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                            NULL,
@@ -892,7 +884,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
 
 
     return u3vResult;
@@ -1923,14 +1914,14 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
         {
             /* Wait for write request to complete with retry limit */
             writeRetryCnt++;
-            if (writeRetryCnt > (ctrlIfInst->u3vTimeout))
+            if ((writeRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
             {
                 /* write failed */
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
-            vTaskDelay(pdMS_TO_TICKS(1));
+            vTaskDelay(pdMS_TO_TICKS(10));
         }
 
         reqAcknowledged = false;
@@ -1961,23 +1952,24 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
                 return u3vResult;
             }
 
+            ack = (T_U3VCtrlIfAcknowledge *)(ctrlIfInst->ackBuffer);
+
             while ((ctrlIfInst->readReqSts.length != ackBufferSize) ||
                    (ctrlIfInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
-                   (ctrlIfInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID))
+                   (ctrlIfInst->readReqSts.transferHandle == U3V_HOST_TRANSFER_HANDLE_INVALID) ||
+                   (ack->header.prefix != U3V_CONTROL_MGK_PREFIX))
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
-                if (readRetryCnt > (ctrlIfInst->u3vTimeout))
+                if ((readRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
                 {
                     /* read failed */
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                vTaskDelay(pdMS_TO_TICKS(1));
+                vTaskDelay(pdMS_TO_TICKS(10));
             }
-
-            ack = (T_U3VCtrlIfAcknowledge *)(ctrlIfInst->ackBuffer);
 
             /* Inspect the acknowledge buffer */
             if (((ack->header.cmd != U3V_CTRL_READMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
@@ -2022,6 +2014,7 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
 
     return u3vResult;
 }
+
 
 static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
                                                   T_U3VHostTransferHandle *transferHandle,
@@ -2086,6 +2079,10 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         T_U3VCtrlIfWriteMemCmdPayload *payload = (T_U3VCtrlIfWriteMemCmdPayload *)(command->payload);
         uint32_t writeRetryCnt = 0UL;
 
+        ctrlIfInst->writeReqSts.length = 0UL;
+        ctrlIfInst->writeReqSts.result = U3V_HOST_RESULT_FAILURE;
+        ctrlIfInst->writeReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
+
         command->header.prefix = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
 		command->header.flags = (uint16_t)(U3V_CTRL_REQ_ACK);
 		command->header.cmd = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
@@ -2122,14 +2119,14 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         {
             /* Wait for write request to complete with retry limit */
             writeRetryCnt++;
-            if (writeRetryCnt > (ctrlIfInst->u3vTimeout))
+            if ((writeRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
             {
                 /* write failed */
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
-            vTaskDelay(pdMS_TO_TICKS(1));
+            vTaskDelay(pdMS_TO_TICKS(10));
         }
 
         reqAcknowledged = false;
@@ -2137,8 +2134,11 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         {
             uint32_t readRetryCnt = 0UL;
 
-            /* reset buffer */
-			memset(ctrlIfInst->ackBuffer, 0, ackBufferSize);
+            ctrlIfInst->readReqSts.length = 0UL;
+            ctrlIfInst->readReqSts.result = U3V_HOST_RESULT_FAILURE;
+            ctrlIfInst->readReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
+
+            memset(ctrlIfInst->ackBuffer, 0, ackBufferSize);
 
 			/* read the ack */
             hostResult = USB_HOST_DeviceTransfer(ctrlIfHandle->bulkInPipeHandle,
@@ -2149,6 +2149,13 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
 
             u3vResult = _U3VHost_HostToU3VResultsMap(hostResult);
 
+            if (u3vResult != U3V_HOST_RESULT_SUCCESS)
+            {
+                OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
+                u3vResult = U3V_HOST_RESULT_FAILURE;
+                return u3vResult;
+            }
+            
             ack = (T_U3VCtrlIfAcknowledge *)(ctrlIfInst->ackBuffer);
             writeMemAck = (T_U3V_CtrlIfWriteMemAckPayload *)(ack->payload);
 
@@ -2159,14 +2166,14 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
-                if (readRetryCnt > (ctrlIfInst->u3vTimeout))
+                if ((readRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
                 {
                     /* read failed */
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                vTaskDelay(pdMS_TO_TICKS(1));
+                vTaskDelay(pdMS_TO_TICKS(10));
             }
             
             /* Inspect the acknowledge buffer */

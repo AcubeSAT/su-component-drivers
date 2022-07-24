@@ -8,6 +8,7 @@
 
 
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,6 +22,7 @@ extern "C" {
 /********************************************************
 * Type definitions
 *********************************************************/
+
 typedef enum
 {
     U3V_CAM_DRV_NOT_INITD   = -2,
@@ -35,6 +37,7 @@ typedef enum
     U3V_CAM_DRV_GET_TEXT_MODEL_NAME,
     U3V_CAM_DRV_GET_TEXT_DEVICE_VERSION,
 } T_U3VCamDriverDevDescrTextType;
+
 
 /********************************************************
 * Constant declarations
@@ -58,7 +61,7 @@ T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params); //TODO: maybe a
 
 T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDevDescrTextType textType, void *buffer); //buffer size must be 64bytes at least
 
-T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC); //temperatureC in celcius with 2 decimals resolution
+T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC); //temperature in celcius with 2 decimals resolution
 
 T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
 
