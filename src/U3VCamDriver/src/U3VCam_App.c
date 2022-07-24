@@ -8,8 +8,6 @@
 #include "system/dma/sys_dma.h"
 #include "U3VCamDriver.h"
 
-#include "FreeRTOS.h"
-#include "task.h"
 
 /********************************************************
 * Local function declarations
@@ -39,6 +37,7 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vObjH
 
 static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT dmaEvent, uintptr_t context);
 
+
 /********************************************************
 * Constant & Variable declarations
 *********************************************************/
@@ -52,6 +51,7 @@ T_U3VStreamIfConfig streamConfigVals;
 uint32_t    u3vAppStMchStepbits;    //debug bitfield monitor var for U3V App State Machine
 
 uint8_t     imgBfrDst[U3V_IN_BUFFER_MAX_SIZE]; //TODO: debug remove
+
 
 /********************************************************
 * Function definitions
@@ -227,7 +227,6 @@ void U3VCamDriver_Tasks(void)
         case U3V_APP_STATE_GET_STREAM_CAPABILITIES:
             u3vAppStMchStepbits |= 0x0040UL;
             result1 = U3VHost_GetStreamCapabilities(U3VAppData.u3vHostHandle);
-            vTaskDelay(pdMS_TO_TICKS(10));
             if ((result1 == U3V_HOST_RESULT_SUCCESS))
             {
                 U3VAppData.state = U3V_APP_STATE_SETUP_PIXEL_FORMAT;
@@ -247,7 +246,6 @@ void U3VCamDriver_Tasks(void)
             {
                 if (U3VAppData.pixelFormat != U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
                 {
-                    vTaskDelay(pdMS_TO_TICKS(10));
                     /* set correct pixel format */
                     result2 = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                              U3V_MEM_REG_INT_PIXELFORMAT,
@@ -273,7 +271,6 @@ void U3VCamDriver_Tasks(void)
             {
                 if (U3VAppData.acquisitionMode != U3V_ACQUISITION_MODE_SINGLE_FRAME)
                 {
-                    vTaskDelay(pdMS_TO_TICKS(10));
                     /* set correct acquisition mode */
                     result2 = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                              U3V_MEM_REG_INT_ACQUISITION_MODE,
@@ -295,7 +292,6 @@ void U3VCamDriver_Tasks(void)
             result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                     U3V_MEM_REG_INT_PAYLOAD_SIZE,
                                                     &U3VAppData.payloadSize);
-            vTaskDelay(pdMS_TO_TICKS(10));
             /* setup stream config data */
             {
                 streamConfigVals.imageSize = U3VAppData.payloadSize;
@@ -305,7 +301,6 @@ void U3VCamDriver_Tasks(void)
                 streamConfigVals.maxTrailerSize = 256U;
             }
             result2 = U3VHost_SetupStreamTransferParams(U3VAppData.u3vHostHandle, &streamConfigVals);
-            // U3VHost_ResetStreamCh(U3VAppData.u3vHostHandle);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
             {
                 U3VAppData.state = U3V_APP_STATE_GET_CAM_TEMPERATURE;
@@ -318,14 +313,13 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_GET_CAM_TEMPERATURE:
             u3vAppStMchStepbits |= 0x0400UL;
-            vTaskDelay(pdMS_TO_TICKS(50)); //temperature needs a few ms to be sampled
             result1 = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle,
                                                   U3V_MEM_REG_FLOAT_TEMPERATURE,
                                                   &U3VAppData.camTemperature);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION;
-                LED1_On(); // DEBUG XULT board - LED1 ON to show cam is ready for image acq
+                LED1_On(); // DEBUG XULT board - turn LED1 ON to show cam is ready for image acq
             }
             else
             {
@@ -338,7 +332,6 @@ void U3VCamDriver_Tasks(void)
             if (U3VAppData.acquisitionRequested)
             {
                 result1 = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, true);
-                vTaskDelay(pdMS_TO_TICKS(10));
                 result2 = U3VHost_AcquisitionStart(U3VAppData.u3vHostHandle);
 
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
@@ -383,7 +376,6 @@ void U3VCamDriver_Tasks(void)
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
             u3vAppStMchStepbits |= 0x2000UL;
             result1 = U3VHost_AcquisitionStop(U3VAppData.u3vHostHandle);
-            vTaskDelay(pdMS_TO_TICKS(10));
             result2 = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, false);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
             {
