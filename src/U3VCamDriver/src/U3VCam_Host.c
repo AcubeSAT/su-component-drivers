@@ -5,11 +5,11 @@
 #include <string.h>
 #include "U3VCam_Host.h"
 #include "U3VCam_Host_Local.h"
-#include "U3VCam_Device_Class_Specs.h"
 #include "math.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
+
 
 /********************************************************
 * Local function declarations
@@ -1008,7 +1008,7 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     ctrlIfInst->transfReqCompleteCbk = _U3VHost_CtrlIfTransferReqCompleteCbk;
 
-    ctrlIfInst->u3vTimeout = U3V_REQ_TIMEOUT;
+    ctrlIfInst->u3vTimeout = U3V_REQ_TIMEOUT_MS;
     ctrlIfInst->maxAckTransfSize = sizeof(ctrlIfInst->ackBuffer);
     ctrlIfInst->maxCmdTransfSize = sizeof(ctrlIfInst->cmdBuffer);
 
@@ -1033,7 +1033,7 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
         return u3vResult;
     }
     
-    ctrlIfInst->u3vTimeout = MAX(U3V_REQ_TIMEOUT, maxResponse);
+    ctrlIfInst->u3vTimeout = MAX(U3V_REQ_TIMEOUT_MS, maxResponse);
 
     /* get from ABRM -> SBRM address */
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInst,

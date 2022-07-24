@@ -44,7 +44,7 @@ extern "C" {
 typedef uintptr_t T_U3VHostHandle;
 typedef uintptr_t T_U3VHostTransferHandle;
 typedef uintptr_t T_U3VHostRequestHandle;
-typedef USB_HOST_DEVICE_OBJ_HANDLE T_U3VHostDeviceObjHandle;  /* Inherited type from usb_host.h */
+typedef USB_HOST_DEVICE_OBJ_HANDLE T_U3VHostDeviceObjHandle;
 
 typedef enum
 {

@@ -6,12 +6,10 @@
 #define COMPONENT_DRIVERS_U3VCAMDRIVER_H
 
 
-
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 
 /********************************************************

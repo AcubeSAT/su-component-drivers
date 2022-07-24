@@ -6,15 +6,15 @@
 #define COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
 
 
+#include "U3VCam_Host.h"
+#include "U3VCam_Control_IF_Types.h"
+#include "osal/osal.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-#include "U3VCam_Host.h"
-#include "U3VCam_Control_IF_Types.h"
-#include "U3VCam_Config.h"
-#include "osal/osal.h"
 
 
 /********************************************************
@@ -28,6 +28,7 @@ extern "C" {
 /********************************************************
 * Type definitions
 *********************************************************/
+
 typedef void (*T_U3VHostTransfCompleteHandler)(T_U3VHostHandle ctrlIfObj, T_U3VHostEvent transfEvent, void *transfData);
 
 typedef enum
@@ -73,8 +74,8 @@ typedef struct
     USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
     T_U3VHostState                      state;              /* U3V instance state */
     T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
-    T_U3VHostInterfHandle               controlIfHandle;    /* U3V Control Interface handle */
     T_U3VControlIfObj                   controlIfObj;       /* U3V Control Interface object */
+    T_U3VHostInterfHandle               controlIfHandle;    /* U3V Control Interface handle */
     T_U3VHostInterfHandle               eventIfHandle;      /* U3V Event Interface handle */
     T_U3VHostInterfHandle               streamIfHandle;     /* U3V Stream Interface handle */
     uintptr_t                           context;            /* Application defined context */
@@ -128,6 +129,7 @@ extern T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 /********************************************************
 * Function declarations
 *********************************************************/
+
 
 
 #ifdef __cplusplus

@@ -14,6 +14,7 @@ extern "C" {
 #endif
 
 
+
 /********************************************************
 * Macros Definitions
 *********************************************************/
@@ -24,7 +25,7 @@ extern "C" {
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER            1U
 
 #define U3V_IN_BUFFER_MAX_SIZE                      512U
-#define U3V_REQ_TIMEOUT                             1600UL
+#define U3V_REQ_TIMEOUT_MS                          1600UL
 
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding for MCU architecture */
 

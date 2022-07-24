@@ -13,12 +13,12 @@
 #include "configuration.h"
 // #include "definitions.h"
 #include "U3VCam_Host.h"
-#include "U3VCam_Device_Class_Specs.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 
 /********************************************************
@@ -129,6 +129,7 @@ typedef bool T_U3VCamIDValid;
 // void U3VCamDriver_Tasks(void); 
 // T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params);
 // T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
+
 
 
 #ifdef __cplusplus

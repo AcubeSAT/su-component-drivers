@@ -3,10 +3,8 @@
 //
 
 #include "U3VCam_App.h"
-#include "U3VCam_Host.h"
-#include "U3VCam_Config.h"
-#include "system/dma/sys_dma.h"
 #include "U3VCamDriver.h"
+#include "system/dma/sys_dma.h"
 
 
 /********************************************************
