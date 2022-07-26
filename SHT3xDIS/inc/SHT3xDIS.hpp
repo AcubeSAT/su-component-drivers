@@ -45,11 +45,6 @@ private:
      */
     TWIHS_ERROR error;
 
-    uint8_t polynomial = 0x07; 
-	uint8_t width = (8 * sizeof(uint8_t));
-	uint8_t topbit = (1 << (width - 1));
-	uint8_t crcTable[256];
-
 public:
 	/**
 	 * Reads the measurments given by the SHT3xDIS sensor.
