@@ -1,4 +1,5 @@
 #include <etl/array.h>
+#include <cstdint>
 
 class SHT3xDIS {
 private:
@@ -43,6 +44,11 @@ private:
      * High Speed Two-Wired Interface transaction error
      */
     TWIHS_ERROR error;
+
+    uint8_t polynomial = 0x07; 
+	uint8_t width = (8 * sizeof(uint8_t));
+	uint8_t topbit = (1 << (width - 1));
+	uint8_t crcTable[256];
 
 public:
 	/**
@@ -99,4 +105,9 @@ public:
 	inline float getHumidity(uint16_t relativeHumidity){
 		return 100 * (relativeHumidity / 65535);
 	}
+
+	/**
+	 * implemarntation of CRC8 algorithm, parameters are set according to the manual(paragraph 4.12).
+	 */
+	bool CRC8(uint8_t MSB, uint8_t LSB, uint8_t checksum);
 }
