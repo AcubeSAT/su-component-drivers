@@ -117,12 +117,10 @@ T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventH
     }
     else
     {
-        /* Search for free listener object */
         for (iterator = 0; iterator < U3V_HOST_ATTACH_LISTENERS_NUMBER; iterator++)
         {
             if (!gUSBHostU3VAttachListener[iterator].inUse)
             {
-                /* Found a free object */
                 attachListener = &gUSBHostU3VAttachListener[iterator];
                 attachListener->inUse = true;
                 attachListener->eventHandler = eventHandler;
@@ -135,20 +133,6 @@ T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventH
     return result;
 }
 
-
-T_U3VHostDeviceObjHandle U3VHost_DeviceObjectHandleGet(T_U3VHostHandle u3vObjHandle)
-{
-    USB_HOST_DEVICE_OBJ_HANDLE result = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
-    T_U3VHostInstanceObj *u3vInstance;
-
-    if(u3vObjHandle != 0UL)
-    {
-        u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-        result = u3vInstance->deviceObjHandle;
-    }
-    return result;
-}
-                               
 
 T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle)
 {
@@ -168,12 +152,6 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle)
 }
 
 
-void U3VHost_Close(T_U3VHostHandle u3vDeviceHandle)
-{
-    //TODO
-}
-
-
 T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context)
 {
     T_U3VHostResult result = U3V_HOST_RESULT_HANDLE_INVALID;
@@ -189,9 +167,7 @@ T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHa
 }
 
 
-T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle,
-                                              T_U3VHostDetachEventHandler detachEventHandler,
-                                              uintptr_t context)
+T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context)
 {
     T_U3VHostResult result = U3V_HOST_RESULT_HANDLE_INVALID;
     T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)(handle);
@@ -279,7 +255,6 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 
         u3vInstance->u3vDevInfo.hostByteAlignment = U3V_TARGET_ARCH_BYTE_ALIGNMENT;
 
-        /* the SI Info req may take up to 620us to complete */
         u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                               NULL,
                                               sirmAddress + U3V_SIRM_INFO_OFS,
@@ -293,7 +268,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
         }
         else
         {
-            deviceByteAlignment = 1 << ((siInfo & U3V_SIRM_INFO_ALIGNMENT_MASK) >> U3V_SIRM_INFO_ALIGNMENT_SHIFT);
+            deviceByteAlignment = 1U << ((siInfo & U3V_SIRM_INFO_ALIGNMENT_MASK) >> U3V_SIRM_INFO_ALIGNMENT_SHIFT);
             u3vInstance->u3vDevInfo.transferAlignment = _LCMui32(deviceByteAlignment, u3vInstance->u3vDevInfo.hostByteAlignment);
         }
         
@@ -303,9 +278,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 }
 
 
-T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle,
-                                               T_U3VMemRegInteger integerReg,
-                                               uint32_t *const pReadValue)
+T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *const pReadValue)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -400,9 +373,7 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle,
 }
 
 
-T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle,
-                                                T_U3VMemRegInteger integerReg,
-                                                uint32_t regVal)
+T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t regVal)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -471,9 +442,7 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle,
 }
 
 
-T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle,
-                                             T_U3VMemRegFloat floatReg,
-                                             float *const pReadValue)
+T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegFloat floatReg, float *const pReadValue)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -504,7 +473,6 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle,
                                                       sizeof(regValue),
                                                       &bytesRead,
                                                       (void *)&regValue);
-                                                      
                 /* Calculate temperature in Celcius rounded to 2 decimals */
                 floatRetVal = roundf(((float)((regValue & 0xFFFUL) / 10UL) - 273.15F) * 100) / 100;
                 break;
@@ -531,9 +499,7 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle,
 }
 
 
-T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle,
-                                              T_U3VMemRegString stringReg,
-                                              char *const pReadBfr)
+T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, char *const pReadBfr)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
     T_U3VHostInstanceObj *u3vInstance;
@@ -953,7 +919,6 @@ T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void
     }
     u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
     ctrlIfInstance = &u3vInstance->controlIfObj;
-    // strmChInstance = u3vInstance->streamIfHandle.;
 
     u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
@@ -1012,12 +977,11 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
     ctrlIfInst->maxAckTransfSize = sizeof(ctrlIfInst->ackBuffer);
     ctrlIfInst->maxCmdTransfSize = sizeof(ctrlIfInst->cmdBuffer);
 
-    /* requestId, maxRequestId are preincremented, with overflow will start again from 0 */
-    ctrlIfInst->requestId = -1;
-    ctrlIfInst->maxRequestId = -1;
+    /* requestId, maxRequestId are preincremented, with overflow the unsigned will start again from 0 */
+    ctrlIfInst->requestId = 0xFFFFU;
+    ctrlIfInst->maxRequestId = 0xFFFFU;
     ctrlIfInst->ctrlIntfHandle = &u3vInstance->controlIfHandle;
 
-    /* get from ABRM -> max device response time */
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                           NULL,
                                           U3V_ABRM_MAX_DEV_RESPONSE_TIME_MS_OFS,
@@ -1035,7 +999,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
     
     ctrlIfInst->u3vTimeout = MAX(U3V_REQ_TIMEOUT_MS, maxResponse);
 
-    /* get from ABRM -> SBRM address */
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                           NULL,
                                           U3V_ABRM_SBRM_ADDRESS_OFS,
@@ -1051,7 +1014,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
         return u3vResult;
     }
 
-    /* get from SBRM -> max command buffer size */
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                           NULL,
                                           sbrmAddress + U3V_SBRM_MAX_CMD_TRANSFER_OFS,
@@ -1069,7 +1031,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     ctrlIfInst->maxCmdTransfSize = MIN(ctrlIfInst->maxCmdTransfSize, cmdBfrSize);
 
-    /* get from SBRM -> max acknowledge buffer size */
     u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                           NULL,
                                           sbrmAddress + U3V_SBRM_MAX_ACK_TRANSFER_OFS,
@@ -1168,11 +1129,9 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
     USB_HOST_ENDPOINT_DESCRIPTOR_QUERY endpointDescriptorQuery;
     USB_HOST_INTERFACE_DESCRIPTOR_QUERY interfaceDescriptorQuery;
 
-    /* Expected number of interfaces = 3 for U3V device (Control/Event/Streaming) */
+    /* This is an IAD, the expected number of interfaces is more than one for a U3V device (e.g. Control, Event, Streaming) */
     if (nInterfaces > 1U) 
     {
-        /* Then this means that this is an IAD. We first assign a U3V instance to this device */
-
         for (iterator = 0U; iterator < U3V_HOST_INSTANCES_NUMBER; iterator++)
         {
             if (!gUSBHostU3VObj[iterator].inUse)
@@ -1185,7 +1144,6 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
 
         if (u3vInstance == NULL)
         {
-            /* Instance not found. Release all interfaces */
             for (iterator = 0U; iterator < nInterfaces; iterator++)
             {
                 USB_HOST_DeviceInterfaceRelease(interfaces[iterator]);
@@ -1193,23 +1151,17 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
         }
         else
         {
-            /* Save the device object handle and open the control pipe */
             u3vInstance->deviceObjHandle = deviceObjHandle;
             u3vInstance->controlPipeHandle = USB_HOST_DeviceControlPipeOpen(deviceObjHandle);
 
-            /* An instance is assigned. The descriptor will be a pointer to the IAD.
-             * Lets get the first interface descriptor in the IAD group and see which interface this is. */
             USB_HOST_DeviceInterfaceQueryContextClear(&interfaceDescriptorQuery);
             interfaceDescriptorQuery.flags = USB_HOST_INTERFACE_QUERY_ANY;
 
-            /* We know that we need two interfaces */
             for (iterator = 0U; iterator < nInterfaces; iterator++)
             {
-                /* We need to search for two interface descriptors */
                 interfaceDescriptor = USB_HOST_DeviceGeneralInterfaceDescriptorQuery((USB_INTERFACE_ASSOCIATION_DESCRIPTOR *)(descriptor),
                                                                                      &interfaceDescriptorQuery);
 
-                /* If we have a valid interface descriptor find out its type */
                 if (interfaceDescriptor != NULL)
                 {
                     /* Control Interface */
@@ -1218,33 +1170,29 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                         (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_CONTROL) &&
                         (interfaceDescriptor->bDescriptorType == U3V_DESCRIPTOR_TYPE_INTERFACE))
                     {
-                        /* We found the communication class */
                         u3vInstance->controlIfHandle.idNum = interfaceDescriptor->bInterfaceNumber;
                         u3vInstance->controlIfHandle.ifHandle = interfaces[iterator];
 
-                        /* Create the endpoint query */
                         USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
                         endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
                         endpointDescriptorQuery.direction = USB_DATA_DIRECTION_DEVICE_TO_HOST;
-                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
+                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE | USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
                         endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
 
                         if (endpointDescriptor != NULL)
                         {
-                            /* Open the pipe */
                             u3vInstance->controlIfHandle.bulkInPipeHandle = USB_HOST_DevicePipeOpen(u3vInstance->controlIfHandle.ifHandle,
                                                                                                     endpointDescriptor->bEndpointAddress);
                         }
                         else
                         {
-                            /* Make sure that the pipe handle stays invalid if we could not open the pipe */
                             u3vInstance->controlIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
                         /* Get the bulk out endpoint */
                         USB_HOST_DeviceEndpointQueryContextClear(&endpointDescriptorQuery);
                         endpointDescriptorQuery.transferType = USB_TRANSFER_TYPE_BULK;
                         endpointDescriptorQuery.direction = USB_DATA_DIRECTION_HOST_TO_DEVICE;
-                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE|USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
+                        endpointDescriptorQuery.flags = (USB_HOST_ENDPOINT_QUERY_FLAG)(USB_HOST_ENDPOINT_QUERY_BY_TRANSFER_TYPE | USB_HOST_ENDPOINT_QUERY_BY_DIRECTION);
                         endpointDescriptor = USB_HOST_DeviceEndpointDescriptorQuery(interfaceDescriptor, &endpointDescriptorQuery);
 
                         if (endpointDescriptor != NULL)
@@ -1264,8 +1212,6 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                              (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_EVENT) &&
                              (interfaceDescriptor->bDescriptorType == U3V_DESCRIPTOR_TYPE_INTERFACE))
                     {
-                        /* We found the data class */
-
                         u3vInstance->eventIfHandle.idNum = interfaceDescriptor->bInterfaceNumber;
                         u3vInstance->eventIfHandle.ifHandle = interfaces[iterator];
 
@@ -1283,7 +1229,6 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                         }
                         else
                         {
-                            /* Make the pipe handle invalid */
                             u3vInstance->eventIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
                         /* no EP OUT in Event interface*/
@@ -1294,8 +1239,6 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                              (interfaceDescriptor->bInterfaceProtocol == U3V_INTERFACE_DATASTREAM) &&
                              (interfaceDescriptor->bDescriptorType == U3V_DESCRIPTOR_TYPE_INTERFACE))
                     {
-                        /* We found the data class */
-
                         u3vInstance->streamIfHandle.ifHandle = interfaces[iterator];
                         u3vInstance->streamIfHandle.idNum = interfaceDescriptor->bInterfaceNumber;
 
@@ -1313,7 +1256,6 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                         }
                         else
                         {
-                            /* Make the pipe handle invalid */
                             u3vInstance->streamIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
                         }
                         /* no EP OUT in Streaming interface*/
@@ -1326,32 +1268,23 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                 }
             }
 
-            /* Now check if we can move the host client driver instance to a ready state */
-
             if ((u3vInstance->controlIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID) &&
                 (u3vInstance->controlIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID) &&
                 (u3vInstance->eventIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID) &&
                 (u3vInstance->streamIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID))
             {
-                /* All the pipes are opened. The client driver is ready */
                 u3vInstance->state = U3V_HOST_STATE_READY;
 
-                /* We know that the client driver is now ready. We can let 
-                 * all the listeners know that the device has be attached. */
                 for (iterator = 0U; iterator < U3V_HOST_ATTACH_LISTENERS_NUMBER; iterator++)
                 {
                     if (gUSBHostU3VAttachListener[iterator].inUse)
                     {
-                        /* Call the attach listener event handler 
-                         * function. */
-                        gUSBHostU3VAttachListener[iterator].eventHandler((T_U3VHostHandle)u3vInstance,
-                                                                         gUSBHostU3VAttachListener[iterator].context);
+                        gUSBHostU3VAttachListener[iterator].eventHandler((T_U3VHostHandle)u3vInstance, gUSBHostU3VAttachListener[iterator].context);
                     }
                 }
             }
             else
             {
-                /* Something went wrong. */
                 u3vInstance->state = U3V_HOST_STATE_ERROR;
             }
         }
@@ -1368,12 +1301,10 @@ static void _U3VHost_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interface
     int32_t u3vIndex;
     T_U3VHostInstanceObj *u3vInstance;
 
-    /* Get the instance associated with this interface */
     u3vIndex = _U3VHost_InterfaceHandleToInstance(interfaceHandle);
 
     if (u3vIndex >= 0U)
     {
-        /* Get the pointer to the instance object */
         u3vInstance = &gUSBHostU3VObj[u3vIndex];
         
         if(u3vInstance->inUse)
@@ -1382,39 +1313,33 @@ static void _U3VHost_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interface
 
             if(u3vInstance->controlIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
             {
-                /* Close the controlIfHandle.bulkInPipeHandle and invalidate the pipe handle */
                 USB_HOST_DevicePipeClose(u3vInstance->controlIfHandle.bulkInPipeHandle);
                 u3vInstance->controlIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
             }
 
             if(u3vInstance->controlIfHandle.bulkOutPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
             {
-                /* Close the controlIfHandle.bulkOutPipeHandle and invalidate the pipe handle */
                 USB_HOST_DevicePipeClose(u3vInstance->controlIfHandle.bulkOutPipeHandle);
                 u3vInstance->controlIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
             }
 
             if(u3vInstance->eventIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
             {
-                /* Close the eventIfHandle.bulkInPipeHandle and invalidate the pipe handle */
                 USB_HOST_DevicePipeClose(u3vInstance->eventIfHandle.bulkInPipeHandle);
                 u3vInstance->eventIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
             }
             
             if(u3vInstance->streamIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
             {
-                /* Close the streamIfHandle.bulkInPipeHandle and invalidate the pipe handle */
                 USB_HOST_DevicePipeClose(u3vInstance->streamIfHandle.bulkInPipeHandle);
                 u3vInstance->streamIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
             }
 
             if(u3vInstance->detachEventHandler != NULL)
             {
-                /* Let the client know that the device is detached */
                 u3vInstance->detachEventHandler((T_U3VHostHandle)(u3vInstance), u3vInstance->context);
             }
 
-            /* Release the object */
             u3vInstance->detachEventHandler = NULL;
             u3vInstance->eventHandler = NULL;
             u3vInstance->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
@@ -1435,7 +1360,6 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _U3VHost_InterfaceEventHandler(U
     T_U3VHostEvent u3vEvent;
     T_U3VHostEventWriteCompleteData u3vTransferCompleteData;
 
-    /* Find out to which U3V Instance this interface belongs */
     u3vIndex = _U3VHost_InterfaceHandleToInstance(interfaceHandle);
     u3vInstance = &gUSBHostU3VObj[u3vIndex];
     u3vEvent = (T_U3VHostEvent)(context);
@@ -1443,7 +1367,6 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE _U3VHost_InterfaceEventHandler(U
     switch (event)
     {
         case USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE:
-            /* This means a data transfer has completed */
             dataTransferEvent = (USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA *)(eventData);
             u3vTransferCompleteData.transferHandle = dataTransferEvent->transferHandle;
             u3vTransferCompleteData.result = _U3VHost_HostToU3VResultsMap(dataTransferEvent->result);
@@ -1480,15 +1403,12 @@ static USB_HOST_DEVICE_EVENT_RESPONSE _U3VHost_DeviceEventHandler(USB_HOST_DEVIC
                                                                   void *eventData,
                                                                   uintptr_t context)
 {
-   /* The event context is the pointer to the U3V Instance Object */
    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)(context);
    USB_HOST_DEVICE_EVENT_CONFIGURATION_SET_DATA *configSetEventData;
 
    switch (event)
    {
         case USB_HOST_DEVICE_EVENT_CONFIGURATION_SET:
-            /* This means the configuration was set. Update the instance
-             * variables to let the main state machine know. */
             configSetEventData = (USB_HOST_DEVICE_EVENT_CONFIGURATION_SET_DATA *)(eventData);
             u3vInstance->hostRequestResult = configSetEventData->result;
             u3vInstance->hostRequestDone = true;
@@ -1510,14 +1430,11 @@ static void _U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
 {
     uint32_t iterator;
     T_U3VHostInstanceObj *u3vInstanceObj = NULL;
-    /* If this function is being called, this means that a device class subclass
-     * protocol match was obtained.  Look for a free instance */
+
     for (iterator = 0U; iterator < U3V_HOST_INSTANCES_NUMBER; iterator++)
     {
-        /* Search for an available U3V instance object */
         if (!gUSBHostU3VObj[iterator].inUse)
         {
-            /* Allocate the object */
             u3vInstanceObj = &gUSBHostU3VObj[iterator];
             u3vInstanceObj->inUse = true;
             u3vInstanceObj->deviceObjHandle = deviceObjHandle;
@@ -1528,22 +1445,17 @@ static void _U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
 
     if(u3vInstanceObj == NULL)
     {
-        /* This means an instance could not be allocated. Return the device back to the host */
         USB_HOST_DeviceRelease(deviceHandle);
     }
     else
     {
-        /* An instance object was allocated. Check if the device has any configurations */
         if(deviceDescriptor->bNumConfigurations > 0U)
         {
-            /* This means we have configurations. We can try setting the first 
-             * configuration. Also open the control pipe to the device. */
             u3vInstanceObj->state = U3V_HOST_STATE_SET_CONFIGURATION;
             u3vInstanceObj->controlPipeHandle = USB_HOST_DeviceControlPipeOpen(deviceObjHandle);
         }
         else
         {
-            /* There are no configurations! Move to error state */
             u3vInstanceObj->state = U3V_HOST_STATE_ERROR;
         }
     }
@@ -1555,7 +1467,6 @@ static void _U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
     int32_t index;
     T_U3VHostInstanceObj *u3vInstance;
 
-    /* Find the U3V instance object that owns this device */
     index = _U3VHost_DeviceHandleToInstance(deviceHandle);
 
     if (index >= 0U)
@@ -1565,40 +1476,34 @@ static void _U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 
         if (u3vInstance->controlIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
         {
-            /* Close the controlIfHandle.bulkInPipeHandle and invalidate the pipe handle */
             USB_HOST_DevicePipeClose(u3vInstance->controlIfHandle.bulkInPipeHandle);
             u3vInstance->controlIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
         if (u3vInstance->controlIfHandle.bulkOutPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
         {
-            /* Close the controlIfHandle.bulkOutPipeHandle and invalidate the pipe handle */
             USB_HOST_DevicePipeClose(u3vInstance->controlIfHandle.bulkOutPipeHandle);
             u3vInstance->controlIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
         if (u3vInstance->eventIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
         {
-            /* Close the eventIfHandle.bulkInPipeHandle and invalidate the pipe handle */
             USB_HOST_DevicePipeClose(u3vInstance->eventIfHandle.bulkInPipeHandle);
             u3vInstance->eventIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
         if (u3vInstance->streamIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID)
         {
-            /* Close the streamIfHandle.bulkInPipeHandle and invalidate the pipe handle */
             USB_HOST_DevicePipeClose(u3vInstance->streamIfHandle.bulkInPipeHandle);
             u3vInstance->streamIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
         }
 
         if (u3vInstance->detachEventHandler != NULL)
         {
-            /* Let the client know that the device is detached */
             u3vInstance->detachEventHandler((T_U3VHostHandle)(u3vInstance),
                                             u3vInstance->context);
         }
 
-        /* Release the object */
         u3vInstance->detachEventHandler = NULL;
         u3vInstance->eventHandler = NULL;
         u3vInstance->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
@@ -1623,67 +1528,45 @@ static void _U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 
         if (u3vInstance->inUse)
         {
-            /* Instance is valid */
             switch (u3vInstance->state)
             {
                 case U3V_HOST_STATE_NOT_READY:
-                    /* The instance is not ready. We dont do anything yet */
                     break;
 
                 case U3V_HOST_STATE_SET_CONFIGURATION:
-                    /* The instance should set the configuration. We clear the
-                     * controlTransferDone flag. This will be set in the device
-                     * event handler when the configuration set event is received. */
                     u3vInstance->hostRequestDone = false;
-                    result = USB_HOST_DeviceConfigurationSet(u3vInstance->deviceClientHandle,
-                                                             &requestHandle,
-                                                             0U,
-                                                             (uintptr_t)(u3vInstance));
-
+                    result = USB_HOST_DeviceConfigurationSet(u3vInstance->deviceClientHandle, &requestHandle, 0U, (uintptr_t)(u3vInstance));
                     if (result == USB_HOST_RESULT_SUCCESS)
                     {
-                        /* The result was successful. Change state to wating for configuration. */
                         u3vInstance->state = U3V_HOST_STATE_WAIT_FOR_CONFIGURATION_SET;
                     }
                     break;
 
                 case U3V_HOST_STATE_WAIT_FOR_CONFIGURATION_SET:
-                    /* Here we are waiting for the configuration to be set */
                     if (u3vInstance->hostRequestDone == true)
                     {
                         if (u3vInstance->hostRequestResult == USB_HOST_RESULT_SUCCESS)
                         {
-                            /* The configuration has been set. Now wait for the host
-                             * layer to send the communication and the data
-                             * interface to the client driver */
                             u3vInstance->state = U3V_HOST_STATE_WAIT_FOR_INTERFACES;
                         }
                         else
                         {
-                            /* If we could not set the configuration, then state
-                             * instance state to error */
                             u3vInstance->state = U3V_HOST_STATE_ERROR;
                         }
                     }
                     break;
 
                 case U3V_HOST_STATE_WAIT_FOR_INTERFACES:
-                    /* Here we wait for both the interfaces to get ready */
                     if ((u3vInstance->controlIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID) &&
                         (u3vInstance->controlIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID) &&
                         (u3vInstance->eventIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID) &&
                         (u3vInstance->streamIfHandle.bulkInPipeHandle != USB_HOST_PIPE_HANDLE_INVALID))
                     {
-                        /* Set the state to ready */
                         u3vInstance->state = U3V_HOST_STATE_READY;
-                        /* We know that the client driver is now ready. We can
-                         * let all the listeners know that the device has been
-                         * attached */
                         for (iterator = 0; iterator < U3V_HOST_ATTACH_LISTENERS_NUMBER; iterator++)
                         {
                             if (gUSBHostU3VAttachListener[iterator].inUse)
                             {
-                                /* Call the attach listener event handler function. */
                                 gUSBHostU3VAttachListener[iterator].eventHandler((T_U3VHostHandle)u3vInstance,
                                                                                  gUSBHostU3VAttachListener[iterator].context);
                             }
@@ -1692,11 +1575,10 @@ static void _U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
                     break;
 
                 case U3V_HOST_STATE_READY:
-                    /* The U3V client driver is ready to be opened */
                     break;
 
                 case U3V_HOST_STATE_ERROR:
-                    /* The instance is an error state. Do nothing */
+                default:
                     break;
             }
         }
@@ -1813,7 +1695,6 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
     size_t cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(T_U3VCtrlIfReadMemCmdPayload);
     size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + transfSize;
 
-    /* check input argument errors */
     u3vResult = (u3vCtrlIf == NULL) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
     u3vResult = (bytesRead == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
     u3vResult = (buffer == NULL)    ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
@@ -1895,7 +1776,6 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
             writeRetryCnt++;
             if ((writeRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
             {
-                /* write failed */
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
@@ -1915,7 +1795,6 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
             ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + MAX((size_t)(bytesThisIteration), sizeof(T_U3VCtrlIfPendingAckPayload));
             memset(ctrlIfInst->ackBuffer, 0, ackBufferSize);
 
-            /* read the ack */
             hostResult = USB_HOST_DeviceTransfer(ctrlIfHandle->bulkInPipeHandle,
                                                  &tempTransferHandle,
                                                  ctrlIfInst->ackBuffer,
@@ -1942,7 +1821,6 @@ static T_U3VHostResult _U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
                 readRetryCnt++;
                 if ((readRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
                 {
-                    /* read failed */
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
@@ -2014,10 +1892,8 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
     T_U3VCtrlIfPendingAckPayload *pendingAck = NULL;
     T_U3V_CtrlIfWriteMemAckPayload *writeMemAck = NULL;
     size_t cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(T_U3VCtrlIfWriteMemCmdPayload);
-    size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + MAX(sizeof(T_U3V_CtrlIfWriteMemAckPayload),
-                                                              sizeof(T_U3VCtrlIfPendingAckPayload));
+    size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + MAX(sizeof(T_U3V_CtrlIfWriteMemAckPayload), sizeof(T_U3VCtrlIfPendingAckPayload));
 
-    /* check input argument errors */
     u3vResult = (u3vCtrlIf == NULL)    ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
     u3vResult = (bytesWritten == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
     u3vResult = (buffer == NULL)       ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
@@ -2100,7 +1976,6 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             writeRetryCnt++;
             if ((writeRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
             {
-                /* write failed */
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
@@ -2119,7 +1994,6 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
 
             memset(ctrlIfInst->ackBuffer, 0, ackBufferSize);
 
-			/* read the ack */
             hostResult = USB_HOST_DeviceTransfer(ctrlIfHandle->bulkInPipeHandle,
                                                  &tempTransferHandle,
                                                  ctrlIfInst->ackBuffer,
@@ -2147,7 +2021,6 @@ static T_U3VHostResult _U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
                 readRetryCnt++;
                 if ((readRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
                 {
-                    /* read failed */
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
@@ -2239,7 +2112,6 @@ static inline uint32_t _LCMui32(uint32_t n1, uint32_t n2)
 
     lcm = (n1 > n2) ? n1 : n2;
 
-    /* check if any of inputs is 0 */
     if (n1 == 0UL || n2 == 0UL)
     {
         lcm = 0UL;

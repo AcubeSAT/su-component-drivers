@@ -7,10 +7,6 @@
 
 
 /********************************************************
-* Local function declarations
-*********************************************************/
-
-/********************************************************
  * Constant & Variable declarations
  *********************************************************/
 
@@ -33,16 +29,16 @@ const T_U3VCamRegisterLUT U3VCamRegisterLUT[2U] =
 
     /* #1 U3V_XIMEA_XIQ_MQ013CG_E2_LUT_ENTRY */
     {
-        .camRegBaseAddress              = 0x0ULL,   //tbd
-        .SBRMOffset                     = 0x0ULL,   //tbd
-        .temperature_Reg                = 0x0ULL,   //tbd
-        .deviceReset_Reg                = 0x0ULL,   //tbd
-        .singleFrameAcquisitionMode_Reg = 0x0ULL,   //tbd
-        .acquisitionMode_Reg            = 0x0ULL,   //tbd
-        .acquisitionStart_Reg           = 0x0ULL,   //tbd
-        .acquisitionStop_Reg            = 0x0ULL,   //tbd
-        .colorCodingID_Reg              = 0x0ULL,   //tbd
-        .pixelFormatCtrlVal_Int_Sel     = 0x0UL
+        .camRegBaseAddress              = 0x0ULL,   //TODO: add
+        .SBRMOffset                     = 0x0ULL,   //TODO: add
+        .temperature_Reg                = 0x0ULL,   //TODO: add
+        .deviceReset_Reg                = 0x0ULL,   //TODO: add
+        .singleFrameAcquisitionMode_Reg = 0x0ULL,   //TODO: add
+        .acquisitionMode_Reg            = 0x0ULL,   //TODO: add
+        .acquisitionStart_Reg           = 0x0ULL,   //TODO: add
+        .acquisitionStop_Reg            = 0x0ULL,   //TODO: add
+        .colorCodingID_Reg              = 0x0ULL,   //TODO: add
+        .pixelFormatCtrlVal_Int_Sel     = 0x0UL     //TODO: add
     }
 };
 

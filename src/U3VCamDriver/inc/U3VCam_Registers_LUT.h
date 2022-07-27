@@ -31,14 +31,14 @@ typedef struct
 {
     uint64_t camRegBaseAddress;
     uint64_t SBRMOffset;
-    uint64_t temperature_Reg;                       /* length = 4 */
-    uint64_t deviceReset_Reg;                       /* length = 4 */
-    uint64_t singleFrameAcquisitionMode_Reg;        /* length = 4 */
-    uint64_t acquisitionMode_Reg;                   /* length = 4 */
-    uint64_t acquisitionStart_Reg;                  /* length = 4 */
-    uint64_t acquisitionStop_Reg;                   /* length = 4 */
-    uint64_t colorCodingID_Reg;                     /* length = 4 */
-    uint64_t payloadSizeVal_Reg;                    /* length = 4 */
+    uint64_t temperature_Reg;                       /* length of val = 4 */
+    uint64_t deviceReset_Reg;                       /* length of val = 4 */
+    uint64_t singleFrameAcquisitionMode_Reg;        /* length of val = 4 */
+    uint64_t acquisitionMode_Reg;                   /* length of val = 4 */
+    uint64_t acquisitionStart_Reg;                  /* length of val = 4 */
+    uint64_t acquisitionStop_Reg;                   /* length of val = 4 */
+    uint64_t colorCodingID_Reg;                     /* length of val = 4 */
+    uint64_t payloadSizeVal_Reg;                    /* length of val = 4 */
     uint32_t pixelFormatCtrlVal_Int_Sel;
 } T_U3VCamRegisterLUT;
 

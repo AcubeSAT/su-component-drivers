@@ -32,8 +32,8 @@ extern "C" {
 
 #define U3V_INFO_IS_U3V_INTERFACE               0x24     /* U3V descriptor data = U3V type */
 #define U3V_INFO_IS_DEVICEINFO                  0x01     /* U3V descriptor data = info type*/
-#define U3V_INFO_MIN_LENGTH_STR                 20u      /* U3V descriptor data min length */
-#define U3V_MAX_DESCR_STR_LENGTH                64u      /* U3V descriptor data buffer size */
+#define U3V_INFO_MIN_LENGTH_STR                 20U      /* U3V descriptor data min length */
+#define U3V_MAX_DESCR_STR_LENGTH                64U      /* U3V descriptor data buffer size */
 #define U3V_ERR_NO_ERROR				        0x0000
 
 /*** U3V magic key codes ***/
@@ -51,28 +51,28 @@ extern "C" {
 #define	U3V_CTRL_EVENT_CMD	                    0x0C00
 
 /*** U3V - GenCP Registers Size ***/
-#define U3V_REG_GENCP_VERSION_SIZE              4u
-#define U3V_REG_MANUFACTURER_NAME_SIZE          64u
-#define U3V_REG_MODEL_NAME_SIZE                 64u
-#define U3V_REG_FAMILY_NAME_SIZE                64u
-#define U3V_REG_DEVICE_VERSION_SIZE             64u
-#define U3V_REG_MANUFACTURER_INFO_SIZE          64u
-#define U3V_REG_SERIAL_NUMBER_SIZE              64u
-#define U3V_REG_USER_DEFINED_NAME_SIZE          64u
-#define U3V_REG_DEVICE_CAPABILITY_SIZE          8u
-#define U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE   4u
-#define U3V_REG_MANIFEST_TABLE_ADDRESS_SIZE     8u
-#define U3V_REG_SBRM_ADDRESS_SIZE               8u
-#define U3V_REG_DEVICE_CONFIGURATION_SIZE       8u
-#define U3V_REG_HEARTBEAT_TIMEOUT_SIZE          4u
-#define U3V_REG_MESSAGE_CHANNEL_ID_SIZE         4u
-#define U3V_REG_TIMESTAMP_SIZE                  8u
-#define U3V_REG_TIMESTAMP_LATCH_SIZE            4u
-#define U3V_REG_TIMESTAMP_INCREMENT_SIZE        8u
-#define U3V_REG_ACCESS_PRIVILEGE_SIZE           4u
-#define U3V_REG_RESERVED_DPRCTD_AREA_SIZE       4u
-#define U3V_REG_IMPLEMENTATION_ENDIANESS_SIZE   4u
-#define U3V_REG_RESERVED_SPACE_SIZE             65008u
+#define U3V_REG_GENCP_VERSION_SIZE              4U
+#define U3V_REG_MANUFACTURER_NAME_SIZE          64U
+#define U3V_REG_MODEL_NAME_SIZE                 64U
+#define U3V_REG_FAMILY_NAME_SIZE                64U
+#define U3V_REG_DEVICE_VERSION_SIZE             64U
+#define U3V_REG_MANUFACTURER_INFO_SIZE          64U
+#define U3V_REG_SERIAL_NUMBER_SIZE              64U
+#define U3V_REG_USER_DEFINED_NAME_SIZE          64U
+#define U3V_REG_DEVICE_CAPABILITY_SIZE          8U
+#define U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE   4U
+#define U3V_REG_MANIFEST_TABLE_ADDRESS_SIZE     8U
+#define U3V_REG_SBRM_ADDRESS_SIZE               8U
+#define U3V_REG_DEVICE_CONFIGURATION_SIZE       8U
+#define U3V_REG_HEARTBEAT_TIMEOUT_SIZE          4U
+#define U3V_REG_MESSAGE_CHANNEL_ID_SIZE         4U
+#define U3V_REG_TIMESTAMP_SIZE                  8U
+#define U3V_REG_TIMESTAMP_LATCH_SIZE            4U
+#define U3V_REG_TIMESTAMP_INCREMENT_SIZE        8U
+#define U3V_REG_ACCESS_PRIVILEGE_SIZE           4U
+#define U3V_REG_RESERVED_DPRCTD_AREA_SIZE       4U
+#define U3V_REG_IMPLEMENTATION_ENDIANESS_SIZE   4U
+#define U3V_REG_RESERVED_SPACE_SIZE             65008U
 
 /* USB3 Vision / GenCP - Technology Agnostic Bootstrap Register Map (ABRM) */
 #define U3V_ABRM_GENCP_VERSION_OFS              0x00000
@@ -152,14 +152,101 @@ extern "C" {
 #define U3V_PFNC_RGB16                          0x02300033 /* Red-Green-Blue 16-bit */
 #define U3V_PFNC_RGB16_Planar                   0x02300024 /* Red-Green-Blue 16-bit planar */
 
+/* USB3 Vision Acquisition Modes */
 #define U3V_ACQUISITION_MODE_CONTINUOUS         0x0
 #define U3V_ACQUISITION_MODE_SINGLE_FRAME       0x1
 #define U3V_ACQUISITION_MODE_MULTI_FRAME        0x2
+
+/* USB3 Vision Stream Payload types */
+#define U3V_STREAM_PLD_TYPE_IMAGE                   0x0001
+#define U3V_STREAM_PLD_TYPE_IMAGE_EXTENDED_CHUNK    0x4001
+#define U3V_STREAM_PLD_TYPE_CHUNK                   0x4000
 
 
 /********************************************************
  * Type definitions
  *********************************************************/
+
+#pragma pack(push, 1)
+
+typedef struct 
+{
+    uint32_t        magicKey;           /* "U3VL" for Leader / "U3VT" for Trailer */
+	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        size;
+	uint64_t        blockID;
+    void            *data;
+} T_U3VSiGenericPacket;
+
+typedef struct
+{
+    uint32_t        magicKey;           /* "U3VL" for Leader */
+	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        leaderSize;
+	uint64_t        blockID;
+	uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        payloadType;        /* 0x0001 for Image */
+    uint64_t        timestamp;
+    uint32_t        pixelFormat;
+    uint32_t        sizeX;
+    uint32_t        sizeY;
+    uint32_t        offsetX;
+    uint32_t        offsetY;
+    uint16_t        paddingX;
+    uint16_t        reserved2;          /* Set 0 on Tx, ignore on Rx */
+} T_U3VStrmIfImageLeader;
+
+// typedef T_U3VStrmIfImageLeader T_U3VSiImageExtChunkLeader;  /* payloadType = 0x4001 for Image Extended Chunk */
+
+// typedef struct
+// {
+//     uint32_t        magicKey;           /* "U3VL" for Leader */
+// 	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+// 	uint16_t        leaderSize;
+// 	uint64_t        blockID;
+// 	uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+// 	uint16_t        payloadType;        /* 0x4000 for Chunk */
+//     uint64_t        timestamp;
+// } T_U3VSiChunkLeader;
+
+typedef struct
+{
+    uint32_t        magicKey;           /* "U3VT" for Trailer */
+    uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+    uint16_t        trailerSize;
+    uint64_t        blockID;
+    uint16_t        status;
+    uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+    uint64_t        validPayloadSize;
+    uint32_t        sizeY;
+} T_U3VStrmIfImageTrailer;
+
+// typedef struct
+// {
+//     uint32_t        magicKey;           /* "U3VT" for Trailer */
+//     uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+//     uint16_t        trailerSize;
+//     uint64_t        blockID;
+//     uint16_t        status;
+//     uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+//     uint64_t        validPayloadSize;
+//     uint32_t        sizeY;
+//     uint32_t        chunkLayoutID;
+// } T_U3VSiImageExtChunkTrailer;
+
+// typedef struct
+// {
+//     uint32_t        magicKey;           /* "U3VT" for Trailer */
+//     uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+//     uint16_t        trailerSize;
+//     uint64_t        blockID;
+//     uint16_t        status;
+//     uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+//     uint64_t        validPayloadSize;
+//     uint32_t        chunkLayoutID;
+// } T_U3VSiChunkTrailer;
+
+#pragma pack(pop)
 
 
 

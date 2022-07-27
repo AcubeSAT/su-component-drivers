@@ -7,7 +7,6 @@
 
 
 #include "U3VCam_Host.h"
-#include "U3VCam_Control_IF_Types.h"
 #include "osal/osal.h"
 
 
@@ -29,89 +28,127 @@ extern "C" {
 * Type definitions
 *********************************************************/
 
+#pragma pack(push, 1)
+
+typedef struct
+{
+	uint32_t 	prefix;
+	uint16_t 	status;
+	uint16_t 	cmd;
+	uint16_t 	length;
+	uint16_t 	ackId;
+} T_U3VCtrlIfAckHeader;
+
+typedef struct
+{
+	T_U3VCtrlIfAckHeader 	header;
+	uint8_t 				payload[0];
+} T_U3VCtrlIfAcknowledge;
+
+typedef struct
+{
+	uint16_t 	reserved;
+	uint16_t 	timeout;
+} T_U3VCtrlIfPendingAckPayload;
+
+typedef struct
+{
+	uint32_t 	prefix;
+	uint16_t 	flags;
+	uint16_t 	cmd;
+	uint16_t 	length;
+	uint16_t 	requestId;
+} T_U3VCtrlIfCmdHeader;
+
+typedef struct
+{
+	T_U3VCtrlIfCmdHeader 	header;
+	uint8_t 				payload[0];
+} T_U3VCtrlIfCommand;
+
+typedef struct 
+{
+	uint64_t 	address;
+	uint16_t 	reserved;
+	uint16_t 	byteCount;
+} T_U3VCtrlIfReadMemCmdPayload;
+
+typedef struct
+{
+	uint64_t 	address;
+	uint8_t  	data[0];
+} T_U3VCtrlIfWriteMemCmdPayload;
+
+typedef struct
+{
+	uint16_t 	reserved;
+	uint16_t 	bytesWritten;
+} T_U3V_CtrlIfWriteMemAckPayload;
+
+#pragma pack(pop)
+
 typedef void (*T_U3VHostTransfCompleteHandler)(T_U3VHostHandle ctrlIfObj, T_U3VHostEvent transfEvent, void *transfData);
 
 typedef enum
 {
-    U3V_HOST_STATE_ERROR                        = -1,       /* Error state */
-    U3V_HOST_STATE_NOT_READY                    =  0,       /* The instance is not ready */
-    U3V_HOST_STATE_SET_CONFIGURATION,                       /* The instance should set the configuration */
-    U3V_HOST_STATE_WAIT_FOR_CONFIGURATION_SET,              /* Wait for configuration set */
-    U3V_HOST_STATE_WAIT_FOR_INTERFACES,                     /* Wait for interfaces to get ready */
-    U3V_HOST_STATE_READY,                                   /* The instance is ready */
+    U3V_HOST_STATE_ERROR                        = -1,
+    U3V_HOST_STATE_NOT_READY                    =  0,
+    U3V_HOST_STATE_SET_CONFIGURATION,
+    U3V_HOST_STATE_WAIT_FOR_CONFIGURATION_SET,
+    U3V_HOST_STATE_WAIT_FOR_INTERFACES,
+    U3V_HOST_STATE_READY,
 } T_U3VHostState;
 
 typedef struct
 {
-    uint8_t                             idNum;              /* Number of interface */
-    USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;           /* Interface handle */
-    USB_HOST_PIPE_HANDLE                bulkInPipeHandle;   /* Bulk in pipe handle */
-    USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;  /* Bulk out pipe handle */
+    uint8_t                             idNum;
+    USB_HOST_DEVICE_INTERFACE_HANDLE    ifHandle;
+    USB_HOST_PIPE_HANDLE                bulkInPipeHandle;
+    USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;
 } T_U3VHostInterfHandle;
 
 typedef struct 
 {
-    T_U3VHostInterfHandle               *ctrlIntfHandle;        /* Pointer to Control Interface Handle */
-	OSAL_MUTEX_DECLARE					(readWriteLock);  		/* Mutex lock/unlock */
-	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)]; /* Acknowledge buffer */
-	uint32_t							maxAckTransfSize;		/* Max acknowledge transfer size */
-	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)]; /* Command buffer */
-	uint32_t 							maxCmdTransfSize;		/* Max command transfer size */
-	uint16_t 							requestId;				/* Request ID */
-	uint16_t 							maxRequestId;  			/* Maximum id value before loop back around */
-	uint32_t 							u3vTimeout;    			/* Maximum device response time in ms */
-    T_U3VHostTransfCompleteHandler      transfReqCompleteCbk;   /* Transfer request callback */
-	T_U3VHostEventReadCompleteData 		readReqSts;				/* Read request transfer status */
-	T_U3VHostEventWriteCompleteData 	writeReqSts;			/* Write request transfer status */
+    T_U3VHostInterfHandle               *ctrlIntfHandle;
+	OSAL_MUTEX_DECLARE					(readWriteLock);
+	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)];
+	uint32_t							maxAckTransfSize;
+	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)];
+	uint32_t 							maxCmdTransfSize;
+	uint16_t 							requestId;
+	uint16_t 							maxRequestId;
+	uint32_t 							u3vTimeout;     /* ms */
+    T_U3VHostTransfCompleteHandler      transfReqCompleteCbk;
+	T_U3VHostEventReadCompleteData 		readReqSts;
+	T_U3VHostEventWriteCompleteData 	writeReqSts;
 } T_U3VControlIfObj;
 
 typedef struct
 {
-    bool                                inUse;              /* True if object is in use */
-    USB_HOST_DEVICE_CLIENT_HANDLE       deviceClientHandle; /* Device client handle */
-    USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;    /* Device object handle */
-    USB_HOST_PIPE_HANDLE                controlPipeHandle;  /* Control Pipe Handle */
-    USB_SETUP_PACKET                    setupPacket;        /* Setup packet information */
-    T_U3VHostState                      state;              /* U3V instance state */
-    T_U3VDeviceInfo                     u3vDevInfo;         /* U3V Device Information */
-    T_U3VControlIfObj                   controlIfObj;       /* U3V Control Interface object */
-    T_U3VHostInterfHandle               controlIfHandle;    /* U3V Control Interface handle */
-    T_U3VHostInterfHandle               eventIfHandle;      /* U3V Event Interface handle */
-    T_U3VHostInterfHandle               streamIfHandle;     /* U3V Stream Interface handle */
-    uintptr_t                           context;            /* Application defined context */
-    T_U3VHostEventHandler               eventHandler;       /* Application callback */
-    T_U3VHostDetachEventHandler         detachEventHandler; /* Detach event app callback */
-    bool                                hostRequestDone;    /* True if an ongoing host request is done */
-    USB_HOST_RESULT                     hostRequestResult;  /* Result of the host request */
+    bool                                inUse;
+    USB_HOST_DEVICE_CLIENT_HANDLE       deviceClientHandle;
+    USB_HOST_DEVICE_OBJ_HANDLE          deviceObjHandle;
+    USB_HOST_PIPE_HANDLE                controlPipeHandle;
+    USB_SETUP_PACKET                    setupPacket;
+    T_U3VHostState                      state;
+    T_U3VDeviceInfo                     u3vDevInfo;
+    T_U3VControlIfObj                   controlIfObj;
+    T_U3VHostInterfHandle               controlIfHandle;
+    T_U3VHostInterfHandle               eventIfHandle;
+    T_U3VHostInterfHandle               streamIfHandle;
+    uintptr_t                           context;
+    T_U3VHostEventHandler               eventHandler;
+    T_U3VHostDetachEventHandler         detachEventHandler;
+    bool                                hostRequestDone;
+    USB_HOST_RESULT                     hostRequestResult;
 } T_U3VHostInstanceObj;
 
 typedef struct
 {
-    bool                                inUse;              /* This object is in use */
-    T_U3VHostAttachEventHandler         eventHandler;       /* The attach event handler */
-    uintptr_t                           context;            /* Client context */
+    bool                                inUse;
+    T_U3VHostAttachEventHandler         eventHandler;
+    uintptr_t                           context;
 } T_UsbHostU3VAttachListenerObj;
-
-typedef struct 
-{
-	uint16_t    fileVersionSubminor;
-	uint8_t     fileVersionMinor;
-	uint8_t     fileVersionMajor;
-	uint32_t    schema;
-	uint64_t    address;
-	uint64_t    size;
-	uint64_t    unknown3;
-	uint64_t    unknown4;
-	uint64_t    unknown5;
-	uint64_t    unknown6;
-	uint64_t    unknown7;
-} T_U3VManifestEntry;
-
-typedef enum 
-{
-    U3V_MANIFEST_SCHEMA_RAW = 0x00,
-    U3V_MANIFEST_SCHEMA_ZIP = 0x01
-} T_U3VManifestSchema;
 
 
 /********************************************************
