@@ -28,6 +28,8 @@
 // *****************************************************************************
 
 #include "app.h"
+#include "peripheral/pio/plib_pio.h"
+#include "U3VCamDriver.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -51,6 +53,13 @@
 */
 
 APP_DATA appData;
+
+static void PioSw1_U3VAcquireNewImage(PIO_PIN pin, uintptr_t context) // SW1 interrupt handler
+{
+  (void)pin;
+  (void)context;
+  U3VCamDriver_AcquireNewImage(NULL);
+};
 
 // *****************************************************************************
 // *****************************************************************************
@@ -91,7 +100,8 @@ void APP_Initialize ( void )
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
 
-
+    PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, PioSw1_U3VAcquireNewImage, 0);
+    PIO_PinInterruptEnable(GPIO_PB12_PIN);
 
     /* TODO: Initialize your application's state machine and other
      * parameters.
