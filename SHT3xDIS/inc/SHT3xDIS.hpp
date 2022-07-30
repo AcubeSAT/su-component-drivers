@@ -6,13 +6,13 @@ private:
 	/**
 	 * Every register address.
 	 */
-	enum Register{
+	enum Register {
 		I2CAddr1 = 0x44, 
  		I2CAddr2 = 0x45	
  	};
 
  	/**
-	 * All the available commands for the single shoot mode.
+	 * All the available commands for the single shot mode.
 	 */
 	enum Measurement {
 	     HIGH_ENABLED = 0x2C06, 
@@ -26,16 +26,15 @@ private:
 	/**
 	 * Commands for Heater
 	 */
-	enum Heater{
+	enum Heater {
 		HEATER_ENABLED = 0x306D,
 		HEATER_DISABLED = 0x3066
 	};
 
 	/**
-	 * All commands gor status register.
+	 * All commands for the status register.
 	 */
-	enum StatusRegister
-	{
+	enum StatusRegister {
 		READ_STATUS_REGISTER = 0xF32D,
 		CLEAR_STATUS_REGISTER = 0x3041
 	};
@@ -45,12 +44,26 @@ private:
      */
     TWIHS_ERROR error;
 
+    /**
+	 * Tranforms the raw temperature that is measured into the physical.
+	 */
+	inline float temperatureConversion(uint16_t temperature) {
+		return  175 * (temperature / 65535) - 45;
+	}
+
+	/**
+	 * Tranforms the reletive humidity that is measured into the physical.
+	 */
+	inline float humidityConversion(uint16_t relativeHumidity) {
+		return 100 * (relativeHumidity / 65535);
+	}
+
 public:
 	/**
-	 * Reads the measurments given by the SHT3xDIS sensor.
-	 * @return an array containg the temperature and humidity measured.
+	 * Reads the measurements given by the SHT3xDIS sensor.
+	 * @return an array containing the temperature and humidity measured.
 	 */
-	etl::array<float,2> readMeasurements(Register register);
+	etl::array<float, 2> readMeasurements(Register register);
 
 	/**
 	 * Writes a command to register so that it starts the measurement
@@ -63,7 +76,7 @@ public:
 	void setMeasurement(Register register, Measurement command);
 
 	/**
-	 * Sets the heater(On/Off).
+	 * Sets the heater (On/Off).
 	 */
 	void setHeater(Register register, Heater command);
 
@@ -85,24 +98,16 @@ public:
 	/**
 	 * Performs a hard reset on the whole I2C Bus.
 	 */
-	void HardReset();
+	void hardReset();
 
 	/**
-	 * Tranforms the raw temperature that is measured into the physical.
+	 * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
+	 *
+	 * Polynomial: 0x31 (x^8 + x^5 + x^4 + 1)
+	 * Initialization: 0xFF
+	 * Reflect input: False
+	 * Reflect output: False
+	 * Final XOR: 0x00
 	 */
-	inline float getTemperature(uint16_t temperature){
-		return  175 * (temperature / 65535) - 45;
-	}
-
-	/**
-	 * Tranforms the reletive humidity that is measured into the physical.
-	 */
-	inline float getHumidity(uint16_t relativeHumidity){
-		return 100 * (relativeHumidity / 65535);
-	}
-
-	/**
-	 * implemarntation of CRC8 algorithm, parameters are set according to the manual(paragraph 4.12).
-	 */
-	bool CRC8(uint8_t MSB, uint8_t LSB, uint8_t checksum);
+	bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 }
