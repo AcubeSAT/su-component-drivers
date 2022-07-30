@@ -6,7 +6,7 @@
 #define COMPONENT_DRIVERS_U3VCAM_CONFIG_H
 
 
-#include "U3VCam_Registers_LUT.h"
+#include <stdint.h>
 
 
 #ifdef __cplusplus
@@ -18,15 +18,17 @@ extern "C" {
 /********************************************************
 * Macros Definitions
 *********************************************************/
+/* U3V camera models defined here */
+#define U3V_FLIR_CM3_U3_12S2C_CS                    (0)
+#define U3V_XIMEA_XIQ_MQ013CG_E2                    (1)
 
-#define U3V_CAM_MODEL_SEL                           U3V_FLIR_CM3_U3_12S2C_CS_LUT_ENTRY
+/* U3V camera to be enabled in current build set here */
+#define U3V_CAM_MODEL_SELECTED                      U3V_FLIR_CM3_U3_12S2C_CS
 
 #define U3V_HOST_INSTANCES_NUMBER                   1U
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER            1U
-
 #define U3V_IN_BUFFER_MAX_SIZE                      512U
 #define U3V_REQ_TIMEOUT_MS                          1600UL
-
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding for MCU architecture */
 
 #define U3V_DMA_CH_SEL                              SYS_DMA_CHANNEL_0   /* SYS_DMA_SOURCE_ADDRESSING_MODE type */ //TODO: decide if this stays on integration
@@ -46,6 +48,33 @@ extern "C" {
 #define SWITCH1_STATE_RELEASED                      1
 #define VBUS_HOST_EN_PowerEnable()                  (PIOC_REGS->PIO_CODR = (1<<16))
 #define VBUS_HOST_EN_PowerDisable()                 (PIOC_REGS->PIO_SODR = (1<<16))
+
+
+/********************************************************
+* Type definitions
+*********************************************************/
+
+typedef struct
+{
+    uint64_t camRegBaseAddress;
+    uint64_t SBRMOffset;
+    uint64_t temperature_Reg;                       /* reg value size = 4 bytes */
+    uint64_t deviceReset_Reg;                       /* reg value size = 4 bytes */
+    uint64_t singleFrameAcquisitionMode_Reg;        /* reg value size = 4 bytes */
+    uint64_t acquisitionMode_Reg;                   /* reg value size = 4 bytes */
+    uint64_t acquisitionStart_Reg;                  /* reg value size = 4 bytes */
+    uint64_t acquisitionStop_Reg;                   /* reg value size = 4 bytes */
+    uint64_t colorCodingID_Reg;                     /* reg value size = 4 bytes */
+    uint64_t payloadSizeVal_Reg;                    /* reg value size = 4 bytes */
+    uint32_t pixelFormatCtrlVal_Int_Sel;
+} T_U3VCamRegisterCfg;
+
+
+/********************************************************
+* Variable declarations
+*********************************************************/
+
+extern const T_U3VCamRegisterCfg U3VCamRegisterCfgTable;
 
 
 

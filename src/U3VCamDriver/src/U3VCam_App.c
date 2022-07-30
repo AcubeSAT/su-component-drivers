@@ -230,11 +230,11 @@ void U3VCamDriver_Tasks(void)
                                                      &U3VAppData.pixelFormat);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
-                if (U3VAppData.pixelFormat != U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel)
+                if (U3VAppData.pixelFormat != U3VCamRegisterCfgTable.pixelFormatCtrlVal_Int_Sel)
                 {
                     result2 = U3VHost_WriteMemRegIntegerValue(U3VAppData.u3vHostHandle,
                                                               U3V_MEM_REG_INT_PIXELFORMAT,
-                                                              U3VCamRegisterLUT[U3V_CAM_MODEL_SEL].pixelFormatCtrlVal_Int_Sel);
+                                                              U3VCamRegisterCfgTable.pixelFormatCtrlVal_Int_Sel);
                 }
                 else
                 {
