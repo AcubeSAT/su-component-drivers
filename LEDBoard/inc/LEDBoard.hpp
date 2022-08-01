@@ -29,7 +29,7 @@ private:
 public:
 
     /**
-     * Constructor to set the initial LED intensities to zero
+     * Constructor to set the initial LED intensities to zero and define the LED pins
      * @param pins Pointer to an array with the pins connected to the LEDs
      */
     LEDBoard(PIO_PIN *pins);
