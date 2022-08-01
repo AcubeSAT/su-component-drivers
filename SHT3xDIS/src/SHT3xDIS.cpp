@@ -17,7 +17,7 @@ void SHT3xDIS::writeCommandtoRegister(Register register, uint16_t command) {
 
 etl::array<float, 2> SHT3xDIS::readMeasurements(Register register) {
     uint8_t data[6];
-    etl::array<float,2> measurements = {};
+    etl::array<float, 2> measurements = {};
     uint16_t rawTemperature;
     uint16_t rawHumidity; 
 
@@ -56,7 +56,7 @@ etl::array<uint16_t, 2> SHT3xDIS::readStatusRegister(Register register) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
 
-        if (CRC8(data[1], data[2], data[3])) {
+        if (crc8(data[1], data[2], data[3])) {
             status[0] = data[1];
             status[1] = data[2];
         }
