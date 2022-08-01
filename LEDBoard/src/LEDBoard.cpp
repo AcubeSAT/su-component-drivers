@@ -1,4 +1,4 @@
-#include "LEDBoard.hpp"
+#include "../inc/LEDBoard.hpp"
 
 LEDBoard::LEDBoard(PIO_PIN *pins) {
     for(uint8_t i=0; i<numberOfLeds; i++){
