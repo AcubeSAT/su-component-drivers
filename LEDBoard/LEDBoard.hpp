@@ -16,6 +16,9 @@
 class LEDBoard{
 private:
 
+    /**
+     * The number of the LEDs on the LEDBoard
+     */
     const uint8_t numberOfLeds = 4;
 
     /**
@@ -27,16 +30,17 @@ public:
 
     /**
      * Constructor to set the initial LED intensities to zero
-     * @param ledPins Pointer to an array with the pins connected to the LEDs
+     * @param pins Pointer to an array with the pins connected to the LEDs
      */
-    LEDBoard(PIO_PIN *ledPins);
+    LEDBoard(PIO_PIN *pins);
 
     /**
      * Set the LED intensities
      * @param ledIndex The index of the LED (1,2,3,4)
-     * @param letIntensity The value of the intensity
+     * @param letIntensity The value of the intensity (boolean)
+     * @todo Modify this function to accept various ledIntensity values and change the LED voltage accordingly with PWM
      */
-    void setLedIntensity(uint8_t ledIndex, uint8_t ledIntensity);
+    void setLedIntensity(uint8_t ledIndex, bool ledIntensity);
 
 };
 
