@@ -48,14 +48,14 @@ private:
 	 * Tranforms the raw temperature that is measured into the physical.
 	 */
 	inline float temperatureConversion(uint16_t temperature) {
-		return  175 * (temperature / 65535) - 45;
+		return  175 * ((float) temperature / 65535) - 45;
 	}
 
 	/**
 	 * Tranforms the reletive humidity that is measured into the physical.
 	 */
 	inline float humidityConversion(uint16_t relativeHumidity) {
-		return 100 * (relativeHumidity / 65535);
+		return 100 * ((float) relativeHumidity / 65535);
 	}
 
 public:
