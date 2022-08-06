@@ -281,8 +281,8 @@ void U3VCamDriver_Tasks(void)
                 U3VAppData.streamConfig.imageSize = U3VAppData.payloadSize;
                 U3VAppData.streamConfig.blockPadding = U3V_TARGET_ARCH_BYTE_ALIGNMENT;
                 U3VAppData.streamConfig.blockSize = U3V_IN_BUFFER_MAX_SIZE;
-                U3VAppData.streamConfig.maxLeaderSize = 256U;
-                U3VAppData.streamConfig.maxTrailerSize = 256U;
+                U3VAppData.streamConfig.maxLeaderSize = U3V_LEADER_MAX_SIZE;
+                U3VAppData.streamConfig.maxTrailerSize = U3V_TRAILER_MAX_SIZE;
             }
             result2 = U3VHost_SetupStreamTransferParams(U3VAppData.u3vHostHandle, &U3VAppData.streamConfig);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))

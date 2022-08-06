@@ -28,6 +28,8 @@ extern "C" {
 #define U3V_HOST_INSTANCES_NUMBER                   1U
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER            1U
 #define U3V_IN_BUFFER_MAX_SIZE                      512U
+#define U3V_LEADER_MAX_SIZE                         256U
+#define U3V_TRAILER_MAX_SIZE                        256U
 #define U3V_REQ_TIMEOUT_MS                          1600UL
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding for MCU architecture */
 
