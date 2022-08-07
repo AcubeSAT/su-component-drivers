@@ -3,8 +3,6 @@
 //
 
 #include "U3VCam_App.h"
-#include "U3VCamDriver.h"
-#include "system/dma/sys_dma.h" //TODO: possibly remove if handled externally
 
 
 
@@ -14,7 +12,7 @@
 
 static T_U3VDriverInitStatus _U3VCamDriver_DrvInitStatus(void);
 
-static T_U3VCamConnectStatus _U3VCamDriver_GetCamConnectionStatus(void);
+// static T_U3VCamConnectStatus _U3VCamDriver_GetCamConnectionStatus(void); //TODO: maybe remove
 
 static USB_HOST_EVENT_RESPONSE _USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context);
 
@@ -22,13 +20,7 @@ static void _USBHostU3VAttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uint
 
 static void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context);
 
-static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vObjHandle,
-                                                         T_U3VHostEvent event,
-                                                         void *pEventData,
-                                                         uintptr_t context);
-
-static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT dmaEvent, uintptr_t context); //TODO: possibly remove if handled externally
-
+static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context);
 
 /********************************************************
 * Constant & Variable declarations
@@ -51,7 +43,7 @@ void U3VCamDriver_Initialize(void)
 {
     T_U3VDriverInitStatus DrvSts = U3V_DRV_INITIALIZATION_OK;
 
-    VBUS_HOST_EN_PowerDisable(); //TODO: remove on integration, XULT board specific
+    // VBUS_HOST_EN_PowerDisable(); //TODO: remove on integration, XULT board specific
     LED0_Off(); //TODO: remove on integration, XULT board specific
     LED1_Off(); //TODO: remove on integration, XULT board specific
 
@@ -60,12 +52,6 @@ void U3VCamDriver_Initialize(void)
     U3VAppData.deviceWasDetached                = false;
 
     U3VDriver_InitStatus = DrvSts;
-
-    SYS_DMA_DataWidthSetup(U3V_DMA_CH_SEL, SYS_DMA_WIDTH_8_BIT);
-    SYS_DMA_AddressingModeSetup(U3V_DMA_CH_SEL,
-                                SYS_DMA_SOURCE_ADDRESSING_MODE_INCREMENTED, 
-                                SYS_DMA_DESTINATION_ADDRESSING_MODE_INCREMENTED);
-    SYS_DMA_ChannelCallbackRegister(U3V_DMA_CH_SEL, _USBHostU3VDmaTransfCbk, 0);
 
     u3vAppStMchStepbits = 0x0UL;
 }
@@ -336,8 +322,9 @@ void U3VCamDriver_Tasks(void)
                 (U3VAppData.imagePayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_LEADER_COMPLETE) ||
                 (U3VAppData.imagePayloadContainer.imgPldTransfSt == SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE))
             {
+                //TODO: implement check if client ready else skip cycle
                 result1 = U3VHost_StartImgPayldTransfer(U3VAppData.u3vHostHandle,
-                                                        (void *)&U3VAppData.imagePayloadContainer.imgPldBfr1,
+                                                        (void *)&U3VAppData.imagePayloadContainer.imgPldBfr,
                                                         (size_t)U3V_IN_BUFFER_MAX_SIZE);
                 if ((result1 != U3V_HOST_RESULT_SUCCESS) && (result1 != U3V_HOST_RESULT_BUSY))
                 {
@@ -388,8 +375,15 @@ T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params)
     DrvSts = (_U3VCamDriver_DrvInitStatus() == U3V_DRV_INITIALIZATION_OK) ? DrvSts : U3V_CAM_DRV_NOT_INITD;
 
     //TODO: see if other checks needed
-
-    U3VAppData.imageAcquisitionRequested = true;
+    if (U3VAppData.payloadEventExtCbk != NULL)
+    {
+        U3VAppData.imageAcquisitionRequested = true;
+    }
+    else
+    {
+        /* payload event ext callback not set */
+        DrvSts = U3V_CAM_DRV_ERROR;
+    }
 
     return DrvSts;
 }
@@ -469,16 +463,36 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
 }
 
 
-static T_U3VCamConnectStatus _U3VCamDriver_GetCamConnectionStatus(void)
+T_U3VCamDriverStatus U3VCamDriver_SetImageAcqPayloadEventCbk(T_U3VCamDriverPayloadEventCallback cbk, uintptr_t context)
 {
-    T_U3VCamConnectStatus CamStatus = U3V_CAM_STATUS_UNKNOWN;
+    T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
+    DrvSts = (_U3VCamDriver_DrvInitStatus() == U3V_DRV_INITIALIZATION_OK) ? DrvSts : U3V_CAM_DRV_NOT_INITD;
 
-    if (1)  //TODO: check if needed on integration
+    if (DrvSts != U3V_CAM_DRV_NOT_INITD)
     {
-        CamStatus = U3V_CAM_CONNECTED;
+        if (cbk != NULL)
+        {
+            U3VAppData.payloadEventExtCbk = cbk;
+        }
+        else
+        {
+            DrvSts = U3V_CAM_DRV_ERROR;
+        }
     }
-    return CamStatus;
+    return DrvSts;
 }
+
+
+// static T_U3VCamConnectStatus _U3VCamDriver_GetCamConnectionStatus(void) //TODO: maybe remove
+// {
+//     T_U3VCamConnectStatus CamStatus = U3V_CAM_STATUS_UNKNOWN;
+
+//     if (1)  //TODO: check if needed on integration
+//     {
+//         CamStatus = U3V_CAM_CONNECTED;
+//     }
+//     return CamStatus;
+// }
 
 
 static USB_HOST_EVENT_RESPONSE _USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context)
@@ -514,10 +528,7 @@ static void _USBHostU3VDetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr
 }
 
 
-static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle,
-                                                         T_U3VHostEvent event,
-                                                         void *pEventData,
-                                                         uintptr_t context)
+static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
 {
     T_U3VHostEventReadCompleteData  *readCompleteEventData;
     T_U3VAppData                    *pUsbU3VAppData;
@@ -525,39 +536,37 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
 
     pUsbU3VAppData = (T_U3VAppData*)context;
     readCompleteEventData = (T_U3VHostEventReadCompleteData *)(pEventData);
+    T_U3VCamDriverImageAcqPayloadEvent appPldTransfEvent;
 
     switch (event)
     {
         case U3V_HOST_EVENT_IMG_PLD_RECEIVED:
-            pckLeaderOrTrailer = (T_U3VSiGenericPacket*)pUsbU3VAppData->imagePayloadContainer.imgPldBfr1;
+            pckLeaderOrTrailer = (T_U3VSiGenericPacket*)pUsbU3VAppData->imagePayloadContainer.imgPldBfr;
+            pUsbU3VAppData->imagePayloadContainer.imgPldBlockCnt++;
             if (pckLeaderOrTrailer->magicKey == U3V_LEADER_MGK_PREFIX)
             {
                 /* Img Leader packet received */
                 pUsbU3VAppData->imagePayloadContainer.imgPldTransfSt = SI_IMG_TRANSF_STATE_LEADER_COMPLETE;
+                appPldTransfEvent = U3V_CAM_DRV_IMG_LEADER_DATA;
+                pUsbU3VAppData->imagePayloadContainer.imgPldBlockCnt = 0U;
             }
             else if (pckLeaderOrTrailer->magicKey == U3V_TRAILER_MGK_PREFIX)
             {
                 /* Img Trailer packet received, end of transfer */
                 pUsbU3VAppData->imagePayloadContainer.imgPldTransfSt = SI_IMG_TRANSF_STATE_TRAILER_COMPLETE;
+                appPldTransfEvent = U3V_CAM_DRV_IMG_TRAILER_DATA;
             }
             else
             {
                 /* Img Payload block with Image data */
-                //TODO: block counter, recall & initiate DMA transf
-                if (!SYS_DMA_ChannelIsBusy(U3V_DMA_CH_SEL))
-                {
-                    if (SYS_DMA_ChannelTransfer(U3V_DMA_CH_SEL,
-                                                pUsbU3VAppData->imagePayloadContainer.imgPldBfr1,
-                                                imgBfrDst, //TODO: add target dest addr ifaceW
-                                                readCompleteEventData->length))
-                    {
-                        pUsbU3VAppData->imagePayloadContainer.imgPldBfr1St = IMG_PLD_BFR_READ_STATE_ACTV;
-                    }
-                }
-                else
-                {
-                    pUsbU3VAppData->imagePayloadContainer.imgPldBfr1St = IMG_PLD_BFR_WRITE_STATE_ACTV;
-                }
+                appPldTransfEvent = U3V_CAM_DRV_IMG_PAYLOAD_DATA;
+            }
+            if (U3VAppData.payloadEventExtCbk != NULL)
+            {
+                U3VAppData.payloadEventExtCbk(appPldTransfEvent,
+                                              (void *)U3VAppData.imagePayloadContainer.imgPldBfr,
+                                              readCompleteEventData->length,
+                                              (uintptr_t)pUsbU3VAppData->imagePayloadContainer.imgPldBlockCnt); //TODO: add more args?
             }
             break;
 
@@ -567,12 +576,5 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vHand
             break;
     }
     return U3V_HOST_EVENT_RESPONE_NONE;
-}
-
-
-static SYS_DMA_CHANNEL_CALLBACK _USBHostU3VDmaTransfCbk(SYS_DMA_TRANSFER_EVENT dmaEvent, uintptr_t context)
-{
-    SYS_DMA_TRANSFER_EVENT event = dmaEvent;
-    //TODO: sync with request?
 }
 

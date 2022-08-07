@@ -84,6 +84,16 @@ void xTaskU3VCamDriverTasks(void *pvParameters)
     }
 };
 
+void xTaskCamImgDataTestTasks(void *pvParameters)
+{
+    for(;;)
+    {
+        APP_Tasks();
+
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+};
+
 
 int main ( void )
 {
@@ -94,6 +104,7 @@ int main ( void )
     xTaskCreate(xTaskUsbHostTasks, "USB_HOST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 4, NULL);
     xTaskCreate(xTaskDrvUsbHsV1Tasks, "DRV_USBHSV1_TASKS", 1024, NULL, tskIDLE_PRIORITY + 5, NULL);
     xTaskCreate(xTaskU3VCamDriverTasks, "USB_CAM_DRV_TASKS", 1024, NULL, tskIDLE_PRIORITY + 3, NULL);
+    xTaskCreate(xTaskCamImgDataTestTasks, "CAM_DATA_TEST_TASKS", 1024, NULL, tskIDLE_PRIORITY + 3, NULL);
 
     vTaskStartScheduler(); // never exits
 

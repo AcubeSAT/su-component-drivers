@@ -36,6 +36,14 @@ typedef enum
     U3V_CAM_DRV_GET_TEXT_DEVICE_VERSION,
 } T_U3VCamDriverDevDescrTextType;
 
+typedef enum
+{
+    U3V_CAM_DRV_IMG_LEADER_DATA = 1,
+    U3V_CAM_DRV_IMG_PAYLOAD_DATA,
+    U3V_CAM_DRV_IMG_TRAILER_DATA,
+} T_U3VCamDriverImageAcqPayloadEvent;
+
+typedef void (*T_U3VCamDriverPayloadEventCallback) (T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, uint32_t blockSize, uint32_t blockCnt);
 
 /********************************************************
 * Constant declarations
@@ -54,6 +62,8 @@ typedef enum
 void U3VCamDriver_Initialize(void);
 
 void U3VCamDriver_Tasks(void); 
+
+T_U3VCamDriverStatus U3VCamDriver_SetImageAcqPayloadEventCbk(T_U3VCamDriverPayloadEventCallback cbk, uintptr_t context);
 
 T_U3VCamDriverStatus U3VCamDriver_AcquireNewImage(void *params); //TODO: maybe add callback with MEMR interfcace with data bfr + size args
 

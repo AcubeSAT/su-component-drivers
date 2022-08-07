@@ -162,8 +162,9 @@ typedef struct
     T_U3VImgPayldTransfState    imgPldTransfSt;
     // T_U3VStrmIfImageLeader      siLeader;        //TODO: remove if not used
     // T_U3VStrmIfImageTrailer     siTrailer;       //TODO: remove if not used
-    uint8_t                     imgPldBfr1[U3V_IN_BUFFER_MAX_SIZE];
-    T_U3VImgPayldBfrState       imgPldBfr1St;
+    uint8_t                     imgPldBfr[U3V_IN_BUFFER_MAX_SIZE];
+    T_U3VImgPayldBfrState       imgPldBfrStat;
+    uint32_t                    imgPldBlockCnt;
     // uint8_t                     imgPldBfr2[U3V_IN_BUFFER_MAX_SIZE]; //TODO: remove if not used
     // T_U3VImgPayldBfrState       imgPldBfr2St;    //TODO: remove if not used
 } T_U3VImgPayloadContainer;

@@ -54,7 +54,9 @@
 
 APP_DATA appData;
 
-static void PioSw1_U3VAcquireNewImage(PIO_PIN pin, uintptr_t context) // SW1 interrupt handler
+static void _U3vImagePartReceivedCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, uint32_t blockSize, uint32_t blockCnt);
+
+static void _PioSw1_U3VAcquireNewImage(PIO_PIN pin, uintptr_t context) // SW1 interrupt handler
 {
   (void)pin;
   (void)context;
@@ -100,7 +102,7 @@ void APP_Initialize ( void )
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
 
-    PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, PioSw1_U3VAcquireNewImage, 0);
+    PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, _PioSw1_U3VAcquireNewImage, 0);
     PIO_PinInterruptEnable(GPIO_PB12_PIN);
 
     /* TODO: Initialize your application's state machine and other
@@ -128,8 +130,7 @@ void APP_Tasks ( void )
         {
             bool appInitialized = true;
 
-
-            if (appInitialized)
+            if (U3V_CAM_DRV_OK == U3VCamDriver_SetImageAcqPayloadEventCbk(_U3vImagePartReceivedCbk, 0))
             {
 
                 appData.state = APP_STATE_SERVICE_TASKS;
@@ -155,6 +156,26 @@ void APP_Tasks ( void )
     }
 }
 
+
+static void _U3vImagePartReceivedCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, uint32_t blockSize, uint32_t blockCnt)
+{    
+
+  switch (event)
+  {
+    case U3V_CAM_DRV_IMG_LEADER_DATA:
+      break;
+
+    case U3V_CAM_DRV_IMG_TRAILER_DATA:
+      break;
+
+    case U3V_CAM_DRV_IMG_PAYLOAD_DATA:
+
+      break;
+
+    default:
+      break;
+  }
+}
 
 /*******************************************************************************
  End of File

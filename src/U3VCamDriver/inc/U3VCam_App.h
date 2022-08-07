@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "configuration.h"
 #include "U3VCam_Host.h"
+#include "U3VCamDriver.h"
 
 
 #ifdef __cplusplus
@@ -73,19 +74,20 @@ typedef struct
 
 typedef struct
 {
-    T_U3VAppState               state;
-    T_U3VHostHandle             u3vHostHandle;
-    bool                        deviceIsAttached;
-    bool                        deviceWasDetached;
-    bool                        imageAcquisitionRequested;
-    bool                        camSwResetRequested;
-    T_U3VAppDevTextDescr        camTextDescriptions;
-    float                       camTemperature;
-    uint32_t                    pixelFormat;
-    uint32_t                    payloadSize;
-    uint32_t                    acquisitionMode;
-    T_U3VStreamIfConfig         streamConfig;
-    T_U3VImgPayloadContainer    imagePayloadContainer;
+    T_U3VAppState                       state;
+    T_U3VHostHandle                     u3vHostHandle;
+    bool                                deviceIsAttached;
+    bool                                deviceWasDetached;
+    bool                                imageAcquisitionRequested;
+    bool                                camSwResetRequested;
+    T_U3VAppDevTextDescr                camTextDescriptions;
+    float                               camTemperature;
+    uint32_t                            pixelFormat;
+    uint32_t                            payloadSize;
+    uint32_t                            acquisitionMode;
+    T_U3VStreamIfConfig                 streamConfig;
+    T_U3VImgPayloadContainer            imagePayloadContainer;
+    T_U3VCamDriverPayloadEventCallback  payloadEventExtCbk;
 } T_U3VAppData;
 
 typedef enum
