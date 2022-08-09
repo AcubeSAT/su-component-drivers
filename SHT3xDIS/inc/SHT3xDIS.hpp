@@ -63,37 +63,37 @@ public:
 	 * Reads the measurements given by the SHT3xDIS sensor.
 	 * @return an array containing the temperature and humidity measured.
 	 */
-	etl::array<float, 2> readMeasurements(Register register);
+	etl::array<float, 2> readMeasurements(Register address_register);
 
 	/**
 	 * Writes a command to register so that it starts the measurement
 	 */
-	void writeCommandtoRegister(Register register, uint16_t command);
+	void writeCommandtoRegister(Register address_register, uint16_t command);
 
 	/**
 	 * Sets the type of measurement the sensor will execute.
 	 */
-	void setMeasurement(Register register, Measurement command);
+	void setMeasurement(Register address_register, Measurement command);
 
 	/**
 	 * Sets the heater (On/Off).
 	 */
-	void setHeater(Register register, Heater command);
+	void setHeater(Register address_register, Heater command);
 
 	/**
 	 * Writs a command to the Status register so it reads from it or clears it.
 	 */
-	void setStatusRegisterCommand(Register register, StatusRegister command);
+	void setStatusRegisterCommand(Register address_register, StatusRegister command);
 
 	/**
 	 * Reads the data sent by the status register.
 	 */
-	etl::array<uint16_t, 2> readStatusRegister(Register register);
+	etl::array<uint16_t, 2> readStatusRegister(Register address_register);
 
 	/**
 	 * Performs a soft reset to the sensor.
 	 */
-	void setSoftReset(Register register);
+	void setSoftReset(Register address_register);
 
 	/**
 	 * Performs a hard reset on the whole I2C Bus.

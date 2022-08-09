@@ -1,27 +1,27 @@
 #include "SHT3xDIS.hpp"
 
-void SHT3xDIS::writeCommandtoRegister(Register register, uint16_t command) {
-    uint8_t txData[] = {register, static_cast<uint8_t>(command >> 8), static_cast<uint8_t>(command & 0x00FF)};
+void SHT3xDIS::writeCommandtoRegister(Register address_register, uint16_t command) {
+    uint8_t txData[] = {address_register, static_cast<uint8_t>(command >> 8), static_cast<uint8_t>(command & 0x00FF)};
     uint8_t ackData = 0;
 
-    if (TWIHS2_Write(register, &ackData, 1)) {
+    if (TWIHS2_Write(address_register, &ackData, 1)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
     }
 
-    if (TWIHS2_Write(register, txData, 3)) {
+    if (TWIHS2_Write(address_register, txData, 3)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
     }
 }
 
-etl::array<float, 2> SHT3xDIS::readMeasurements(Register register) {
+etl::array<float, 2> SHT3xDIS::readMeasurements(Register address_register) {
     uint8_t data[6];
     etl::array<float, 2> measurements = {};
     uint16_t rawTemperature;
     uint16_t rawHumidity; 
 
-    if (TWIHS2_Read(register, data, 6)) {
+    if (TWIHS2_Read(address_register, data, 6)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
         
@@ -36,23 +36,23 @@ etl::array<float, 2> SHT3xDIS::readMeasurements(Register register) {
     return measurements;
 }
 
-void setMeasurement(Register register, SHT3xDIS::Measurement command) {
-    writeCommandtoRegister(register, command);
+void setMeasurement(Register address_register, SHT3xDIS::Measurement command) {
+    writeCommandtoRegister(address_register, command);
 }
 
-void setHeater(Register register, SHT3xDIS::Heater command) {
-    writeCommandtoRegister(register, command);
+void setHeater(Register address_register, SHT3xDIS::Heater command) {
+    writeCommandtoRegister(address_register, command);
 }
 
-void setStatusRegisterCommand(Register register, SHT3xDIS::StatusRegister command) {
-    writeCommandtoRegister(register, command);
+void setStatusRegisterCommand(Register address_register, SHT3xDIS::StatusRegister command) {
+    writeCommandtoRegister(address_register, command);
 }
 
-etl::array<uint16_t, 2> SHT3xDIS::readStatusRegister(Register register) {
+etl::array<uint16_t, 2> SHT3xDIS::readStatusRegister(Register address_register) {
     uint8_t data[4];
     etl::array<uint16_t, 2> status = {}; 
 
-    if (TWIHS2_Read(register, data, 4)) {
+    if (TWIHS2_Read(address_register, data, 4)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
 
@@ -64,9 +64,9 @@ etl::array<uint16_t, 2> SHT3xDIS::readStatusRegister(Register register) {
     return status;
 }
 
-void setSoftReset(Register register) {
+void setSoftReset(Register address_register) {
     uint16_t softReset = 0x30A2;
-    writeCommandtoRegister(register, softReset);
+    writeCommandtoRegister(address_register, softReset);
 }
 
 void SHT3xDIS::hardReset() {
@@ -75,12 +75,12 @@ void SHT3xDIS::hardReset() {
     uint8_t txData[] = {static_cast<uint8_t>(resetCommand >> 8), static_cast<uint8_t>(resetCommand & 0x00FF)};
     uint8_t ackData = 0;
 
-    if (TWIHS2_Write(register, &ackData, 1)) {
+    if (TWIHS2_Write(address_register, &ackData, 1)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
     }
 
-    if (TWIHS2_Write(register, txData, 2)) {
+    if (TWIHS2_Write(address_register, txData, 2)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
     }
