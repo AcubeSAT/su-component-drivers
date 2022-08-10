@@ -19,15 +19,15 @@ etl::array<float, 2> SHT3xDIS::readMeasurements(Register address_register) {
     uint8_t data[6];
     etl::array<float, 2> measurements = {};
     uint16_t rawTemperature;
-    uint16_t rawHumidity; 
+    uint16_t rawHumidity;
 
     if (TWIHS2_Read(address_register, data, 6)) {
         while (TWIHS2_IsBusy());
         error = TWIHS2_ErrorGet();
-        
+
         if (crc8(data[0], data[1], data[2]) && crc8(data[3], data[4], data[5])) {
-            rawTemperature = (data[0]<<8) | data[1];
-            rawHumidity = (data[3]<<8) | data[4];
+            rawTemperature = (data[0] << 8) | data[1];
+            rawHumidity = (data[3] << 8) | data[4];
 
             measurements[0] = temperatureConversion(rawTemperature);
             measurements[1] = humidityConversion(rawHumidity);
@@ -50,7 +50,7 @@ void setStatusRegisterCommand(Register address_register, SHT3xDIS::StatusRegiste
 
 etl::array<uint16_t, 2> SHT3xDIS::readStatusRegister(Register address_register) {
     uint8_t data[4];
-    etl::array<uint16_t, 2> status = {}; 
+    etl::array<uint16_t, 2> status = {};
 
     if (TWIHS2_Read(address_register, data, 4)) {
         while (TWIHS2_IsBusy());
@@ -89,7 +89,7 @@ void SHT3xDIS::hardReset() {
 bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
     uint8_t CRC = 0xFF;
     uint8_t polynomial = 0x31;
-    
+
     CRC ^= msb;
     for (uint8_t index = 0; index < 8; index++) {
         CRC = CRC & 0x80 ? (CRC << 1) ^ polynomial : CRC << 1;
@@ -100,5 +100,5 @@ bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
         CRC = CRC & 0x80 ? (CRC << 1) ^ polynomial : CRC << 1;
     }
 
-    return CRC == checksum; 
+    return CRC == checksum;
 }
