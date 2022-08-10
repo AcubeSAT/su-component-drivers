@@ -3,34 +3,32 @@
 
 class SHT3xDIS {
 private:
+
     /**
-     * High Speed Two-Wired Interface transaction error
+     * I2C device address.
+     */
+    uint8_t I2CAddress;
+
+    /**
+     * I2C transaction error
      */
     TWIHS_ERROR error;
 
     /**
-	 * Tranforms the raw temperature that is measured into the physical.
+	 * Transforms the raw temperature that is measured into the physical (result in %).
 	 */
-    inline float temperatureConversion(uint16_t temperature) {
-        return 175 * ((float) temperature / 65535) - 45;
+    inline float convertTemperature(uint16_t temperature) {
+        return 175 * (static_cast<float>(temperature) / 65535) - 45;
     }
 
     /**
-     * Tranforms the reletive humidity that is measured into the physical.
+     * Transforms the relative humidity that is measured into the physical (result in degrees Celsius).
      */
-    inline float humidityConversion(uint16_t relativeHumidity) {
-        return 100 * ((float) relativeHumidity / 65535);
+    inline float convertHumidity(uint16_t relativeHumidity) {
+        return 100 * (static_cast<float>(relativeHumidity) / 65535);
     }
 
 public:
-    /**
-	 * Every register address.
-	 */
-    enum Register {
-        I2CAddr1 = 0x44,
-        I2CAddr2 = 0x45
-    };
-
     /**
     * All the available commands for the single shot mode.
     */
@@ -59,46 +57,48 @@ public:
         CLEAR_STATUS_REGISTER = 0x3041
     };
 
+    SHT3xDIS(uint8_t address);
+
     /**
      * Reads the measurements given by the SHT3xDIS sensor.
      * @return an array containing the temperature and humidity measured.
      */
-    etl::array<float, 2> readMeasurements(Register address_register);
+    etl::array<float, 2> readMeasurements();
 
     /**
      * Writes a command to register so that it starts the measurement
      */
-    void writeCommandtoRegister(Register address_register, uint16_t command);
+    void writeCommand(uint16_t command);
 
     /**
      * Sets the type of measurement the sensor will execute.
      */
-    void setMeasurement(Register address_register, Measurement command);
+    void setMeasurement(Measurement command);
 
     /**
      * Sets the heater (On/Off).
      */
-    void setHeater(Register address_register, Heater command);
+    void setHeater(Heater command);
 
     /**
-     * Writs a command to the Status register so it reads from it or clears it.
+     * Writes a command to the Status register so it reads from it or clears it.
      */
-    void setStatusRegisterCommand(Register address_register, StatusRegister command);
+    void setStatusRegisterCommand(StatusRegister command);
 
     /**
      * Reads the data sent by the status register.
      */
-    etl::array<uint16_t, 2> readStatusRegister(Register address_register);
+    etl::array<uint16_t, 2> readStatusRegister();
 
     /**
      * Performs a soft reset to the sensor.
      */
-    void setSoftReset(Register address_register);
+    void setSoftReset();
 
     /**
-     * Performs a hard reset on the whole I2C Bus.
+     * Performs a general call reset on the whole I2C Bus.
      */
-    void hardReset();
+    void generalCallReset();
 
     /**
      * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
