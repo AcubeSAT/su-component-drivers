@@ -99,6 +99,27 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: '0'}
+  - type: Integer
+    attributes: {id: DMA_CH_FOR_USART1_Transmit}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: Boolean
+    attributes: {id: DMA_CH_NEEDED_FOR_USART1_Receive}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+  - type: Boolean
+    attributes: {id: DMA_CH_NEEDED_FOR_USART1_Transmit}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
   - type: Boolean
     attributes: {id: DMA_ENABLE}
     children:
@@ -205,6 +226,57 @@ children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
   - type: Boolean
+    attributes: {id: NVIC_13_0_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+  - type: String
+    attributes: {id: NVIC_13_0_HANDLER}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: USART0_Handler}
+  - type: Boolean
+    attributes: {id: NVIC_13_0_HANDLER_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+  - type: Boolean
+    attributes: {id: NVIC_14_0_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: String
+    attributes: {id: NVIC_14_0_HANDLER}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: USART1_InterruptHandler}
+  - type: Boolean
+    attributes: {id: NVIC_14_0_HANDLER_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+  - type: Combo
+    attributes: {id: NVIC_14_0_PRIORITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4'}
+  - type: Boolean
     attributes: {id: NVIC_19_0_ENABLE}
     children:
     - type: Values
@@ -267,6 +339,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
+  - type: Combo
+    attributes: {id: NVIC_23_0_PRIORITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '5'}
   - type: Boolean
     attributes: {id: NVIC_24_0_ENABLE}
     children:
@@ -309,6 +388,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
+  - type: Combo
+    attributes: {id: NVIC_33_0_PRIORITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '7'}
   - type: Boolean
     attributes: {id: NVIC_34_0_ENABLE}
     children:
@@ -330,6 +416,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
+  - type: Combo
+    attributes: {id: NVIC_34_0_PRIORITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '5'}
   - type: Boolean
     attributes: {id: NVIC_4_0_ENABLE}
     children:
@@ -372,6 +465,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
+  - type: Combo
+    attributes: {id: NVIC_58_0_PRIORITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4'}
   - type: Boolean
     attributes: {id: NVIC_63_0_ENABLE}
     children:
@@ -393,6 +493,36 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
+  - type: Boolean
+    attributes: {id: NVIC_8_0_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: String
+    attributes: {id: NVIC_8_0_HANDLER}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: UART1_Handler}
+  - type: Boolean
+    attributes: {id: NVIC_8_0_HANDLER_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+  - type: Combo
+    attributes: {id: NVIC_8_0_PRIORITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '7'}
   - type: String
     attributes: {id: PCK0_CLOCK_FREQUENCY}
     children:
@@ -400,6 +530,34 @@ children:
       children:
       - type: User
         attributes: {value: '32000'}
+  - type: String
+    attributes: {id: PIN_105_FUNCTION_TYPE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: USART1_TXD1}
+  - type: String
+    attributes: {id: PIN_105_PERIPHERAL_FUNCTION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: D}
+  - type: String
+    attributes: {id: PIN_32_FUNCTION_TYPE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: USART1_RXD1}
+  - type: String
+    attributes: {id: PIN_32_PERIPHERAL_FUNCTION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: A}
   - type: String
     attributes: {id: PIN_46_DIR}
     children:
@@ -532,7 +690,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '24'}
+        attributes: {id: core, value: '2097176'}
   - type: Hex
     attributes: {id: PIOA_PUER_VALUE}
     children:
@@ -553,14 +711,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0'}
+        attributes: {id: core, value: '16'}
   - type: Hex
     attributes: {id: PIOB_ABCDSR2_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0'}
+        attributes: {id: core, value: '16'}
   - type: Hex
     attributes: {id: PIOB_AIMER_VALUE}
     children:
@@ -630,7 +788,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0'}
+        attributes: {id: core, value: '16'}
   - type: Hex
     attributes: {id: PIOB_PUER_VALUE}
     children:
@@ -714,7 +872,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '4096'}
+        attributes: {id: core, value: '4112'}
   - type: Boolean
     attributes: {id: PMC_CKGR_MOR_MOSCXTEN}
     children:
@@ -744,7 +902,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '9116672'}
+        attributes: {id: core, value: '9133056'}
   - type: Hex
     attributes: {id: PMC_PCER1}
     children:
@@ -1158,6 +1316,69 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: '150000000'}
+  - type: Integer
+    attributes: {id: UART1_CLOCK_FREQUENCY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '150000000'}
+  - type: Boolean
+    attributes: {id: UART1_INTERRUPT_ENABLE_UPDATE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+  - type: Boolean
+    attributes: {id: USART0_INTERRUPT_ENABLE_UPDATE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+  - type: Boolean
+    attributes: {id: USART1_CLOCK_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: usart1, value: 'true'}
+  - type: Integer
+    attributes: {id: USART1_CLOCK_FREQUENCY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '150000000'}
+  - type: Boolean
+    attributes: {id: USART1_INTERRUPT_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: usart1, value: 'true'}
+  - type: Boolean
+    attributes: {id: USART1_INTERRUPT_ENABLE_UPDATE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+  - type: String
+    attributes: {id: USART1_INTERRUPT_HANDLER}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: usart1, value: USART1_InterruptHandler}
+  - type: Boolean
+    attributes: {id: USART1_INTERRUPT_HANDLER_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: usart1, value: 'true'}
   - type: Boolean
     attributes: {id: USBHS_CLOCK_ENABLE}
     children:
@@ -1235,31 +1456,105 @@ children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
   - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_CSIZE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: KeyValueSet
     attributes: {id: XDMAC_CC0_DAM}
     children:
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_DIF}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '1'}
+  - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_DSYNC}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '1'}
+  - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_DWIDTH}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_MBSIZE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: Combo
+    attributes: {id: XDMAC_CC0_PERID}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: USART1_Transmit}
       - type: User
-        attributes: {value: '0'}
+        attributes: {value: USART1_Transmit}
+  - type: Boolean
+    attributes: {id: XDMAC_CC0_PERID_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+  - type: Integer
+    attributes: {id: XDMAC_CC0_PERID_VAL}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '9'}
   - type: KeyValueSet
     attributes: {id: XDMAC_CC0_SAM}
     children:
     - type: Values
       children:
-      - type: User
-        attributes: {value: '0'}
+      - type: Dynamic
+        attributes: {id: core, value: '1'}
   - type: KeyValueSet
     attributes: {id: XDMAC_CC0_SIF}
     children:
     - type: Values
       children:
-      - type: User
-        attributes: {value: '0'}
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_SWREQ}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: KeyValueSet
+    attributes: {id: XDMAC_CC0_TYPE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '1'}
   - type: Boolean
     attributes: {id: XDMAC_CH0_ENABLE}
     children:
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
       - type: User
         attributes: {value: 'true'}
   - type: Boolean

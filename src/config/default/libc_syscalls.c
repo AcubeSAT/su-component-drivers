@@ -27,7 +27,8 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <device.h> /* for ARM CMSIS __BKPT() */
+#include <stdbool.h>
+#include "device.h" /* for ARM CMSIS __BKPT() */
 
 #ifdef __cplusplus
 extern "C" {

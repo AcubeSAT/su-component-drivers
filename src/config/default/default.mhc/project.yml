@@ -6,20 +6,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: null
-- generatedChecksum: 13F062B063A4F4AE0B19CE872943995B
-  logicalPath: config/default/driver/i2c
-  name: drv_i2c.c
-  physicalPath: driver/i2c/src
+- generatedChecksum: AA7EB58159A32BD83E5833F17FFD5AED
+  logicalPath: config/default/driver/usart
+  name: drv_usart.c
+  physicalPath: driver/usart/src
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 13F062B063A4F4AE0B19CE872943995B
-- generatedChecksum: 37780F17759DED907A0F36E28BFB3136
-  logicalPath: config/default/driver/i2c
-  name: drv_i2c_local.h
-  physicalPath: driver/i2c/src
+  userChecksum: AA7EB58159A32BD83E5833F17FFD5AED
+- generatedChecksum: 0C11D4D9C1A96A1F2D54E71396D42E32
+  logicalPath: config/default/driver/usart
+  name: drv_usart_local.h
+  physicalPath: driver/usart/src
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 37780F17759DED907A0F36E28BFB3136
+  userChecksum: 0C11D4D9C1A96A1F2D54E71396D42E32
 - generatedChecksum: 680300EC1B71F449C4265A35B9ECA1BF
   logicalPath: config/default/driver/usb/usbhsv1/src
   name: drv_usbhsv1.c
@@ -41,27 +41,27 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 6069C4FD56993BDA3B1FC223DD5BAA4A
-- generatedChecksum: DE77383148B9A82D7EA099C618E62958
+- generatedChecksum: A42DEC53E56CCED56CFA15965E8BDB57
   logicalPath: config/default
   name: initialization.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 8A39120617B28157CF27548585D3F881
-- generatedChecksum: 133941386F0881E73304A5CDED2F62B8
+  userChecksum: DF36216A95C6F96F00724B98ED693F0C
+- generatedChecksum: 7FB9492991AD1D33DDF57D01FE24364E
   logicalPath: config/default
   name: interrupts.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 133941386F0881E73304A5CDED2F62B8
+  userChecksum: 7FB9492991AD1D33DDF57D01FE24364E
 - generatedChecksum: 6513F2461B8F476B68CA73906086047F
   logicalPath: config/default
   name: libc_syscalls.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 40A0C249F1D418FD68D652E395745304
+  userChecksum: 6AF99848C0BBA6ED3DA7C90BE2B88893
 - generatedChecksum: null
   logicalPath: ''
   name: main.c
@@ -69,13 +69,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: null
-- generatedChecksum: 4EDBAB1911F8FC6A8B8493A760BD02A2
+- generatedChecksum: ED4346040C15E9CB93D2B47E13A00469
   logicalPath: config/default/peripheral/clk
   name: plib_clk.c
   physicalPath: peripheral/clk
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 4EDBAB1911F8FC6A8B8493A760BD02A2
+  userChecksum: ED4346040C15E9CB93D2B47E13A00469
 - generatedChecksum: D23DF612DB8267EDD9F5F3A463A02DB2
   logicalPath: config/default/peripheral/efc
   name: plib_efc.c
@@ -83,20 +83,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: D23DF612DB8267EDD9F5F3A463A02DB2
-- generatedChecksum: 5792C260E2F1297B738636C852DE2AC1
+- generatedChecksum: 55960696510B0BCC80131F07B1D4B6A7
   logicalPath: config/default/peripheral/nvic
   name: plib_nvic.c
   physicalPath: peripheral/nvic
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 94225DDA11D267DF04D75BDB60566D65
-- generatedChecksum: 2C26BA442BEC0A31FA1E5780DDC828DF
+  userChecksum: 55960696510B0BCC80131F07B1D4B6A7
+- generatedChecksum: 1BC78803B0D03812986273564F9FFDFA
   logicalPath: config/default/peripheral/pio
   name: plib_pio.c
   physicalPath: peripheral/pio
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 8CB3CA9BF1FD682A7FD9167009971C33
+  userChecksum: 4C5A0E63E7B6B00F8E6452914717A97F
 - generatedChecksum: 72C33CBE3A5B9F0A3B02F4AED5121184
   logicalPath: config/default/peripheral/tc
   name: plib_tc0.c
@@ -111,13 +111,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 618A850993F2C71CF51F61BBED137616
-- generatedChecksum: 5D78528BB898122419B2D837B07FD966
+- generatedChecksum: 3FC92DC9614C3C2528E4705C24CB39E1
+  logicalPath: config/default/peripheral/usart
+  name: plib_usart1.c
+  physicalPath: peripheral/usart
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 3FC92DC9614C3C2528E4705C24CB39E1
+- generatedChecksum: 383FC09AA84A6F4683B784A978356DD2
   logicalPath: config/default/peripheral/xdmac
   name: plib_xdmac.c
   physicalPath: peripheral/xdmac
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 5D78528BB898122419B2D837B07FD966
+  userChecksum: 383FC09AA84A6F4683B784A978356DD2
 - generatedChecksum: 3A35F794BD3C19E7B3142ED6806E4EFE
   logicalPath: config/default
   name: startup_xc32.c
@@ -307,13 +314,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 52F91AC0727F2311EDA0E3BAA7719A9F
-- generatedChecksum: AE389AD2EA1D50D51A08261D4B03600C
+- generatedChecksum: 334D72333B9AF5B6D050A9618ECD1A62
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 910544AA0A35348AAD6E252E733EBD52
+  userChecksum: ED4385B4960C31164B4D383ACE8663F9
 - generatedChecksum: 948CEA542F04017255B040816F368DF8
   logicalPath: packs/CMSIS/CMSIS/Core/Include
   name: core_cm7.h
@@ -335,13 +342,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: B424335B8194FB845DFEE348D5ACCDA0
-- generatedChecksum: F4C2D26F18D326AA814BF3584972FF2B
+- generatedChecksum: DBCE4510C8E20F0547E4B4C84C5795E6
   logicalPath: config/default
   name: definitions.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: BDD4388069995BEC1E3897494D30697C
+  userChecksum: 83C31241E193F8904996156AD117A970
 - generatedChecksum: E4DDC7F84738825A532EDB866BEDBA03
   logicalPath: config/default
   name: device.h
@@ -377,20 +384,20 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: CC7DFCC51CD25171A3E400E18969354F
-- generatedChecksum: 3C6689B8800C6234028EC2FBE82E25CF
-  logicalPath: config/default/driver/i2c
-  name: drv_i2c.h
-  physicalPath: driver/i2c
+- generatedChecksum: 6AF29C60E3BC9BB1F75754A49FBC6473
+  logicalPath: config/default/driver/usart
+  name: drv_usart.h
+  physicalPath: driver/usart
   security: NON_SECURE
   type: HEADER
-  userChecksum: 3C6689B8800C6234028EC2FBE82E25CF
-- generatedChecksum: 260EF469FECCFEF9418D6268909EE2F8
-  logicalPath: config/default/driver/i2c
-  name: drv_i2c_definitions.h
-  physicalPath: driver/i2c
+  userChecksum: 6AF29C60E3BC9BB1F75754A49FBC6473
+- generatedChecksum: 57D98C51D97F6D4A954D171F1EEC9CBB
+  logicalPath: config/default/driver/usart
+  name: drv_usart_definitions.h
+  physicalPath: driver/usart
   security: NON_SECURE
   type: HEADER
-  userChecksum: 260EF469FECCFEF9418D6268909EE2F8
+  userChecksum: 57D98C51D97F6D4A954D171F1EEC9CBB
 - generatedChecksum: DF147276AE56CA76E3E9BEB8447620AB
   logicalPath: config/default/driver/usb
   name: drv_usb.h
@@ -531,13 +538,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 48C1CAD197BD52C6E48A6C4BA57521CE
-- generatedChecksum: E46485C89855AA28197FCDEA68D3F615
+- generatedChecksum: 579683D28E9FD457311CFC75A0D5DF91
   logicalPath: config/default
   name: interrupts.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: E46485C89855AA28197FCDEA68D3F615
+  userChecksum: 579683D28E9FD457311CFC75A0D5DF91
 - generatedChecksum: 0EBBEFA82D9C3EDCC36616B0EB43352A
   logicalPath: packs/ATSAMV71Q21B_DFP/component
   name: isi.h
@@ -727,6 +734,20 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 5132029297BC9554EFA0EC40D3C0BC74
+- generatedChecksum: 44FD896AD7D4EBD0A19883496E849C53
+  logicalPath: config/default/peripheral/usart
+  name: plib_usart1.h
+  physicalPath: peripheral/usart
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 44FD896AD7D4EBD0A19883496E849C53
+- generatedChecksum: 2B0D6DB62F6E6E43DA189A8FA1DB7B5C
+  logicalPath: config/default/peripheral/usart
+  name: plib_usart_common.h
+  physicalPath: peripheral/usart
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 2B0D6DB62F6E6E43DA189A8FA1DB7B5C
 - generatedChecksum: 209A5E1DD5FF25054AD4F5FA0CD08531
   logicalPath: config/default/peripheral/xdmac
   name: plib_xdmac.h
@@ -1202,7 +1223,7 @@ files:
   physicalPath: usb
   security: NON_SECURE
   type: HEADER
-  userChecksum: F127C67A3E33E5788C0F057F648EE57C
+  userChecksum: 6EB8F9F4A43B9BC2C7A58585AC679650
 - generatedChecksum: 6EBC5E4D06FC96A02ADF3B7416957DD6
   logicalPath: config/default/usb
   name: usb_host_client_driver.h

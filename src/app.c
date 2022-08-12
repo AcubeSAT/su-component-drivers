@@ -30,6 +30,8 @@
 #include "app.h"
 #include "peripheral/pio/plib_pio.h"
 #include "U3VCamDriver.h"
+#include "peripheral/usart/plib_usart1.h"
+#include "system/dma/sys_dma.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -54,21 +56,14 @@
 
 APP_DATA appData;
 
-static void _U3vImagePartReceivedCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, uint32_t blockSize, uint32_t blockCnt);
-
-static void _PioSw1_U3VAcquireNewImage(PIO_PIN pin, uintptr_t context) // SW1 interrupt handler
-{
-  (void)pin;
-  (void)context;
-  U3VCamDriver_AcquireNewImage(NULL);
-};
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
 // *****************************************************************************
 // *****************************************************************************
-
+static void _APP_U3vImgPldBlkRcvdCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, size_t blockSize, uint32_t blockCnt);
+static void _APP_PioSw1PrsdCbk(PIO_PIN pin, uintptr_t context); // SW1 interrupt handler
 /* TODO:  Add any necessary callback functions.
 */
 
@@ -101,9 +96,8 @@ void APP_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
-
-    PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, _PioSw1_U3VAcquireNewImage, 0);
-    PIO_PinInterruptEnable(GPIO_PB12_PIN);
+    appData.imgRequested = false;
+    appData.imgPldPending = false;
 
     /* TODO: Initialize your application's state machine and other
      * parameters.
@@ -121,26 +115,38 @@ void APP_Initialize ( void )
 
 void APP_Tasks ( void )
 {
-
     /* Check the application's current state. */
     switch ( appData.state )
     {
         /* Application's initial state. */
-        case APP_STATE_INIT:
+		case APP_STATE_INIT:
+		{
+      if ((U3V_CAM_DRV_OK == U3VCamDriver_SetImagePayloadTransferCfg(_APP_U3vImgPldBlkRcvdCbk, appData.imgData)) &&
+          (PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, _APP_PioSw1PrsdCbk, 0)))
+      {
+        appData.usrtDrv = DRV_USART_Open(0, DRV_IO_INTENT_WRITE);
+				PIO_PinInterruptEnable(GPIO_PB12_PIN);
+				appData.state = APP_STATE_SERVICE_TASKS;
+      }
+      break;
+		}
+
+		case APP_STATE_SERVICE_TASKS:
         {
-            bool appInitialized = true;
-
-            if (U3V_CAM_DRV_OK == U3VCamDriver_SetImageAcqPayloadEventCbk(_U3vImagePartReceivedCbk, 0))
-            {
-
-                appData.state = APP_STATE_SERVICE_TASKS;
-            }
-            break;
-        }
-
-        case APP_STATE_SERVICE_TASKS:
-        {
-
+			if (appData.imgRequested && !appData.imgPldPending)
+			{
+				if (!SYS_DMA_ChannelIsBusy(SYS_DMA_CHANNEL_0))
+				{
+					if (U3V_CAM_DRV_OK == U3VCamDriver_RequestNewImagePayloadBlock())
+					{
+						appData.imgPldPending = true;
+					}
+				}
+				else
+				{
+					appData.state = APP_STATE_SERVICE_TASKS; // debug
+				}
+			}
             break;
         }
 
@@ -157,25 +163,46 @@ void APP_Tasks ( void )
 }
 
 
-static void _U3vImagePartReceivedCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, uint32_t blockSize, uint32_t blockCnt)
-{    
+static void _APP_U3vImgPldBlkRcvdCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, size_t blockSize, uint32_t blockCnt)
+{
+	void *srcAddr = imgData;
+	void *destAddr = (void *)&(USART1_REGS->US_THR);
+	size_t size = blockSize;
 
-  switch (event)
-  {
-    case U3V_CAM_DRV_IMG_LEADER_DATA:
-      break;
+	switch (event)
+	{
+		case U3V_CAM_DRV_IMG_LEADER_DATA:
+			break;
 
-    case U3V_CAM_DRV_IMG_TRAILER_DATA:
-      break;
+		case U3V_CAM_DRV_IMG_TRAILER_DATA:
+			appData.imgRequested = false;
+			break;
 
-    case U3V_CAM_DRV_IMG_PAYLOAD_DATA:
+		case U3V_CAM_DRV_IMG_PAYLOAD_DATA:
+			if (true == DRV_USART_WriteBuffer(appData.usrtDrv, (uint8_t *)srcAddr, size))
+			{
+				/* Tx ok */
+			}
+			else
+			{
+				size = blockSize; // error breakpoint position, should never pass from here
+			}
+			break;
 
-      break;
-
-    default:
-      break;
-  }
+		default:
+			break;
+	}
+	appData.imgPldPending = false;
 }
+
+
+static void _APP_PioSw1PrsdCbk(PIO_PIN pin, uintptr_t context) // SW1 interrupt handler
+{
+	(void)pin;
+	(void)context;
+	appData.imgRequested = true;
+}
+
 
 /*******************************************************************************
  End of File

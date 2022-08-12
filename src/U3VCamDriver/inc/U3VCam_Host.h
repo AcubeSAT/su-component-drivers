@@ -140,35 +140,6 @@ typedef struct
 	uint32_t maxTrailerSize;
 } T_U3VStreamIfConfig;
 
-typedef enum
-{
-    IMG_PLD_BFR_READY_TO_WRITE,
-    IMG_PLD_BFR_WRITE_STATE_ACTV,
-    IMG_PLD_BFR_READY_TO_READ,
-    IMG_PLD_BFR_READ_STATE_ACTV,
-} T_U3VImgPayldBfrState;
-
-typedef enum
-{
-    SI_IMG_TRANSF_STATE_START,
-    SI_IMG_TRANSF_STATE_LEADER_COMPLETE,
-    SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE,
-    SI_IMG_TRANSF_STATE_TRAILER_COMPLETE,
-    SI_IMG_TRANSF_STATE_ERROR
-} T_U3VImgPayldTransfState;
-
-typedef struct
-{
-    T_U3VImgPayldTransfState    imgPldTransfSt;
-    // T_U3VStrmIfImageLeader      siLeader;        //TODO: remove if not used
-    // T_U3VStrmIfImageTrailer     siTrailer;       //TODO: remove if not used
-    uint8_t                     imgPldBfr[U3V_IN_BUFFER_MAX_SIZE];
-    T_U3VImgPayldBfrState       imgPldBfrStat;
-    uint32_t                    imgPldBlockCnt;
-    // uint8_t                     imgPldBfr2[U3V_IN_BUFFER_MAX_SIZE]; //TODO: remove if not used
-    // T_U3VImgPayldBfrState       imgPldBfr2St;    //TODO: remove if not used
-} T_U3VImgPayloadContainer;
-
 
 /********************************************************
 * Constant declarations

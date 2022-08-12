@@ -31,6 +31,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include "definitions.h"
 #include "configuration.h"
 
 // DOM-IGNORE-BEGIN
@@ -85,9 +86,11 @@ typedef struct
 {
     /* The application's current state */
     APP_STATES state;
-
+    DRV_HANDLE usrtDrv;
+    bool imgRequested;
+    bool imgPldPending;
+    uint8_t imgData[512];
     /* TODO: Define any additional data used by the application. */
-
 } APP_DATA;
 
 // *****************************************************************************

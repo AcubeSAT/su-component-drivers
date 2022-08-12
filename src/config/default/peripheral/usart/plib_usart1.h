@@ -1,14 +1,14 @@
 /*******************************************************************************
-  NVIC PLIB Implementation
+  USART1 PLIB
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    plib_nvic.c
+    plib_usart1.h
 
   Summary:
-    NVIC PLIB Source File
+    USART1 PLIB Header File
 
   Description:
     None
@@ -38,72 +38,60 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#include "device.h"
-#include "plib_nvic.h"
+#ifndef PLIB_USART1_H
+#define PLIB_USART1_H
 
+#include "plib_usart_common.h"
+
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    extern "C" {
+
+#endif
+// DOM-IGNORE-END
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: NVIC Implementation
+// Section: Interface
 // *****************************************************************************
 // *****************************************************************************
 
-void NVIC_Initialize( void )
-{
-    /* Priority 0 to 7 and no sub-priority. 0 is the highest priority */
-    NVIC_SetPriorityGrouping( 0x00 );
+#define USART1_FrequencyGet()    (uint32_t)(150000000UL)
 
-    /* Enable NVIC Controller */
-    __DMB();
-    __enable_irq();
+/****************************** USART1 API *********************************/
 
-    /* Enable the interrupt sources and configure the priorities as configured
-     * from within the "Interrupt Manager" of MHC. */
-    NVIC_SetPriority(PIOB_IRQn, 7);
-    NVIC_EnableIRQ(PIOB_IRQn);
-    NVIC_SetPriority(USART1_IRQn, 4);
-    NVIC_EnableIRQ(USART1_IRQn);
-    NVIC_SetPriority(TWIHS0_IRQn, 7);
-    NVIC_EnableIRQ(TWIHS0_IRQn);
-    NVIC_SetPriority(TC0_CH0_IRQn, 5);
-    NVIC_EnableIRQ(TC0_CH0_IRQn);
-    NVIC_SetPriority(USBHS_IRQn, 5);
-    NVIC_EnableIRQ(USBHS_IRQn);
-    NVIC_SetPriority(XDMAC_IRQn, 4);
-    NVIC_EnableIRQ(XDMAC_IRQn);
+void USART1_Initialize( void );
+
+USART_ERROR USART1_ErrorGet( void );
+
+bool USART1_SerialSetup( USART_SERIAL_SETUP *setup, uint32_t srcClkFreq );
+
+bool USART1_Write( void *buffer, const size_t size );
+
+bool USART1_Read( void *buffer, const size_t size );
+
+bool USART1_WriteIsBusy( void );
+
+bool USART1_ReadIsBusy( void );
+
+size_t USART1_WriteCountGet( void );
+
+size_t USART1_ReadCountGet( void );
+
+bool USART1_ReadAbort(void);
+
+void USART1_WriteCallbackRegister( USART_CALLBACK callback, uintptr_t context );
+
+void USART1_ReadCallbackRegister( USART_CALLBACK callback, uintptr_t context );
 
 
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
 
-}
-
-void NVIC_INT_Enable( void )
-{
-    __DMB();
-    __enable_irq();
-}
-
-bool NVIC_INT_Disable( void )
-{
-    bool processorStatus;
-
-    processorStatus = (bool) (__get_PRIMASK() == 0);
-
-    __disable_irq();
-    __DMB();
-
-    return processorStatus;
-}
-
-void NVIC_INT_Restore( bool state )
-{
-    if( state == true )
-    {
-        __DMB();
-        __enable_irq();
     }
-    else
-    {
-        __disable_irq();
-        __DMB();
-    }
-}
+
+#endif
+
+// DOM-IGNORE-END
+#endif // PLIB_USART1_H

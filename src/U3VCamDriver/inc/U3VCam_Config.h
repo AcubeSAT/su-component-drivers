@@ -33,7 +33,6 @@ extern "C" {
 #define U3V_REQ_TIMEOUT_MS                          1600UL
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding for MCU architecture */
 
-#define U3V_DMA_CH_SEL                              SYS_DMA_CHANNEL_0   /* SYS_DMA_SOURCE_ADDRESSING_MODE type */ //TODO: decide if this stays on integration
 
 //TODO: remove or replace before integration all below - DEBUG XULT board specific definitions
 #define LED0_Toggle()                               (PIOA_REGS->PIO_ODSR ^= (1<<23))

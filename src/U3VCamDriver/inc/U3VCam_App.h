@@ -53,10 +53,17 @@ typedef enum
     U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION,
     U3V_APP_STATE_WAIT_TO_ACQUIRE_IMAGE,
     U3V_APP_STATE_STOP_IMAGE_ACQ,
-    U3V_APP_STATE_ERROR,
-
-    U3V_APP_STATE_NOP // TODO: remove, debug state
+    U3V_APP_STATE_ERROR
 } T_U3VAppState;
+
+typedef enum
+{
+    U3V_SI_IMG_TRANSF_STATE_IDLE,
+    U3V_SI_IMG_TRANSF_STATE_START,
+    U3V_SI_IMG_TRANSF_STATE_LEADER_COMPLETE,
+    U3V_SI_IMG_TRANSF_STATE_PAYLOAD_BLOCKS_COMPLETE,
+    U3V_SI_IMG_TRANSF_STATE_TRAILER_COMPLETE
+} T_U3VImgPayldTransfState;
 
 typedef struct
 {
@@ -78,7 +85,8 @@ typedef struct
     T_U3VHostHandle                     u3vHostHandle;
     bool                                deviceIsAttached;
     bool                                deviceWasDetached;
-    bool                                imageAcquisitionRequested;
+    bool                                imgAckRequested;
+    bool                                imgAckReqNewBlock;
     bool                                camSwResetRequested;
     T_U3VAppDevTextDescr                camTextDescriptions;
     float                               camTemperature;
@@ -86,8 +94,10 @@ typedef struct
     uint32_t                            payloadSize;
     uint32_t                            acquisitionMode;
     T_U3VStreamIfConfig                 streamConfig;
-    T_U3VImgPayloadContainer            imagePayloadContainer;
-    T_U3VCamDriverPayloadEventCallback  payloadEventExtCbk;
+    T_U3VImgPayldTransfState            appImgTransfState;
+    uint32_t                            appImgBlockCounter;
+    T_U3VCamDriverPayloadEventCallback  appImgEvtCbk;
+    void                                *appImgDataBfr;
 } T_U3VAppData;
 
 typedef enum

@@ -21,4 +21,4 @@ children:
         children:
         - {type: Value, value: 'false'}
 - type: ElementPosition
-  attributes: {x: '599', y: '306', id: usb_host}
+  attributes: {x: '475', y: '261', id: usb_host}

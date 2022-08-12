@@ -42,30 +42,9 @@ children:
   - type: Combo
     attributes: {id: TWIHS_OPMODE}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
         attributes: {id: twihs0, value: MASTER}
-- type: Attachments
-  children:
-  - type: DirectCapability
-    attributes: {id: TWIHS0_I2C}
-    children:
-    - type: Attributes
-      children:
-      - type: String
-        attributes: {id: targetComponentID}
-        children:
-        - {type: Value, value: drv_i2c_0}
-      - type: String
-        attributes: {id: targetAttachmentID}
-        children:
-        - {type: Value, value: drv_i2c_I2C_dependency}
 - type: ElementPosition
   attributes: {x: '70', y: '334', id: twihs0}

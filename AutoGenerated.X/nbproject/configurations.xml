@@ -7,9 +7,9 @@
       <logicalFolder name="f1" displayName="config" projectFiles="true">
         <logicalFolder name="f1" displayName="default" projectFiles="true">
           <logicalFolder name="f5" displayName="driver" projectFiles="true">
-            <logicalFolder name="f1" displayName="i2c" projectFiles="true">
-              <itemPath>../src/config/default/driver/i2c/drv_i2c.h</itemPath>
-              <itemPath>../src/config/default/driver/i2c/drv_i2c_definitions.h</itemPath>
+            <logicalFolder name="f3" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/driver/usart/drv_usart.h</itemPath>
+              <itemPath>../src/config/default/driver/usart/drv_usart_definitions.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="usb" projectFiles="true">
               <logicalFolder name="f1" displayName="usbhsv1" projectFiles="true">
@@ -52,6 +52,10 @@
                 <itemPath>../src/config/default/peripheral/twihs/master/plib_twihs_master_common.h</itemPath>
                 <itemPath>../src/config/default/peripheral/twihs/master/plib_twihs0_master.h</itemPath>
               </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="f8" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/usart/plib_usart_common.h</itemPath>
+              <itemPath>../src/config/default/peripheral/usart/plib_usart1.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f7" displayName="xdmac" projectFiles="true">
               <itemPath>../src/config/default/peripheral/xdmac/plib_xdmac_common.h</itemPath>
@@ -248,9 +252,9 @@
       <logicalFolder name="f1" displayName="config" projectFiles="true">
         <logicalFolder name="f1" displayName="default" projectFiles="true">
           <logicalFolder name="f5" displayName="driver" projectFiles="true">
-            <logicalFolder name="f1" displayName="i2c" projectFiles="true">
-              <itemPath>../src/config/default/driver/i2c/src/drv_i2c.c</itemPath>
-              <itemPath>../src/config/default/driver/i2c/src/drv_i2c_local.h</itemPath>
+            <logicalFolder name="f3" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/driver/usart/src/drv_usart.c</itemPath>
+              <itemPath>../src/config/default/driver/usart/src/drv_usart_local.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="usb" projectFiles="true">
               <logicalFolder name="f1" displayName="usbhsv1" projectFiles="true">
@@ -281,6 +285,9 @@
               <logicalFolder name="f1" displayName="master" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/twihs/master/plib_twihs0_master.c</itemPath>
               </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="f8" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/usart/plib_usart1.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f7" displayName="xdmac" projectFiles="true">
               <itemPath>../src/config/default/peripheral/xdmac/plib_xdmac.c</itemPath>
@@ -367,9 +374,10 @@
                    projectFiles="false">
       <logicalFolder name="f1" displayName="default.mhc" projectFiles="true">
         <itemPath>../src/config/default/default.mhc/GraphSettings.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/drv_usart.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/dfp.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/usb_host.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/drv_i2c.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/usart1.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/efc.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/settings.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/twihs0.yml</itemPath>
