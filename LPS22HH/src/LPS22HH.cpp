@@ -14,7 +14,6 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress){
 }
 
 void LPS22HH::writeToRegister(RegisterAddress registerAddress, uint8_t txData){
-
     PIO_PinWrite(ssn, false);
 
     SPI_WriteRead(&registerAddress, 1, nullptr, 0);
@@ -45,7 +44,7 @@ float LPS22HH::readPressure(){
                     static_cast<int32_t> (pressureOutL << 8)  |
                     static_cast<int32_t> (pressureOutXL);
 
-    pressureValue = static_cast<float>(pressureData) / LPS22HH::pressureSensitivity;
+    pressureValue = static_cast<float>(pressureData) / pressureSensitivity;
 
     return pressureValue;
 }
@@ -57,9 +56,9 @@ float LPS22HH::readTemperature(){
     uint8_t temperatureOutL = readFromRegister(TEMP_OUT_L);
 
     uint16_t unsigned_value = static_cast<uint16_t> (temperatureOutH) << 8 | temperatureOutL;
-    temperatureData = unsigned_value | 0b1000000000000000;
+    temperatureData = unsigned_value | 0b10000000'00000000;
 
-    temperatureValue = static_cast<float>(temperatureData) / LPS22HH::temperatureSensitivity;
+    temperatureValue = static_cast<float>(temperatureData) / temperatureSensitivity;
 
     return temperatureValue;
 }

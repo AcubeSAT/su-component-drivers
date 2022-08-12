@@ -87,12 +87,12 @@ private:
     PIO_PIN ssn;
 
     /**
-     * Maximum number of bytes that are written kin registers.
+     * Maximum number of bytes that are written in registers.
      */
     static const uint8_t MaxWriteBytes = 3;
 
     /**
-     * Reads from a specific register of the ADXRS453 device.
+     * Reads from a specific register of the LPS22HH device.
      * @param registerAddress is the value of a register address.
      */
     uint8_t readFromRegister(RegisterAddress registerAddress);
@@ -130,7 +130,7 @@ public:
 
     /**
      * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
-     * @param ODR bits
+     * @param rate ODR bits
      */
      void setODRBits(OutputDataRate rate);
 
