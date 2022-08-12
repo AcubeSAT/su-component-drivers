@@ -1,3 +1,4 @@
+#pragma once
 #include <etl/array.h>
 #include <cstdint>
 #include "definitions.h"
