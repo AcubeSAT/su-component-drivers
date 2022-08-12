@@ -4,10 +4,10 @@
 
 #define LPS22HH_SPI_PORT 0
 
-#if LPS22HH_SPI_PORT == 0
-#define SPI_WriteRead SPI0_WriteRead
-#else
+#if LPS22HH_SPI_PORT
 #define SPI_WriteRead SPI1_WriteRead
+#else
+#define SPI_WriteRead SPI0_WriteRead
 #endif
 
 /**
@@ -62,22 +62,22 @@ private:
     };
 
     /**
-     * The pressure sensitivity value according to the datasheet. It is used to calculate the pressure.
+     * The pressure sensitivity value according to the datasheet in LSB/hPa. It is used to calculate the pressure.
      */
-    static const uint16_t pressureSensitivity = 4096;
+    static const uint16_t PressureSensitivity = 4096;
 
     /**
-     * The temperature sensitivity value according to the datasheet. It is used to calculate the temperature.
+     * The temperature sensitivity value according to the datasheet in LSB/°C. It is used to calculate the temperature.
      */
-    static const uint8_t temperatureSensitivity = 100;
+    static const uint8_t TemperatureSensitivity = 100;
 
     /**
-     * The temperature measurement
+     * The temperature measurement in °C.
      */
     float temperatureValue;
 
     /**
-     * The pressure measurement
+     * The pressure measurement in hPa.
      */
     float pressureValue;
 
@@ -117,13 +117,13 @@ public:
     LPS22HH(PIO_PIN ssn);
 
     /**
-     * Read the current pressure measurement.
+     * Read the current pressure measurement in hPa.
      * @return the calculated pressure value.
      */
     float readPressure();
 
     /**
-     * Read the current temperature measurement.
+     * Read the current temperature measurement in °C.
      * @return the calculated temperature value.
      */
     float readTemperature();
@@ -132,13 +132,13 @@ public:
      * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
      * @param rate ODR bits
      */
-     void setODRBits(OutputDataRate rate);
+    void setODRBits(OutputDataRate rate);
 
-     /**
-      * Sets the bit that defines the use of the FIFO watermark level in the FIFO Control Register (FIFO_CTRL(13h))
-      * @param stopOnWTM flag to enable the mode or not
-      */
-     void setStopOnWTM(bool stopOnWTM);
+    /**
+     * Sets the bit that defines the use of the FIFO watermark level in the FIFO Control Register (FIFO_CTRL(13h))
+     * @param stopOnWTM flag to enable the mode or not
+     */
+    void setStopOnWTM(bool stopOnWTM);
 
     /**
      * Sets the bit that enables triggered FIFO modes in the FIFO Control Register (FIFO_CTRL(13h))
