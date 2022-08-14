@@ -47,10 +47,10 @@ public:
      * The Indexes of the LEDs on the LEDBoard
      */
     enum LedIndex : uint8_t {
-        FIRST_LED = 1,
-        SECOND_LED = 2,
-        THIRD_LED = 3,
-        FOURTH_LED = 4
+        FIRST_LED = 0,
+        SECOND_LED = 1,
+        THIRD_LED = 2,
+        FOURTH_LED = 3
     };
 
     /**
