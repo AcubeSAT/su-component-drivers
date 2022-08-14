@@ -13,37 +13,45 @@
  *
  * @author Miltiadis Bozatzis <mpozan20@gmail.com>
  */
-class LEDBoard{
+class LEDBoard {
 private:
-
     /**
      * The number of the LEDs on the LEDBoard
      */
-    const uint8_t numberOfLeds = 4;
+    constexpr uint8_t NumberOfLeds = 4;
 
     /**
      * Array of the pins connected to the LEDs of the Board
      */
-    etl::array<PIO_PIN, numberOfLeds> ledPins;
+    etl::array <PIO_PIN, NumberOfLeds> ledPins;
 
     /**
      * Array of the PWM Channels connected to each pin
      * each pin ledPins[i] should correspond to PWM Channel pinPwmChannels[i]
      */
-    etl::array<PWM_CHANNEL_NUM, numberOfLeds> pinPwmChannels;
+    etl::array <PWM_CHANNEL_NUM, NumberOfLeds> pinPwmChannels;
 
     /**
      * Array of the PWM Channel Masks for each channel
      */
-    etl::array<PWM_CHANNEL_MASK, numberOfLeds> pinPwmChannelMasks;
+    etl::array <PWM_CHANNEL_MASK, NumberOfLeds> pinPwmChannelMasks;
 
     /**
      * Array of the PWM Handler of each pin
      * each pin ledPins[i] should correspond to PWM Handler pinPwmChannels[i]
      */
-    etl::array<bool, numberOfLeds> pwmHandlers;
+    etl::array<bool, NumberOfLeds> pwmHandlers;
 
 public:
+    /**
+     * The Indexes of the LEDs on the LEDBoard
+     */
+    enum LedIndex : uint8_t {
+        FIRST_LED = 1,
+        SECOND_LED = 2,
+        THIRD_LED = 3,
+        FOURTH_LED = 4
+    };
 
     /**
      * Constructor to set the initial LED intensities to zero and define the LED pins
@@ -55,23 +63,23 @@ public:
 
     /**
      * Set the LED intensities
-     * @param ledIndex The index of the LED (1,2,3,4)
+     * @param ledIndex The index of the LED
      * @param ledValue The value of the led, boolean (on-true, off-false)
      */
-    void ledWrite(uint8_t ledIndex, bool ledValue);
+    void ledWrite(LedIndex ledIndex, bool ledValue);
 
     /**
      * Set the LED intensities
-     * @param ledIndex The index of the LED (1,2,3,4)
+     * @param ledIndex The index of the LED
      * @param letIntensity The value of the intensity (percentage from 0 to 100)
      */
-    void setLedIntensity(uint8_t ledIndex, uint16_t intensity);
+    void setLedIntensity(LedIndex ledIndex, uint16_t intensity);
 
     /**
      * Stops the PWM on the selected LED pin
-     * @param ledIndex The index of the LED (1,2,3,4)
+     * @param ledIndex The index of the LED
      */
-    void closeLed(uint8_t ledIndex);
+    void closeLed(LedIndex ledIndex);
 
 };
 
