@@ -19,9 +19,8 @@ extern "C" {
 * Macros Definitions
 *********************************************************/
 /* U3V camera models defined here */
-#define U3V_FLIR_CM3_U3_12S2C_CS                    (0)
-#define U3V_XIMEA_XIQ_MQ013CG_E2                    (1)
-
+#define U3V_FLIR_CM3_U3_12S2C_CS                    0
+#define U3V_XIMEA_XIQ_MQ013CG_E2                    1
 /* U3V camera to be enabled in current build set here */
 #define U3V_CAM_MODEL_SELECTED                      U3V_FLIR_CM3_U3_12S2C_CS
 
@@ -31,7 +30,7 @@ extern "C" {
 #define U3V_LEADER_MAX_SIZE                         256U
 #define U3V_TRAILER_MAX_SIZE                        256U
 #define U3V_REQ_TIMEOUT_MS                          1600UL
-#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding for MCU architecture */
+#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding of MCU architecture */
 
 
 //TODO: remove or replace before integration all below - DEBUG XULT board specific definitions
@@ -59,16 +58,16 @@ typedef struct
 {
     uint64_t camRegBaseAddress;
     uint64_t SBRMOffset;
-    uint64_t temperature_Reg;                       /* reg value size = 4 bytes */
-    uint64_t deviceReset_Reg;                       /* reg value size = 4 bytes */
-    uint64_t singleFrameAcquisitionMode_Reg;        /* reg value size = 4 bytes */
-    uint64_t acquisitionMode_Reg;                   /* reg value size = 4 bytes */
-    uint64_t acquisitionStart_Reg;                  /* reg value size = 4 bytes */
-    uint64_t acquisitionStop_Reg;                   /* reg value size = 4 bytes */
-    uint64_t colorCodingID_Reg;                     /* reg value size = 4 bytes */
-    uint64_t payloadSizeVal_Reg;                    /* reg value size = 4 bytes */
+    uint64_t temperature_Reg;
+    uint64_t deviceReset_Reg;
+    uint64_t singleFrameAcquisitionMode_Reg;
+    uint64_t acquisitionMode_Reg;
+    uint64_t acquisitionStart_Reg;
+    uint64_t acquisitionStop_Reg;
+    uint64_t colorCodingID_Reg;
+    uint64_t payloadSizeVal_Reg;
     uint32_t pixelFormatCtrlVal_Int_Sel;
-} T_U3VCamRegisterCfg;
+} T_U3VCamRegisterCfg;      /* value size is 4 bytes for all (_Reg) registers above */
 
 
 /********************************************************

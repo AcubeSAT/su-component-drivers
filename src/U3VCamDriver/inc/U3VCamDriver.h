@@ -66,11 +66,11 @@ void U3VCamDriver_Initialize(void);
 
 void U3VCamDriver_Tasks(void);
 
-T_U3VCamDriverStatus U3VCamDriver_SetImagePayloadTransferCfg(T_U3VCamDriverPayloadEventCallback callback, void *imgData); //buffer size must be U3V_IN_BUFFER_MAX_SIZE at least, you can use U3VCamDriver_GetPayloadBlockSize()
+T_U3VCamDriverStatus U3VCamDriver_SetImagePayldTransfParams(T_U3VCamDriverPayloadEventCallback callback, void *imgData); //buffer size must be U3V_IN_BUFFER_MAX_SIZE at least, you can use U3VCamDriver_GetImagePayldMaxBlockSize()
 
 T_U3VCamDriverStatus U3VCamDriver_RequestNewImagePayloadBlock(void);
 
-void U3VCamDriver_CancelImageAcquisitionRequest(void);
+void U3VCamDriver_CancelImageAcqRequest(void);
 
 T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDeviceDescriptorTextType textType, void *buffer); //buffer size must be 64bytes at least
 
@@ -78,7 +78,7 @@ T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC); //t
 
 T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
 
-size_t U3VCamDriver_GetPayloadBlockSize(void);
+size_t U3VCamDriver_GetImagePayldMaxBlockSize(void);
 
 
 

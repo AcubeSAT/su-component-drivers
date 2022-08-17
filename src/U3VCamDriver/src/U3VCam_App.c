@@ -93,6 +93,8 @@ void U3VCamDriver_Tasks(void)
 
     if (U3VAppData.deviceWasDetached)
     {
+        u3vAppStMchStepbits = 0x0003UL;
+
         U3VAppData.state                = U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
         U3VAppData.deviceWasDetached    = false;
         U3VAppData.camTemperature       = 0.F;
@@ -105,8 +107,6 @@ void U3VCamDriver_Tasks(void)
         U3VAppData.appImgBlockCounter   = 0UL;
 
         U3VHost_CtrlIf_InterfaceDestroy(U3VAppData.u3vHostHandle);
-
-        u3vAppStMchStepbits = 0x0003UL;
 
         LED1_Off(); //TODO: remove on integration, XULT board specific
     }
@@ -150,12 +150,8 @@ void U3VCamDriver_Tasks(void)
             U3VAppData.u3vHostHandle = U3VHost_Open(U3VAppData.u3vHostHandle);
             if(U3VAppData.u3vHostHandle != U3V_HOST_HANDLE_INVALID)
             {
-                result1 = U3VHost_DetachEventHandlerSet(U3VAppData.u3vHostHandle,
-                                                        _USBHostU3VDetachEventListenerCbk,
-                                                        (uintptr_t)&U3VAppData);
-                result2 = U3VHost_EventHandlerSet(U3VAppData.u3vHostHandle,
-                                                  _USBHostU3VEventHandlerCbk,
-                                                  (uintptr_t)&U3VAppData);
+                result1 = U3VHost_DetachEventHandlerSet(U3VAppData.u3vHostHandle, _USBHostU3VDetachEventListenerCbk, (uintptr_t)&U3VAppData);
+                result2 = U3VHost_EventHandlerSet(U3VAppData.u3vHostHandle, _USBHostU3VEventHandlerCbk, (uintptr_t)&U3VAppData);
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
                     U3VAppData.state = U3V_APP_STATE_SETUP_U3V_CONTROL_IF;
@@ -334,9 +330,11 @@ void U3VCamDriver_Tasks(void)
                 if (U3VAppData.imgAckRequested && U3VAppData.imgAckReqNewBlock)
                 {
                     U3VAppData.imgAckReqNewBlock = false;
+                    /* size of transfer request for Leader and Trailer packes is much smaller, but there is no issue
+                     * with the following size argument being greater, those packes will arrive with their own size */
                     result1 = U3VHost_StartImgPayldTransfer(U3VAppData.u3vHostHandle,
                                                             U3VAppData.appImgDataBfr,
-                                                            (size_t)U3V_IN_BUFFER_MAX_SIZE); /* Leader and Trailer will be less but no problem with this req */
+                                                            (size_t)U3V_IN_BUFFER_MAX_SIZE);
 
                     if (result1 != U3V_HOST_RESULT_SUCCESS)
                     {
@@ -383,7 +381,7 @@ void U3VCamDriver_Tasks(void)
 }
 
 
-T_U3VCamDriverStatus U3VCamDriver_SetImagePayloadTransferCfg(T_U3VCamDriverPayloadEventCallback callback, void *imgData)
+T_U3VCamDriverStatus U3VCamDriver_SetImagePayldTransfParams(T_U3VCamDriverPayloadEventCallback callback, void *imgData)
 {
     T_U3VCamDriverStatus DrvSts = U3V_CAM_DRV_OK;
     DrvSts = (_U3VCamDriver_DrvInitStatus() == U3V_DRV_INITIALIZATION_OK) ? DrvSts : U3V_CAM_DRV_NOT_INITD;
@@ -434,7 +432,7 @@ T_U3VCamDriverStatus U3VCamDriver_RequestNewImagePayloadBlock(void)
 }
 
 
-void U3VCamDriver_CancelImageAcquisitionRequest(void)
+void U3VCamDriver_CancelImageAcqRequest(void)
 {
     U3VAppData.imgAckRequested = false;
     U3VAppData.imgAckReqNewBlock = false;
@@ -516,7 +514,7 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
 }
 
 
-size_t U3VCamDriver_GetPayloadBlockSize(void)
+size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
 {
     return (size_t)U3V_IN_BUFFER_MAX_SIZE;
 }

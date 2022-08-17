@@ -1044,12 +1044,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle)
 {
     T_U3VControlIfObj *u3vCtrlIntfObj = NULL;
-    T_U3VHostInstanceObj *u3vDev = NULL;
+    T_U3VHostInstanceObj *u3vInstance = NULL;
 
     if (u3vObjHandle != 0UL)
     {
-        u3vDev = (T_U3VHostInstanceObj *)u3vObjHandle;
-        u3vCtrlIntfObj = (T_U3VControlIfObj *)(&u3vDev->controlIfObj);
+        u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+        u3vCtrlIntfObj = (T_U3VControlIfObj *)(&u3vInstance->controlIfObj);
         _U3VHost_CtrlItfClearObjData(u3vCtrlIntfObj);
     }
     else
@@ -1065,29 +1065,29 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle)
 
 static void _U3VHost_Initialize(void * data)
 {
-    T_U3VHostInstanceObj *u3vInstanceObj = NULL;
+    T_U3VHostInstanceObj *u3vInstance = NULL;
     uint32_t iterator;
 
     for(iterator = 0U; iterator < U3V_HOST_INSTANCES_NUMBER; iterator ++)
     {
         /* Set the pipes handles to invalid */
-        u3vInstanceObj = &gUSBHostU3VObj[iterator];
+        u3vInstance = &gUSBHostU3VObj[iterator];
 
-        u3vInstanceObj->deviceClientHandle = USB_HOST_DEVICE_CLIENT_HANDLE_INVALID;
-        u3vInstanceObj->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
-        u3vInstanceObj->controlPipeHandle = USB_HOST_CONTROL_PIPE_HANDLE_INVALID;
+        u3vInstance->deviceClientHandle = USB_HOST_DEVICE_CLIENT_HANDLE_INVALID;
+        u3vInstance->deviceObjHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
+        u3vInstance->controlPipeHandle = USB_HOST_CONTROL_PIPE_HANDLE_INVALID;
 
-        u3vInstanceObj->controlIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
-        u3vInstanceObj->controlIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
-        u3vInstanceObj->controlIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
+        u3vInstance->controlIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
+        u3vInstance->controlIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
+        u3vInstance->controlIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
 
-        u3vInstanceObj->eventIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
-        u3vInstanceObj->eventIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
-        u3vInstanceObj->eventIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;   /* N/A */
+        u3vInstance->eventIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
+        u3vInstance->eventIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
+        u3vInstance->eventIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;   /* N/A */
 
-        u3vInstanceObj->streamIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
-        u3vInstanceObj->streamIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
-        u3vInstanceObj->streamIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;  /* N/A */
+        u3vInstance->streamIfHandle.ifHandle = USB_HOST_DEVICE_OBJ_HANDLE_INVALID;
+        u3vInstance->streamIfHandle.bulkInPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;
+        u3vInstance->streamIfHandle.bulkOutPipeHandle = USB_HOST_PIPE_HANDLE_INVALID;  /* N/A */
 
     }
 }
@@ -1418,21 +1418,21 @@ static void _U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
                                   USB_DEVICE_DESCRIPTOR *deviceDescriptor)
 {
     uint32_t iterator;
-    T_U3VHostInstanceObj *u3vInstanceObj = NULL;
+    T_U3VHostInstanceObj *u3vInstance = NULL;
 
     for (iterator = 0U; iterator < U3V_HOST_INSTANCES_NUMBER; iterator++)
     {
         if (!gUSBHostU3VObj[iterator].inUse)
         {
-            u3vInstanceObj = &gUSBHostU3VObj[iterator];
-            u3vInstanceObj->inUse = true;
-            u3vInstanceObj->deviceObjHandle = deviceObjHandle;
-            u3vInstanceObj->deviceClientHandle = deviceHandle;
+            u3vInstance = &gUSBHostU3VObj[iterator];
+            u3vInstance->inUse = true;
+            u3vInstance->deviceObjHandle = deviceObjHandle;
+            u3vInstance->deviceClientHandle = deviceHandle;
             break;
         }
     }
 
-    if(u3vInstanceObj == NULL)
+    if(u3vInstance == NULL)
     {
         USB_HOST_DeviceRelease(deviceHandle);
     }
@@ -1440,12 +1440,12 @@ static void _U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
     {
         if(deviceDescriptor->bNumConfigurations > 0U)
         {
-            u3vInstanceObj->state = U3V_HOST_STATE_SET_CONFIGURATION;
-            u3vInstanceObj->controlPipeHandle = USB_HOST_DeviceControlPipeOpen(deviceObjHandle);
+            u3vInstance->state = U3V_HOST_STATE_SET_CONFIGURATION;
+            u3vInstance->controlPipeHandle = USB_HOST_DeviceControlPipeOpen(deviceObjHandle);
         }
         else
         {
-            u3vInstanceObj->state = U3V_HOST_STATE_ERROR;
+            u3vInstance->state = U3V_HOST_STATE_ERROR;
         }
     }
 }
@@ -1504,7 +1504,7 @@ static void _U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 static void _U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     int32_t index;
-    int32_t iterator;
+    uint32_t iterator;
     T_U3VHostInstanceObj *u3vInstance;
     USB_HOST_RESULT result;
     USB_HOST_REQUEST_HANDLE requestHandle;

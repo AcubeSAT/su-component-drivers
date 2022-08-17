@@ -121,7 +121,7 @@ void APP_Tasks ( void )
         /* Application's initial state. */
 		case APP_STATE_INIT:
 		{
-      if ((U3V_CAM_DRV_OK == U3VCamDriver_SetImagePayloadTransferCfg(_APP_U3vImgPldBlkRcvdCbk, appData.imgData)) &&
+      if ((U3V_CAM_DRV_OK == U3VCamDriver_SetImagePayldTransfParams(_APP_U3vImgPldBlkRcvdCbk, appData.imgData)) &&
           (PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, _APP_PioSw1PrsdCbk, 0)))
       {
         appData.usrtDrv = DRV_USART_Open(0, DRV_IO_INTENT_WRITE);

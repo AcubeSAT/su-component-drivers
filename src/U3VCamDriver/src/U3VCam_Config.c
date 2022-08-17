@@ -37,7 +37,7 @@ const T_U3VCamRegisterCfg U3VCamRegisterCfgTable =
     .payloadSizeVal_Reg             = 0x0ULL,   //TODO: add
     .pixelFormatCtrlVal_Int_Sel     = 0x0UL     //TODO: add
 #else
-    #error "Not valid USB3 Vision camera model configured"
+    #error "Invalid USB3 Vision camera model selected"
 #endif
 };
 

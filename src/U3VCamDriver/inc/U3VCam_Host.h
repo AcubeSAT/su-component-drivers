@@ -27,11 +27,9 @@ extern "C" {
 *********************************************************/
 
 #define U3V_HOST_RESULT_MIN                         (USB_HOST_RESULT_MIN)
-
 #define U3V_HOST_HANDLE_INVALID                     ((T_U3VHostHandle)(-1))
 #define U3V_HOST_TRANSFER_HANDLE_INVALID            ((T_U3VHostTransferHandle)(-1))
 #define U3V_HOST_REQUEST_HANDLE_INVALID             ((T_U3VHostRequestHandle)(-1))
-
 #define U3V_INTERFACE                               (&gUSBHostU3VClientDriver)
 
 
@@ -43,6 +41,51 @@ typedef uintptr_t T_U3VHostHandle;
 typedef uintptr_t T_U3VHostTransferHandle;
 typedef uintptr_t T_U3VHostRequestHandle;
 typedef USB_HOST_DEVICE_OBJ_HANDLE T_U3VHostDeviceObjHandle;
+
+
+#pragma pack(push, 1)
+
+typedef struct 
+{
+    uint32_t        magicKey;           /* "U3VL" for Leader / "U3VT" for Trailer */
+	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        size;
+	uint64_t        blockID;
+    void            *data;
+} T_U3VSiGenericPacket;
+
+typedef struct
+{
+    uint32_t        magicKey;           /* "U3VL" for Leader */
+	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        leaderSize;
+	uint64_t        blockID;
+	uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+	uint16_t        payloadType;        /* 0x0001 for Image */
+    uint64_t        timestamp;
+    uint32_t        pixelFormat;
+    uint32_t        sizeX;
+    uint32_t        sizeY;
+    uint32_t        offsetX;
+    uint32_t        offsetY;
+    uint16_t        paddingX;
+    uint16_t        reserved2;          /* Set 0 on Tx, ignore on Rx */
+} T_U3VStrmIfImageLeader;
+
+typedef struct
+{
+    uint32_t        magicKey;           /* "U3VT" for Trailer */
+    uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
+    uint16_t        trailerSize;
+    uint64_t        blockID;
+    uint16_t        status;
+    uint16_t        reserved1;          /* Set 0 on Tx, ignore on Rx */
+    uint64_t        validPayloadSize;
+    uint32_t        sizeY;
+} T_U3VStrmIfImageTrailer;
+
+#pragma pack(pop)
+
 
 typedef enum
 {
@@ -96,38 +139,15 @@ typedef enum
 
 typedef enum
 {
-    U3V_HOST_EVENT_RESPONE_NONE  = 0     /* This means no response is required */
+    U3V_HOST_EVENT_RESPONE_NONE  = 0
 } T_U3VHostEventResponse;
-
-typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostHandle u3vObjHandle, uintptr_t context);
-
-typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vObjHandle, uintptr_t context);
-
-typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *eventData, uintptr_t context);
 
 typedef struct 
 {
-	// uint32_t    genCpVersion;                                        //TODO: remove if never used
-	// uint32_t    u3vVersion;                                          //TODO: remove if never used
-	// char        deviceGuid[U3V_MAX_DESCR_STR_LENGTH];                //TODO: remove if never used
-	// char        vendorName[U3V_REG_MANUFACTURER_NAME_SIZE];          //TODO: remove if never used
-	// char        modelName[U3V_REG_MODEL_NAME_SIZE];                  //TODO: remove if never used
-	// char        familyName[U3V_REG_FAMILY_NAME_SIZE];                //TODO: remove if never used
-	// char        deviceVersion[U3V_REG_DEVICE_VERSION_SIZE];          //TODO: remove if never used
-	// char        manufacturerInfo[U3V_REG_MANUFACTURER_INFO_SIZE];    //TODO: remove if never used
-	// char        serialNumberU3v[U3V_REG_SERIAL_NUMBER_SIZE];         //TODO: remove if never used
-	// char        userDefinedName[U3V_REG_USER_DEFINED_NAME_SIZE];     //TODO: remove if never used
-	// uint8_t     speedSupport;                                        //TODO: remove if never used
-    // uint8_t     previouslyInitialized;                               //TODO: remove if never used
 	uint32_t    hostByteAlignment;
-	// uint32_t    osMaxTransferSize;                                   //TODO: remove if never used
 	uint64_t    sirmAddr;
 	uint32_t    transferAlignment;
-	// uint32_t    segmentedXferSupported;                              //TODO: remove if never used
-	// uint32_t    segmentedXferEnabled;                                //TODO: remove if never used
-	// uint32_t    legacyCtrlEpStallEnabled;                            //TODO: remove if never used
 } T_U3VDeviceInfo;
-
 
 typedef struct 
 {
@@ -139,6 +159,12 @@ typedef struct
 	uint32_t maxLeaderSize;
 	uint32_t maxTrailerSize;
 } T_U3VStreamIfConfig;
+
+typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostHandle u3vObjHandle, uintptr_t context);
+
+typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vObjHandle, uintptr_t context);
+
+typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *eventData, uintptr_t context);
 
 
 /********************************************************
