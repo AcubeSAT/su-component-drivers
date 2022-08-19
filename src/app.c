@@ -166,7 +166,6 @@ void APP_Tasks ( void )
 static void _APP_U3vImgPldBlkRcvdCbk(T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, size_t blockSize, uint32_t blockCnt)
 {
 	void *srcAddr = imgData;
-	void *destAddr = (void *)&(USART1_REGS->US_THR);
 	size_t size = blockSize;
 
 	switch (event)
@@ -179,7 +178,7 @@ static void _APP_U3vImgPldBlkRcvdCbk(T_U3VCamDriverImageAcqPayloadEvent event, v
 			break;
 
 		case U3V_CAM_DRV_IMG_PAYLOAD_DATA:
-			if (true == DRV_USART_WriteBuffer(appData.usrtDrv, (uint8_t *)srcAddr, size))
+			if (true == DRV_USART_WriteBuffer(appData.usrtDrv, srcAddr, size))
 			{
 				/* Tx ok */
 			}
