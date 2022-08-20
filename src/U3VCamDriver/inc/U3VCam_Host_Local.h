@@ -110,7 +110,7 @@ typedef struct
 typedef struct 
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;
-	OSAL_MUTEX_DECLARE					(readWriteLock); //TODO: maybe use FreeRTOS semaphore?
+	OSAL_MUTEX_DECLARE					(readWriteLock); //TODO: possibly use FreeRTOS mutex instead?
 	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)];
 	uint32_t							maxAckTransfSize;
 	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)];
@@ -148,7 +148,7 @@ typedef struct
     bool                                inUse;
     T_U3VHostAttachEventHandler         eventHandler;
     uintptr_t                           context;
-} T_UsbHostU3VAttachListenerObj;
+} T_U3VHostAttachListenerObj;
 
 
 /********************************************************

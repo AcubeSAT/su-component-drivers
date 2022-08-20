@@ -12,7 +12,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "device.h"
+#include "device.h"  //TODO: remove on integration
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,9 +36,8 @@ extern "C" {
 #define U3V_TRAILER_MAX_SIZE                        256U
 #define U3V_REQ_TIMEOUT_MS                          1600UL
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U        /* Byte alignment / padding of MCU architecture */
-#define USB_ALIGN                                   CACHE_ALIGN
 
-//TODO: remove defs below on integration, used for debug (XULT board specific)
+//TODO: remove on integration all defs below, used for debug (XULT board specific)
 #define LED0_Toggle()                               (PIOA_REGS->PIO_ODSR ^= (1<<23))
 #define LED0_On()                                   (PIOA_REGS->PIO_CODR = (1<<23))
 #define LED0_Off()                                  (PIOA_REGS->PIO_SODR = (1<<23))

@@ -29,7 +29,7 @@ T_U3VDriverInitStatus U3VDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
 T_U3VAppData U3VAppData;
 
-uint32_t u3vAppStMchStepbits; // TODO: maybe remove, debug bitfield monitor var for U3V App State Machine
+uint32_t u3vAppStMchStepbits;   //TODO: maybe remove, debug var used as bitfield monitor U3V App State Machine
 
 
 /********************************************************
@@ -41,11 +41,11 @@ void U3VCamDriver_Initialize(void)
     T_U3VDriverInitStatus DrvSts = U3V_DRV_INITIALIZATION_OK;
 
     LED1_Off(); //TODO: remove on integration, XULT board specific
+    u3vAppStMchStepbits = 0x0UL;
 
     U3VAppData.state                = U3V_APP_STATE_BUS_ENABLE;
     U3VAppData.deviceIsAttached     = false;
     U3VAppData.deviceWasDetached    = false;
-
     U3VAppData.camTemperature       = 0.F;
     U3VAppData.pixelFormat          = 0UL;
     U3VAppData.payloadSize          = 0UL;
@@ -57,16 +57,7 @@ void U3VCamDriver_Initialize(void)
     U3VAppData.appImgEvtCbk         = NULL;
     U3VAppData.appImgDataBfr        = NULL;
 
-
     U3VDriver_InitStatus = DrvSts;
-
-    u3vAppStMchStepbits = 0x0UL;
-}
-
-
-static T_U3VDriverInitStatus _U3VCamDriver_DrvInitStatus(void)
-{
-    return U3VDriver_InitStatus;
 }
 
 
@@ -190,7 +181,6 @@ void U3VCamDriver_Tasks(void)
             result2 |= U3VHost_ReadMemRegStringValue(U3VAppData.u3vHostHandle,
                                                      U3V_MEM_REG_STRING_SERIAL_NUMBER,
                                                      U3VAppData.camTextDescriptions.serialNumber);
-
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
             {
                 U3VAppData.state = U3V_APP_STATE_GET_STREAM_CAPABILITIES;
@@ -216,9 +206,7 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_SETUP_PIXEL_FORMAT:
             u3vAppStMchStepbits |= 0x0080UL;
-            result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
-                                                     U3V_MEM_REG_INT_PIXELFORMAT,
-                                                     &U3VAppData.pixelFormat);
+            result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_INT_PIXELFORMAT, &U3VAppData.pixelFormat);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
                 if (U3VAppData.pixelFormat != U3VCamRegisterCfgTable.pixelFormatCtrlVal_Int_Sel)
@@ -240,9 +228,7 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
             u3vAppStMchStepbits |= 0x0100UL;
-            result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
-                                                     U3V_MEM_REG_INT_ACQUISITION_MODE,
-                                                     &U3VAppData.acquisitionMode);
+            result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQUISITION_MODE, &U3VAppData.acquisitionMode);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
                 if (U3VAppData.acquisitionMode != U3V_ACQUISITION_MODE_SINGLE_FRAME)
@@ -264,10 +250,8 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_SETUP_U3V_STREAM_IF:
             u3vAppStMchStepbits |= 0x0200UL;
-            result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle,
-                                                     U3V_MEM_REG_INT_PAYLOAD_SIZE,
-                                                     &U3VAppData.payloadSize);
-            /* setup stream config data */
+            result1 = U3VHost_ReadMemRegIntegerValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_INT_PAYLOAD_SIZE, &U3VAppData.payloadSize);
+            /* set stream config values */
             {
                 U3VAppData.streamConfig.imageSize = (uint64_t)U3VAppData.payloadSize;
                 U3VAppData.streamConfig.blockPadding = (uint32_t)U3V_TARGET_ARCH_BYTE_ALIGNMENT;
@@ -288,9 +272,7 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_GET_CAM_TEMPERATURE:
             u3vAppStMchStepbits |= 0x0400UL;
-            result1 = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle,
-                                                   U3V_MEM_REG_FLOAT_TEMPERATURE,
-                                                   &U3VAppData.camTemperature);
+            result1 = U3VHost_ReadMemRegFloatValue(U3VAppData.u3vHostHandle, U3V_MEM_REG_FLOAT_TEMPERATURE, &U3VAppData.camTemperature);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
                 U3VAppData.state = U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION;
@@ -308,7 +290,6 @@ void U3VCamDriver_Tasks(void)
             {
                 result1 = U3VHost_StreamChControl(U3VAppData.u3vHostHandle, true);
                 result2 = U3VHost_AcquisitionStart(U3VAppData.u3vHostHandle);
-
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
                     U3VAppData.appImgTransfState = U3V_SI_IMG_TRANSF_STATE_START;
@@ -332,10 +313,7 @@ void U3VCamDriver_Tasks(void)
                     U3VAppData.imgAckReqNewBlock = false;
                     /* size of transfer request for Leader and Trailer packes is much smaller, but there is no issue
                      * with the following size argument being greater, those packes will arrive with their own size */
-                    result1 = U3VHost_StartImgPayldTransfer(U3VAppData.u3vHostHandle,
-                                                            U3VAppData.appImgDataBfr,
-                                                            (size_t)U3V_IN_BUFFER_MAX_SIZE);
-
+                    result1 = U3VHost_StartImgPayldTransfer(U3VAppData.u3vHostHandle, U3VAppData.appImgDataBfr, (size_t)U3V_IN_BUFFER_MAX_SIZE);
                     if (result1 != U3V_HOST_RESULT_SUCCESS)
                     {
                         U3VAppData.state = U3V_APP_STATE_ERROR;
@@ -478,6 +456,7 @@ T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDeviceDe
             size = (size_t)0U;
             break;
     }
+    
     if ((buffer != NULL) && (lclBuffer != NULL))
     {
         memcpy((void *)buffer, (void *)lclBuffer, size);
@@ -517,6 +496,16 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
 size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
 {
     return (size_t)U3V_IN_BUFFER_MAX_SIZE;
+}
+
+
+/********************************************************
+* Local function definitions
+*********************************************************/
+
+static T_U3VDriverInitStatus _U3VCamDriver_DrvInitStatus(void)
+{
+    return U3VDriver_InitStatus;
 }
 
 

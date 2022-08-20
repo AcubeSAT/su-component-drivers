@@ -83,7 +83,7 @@ static inline uint32_t _LCMui32(uint32_t n1, uint32_t n2); /* least common multi
 
 T_U3VHostInstanceObj gUSBHostU3VObj[U3V_HOST_INSTANCES_NUMBER];
 
-T_UsbHostU3VAttachListenerObj gUSBHostU3VAttachListener[U3V_HOST_ATTACH_LISTENERS_NUMBER];
+T_U3VHostAttachListenerObj gUSBHostU3VAttachListener[U3V_HOST_ATTACH_LISTENERS_NUMBER];
 
 USB_HOST_CLIENT_DRIVER gUSBHostU3VClientDriver =
 {
@@ -108,7 +108,7 @@ USB_HOST_CLIENT_DRIVER gUSBHostU3VClientDriver =
 T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventHandler, uintptr_t context)
 {
     T_U3VHostResult result = U3V_HOST_RESULT_FAILURE;
-    T_UsbHostU3VAttachListenerObj *attachListener;
+    T_U3VHostAttachListenerObj *attachListener;
     int32_t iterator;
 
     if (eventHandler == NULL)
@@ -130,6 +130,7 @@ T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventH
             }
         }
     }
+
     return result;
 }
 
@@ -148,6 +149,7 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle)
             result = (T_U3VHostHandle)(u3vObjHandle);
         }
     }
+
     return result;
 }
 
@@ -163,6 +165,7 @@ T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHa
         u3vInstance->context = context;
         result = U3V_HOST_RESULT_SUCCESS;
     }
+
     return result;
 }
 
@@ -178,6 +181,7 @@ T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle, T_U3VHostD
         u3vInstance->context = context;
         result = U3V_HOST_RESULT_SUCCESS;
     }
+
     return result;
 }
 
@@ -301,48 +305,28 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
         {
             case U3V_MEM_REG_INT_PIXELFORMAT:
                 regAddr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.colorCodingID_Reg;
-                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
-                                                      NULL,
-                                                      regAddr,
-                                                      sizeof(regValue),
-                                                      &bytesRead,
-                                                      (void *)&regValue);
+                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* value is stored on high byte (bits 24 to 31) */
                 regValue = (regValue >> 24U) & 0xFFUL;
                 break;
 
             case U3V_MEM_REG_INT_PAYLOAD_SIZE:
                 regAddr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.payloadSizeVal_Reg;
-                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
-                                                      NULL,
-                                                      regAddr,
-                                                      sizeof(regValue),
-                                                      &bytesRead,
-                                                      (void *)&regValue);
+                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* redundant assignment */
                 regValue = regValue;
                 break;
 
             case U3V_MEM_REG_INT_ACQUISITION_MODE:
                 regAddr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.acquisitionMode_Reg;
-                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
-                                                      NULL,
-                                                      regAddr,
-                                                      sizeof(regValue),
-                                                      &bytesRead,
-                                                      (void *)&regValue);
+                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* redundant assignment */
                 regValue = regValue;
                 break;
 
             case U3V_MEM_REG_INT_DEVICE_RESET:
                 regAddr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.deviceReset_Reg;
-                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
-                                                      NULL,
-                                                      regAddr,
-                                                      sizeof(regValue),
-                                                      &bytesRead,
-                                                      (void *)&regValue);
+                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* value is stored in MSB (bit 31) */
                 regValue = (regValue >> 31U) & 0xFFUL;
                 break;
@@ -354,7 +338,7 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
 
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
-            if (bytesRead = sizeof(regValue))
+            if (bytesRead == sizeof(regValue))
             {
                 *pReadValue = regValue;
             }
@@ -417,12 +401,7 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
 
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
-            u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
-                                                   NULL,
-                                                   regAddr,
-                                                   sizeof(regValue),
-                                                   &bytesWritten,
-                                                   (void *)&regValue);
+            u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesWritten, (void *)&regValue);
             if (bytesWritten != sizeof(regValue))
             {
                 u3vResult = U3V_HOST_RESULT_ABORTED;
@@ -458,12 +437,7 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
         {
             case U3V_MEM_REG_FLOAT_TEMPERATURE:
                 regAddr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.temperature_Reg;
-                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
-                                                      NULL,
-                                                      regAddr,
-                                                      sizeof(regValue),
-                                                      &bytesRead,
-                                                      (void *)&regValue);
+                u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* Calculate temperature in Celcius rounded to 2 decimals */
                 floatRetVal = roundf(((float)((regValue & 0xFFFUL) / 10UL) - 273.15F) * 100) / 100;
                 break;
@@ -554,12 +528,7 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
 
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
-            u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance,
-                                                  NULL,
-                                                  regAddr,
-                                                  stringSize,
-                                                  &bytesRead,
-                                                  (void *)stringBfr);
+            u3vResult = _U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, stringSize, &bytesRead, (void *)stringBfr);
 
             if (u3vResult == U3V_HOST_RESULT_SUCCESS)
             {
@@ -585,8 +554,8 @@ T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle)
     T_U3VHostInstanceObj *u3vInstance;
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesWritten;
-    uint32_t acquisnStartCmdVal;
-    uint64_t acquisStartRegAdr;
+    uint32_t acqStartCmdVal;
+    uint64_t acqStartRegAdr;
 
     u3vResult = (u3vObjHandle == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -605,16 +574,11 @@ T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle)
         return u3vResult;
     }
 
-    acquisStartRegAdr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.acquisitionStart_Reg;
+    acqStartRegAdr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.acquisitionStart_Reg;
 
-    acquisnStartCmdVal = (0x80U << 24);
+    acqStartCmdVal = (0x80U << 24);
 
-    u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
-                                           NULL,
-                                           acquisStartRegAdr,
-                                           sizeof(acquisnStartCmdVal),
-                                           &bytesWritten,
-                                           (void *)&acquisnStartCmdVal);
+    u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance, NULL, acqStartRegAdr, sizeof(acqStartCmdVal), &bytesWritten, (void *)&acqStartCmdVal);
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -631,8 +595,8 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle)
     T_U3VHostInstanceObj *u3vInstance;
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesWritten;
-    uint32_t acquisnStopCmdVal;
-    uint64_t acquisStopRegAdr;
+    uint32_t acqStopCmdVal;
+    uint64_t acqStopRegAdr;
 
     u3vResult = (u3vObjHandle == 0U)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -651,16 +615,11 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle)
         return u3vResult;
     }
 
-    acquisStopRegAdr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.acquisitionStop_Reg;
+    acqStopRegAdr = U3VCamRegisterCfgTable.camRegBaseAddress + U3VCamRegisterCfgTable.acquisitionStop_Reg;
 
-    acquisnStopCmdVal = 0x0000000UL;
+    acqStopCmdVal = 0x0000000UL;
 
-    u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
-                                           NULL,
-                                           acquisStopRegAdr,
-                                           sizeof(acquisnStopCmdVal),
-                                           &bytesWritten,
-                                           (void *)&acquisnStopCmdVal);
+    u3vResult = _U3VHost_CtrlIfWriteMemory(ctrlIfInstance, NULL, acqStopRegAdr, sizeof(acqStopCmdVal), &bytesWritten, (void *)&acqStopCmdVal);
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -839,7 +798,6 @@ T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, 
     {
         return u3vResult;
     }
-
 
     return u3vResult;
 }
@@ -1268,7 +1226,8 @@ static void _U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interface
                 {
                     if (gUSBHostU3VAttachListener[iterator].inUse)
                     {
-                        gUSBHostU3VAttachListener[iterator].eventHandler((T_U3VHostHandle)u3vInstance, gUSBHostU3VAttachListener[iterator].context);
+                        gUSBHostU3VAttachListener[iterator].eventHandler((T_U3VHostHandle)u3vInstance,
+                                                                         gUSBHostU3VAttachListener[iterator].context);
                     }
                 }
             }
@@ -1409,6 +1368,7 @@ static USB_HOST_DEVICE_EVENT_RESPONSE _U3VHost_DeviceEventHandler(USB_HOST_DEVIC
         default:
             break;
     }
+
     return USB_HOST_DEVICE_EVENT_RESPONSE_NONE;
 }
 
@@ -1588,6 +1548,7 @@ static int32_t _U3VHost_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE dev
             break;
         }
     }
+
     return result;
 }
 
@@ -1605,6 +1566,7 @@ static int32_t _U3VHost_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE dev
             break;
         }
     }
+
     return result;
 }
 
@@ -1624,6 +1586,7 @@ static int32_t _U3VHost_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HAND
             break;
         }
     }
+
     return result;
 }
 
@@ -1660,6 +1623,7 @@ static T_U3VHostResult _U3VHost_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
             u3vResult = U3V_HOST_RESULT_FAILURE;
             break;
     }
+
     return u3vResult;
 }
 

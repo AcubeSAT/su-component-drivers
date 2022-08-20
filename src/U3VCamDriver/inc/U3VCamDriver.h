@@ -48,6 +48,7 @@ typedef enum
 
 typedef void (*T_U3VCamDriverPayloadEventCallback) (T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, size_t blockSize, uint32_t blockCnt);
 
+
 /********************************************************
 * Constant declarations
 *********************************************************/
