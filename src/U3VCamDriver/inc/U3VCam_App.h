@@ -6,11 +6,6 @@
 #define COMPONENT_DRIVERS_U3VCAM_APP_H
 
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include "configuration.h"
 #include "U3VCam_Host.h"
 #include "U3VCamDriver.h"
 
@@ -67,17 +62,17 @@ typedef enum
 
 typedef struct
 {
-	// uint32_t    genCpVersion;                                       //TODO: remove if never used
-	// uint32_t    u3vVersion;                                         //TODO: remove if never used
-	// char        deviceGuid[U3V_MAX_DESCR_STR_LENGTH];               //TODO: remove if never used
+	// uint32_t    genCpVersion;
+	// uint32_t    u3vVersion;
+	// char        deviceGuid[U3V_MAX_DESCR_STR_LENGTH];
 	char        vendorName[U3V_REG_MANUFACTURER_NAME_SIZE];
 	char        modelName[U3V_REG_MODEL_NAME_SIZE];
-	// char        familyName[U3V_REG_FAMILY_NAME_SIZE];               //TODO: remove if never used
-	char        deviceVersion[U3V_REG_DEVICE_VERSION_SIZE];            //TODO: remove if never used
-	// char        manufacturerInfo[U3V_REG_MANUFACTURER_INFO_SIZE];   //TODO: remove if never used
+	// char        familyName[U3V_REG_FAMILY_NAME_SIZE];
+	char        deviceVersion[U3V_REG_DEVICE_VERSION_SIZE];
+	// char        manufacturerInfo[U3V_REG_MANUFACTURER_INFO_SIZE];
 	char        serialNumber[U3V_REG_SERIAL_NUMBER_SIZE];
-	// char        userDefinedName[U3V_REG_USER_DEFINED_NAME_SIZE];    //TODO: remove if never used
-} T_U3VAppDevTextDescr;
+	// char        userDefinedName[U3V_REG_USER_DEFINED_NAME_SIZE];
+} T_U3VAppDevTextDescr;     //TODO: elements that are not used can be removed
 
 typedef struct
 {

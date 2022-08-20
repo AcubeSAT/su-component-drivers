@@ -7,7 +7,12 @@
 
 
 #include <stdint.h>
-
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include "device.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,7 +26,7 @@ extern "C" {
 /* U3V camera models defined here */
 #define U3V_FLIR_CM3_U3_12S2C_CS                    0
 #define U3V_XIMEA_XIQ_MQ013CG_E2                    1
-/* U3V camera to be enabled in current build set here */
+/* U3V camera model selected for current build */
 #define U3V_CAM_MODEL_SELECTED                      U3V_FLIR_CM3_U3_12S2C_CS
 
 #define U3V_HOST_INSTANCES_NUMBER                   1U
@@ -30,22 +35,16 @@ extern "C" {
 #define U3V_LEADER_MAX_SIZE                         256U
 #define U3V_TRAILER_MAX_SIZE                        256U
 #define U3V_REQ_TIMEOUT_MS                          1600UL
-#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U                  /* Byte alignment / padding of MCU architecture */
+#define U3V_TARGET_ARCH_BYTE_ALIGNMENT              8U        /* Byte alignment / padding of MCU architecture */
+#define USB_ALIGN                                   CACHE_ALIGN
 
-
-//TODO: remove or replace before integration all below - DEBUG XULT board specific definitions
+//TODO: remove defs below on integration, used for debug (XULT board specific)
 #define LED0_Toggle()                               (PIOA_REGS->PIO_ODSR ^= (1<<23))
 #define LED0_On()                                   (PIOA_REGS->PIO_CODR = (1<<23))
 #define LED0_Off()                                  (PIOA_REGS->PIO_SODR = (1<<23))
 #define LED1_Toggle()                               (PIOC_REGS->PIO_ODSR ^= (1<<9))
 #define LED1_On()                                   (PIOC_REGS->PIO_CODR = (1<<9))
 #define LED1_Off()                                  (PIOC_REGS->PIO_SODR = (1<<9))
-#define SWITCH0_Get()                               ((PIOA_REGS->PIO_PDSR >> 9) & 0x1)
-#define SWITCH0_STATE_PRESSED                       0
-#define SWITCH0_STATE_RELEASED                      1
-#define SWITCH1_Get()                               ((PIOB_REGS->PIO_PDSR >> 12) & 0x1)
-#define SWITCH1_STATE_PRESSED                       0
-#define SWITCH1_STATE_RELEASED                      1
 #define VBUS_HOST_EN_PowerEnable()                  (PIOC_REGS->PIO_CODR = (1<<16))
 #define VBUS_HOST_EN_PowerDisable()                 (PIOC_REGS->PIO_SODR = (1<<16))
 
@@ -67,7 +66,7 @@ typedef struct
     uint64_t colorCodingID_Reg;
     uint64_t payloadSizeVal_Reg;
     uint32_t pixelFormatCtrlVal_Int_Sel;
-} T_U3VCamRegisterCfg;      /* value size is 4 bytes for all (_Reg) registers above */
+} T_U3VCamRegisterCfg;      /* value size is 4 bytes for all (x_Reg) registers above */
 
 
 /********************************************************

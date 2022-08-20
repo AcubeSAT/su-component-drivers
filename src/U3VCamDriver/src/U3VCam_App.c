@@ -27,9 +27,9 @@ static T_U3VHostEventResponse _USBHostU3VEventHandlerCbk(T_U3VHostHandle u3vObjH
 
 T_U3VDriverInitStatus U3VDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
-T_U3VAppData USB_ALIGN U3VAppData;
+T_U3VAppData U3VAppData;
 
-uint32_t    u3vAppStMchStepbits;    //TODO: maybe remove, debug bitfield monitor var for U3V App State Machine
+uint32_t u3vAppStMchStepbits; // TODO: maybe remove, debug bitfield monitor var for U3V App State Machine
 
 
 /********************************************************

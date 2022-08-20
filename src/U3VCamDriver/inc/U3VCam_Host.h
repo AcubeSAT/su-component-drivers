@@ -6,14 +6,9 @@
 #define COMPONENT_DRIVERS_U3VCAM_HOST_H
 
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-#include "usb/usb_host_client_driver.h"
 #include "U3VCam_Device_Class_Specs.h"
 #include "U3VCam_Config.h"
+#include "usb/usb_host_client_driver.h"
 
 
 #ifdef __cplusplus

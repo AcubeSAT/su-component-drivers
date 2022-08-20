@@ -2,13 +2,13 @@
 // Created by fomarko on 04/02/22.
 //
 
-#include <string.h>
 #include "U3VCam_Host.h"
 #include "U3VCam_Host_Local.h"
 #include "math.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
+
 
 
 /********************************************************
