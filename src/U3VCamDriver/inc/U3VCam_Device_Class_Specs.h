@@ -1,6 +1,3 @@
-//
-// Created by fomarko on 29/01/22.
-//
 
 #ifndef COMPONENT_DRIVERS_U3VCAM_DEVICE_CLASS_SPECS_H
 #define COMPONENT_DRIVERS_U3VCAM_DEVICE_CLASS_SPECS_H
@@ -163,15 +160,8 @@ extern "C" {
 #define U3V_STREAM_PLD_TYPE_CHUNK                   0x4000
 
 
-/********************************************************
- * Type definitions
- *********************************************************/
-
-
-
 
 #ifdef __cplusplus
-
 }
 #endif //__cplusplus
 

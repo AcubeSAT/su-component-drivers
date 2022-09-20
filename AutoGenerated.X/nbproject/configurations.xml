@@ -361,9 +361,8 @@
         <logicalFolder name="inc" displayName="inc" projectFiles="true">
         </logicalFolder>
         <logicalFolder name="src" displayName="src" projectFiles="true">
-          <itemPath>/home/mojo/wspace/AcubeSAT-OBCamera/component-drivers/src/U3VCamDriver/src/U3VCam_Host.c</itemPath>
-          <itemPath>/home/mojo/wspace/AcubeSAT-OBCamera/component-drivers/src/U3VCamDriver/src/U3VCam_App.c</itemPath>
-          <itemPath>/home/mojo/wspace/AcubeSAT-OBCamera/component-drivers/src/U3VCamDriver/src/U3VCam_Config.c</itemPath>
+          <itemPath>../src/U3VCamDriver/src/U3VCam_App.c</itemPath>
+          <itemPath>../src/U3VCamDriver/src/U3VCam_Host.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>

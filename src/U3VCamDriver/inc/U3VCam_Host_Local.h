@@ -1,6 +1,3 @@
-//
-// Created by fomarko on 04/02/22.
-//
 
 #ifndef COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
 #define COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
@@ -20,8 +17,8 @@ extern "C" {
 * Macro definitions
 *********************************************************/
 
-#define MAX(a, b)         (((a) > (b)) ? (a) : (b))
-#define MIN(a, b)         (((a) < (b)) ? (a) : (b))
+#define U3VDRV_MAX(a, b)         (((a) > (b)) ? (a) : (b))
+#define U3VDRV_MIN(a, b)         (((a) < (b)) ? (a) : (b))
 
 
 /********************************************************
@@ -41,8 +38,8 @@ typedef struct
 
 typedef struct
 {
-	T_U3VCtrlIfAckHeader 	header;
-	uint8_t 				payload[0];
+	T_U3VCtrlIfAckHeader    header;
+	uint8_t                 payload[];
 } T_U3VCtrlIfAcknowledge;
 
 typedef struct
@@ -62,8 +59,8 @@ typedef struct
 
 typedef struct
 {
-	T_U3VCtrlIfCmdHeader 	header;
-	uint8_t 				payload[0];
+	T_U3VCtrlIfCmdHeader    header;
+	uint8_t                 payload[];
 } T_U3VCtrlIfCommand;
 
 typedef struct 
@@ -75,8 +72,8 @@ typedef struct
 
 typedef struct
 {
-	uint64_t 	address;
-	uint8_t  	data[0];
+	uint64_t    address;
+	uint8_t     data[];
 } T_U3VCtrlIfWriteMemCmdPayload;
 
 typedef struct
@@ -152,19 +149,23 @@ typedef struct
 
 
 /********************************************************
-* Constant declarations
+* Local data
 *********************************************************/
 
-
-/********************************************************
-* Variable declarations
-*********************************************************/
-
-
-/********************************************************
-* Function declarations
-*********************************************************/
-
+static T_U3VCamRegisterCfg u3vCamRegisterCfg =
+{
+	.camRegBaseAddress				= (uint64_t)U3V_CFG_MDL_CAM_REG_BASE_ADDRESS,
+    .SBRMOffset                     = (uint64_t)U3V_CFG_MDL_SBRM_OFFSET,
+    .temperature_Reg                = (uint64_t)U3V_CFG_MDL_TEMPERATURE_REG,
+    .deviceReset_Reg                = (uint64_t)U3V_CFG_MDL_DEVICE_RESET_REG,
+    .singleFrameAcquisitionMode_Reg = (uint64_t)U3V_CFG_MDL_SINGLE_FRAME_ACQ_MODE_REG,
+    .acquisitionMode_Reg            = (uint64_t)U3V_CFG_MDL_ACQ_MODE_REG,
+    .acquisitionStart_Reg           = (uint64_t)U3V_CFG_MDL_ACQ_START_REG,
+    .acquisitionStop_Reg            = (uint64_t)U3V_CFG_MDL_ACQ_STOP_REG,
+    .colorCodingID_Reg              = (uint64_t)U3V_CFG_MDL_COLOR_CODING_ID_REG,
+    .payloadSizeVal_Reg             = (uint64_t)U3V_CFG_MDL_PAYLOAD_SIZE_VAL_REG,
+    .pixelFormatCtrlVal_Int_Sel     = (uint32_t)U3V_CFG_MDL_PIXEL_FORMAT_CTRL_INT_SEL 
+};
 
 
 #ifdef __cplusplus

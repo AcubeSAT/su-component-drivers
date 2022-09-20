@@ -89,7 +89,7 @@ typedef struct
     DRV_HANDLE usrtDrv;
     bool imgRequested;
     bool imgPldPending;
-    uint8_t imgData[512];
+    uint8_t imgData[1024U];
     /* TODO: Define any additional data used by the application. */
 } APP_DATA;
 
