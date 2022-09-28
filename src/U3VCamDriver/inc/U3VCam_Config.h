@@ -20,7 +20,7 @@ extern "C" {
 *********************************************************/
 
 /**
- * Selected camera model defines.
+ * U3VCamDriver Selected camera model defines.
  * 
  * These model name definitions match a specific entry in
  * u3vCamRegisterCfg. For any new camera model to be
@@ -63,6 +63,15 @@ extern "C" {
 #else
     #error "Invalid USB3 Vision camera model selected"
 #endif
+
+/**
+ * U3VCamDriver error report callout function.
+ * 
+ * This is a 'stub' function to match optionally
+ * set an error handler function to report or log
+ * the error event.
+ */
+#define U3V_REPORT_ERROR(errID)                         (void)(errID) //TODO: add error report IF
 
 #define U3V_HOST_INSTANCES_NUMBER                       (1U)
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER                (1U)

@@ -166,12 +166,12 @@ void U3VCamDriver_Tasks(void);
  * 
  * @param callback Callback to the app software to notify
  * the app that an image payload block has been received.
- * @param imgData Buffer address where image payload block
- * will be copied into.
+ * @param imgDataBfr Buffer address where image payload 
+ * block will be copied into.
  * @return T_U3VCamDriverStatus Status of the driver that
  * indicates the operability of the driver.
  */
-T_U3VCamDriverStatus U3VCamDriver_SetImagePayldTransfParams(T_U3VCamDriverPayloadEventCallback callback, void *imgData); //buffer size must be U3V_IN_BUFFER_MAX_SIZE at least, you can use U3VCamDriver_GetImagePayldMaxBlockSize()
+T_U3VCamDriverStatus U3VCamDriver_SetImagePayldTransfParams(T_U3VCamDriverPayloadEventCallback callback, void *imgDataBfr);
 
 /**
  * Request a new image payload block from U3VCamDriver.
@@ -237,8 +237,9 @@ void U3VCamDriver_CancelImageAcqRequest(void);
  * @param buffer Data buffer for the received text descriptor.
  * @return T_U3VCamDriverStatus Status of the driver that
  * indicates the operability of the driver.
- * @warning The app buffer to hold text values must be at 
- * least 64 bytes in length.
+ * @warning The input buffer to hold text values must be 64 
+ * bytes (at least) in length and its basetype must be 'char'
+ * or 'uint8_t', for every text descriptor selection.
  */
 T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDeviceDescriptorTextType textType, void *buffer);
 
@@ -293,7 +294,7 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
  * size.
  * 
  * @return size_t Max size of the image payload block 
- * @note The return value is a constant
+ * @note The return value comes from a constant
  * (U3V_IN_BUFFER_MAX_SIZE)
  */
 size_t U3VCamDriver_GetImagePayldMaxBlockSize(void);
