@@ -1,6 +1,3 @@
-//
-// Created by fomarko on 29/01/22.
-//
 
 #ifndef COMPONENT_DRIVERS_U3VCAM_DEVICE_CLASS_SPECS_H
 #define COMPONENT_DRIVERS_U3VCAM_DEVICE_CLASS_SPECS_H
@@ -157,16 +154,18 @@ extern "C" {
 #define U3V_ACQUISITION_MODE_SINGLE_FRAME       0x1
 #define U3V_ACQUISITION_MODE_MULTI_FRAME        0x2
 
+/* USB3 Vision Acquisition Command values */
+#define U3V_ACQ_START_CMD_VAL                   0x80000000UL
+#define U3V_ACQ_STOP_CMD_VAL                    0x00000000UL
+
+/* USB3 Vision Stream Control Command values */
+#define U3V_SI_CTRL_CMD_ENABLE                  0x00000001UL
+#define U3V_SI_CTRL_CMD_DISABLE                 0x00000000UL
+
 /* USB3 Vision Stream Payload types */
 #define U3V_STREAM_PLD_TYPE_IMAGE                   0x0001
 #define U3V_STREAM_PLD_TYPE_IMAGE_EXTENDED_CHUNK    0x4001
 #define U3V_STREAM_PLD_TYPE_CHUNK                   0x4000
-
-
-/********************************************************
- * Type definitions
- *********************************************************/
-
 
 
 

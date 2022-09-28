@@ -1,6 +1,3 @@
-//
-// Created by fomarko on 04/02/22.
-//
 
 #ifndef COMPONENT_DRIVERS_U3VCAM_HOST_H
 #define COMPONENT_DRIVERS_U3VCAM_HOST_H
@@ -144,17 +141,6 @@ typedef struct
 	uint32_t    transferAlignment;
 } T_U3VDeviceInfo;
 
-typedef struct 
-{
-	uint64_t imageSize;
-	uint64_t chunkDataSize;
-	uint32_t maxBlockSize;
-	uint32_t blockPadding;
-	uint64_t blockSize;
-	uint32_t maxLeaderSize;
-	uint32_t maxTrailerSize;
-} T_U3VStreamIfConfig;
-
 typedef void (*T_U3VHostAttachEventHandler)(T_U3VHostHandle u3vObjHandle, uintptr_t context);
 
 typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vObjHandle, uintptr_t context);
@@ -163,12 +149,7 @@ typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vObjHa
 
 
 /********************************************************
-* Constant declarations
-*********************************************************/
-
-
-/********************************************************
-* Variable declarations
+* Global data
 *********************************************************/
 
 extern USB_HOST_CLIENT_DRIVER   gUSBHostU3VClientDriver;
@@ -188,7 +169,7 @@ T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHa
 
 T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle);
 
-T_U3VHostResult U3VHost_SetupStreamTransferParams(T_U3VHostHandle u3vObjHandle, T_U3VStreamIfConfig *streamConfig);
+T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint32_t imgPayloadSize);
 
 T_U3VHostResult U3VHost_StreamChControl(T_U3VHostHandle u3vObjHandle, bool enable);
 
@@ -202,17 +183,19 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle);
 
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
 
-T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *const pReadValue);
+uint32_t U3VHost_GetSelectedPixelFormat(void);
 
-T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegFloat floatReg, float *const pReadValue);
+T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *pReadValue);
 
-T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, char *const pReadBfr); /* string buffer size must be 64bytes long (at least) */
+T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegFloat floatReg, float *pReadValue);
+
+T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, void *pReadBfr); /* string buffer size must be 64bytes long (at least) */
 
 T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
 
 T_U3VHostResult U3VHost_WriteMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegFloat integerReg, float writeValue);
 
-T_U3VHostResult U3VHost_WriteMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString integerReg, const char *pWriteBfr); /* string buffer size must be 64bytes long (at least) */
+T_U3VHostResult U3VHost_WriteMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString integerReg, void *pWriteBfr); /* string buffer size must be 64bytes long (at least) */
 
 
 #ifdef __cplusplus
