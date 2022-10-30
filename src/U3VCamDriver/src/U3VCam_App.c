@@ -221,11 +221,11 @@ void U3VCamDriver_Tasks(void)
             result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQUISITION_MODE, &u3vAppData.acquisitionMode);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
-                if (u3vAppData.acquisitionMode != U3V_ACQUISITION_MODE_SINGLE_FRAME)
+                if (u3vAppData.acquisitionMode != (uint32_t)U3V_ACQUISITION_MODE_SINGLE_FRAME)
                 {
                     result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle,
                                                               U3V_MEM_REG_INT_ACQUISITION_MODE,
-                                                              U3V_ACQUISITION_MODE_SINGLE_FRAME);
+                                                              (uint32_t)U3V_ACQUISITION_MODE_SINGLE_FRAME);
                 }
                 else
                 {
@@ -278,7 +278,7 @@ void U3VCamDriver_Tasks(void)
         case U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION:
             if (u3vAppData.imgAcqRequested)
             {
-                result1 = U3VHost_StreamChControl(u3vAppData.u3vHostHandle, true);
+                result1 = U3VHost_StreamIfControl(u3vAppData.u3vHostHandle, true);
                 result2 = U3VHost_AcquisitionStart(u3vAppData.u3vHostHandle);
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
@@ -326,7 +326,7 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
             result1 = U3VHost_AcquisitionStop(u3vAppData.u3vHostHandle);
-            result2 = U3VHost_StreamChControl(u3vAppData.u3vHostHandle, false);
+            result2 = U3VHost_StreamIfControl(u3vAppData.u3vHostHandle, false);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
             {
                 u3vAppData.appImgTransfState = U3V_SI_IMG_TRANSF_STATE_IDLE;
@@ -514,12 +514,30 @@ size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
 * Local function definitions
 *********************************************************/
 
+/**
+ * U3V App driver initialization status.
+ * 
+ * This function returns the initialization status of the U3V cam driver.
+ * @return T_U3VDriverInitStatus 
+ */
 static T_U3VDriverInitStatus U3VApp_DrvInitStatus(void)
 {
     return u3vDriver_InitStatus;
 }
 
 
+/**
+ * U3V App USB Host event handler callback.
+ * 
+ * This callback shall be registered to the USB Host Layer to be called when a 
+ * USB Host Layer event occurs, with regards to the detected device. 
+ * @param event 
+ * @param pEventData 
+ * @param context 
+ * @return USB_HOST_EVENT_RESPONSE 
+ * @note This callback serves no functionality in this application and is used 
+ * mainly as a placeholder.
+ */
 static USB_HOST_EVENT_RESPONSE U3VApp_USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context)
 {
     switch (event)
@@ -535,6 +553,17 @@ static USB_HOST_EVENT_RESPONSE U3VApp_USBHostEventHandlerCbk(USB_HOST_EVENT even
 }
 
 
+/**
+ * U3V App attach event listener callback.
+ * 
+ * This callback shall be registered to the USB Host attack listener mechanism 
+ * so that when a new device is being detected by the USB Host LAyer, this 
+ * callback will be called in order to store the generated USB device host 
+ * handle ID and set the device attachment flag. Then the App can handle the 
+ * establish connection and setup interfaces on the following run cycles.
+ * @param u3vObjHandle 
+ * @param context 
+ */
 static void U3VApp_AttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context)
 {
     T_U3VAppData *pUsbU3VAppData;
@@ -545,6 +574,15 @@ static void U3VApp_AttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_
 }
 
 
+/**
+ * U3V App detach event listener callback.
+ * 
+ * This callback shall be registered to the USB detach listener mechanism so 
+ * that when a connected device gets detached, the device detachment flag can be
+ * set and then the App can destruct objects accordingly on next run cycle.
+ * @param u3vHandle 
+ * @param context 
+ */
 static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t context)
 {
     T_U3VAppData *pUsbU3VAppData;
@@ -553,6 +591,18 @@ static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t c
 }
 
 
+/**
+ * U3V App  U3V Host event handler callback.
+ * 
+ * This callback shall be registered to the U3V Host, to be called when a U3V 
+ * Host event occurs. In this implementation the main scope of this callback is 
+ * to handle incoming image payload data.
+ * @param u3vHandle 
+ * @param event 
+ * @param pEventData 
+ * @param context 
+ * @return T_U3VHostEventResponse 
+ */
 static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
 {
     T_U3VHostEventReadCompleteData  *readCompleteEventData;

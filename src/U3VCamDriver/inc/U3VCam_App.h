@@ -17,6 +17,10 @@ extern "C" {
 * Type definitions
 *********************************************************/
 
+/**
+ * U3V Cam Driver initialization state.
+ * 
+ */
 typedef enum
 {
     U3V_DRV_INITIALIZATION_FAIL = -1,
@@ -24,6 +28,11 @@ typedef enum
     U3V_DRV_INITIALIZATION_OK   =  1
 } T_U3VDriverInitStatus;
 
+/**
+ * U3V App state.
+ * 
+ * App states of internal state machine that handles U3V driver operations.
+ */
 typedef enum
 {
     U3V_APP_STATE_BUS_ENABLE,
@@ -43,6 +52,10 @@ typedef enum
     U3V_APP_STATE_ERROR
 } T_U3VAppState;
 
+/**
+ * U3V App image payload transfer state.
+ * 
+ */
 typedef enum
 {
     U3V_SI_IMG_TRANSF_STATE_IDLE,
@@ -52,6 +65,10 @@ typedef enum
     U3V_SI_IMG_TRANSF_STATE_TRAILER_COMPLETE
 } T_U3VImgPayldTransfState;
 
+/**
+ * U3V App device text descriptors struct.
+ * 
+ */
 typedef struct
 {
 	uint8_t     vendorName[U3V_REG_MANUFACTURER_NAME_SIZE];
@@ -60,6 +77,11 @@ typedef struct
 	uint8_t     serialNumber[U3V_REG_SERIAL_NUMBER_SIZE];
 } T_U3VAppDevTextDescr;
 
+/**
+ * U3V App data struct.
+ * 
+ * This struct holds all data handled by the U3V App localy.
+ */
 typedef struct
 {
     T_U3VAppState                       state;
@@ -80,19 +102,12 @@ typedef struct
     void                                *appImgDataBfr;
 } T_U3VAppData;
 
-typedef enum
-{
-    U3V_CAM_DISCONNECTED     = -1,
-    U3V_CAM_STATUS_UNKNOWN   =  0,
-    U3V_CAM_CONNECTED        =  1
-} T_U3VCamConnectStatus;
-
-typedef enum
-{
-    U3V_CAM_DEV_ID_ERROR     = 0,
-    U3V_CAM_DEV_ID_OK        = 1
-} T_U3VCamDevIDStatus;
-
+/**
+ * U3V App driver error IDs.
+ * 
+ * These error IDs are used for error reporting by the local U3V App state 
+ * machine, when the execution of a step fails.
+ */
 typedef enum
 {
     U3V_DRV_ERR_UNKNOWN,
@@ -112,6 +127,7 @@ typedef enum
     U3V_DRV_ERR_IMG_TRANSF_STATE_FAIL,
     U3V_DRV_ERR_STOP_IMG_ACQ_FAIL
 } T_U3VCamDriverErrorID;
+
 
 #ifdef __cplusplus
 }
