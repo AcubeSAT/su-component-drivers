@@ -15,7 +15,7 @@ static void U3VHost_Initialize(void *data);
 
 static void U3VHost_Deinitialize(void);
 
-static void U3VHost_Reinitialize(void *msdInitData);
+static void U3VHost_Reinitialize(void *data);
 
 static void U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
                                  USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
@@ -70,7 +70,9 @@ static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vHostHandle, 
 
 static inline void U3VHost_CtrlIfClearObjData(T_U3VControlIfObj *pCtrlIfObj);
 
-static inline uint32_t U3VHost_LCMui32(uint32_t n1, uint32_t n2); /* least common multiplier calc restricted to 32bit size max */
+static inline uint32_t U3VHost_GCDu32(uint32_t n1, uint32_t n2);
+
+static inline uint32_t U3VHost_LCMu32(uint32_t n1, uint32_t n2);
 
 
 /********************************************************
@@ -212,7 +214,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                          NULL,
-                                         U3V_ABRM_SBRM_ADDRESS_OFS,
+                                         (uint64_t)U3V_ABRM_SBRM_ADDRESS_OFS,
                                          sizeof(sbrmAddress),
                                          &bytesRead,
                                          (void *)&sbrmAddress);
@@ -224,7 +226,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                          NULL,
-                                         sbrmAddress + U3V_SBRM_U3VCP_CAPABILITY_OFS,
+                                         sbrmAddress + (uint64_t)U3V_SBRM_U3VCP_CAPABILITY_OFS,
                                          sizeof(u3vCapability),
                                          &bytesRead,
                                          (void *)&u3vCapability);
@@ -238,7 +240,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
     {
         u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                              NULL,
-                                             sbrmAddress + U3V_SBRM_SIRM_ADDRESS_OFS,
+                                             sbrmAddress + (uint64_t)U3V_SBRM_SIRM_ADDRESS_OFS,
                                              sizeof(sirmAddress),
                                              &bytesRead,
                                              (void *)&sirmAddress);
@@ -256,7 +258,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 
         u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                              NULL,
-                                             sirmAddress + U3V_SIRM_INFO_OFS,
+                                             sirmAddress + (uint64_t)U3V_SIRM_INFO_OFS,
                                              sizeof(siInfo),
                                              &bytesRead,
                                              (void *)&siInfo);
@@ -268,7 +270,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
         else
         {
             deviceByteAlignment = 1U << ((siInfo & U3V_SIRM_INFO_ALIGNMENT_MASK) >> U3V_SIRM_INFO_ALIGNMENT_SHIFT);
-            u3vInstance->u3vDevInfo.transferAlignment = U3VHost_LCMui32(deviceByteAlignment, u3vInstance->u3vDevInfo.hostByteAlignment);
+            u3vInstance->u3vDevInfo.transferAlignment = U3VHost_LCMu32(deviceByteAlignment, u3vInstance->u3vDevInfo.hostByteAlignment);
         }
         
     }
@@ -333,7 +335,7 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
 
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
-            if (bytesRead == sizeof(regValue))
+            if (bytesRead == (uint32_t)sizeof(regValue))
             {
                 *pReadValue = regValue;
             }
@@ -397,7 +399,7 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
             u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesWritten, (void *)&regValue);
-            if (bytesWritten != sizeof(regValue))
+            if (bytesWritten != (uint32_t)sizeof(regValue))
             {
                 u3vResult = U3V_HOST_RESULT_ABORTED;
             }
@@ -444,7 +446,7 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
 
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
-            if (bytesRead = sizeof(regValue))
+            if (bytesRead == (uint32_t)sizeof(regValue))
             {
                 *pReadValue = floatRetVal;
             }
@@ -465,7 +467,7 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
     T_U3VHostInstanceObj *u3vInstance;
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesRead;
-    uint32_t stringSize;
+    size_t stringSize;
     uint8_t stringBfr[U3V_REG_MANUFACTURER_NAME_SIZE];
     uint64_t regAddr;
 
@@ -482,38 +484,38 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
         switch (stringReg)
         {            
             case U3V_MEM_REG_STRING_MANUFACTURER_NAME:
-                regAddr = U3V_ABRM_MANUFACTURER_NAME_OFS;
-                stringSize = U3V_REG_MANUFACTURER_NAME_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_MANUFACTURER_NAME_OFS;
+                stringSize = (size_t)U3V_REG_MANUFACTURER_NAME_SIZE;
                 break;
 
             case U3V_MEM_REG_STRING_MODEL_NAME:
-                regAddr = U3V_ABRM_MODEL_NAME_OFS;
-                stringSize = U3V_REG_MODEL_NAME_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_MODEL_NAME_OFS;
+                stringSize = (size_t)U3V_REG_MODEL_NAME_SIZE;
                 break;
 
             case U3V_MEM_REG_STRING_FAMILY_NAME:
-                regAddr = U3V_ABRM_FAMILY_NAME_OFS;
-                stringSize = U3V_REG_FAMILY_NAME_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_FAMILY_NAME_OFS;
+                stringSize = (size_t)U3V_REG_FAMILY_NAME_SIZE;
                 break;
 
             case U3V_MEM_REG_STRING_DEVICE_VERSION:
-                regAddr = U3V_ABRM_DEVICE_VERSION_OFS;
-                stringSize = U3V_REG_DEVICE_VERSION_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_DEVICE_VERSION_OFS;
+                stringSize = (size_t)U3V_REG_DEVICE_VERSION_SIZE;
                 break;
 
             case U3V_MEM_REG_STRING_MANUFACTURER_INFO:
-                regAddr = U3V_ABRM_MANUFACTURER_INFO_OFS;
-                stringSize = U3V_REG_MANUFACTURER_INFO_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_MANUFACTURER_INFO_OFS;
+                stringSize = (size_t)U3V_REG_MANUFACTURER_INFO_SIZE;
                 break;
 
             case U3V_MEM_REG_STRING_SERIAL_NUMBER:
-                regAddr = U3V_ABRM_SERIAL_NUMBER_OFS;
-                stringSize = U3V_REG_SERIAL_NUMBER_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_SERIAL_NUMBER_OFS;
+                stringSize = (size_t)U3V_REG_SERIAL_NUMBER_SIZE;
                 break;
 
             case U3V_MEM_REG_STRING_USER_DEFINED_NAME:
-                regAddr = U3V_ABRM_USER_DEFINED_NAME_OFS;
-                stringSize = U3V_REG_USER_DEFINED_NAME_SIZE;
+                regAddr = (uint64_t)U3V_ABRM_USER_DEFINED_NAME_OFS;
+                stringSize = (size_t)U3V_REG_USER_DEFINED_NAME_SIZE;
                 break;
 
             default:
@@ -527,7 +529,7 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
 
             if (u3vResult == U3V_HOST_RESULT_SUCCESS)
             {
-                if (bytesRead = stringSize)
+                if (bytesRead == (uint32_t)stringSize)
                 {
                     memcpy((void *)pReadBfr, (void *)stringBfr, stringSize);
                 }
@@ -550,7 +552,7 @@ T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle)
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesWritten;
     uint64_t acqStartRegAdr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.acquisitionStart_Reg;
-    uint32_t acqStartCmdVal = U3V_ACQ_START_CMD_VAL;
+    uint32_t acqStartCmdVal = (uint32_t)U3V_ACQ_START_CMD_VAL;
 
     u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -587,7 +589,7 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle)
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesWritten;
     uint64_t acqStopRegAdr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.acquisitionStop_Reg;
-    uint32_t acqStopCmdVal = U3V_ACQ_STOP_CMD_VAL;
+    uint32_t acqStopCmdVal = (uint32_t)U3V_ACQ_STOP_CMD_VAL;
 
     u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -652,7 +654,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
     uint32_t siMaxLeaderSize = (uint32_t)U3V_LEADER_MAX_SIZE;
     uint32_t siMaxTrailerSize = (uint32_t)U3V_TRAILER_MAX_SIZE;
     /* transfer size is the size of each payload block */
-    uint32_t siPayloadTransfSize = U3V_IN_BUFFER_MAX_SIZE;
+    uint32_t siPayloadTransfSize = (uint32_t)U3V_IN_BUFFER_MAX_SIZE;
     /* transfer count is the total count of payload blocks, minus the transf1 & transf2 */
     uint32_t siPayloadTransfCount = u32ImageSize / siPayloadTransfSize;
     /* transfer1 size is the remainder of the total payload with padding of U3V_TARGET_ARCH_BYTE_ALIGNMENT, sent as an extra payload block */
@@ -667,7 +669,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                          NULL,
-                                         sirmAddress + U3V_SIRM_REQ_LEADER_SIZE_OFS,
+                                         sirmAddress + (uint64_t)U3V_SIRM_REQ_LEADER_SIZE_OFS,
                                          sizeof(siRequiredLeaderSize),
                                          &bytesRead,
                                          (void *)&siRequiredLeaderSize);
@@ -679,7 +681,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                          NULL,
-                                         sirmAddress + U3V_SIRM_REQ_PAYLOAD_SIZE_OFS,
+                                         sirmAddress + (uint64_t)U3V_SIRM_REQ_PAYLOAD_SIZE_OFS,
                                          sizeof(siRequiredPayloadSize),
                                          &bytesRead,
                                          (void *)&siRequiredPayloadSize);
@@ -691,7 +693,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance,
                                          NULL,
-                                         sirmAddress + U3V_SIRM_REQ_TRAILER_SIZE_OFS,
+                                         sirmAddress + (uint64_t)U3V_SIRM_REQ_TRAILER_SIZE_OFS,
                                          sizeof(siRequiredTrailerSize),
                                          &bytesRead,
                                          (void *)&siRequiredTrailerSize);
@@ -711,7 +713,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_MAX_LEADER_SIZE_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_MAX_LEADER_SIZE_OFS,
                                           sizeof(siMaxLeaderSize),
                                           &bytesRead,
                                           (void *)&siMaxLeaderSize);
@@ -723,7 +725,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_MAX_TRAILER_SIZE_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_MAX_TRAILER_SIZE_OFS,
                                           sizeof(siMaxTrailerSize),
                                           &bytesRead,
                                           (void *)&siMaxTrailerSize);
@@ -735,7 +737,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_PAYLOAD_SIZE_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_PAYLOAD_SIZE_OFS,
                                           sizeof(siPayloadTransfSize),
                                           &bytesRead,
                                           (void *)&siPayloadTransfSize);
@@ -747,7 +749,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_PAYLOAD_COUNT_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_PAYLOAD_COUNT_OFS,
                                           sizeof(siPayloadTransfCount),
                                           &bytesRead,
                                           (void *)&siPayloadTransfCount);
@@ -759,7 +761,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_TRANSFER1_SIZE_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_TRANSFER1_SIZE_OFS,
                                           sizeof(siPayloadFinalTransf1Size),
                                           &bytesRead,
                                           (void *)&siPayloadFinalTransf1Size);
@@ -771,7 +773,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_TRANSFER2_SIZE_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_TRANSFER2_SIZE_OFS,
                                           sizeof(siPayloadFinalTransf2Size),
                                           &bytesRead,
                                           (void *)&siPayloadFinalTransf2Size);
@@ -785,7 +787,7 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 }
 
 
-T_U3VHostResult U3VHost_StreamChControl(T_U3VHostHandle u3vObjHandle, bool enable)
+T_U3VHostResult U3VHost_StreamIfControl(T_U3VHostHandle u3vObjHandle, bool enable)
 {
     USB_HOST_RESULT hostResult;
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
@@ -793,7 +795,7 @@ T_U3VHostResult U3VHost_StreamChControl(T_U3VHostHandle u3vObjHandle, bool enabl
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesRead;
 
-    u3vResult = (u3vObjHandle == 0U)   ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
+    u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -803,7 +805,7 @@ T_U3VHostResult U3VHost_StreamChControl(T_U3VHostHandle u3vObjHandle, bool enabl
     u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
     ctrlIfInstance = &u3vInstance->controlIfObj;
 
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -811,11 +813,11 @@ T_U3VHostResult U3VHost_StreamChControl(T_U3VHostHandle u3vObjHandle, bool enabl
     }
 
     uint64_t sirmAddress = u3vInstance->u3vDevInfo.sirmAddr;
-    uint32_t siControlCmd = (enable) ? U3V_SI_CTRL_CMD_ENABLE : U3V_SI_CTRL_CMD_DISABLE;
+    uint32_t siControlCmd = (enable) ? (uint32_t)U3V_SI_CTRL_CMD_ENABLE : (uint32_t)U3V_SI_CTRL_CMD_DISABLE;
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
-                                          sirmAddress + U3V_SIRM_CONTROL_OFS,
+                                          sirmAddress + (uint64_t)U3V_SIRM_CONTROL_OFS,
                                           sizeof(siControlCmd),
                                           &bytesRead,
                                           (void *)&siControlCmd);
@@ -847,7 +849,7 @@ T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void
     u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
     ctrlIfInstance = &u3vInstance->controlIfObj;
 
-    u3vResult = (ctrlIfInstance == NULL)    ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         return u3vResult;
@@ -901,9 +903,9 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     ctrlIfInst->transfReqCompleteCbk = U3VHost_CtrlIfTransferReqCompleteCbk;
 
-    ctrlIfInst->u3vTimeout = U3V_REQ_TIMEOUT_MS;
-    ctrlIfInst->maxAckTransfSize = sizeof(ctrlIfInst->ackBuffer);
-    ctrlIfInst->maxCmdTransfSize = sizeof(ctrlIfInst->cmdBuffer);
+    ctrlIfInst->u3vTimeout = (uint32_t)U3V_REQ_TIMEOUT_MS;
+    ctrlIfInst->maxAckTransfSize = (uint32_t)sizeof(ctrlIfInst->ackBuffer);
+    ctrlIfInst->maxCmdTransfSize = (uint32_t)sizeof(ctrlIfInst->cmdBuffer);
 
     /* requestId, maxRequestId are preincremented, with overflow the unsigned will start again from 0 */
     ctrlIfInst->requestId = 0xFFFFU;
@@ -912,12 +914,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                          NULL,
-                                         U3V_ABRM_MAX_DEV_RESPONSE_TIME_MS_OFS,
-                                         U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE,
+                                         (uint64_t)U3V_ABRM_MAX_DEV_RESPONSE_TIME_MS_OFS,
+                                         (size_t)U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE,
                                          &bytesRead,
                                          &maxResponse);
 
-    u3vResult = (bytesRead != U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != (uint32_t)U3V_REG_MAX_DEV_RESPONSE_TIME_MS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -929,12 +931,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                          NULL,
-                                         U3V_ABRM_SBRM_ADDRESS_OFS,
-                                         U3V_REG_SBRM_ADDRESS_SIZE,
+                                         (uint64_t)U3V_ABRM_SBRM_ADDRESS_OFS,
+                                         (size_t)U3V_REG_SBRM_ADDRESS_SIZE,
                                          &bytesRead,
                                          &sbrmAddress);
 
-    u3vResult = (bytesRead != U3V_REG_SBRM_ADDRESS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != (uint32_t)U3V_REG_SBRM_ADDRESS_SIZE) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -944,12 +946,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                          NULL,
-                                         sbrmAddress + U3V_SBRM_MAX_CMD_TRANSFER_OFS,
-                                         sizeof(uint32_t),
+                                         sbrmAddress + (uint64_t)U3V_SBRM_MAX_CMD_TRANSFER_OFS,
+                                         sizeof(cmdBfrSize),
                                          &bytesRead,
                                          &cmdBfrSize);
 
-    u3vResult = (bytesRead != sizeof(uint32_t)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != (uint32_t)sizeof(cmdBfrSize)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -961,12 +963,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
     u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInst,
                                          NULL,
-                                         sbrmAddress + U3V_SBRM_MAX_ACK_TRANSFER_OFS,
-                                         sizeof(uint32_t),
+                                         sbrmAddress + (uint64_t)U3V_SBRM_MAX_ACK_TRANSFER_OFS,
+                                         sizeof(ackBfrSize),
                                          &bytesRead,
                                          &ackBfrSize);
 
-    u3vResult = (bytesRead != sizeof(uint32_t)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
+    u3vResult = (bytesRead != (uint32_t)sizeof(ackBfrSize)) ? U3V_HOST_RESULT_FAILURE : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -1008,6 +1010,14 @@ uint32_t U3VHost_GetSelectedPixelFormat(void)
 * Local function definitions
 *********************************************************/
 
+/**
+ * U3V Host Initialization function.
+ * 
+ * Local function to initialize all gUSBHostU3VObj instances handles to default 
+ * values, called when the USB Host layer initializes. Used as a callback by the
+ * USB Host layer.
+ * @param data      (TPL configuration data)
+ */
 static void U3VHost_Initialize(void * data)
 {
     T_U3VHostInstanceObj *u3vInstance = NULL;
@@ -1037,18 +1047,49 @@ static void U3VHost_Initialize(void * data)
 }
 
 
+/**
+ * U3V Host Deinitialization function.
+ * 
+ * Local function to deinitialize local U3V Host data, called when USB Host 
+ * deinitializes. Used as a callback by the USB Host layer.
+ * @note Not applicable, used as a placeholder for gUSBHostU3VClientDriver.
+ */
 static void U3VHost_Deinitialize(void)
 {
     /* N/A */
 }
 
 
-static void U3VHost_Reinitialize(void * msdInitData)
+/**
+ * U3V Host Reinitialization function.
+ * 
+ * Local function to reinitialize local U3V Host data, called when
+ * USB Host layer deinitializes. Used as a callback by the USB Host layer.
+ * @param data 
+ * @note Not applicable, used as a placeholder for gUSBHostU3VClientDriver.
+ */
+static void U3VHost_Reinitialize(void * data)
 {
     /* N/A */
 }
 
 
+/**
+ * U3V Host Interface assignment function.
+ *
+ * Local function used to assign detected U3V interfaces from connected
+ * device to local gUSBHostU3VObj object. Used as a callback by the USB Host
+ * layer.
+ * @param interfaces
+ * @param deviceObjHandle
+ * @param nInterfaces
+ * @param descriptor
+ * @note The expected interface types to assign should only be the 3 interfaces 
+ * that the USB 3 Vision standard defines, the Control, Event and Streaming 
+ * interfaces. The expected device type shall be an IAD (interface association 
+ * device), therefore at least 2 interfaces must be detected in order for the 
+ * function to assign them.
+ */
 static void U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces,
                                     USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
                                     size_t nInterfaces,
@@ -1062,7 +1103,8 @@ static void U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces
     USB_HOST_ENDPOINT_DESCRIPTOR_QUERY endpointDescriptorQuery;
     USB_HOST_INTERFACE_DESCRIPTOR_QUERY interfaceDescriptorQuery;
 
-    /* This is an IAD, the expected number of interfaces is more than one for a U3V device (e.g. Control, Event, Streaming) */
+    /* This is an IAD, the expected number of interfaces is at least  *
+     * 2 for a U3V device (e.g. Control, Event, Streaming interfaces) */
     if (nInterfaces > 1UL) 
     {
         for (iterator = 0UL; iterator < U3V_HOST_INSTANCES_NUMBER; iterator++)
@@ -1230,6 +1272,13 @@ static void U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces
 }
 
 
+/**
+ * U3V Host Interface release function.
+ *
+ * Local function used to release assigned U3V interfaces of gUSBHostU3VObj
+ * object. Used as a callback by the USB Host layer.
+ * @param interfaceHandle
+ */
 static void U3VHost_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     T_U3VHostInstanceObj *u3vInstance;
@@ -1281,6 +1330,17 @@ static void U3VHost_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceH
 }
 
 
+/**
+ * U3V Host Interface event handler function.
+ * 
+ * Local function used as an event handler, called by the USB Host layer when a 
+ * transfer related event occurs. Used as a callback by the USB Host layer.
+ * @param interfaceHandle 
+ * @param event 
+ * @param eventData 
+ * @param context 
+ * @return USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE (return N/A)
+ */
 static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE U3VHost_InterfaceEventHandler(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle,
                                                                               USB_HOST_DEVICE_INTERFACE_EVENT event,
                                                                               void *eventData,
@@ -1322,12 +1382,32 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE U3VHost_InterfaceEventHandler(US
 }
 
 
+/**
+ * U3V Host Interface tasks function.
+ *
+ * Local function used as a routine to handle interface related tasks. Used as a
+ * callback by the USB Host layer.
+ * @param interfaceHandle
+ * @note Not applicable, used as a placeholder for gUSBHostU3VClientDriver.
+ */
 static void U3VHost_InterfaceTasks(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     /* N/A */
 }
 
 
+/**
+ * U3V Host device event handler function. 
+ * 
+ * Local function used as device event handler, called by the USB Host layer
+ * when a device related (configuration) event occurs. Used as a callback by the
+ * USB Host layer.
+ * @param deviceHandle 
+ * @param event 
+ * @param eventData 
+ * @param context 
+ * @return USB_HOST_DEVICE_EVENT_RESPONSE   (return N/A)
+ */
 static USB_HOST_DEVICE_EVENT_RESPONSE U3VHost_DeviceEventHandler(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
                                                                  USB_HOST_DEVICE_EVENT event,
                                                                  void *eventData,
@@ -1355,6 +1435,16 @@ static USB_HOST_DEVICE_EVENT_RESPONSE U3VHost_DeviceEventHandler(USB_HOST_DEVICE
 }
 
 
+/**
+ * U3V Host device assignment function.
+ *
+ * Local function used for device assignment, called by the USB Host layer
+ * when a device with the corresponding TPL data has been detected. Used as
+ * a callback by the USB Host layer.
+ * @param deviceHandle
+ * @param deviceObjHandle
+ * @param deviceDescriptor
+ */
 static void U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
                                  USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle,
                                  USB_DEVICE_DESCRIPTOR *deviceDescriptor)
@@ -1392,6 +1482,14 @@ static void U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
 }
 
 
+/**
+ * U3V Host device release function.
+ *
+ * Local function used for device release, called by the USB Host layer when a 
+ * previously connected device has been detached. Used as a callback by the USB
+ * Host layer.
+ * @param deviceHandle 
+ */
 static void U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     T_U3VHostInstanceObj *u3vInstance;
@@ -1440,6 +1538,14 @@ static void U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 }
 
 
+/**
+ * U3V Host device tasks function.
+ *
+ * Local function used as a device tasks routine, called by the USB Host layer
+ * periodically. This function handles the configuration stages of an attaced
+ * device. Used as a callback by the USB Host layer.
+ * @param deviceHandle 
+ */
 static void U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     T_U3VHostInstanceObj *u3vInstance;
@@ -1511,6 +1617,14 @@ static void U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 }
 
 
+/**
+ * U3V Host device client handle to instance matching function.
+ *
+ * Local function used to match a client handle to a valid instance of 
+ * gUSBHostU3VObj object.
+ * @param deviceClientHandle 
+ * @return int32_t 
+ */
 static int32_t U3VHost_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE deviceClientHandle)
 {
     int32_t result = -1L;
@@ -1528,6 +1642,14 @@ static int32_t U3VHost_DeviceHandleToInstance(USB_HOST_DEVICE_CLIENT_HANDLE devi
 }
 
 
+/**
+ * U3V Host device object handle to instance matching function.
+ *
+ * Local function used to match an object handle to a valid instance of 
+ * gUSBHostU3VObj object.
+ * @param deviceObjHandle 
+ * @return int32_t 
+ */
 static int32_t U3VHost_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE deviceObjHandle)
 {
     int32_t result = -1L;
@@ -1545,6 +1667,14 @@ static int32_t U3VHost_DeviceObjHandleToInstance(USB_HOST_DEVICE_OBJ_HANDLE devi
 }
 
 
+/**
+ * U3V Host interface handle to instance matching function.
+ *
+ * Local function used to match a valid interface handle to a valid instance of 
+ * gUSBHostU3VObj object.
+ * @param interfaceHandle 
+ * @return int32_t 
+ */
 static int32_t U3VHost_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     int32_t result = -1L;
@@ -1564,6 +1694,13 @@ static int32_t U3VHost_InterfaceHandleToInstance(USB_HOST_DEVICE_INTERFACE_HANDL
 }
 
 
+/**
+ * USB Host layer to U3V Host result mapping.
+ *
+ * Local function used to map a USB Host layer result to a U3V Host result.
+ * @param hostResult 
+ * @return T_U3VHostResult 
+ */
 static T_U3VHostResult U3VHost_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
 {
     T_U3VHostResult u3vResult;
@@ -1601,6 +1738,21 @@ static T_U3VHostResult U3VHost_HostToU3VResultsMap(USB_HOST_RESULT hostResult)
 }
 
 
+/**
+ * U3V Control Interface - Read memory register function.
+ *
+ * This function can be used to read a register directly from a connected U3V 
+ * device memory, using the dedicated Control Interface.
+ * @param u3vCtrlIf
+ * @param transferHandle
+ * @param memAddress
+ * @param transfSize
+ * @param bytesRead
+ * @param buffer   (unsigned integer datatype, size according to request)
+ * @return T_U3VHostResult
+ * @warning This function may be used only after the Control IF has been 
+ * detected and assigned. This function makes use of 'vTaskDelay' of FreeRTOS.
+ */
 static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
                                                 T_U3VHostTransferHandle *transferHandle,
                                                 uint64_t memAddress,
@@ -1755,12 +1907,12 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
             }
 
             /* Inspect the acknowledge buffer */
-            if (((ack->header.cmd != U3V_CTRL_READMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
+            if (((ack->header.cmd != (uint16_t)U3V_CTRL_READMEM_ACK) && (ack->header.cmd != (uint16_t)U3V_CTRL_PENDING_ACK)) ||
                 (ack->header.prefix != U3V_CONTROL_MGK_PREFIX) ||
-                (ack->header.status != U3V_ERR_NO_ERROR) ||
+                (ack->header.status != (uint16_t)U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlIfInst->requestId) ||
-                ((ack->header.cmd == U3V_CTRL_READMEM_ACK) && (ack->header.length != bytesThisIteration)) ||
-                ((ack->header.cmd == U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlIfPendingAckPayload))))
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_READMEM_ACK) && (ack->header.length != bytesThisIteration)) ||
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlIfPendingAckPayload))))
             {
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_FAILURE;
@@ -1768,7 +1920,7 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
             }
 
             /* For a pending ack, update the timeout and resubmit the read request */
-            if (ack->header.cmd == U3V_CTRL_PENDING_ACK)
+            if (ack->header.cmd == (uint16_t)U3V_CTRL_PENDING_ACK)
             {
                 pendingAck = (T_U3VCtrlIfPendingAckPayload *)(ack->payload);
                 ctrlIfInst->u3vTimeout = U3VDRV_MAX(ctrlIfInst->u3vTimeout, (uint32_t)(pendingAck->timeout));
@@ -1799,6 +1951,21 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
 }
 
 
+/**
+ * U3V Control Interface - Write memory register function.
+ *
+ * This function can be used to write a register directly to a connected U3V 
+ * device memory, using the dedicated Control Interface.
+ * @param u3vCtrlIf
+ * @param transferHandle
+ * @param memAddress
+ * @param transfSize
+ * @param bytesWritten
+ * @param buffer  (unsigned integer datatype, size according to request)
+ * @return T_U3VHostResult
+ * @warning This function may be used only after the Control IF has been 
+ * detected and assigned. This function makes use of 'vTaskDelay' of FreeRTOS.
+ */
 static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
                                                  T_U3VHostTransferHandle *transferHandle,
                                                  uint64_t memAddress,
@@ -1865,8 +2032,8 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         ctrlIfInst->writeReqSts.transferHandle = U3V_HOST_TRANSFER_HANDLE_INVALID;
 
         command->header.prefix = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
-		command->header.flags = (uint16_t)(U3V_CTRL_REQ_ACK);
-		command->header.cmd = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
+        command->header.flags  = (uint16_t)(U3V_CTRL_REQ_ACK);
+        command->header.cmd    = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
         command->header.length = (uint16_t)(sizeof(T_U3VCtrlIfWriteMemCmdPayload) + bytesThisIteration);
 
         if ((ctrlIfInst->requestId + 1U) >= ctrlIfInst->maxRequestId)
@@ -1955,13 +2122,13 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             }
             
             /* Inspect the acknowledge buffer */
-            if (((ack->header.cmd != U3V_CTRL_WRITEMEM_ACK) && (ack->header.cmd != U3V_CTRL_PENDING_ACK)) ||
+            if (((ack->header.cmd != (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.cmd != (uint16_t)U3V_CTRL_PENDING_ACK)) ||
                 (ack->header.prefix != U3V_CONTROL_MGK_PREFIX) ||
-                (ack->header.status != U3V_ERR_NO_ERROR) ||
+                (ack->header.status != (uint16_t)U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlIfInst->requestId) ||
-                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3V_CtrlIfWriteMemAckPayload)) && (ack->header.length != 0U)) ||
-                ((ack->header.cmd == U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlIfWriteMemAckPayload)) && (writeMemAck->bytesWritten != bytesThisIteration)) ||
-                ((ack->header.cmd == U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlIfPendingAckPayload))))
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3V_CtrlIfWriteMemAckPayload)) && (ack->header.length != 0U)) ||
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlIfWriteMemAckPayload)) && (writeMemAck->bytesWritten != bytesThisIteration)) ||
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlIfPendingAckPayload))))
             {
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_FAILURE;
@@ -1969,7 +2136,7 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             }
 
             /* For a pending ack, update the timeout and resubmit the read request */
-			if (ack->header.cmd == U3V_CTRL_PENDING_ACK) 
+			if (ack->header.cmd == (uint16_t)U3V_CTRL_PENDING_ACK) 
             {
                 pendingAck = (T_U3VCtrlIfPendingAckPayload *)(ack->payload);
                 ctrlIfInst->u3vTimeout = U3VDRV_MAX(ctrlIfInst->u3vTimeout, (uint32_t)(pendingAck->timeout));
@@ -1996,6 +2163,17 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
 }
 
 
+/**
+ * U3V Control Interface - transfer request complete callback function.
+ *
+ * This callback is called when a transfer request over the Control Interface
+ * has been completed.
+ * @param u3vHostHandle
+ * @param transfEvent
+ * @param transfData
+ * @warning Shall only be used for Control Interface transfers.
+ * @note callback type is 'T_U3VHostTransfCompleteHandler'
+ */
 static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vHostHandle, T_U3VHostEvent transfEvent, void *transfData)
 {
     T_U3VHostEventWriteCompleteData *writeCompleteEventData;
@@ -2026,32 +2204,53 @@ static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vHostHandle, 
 }
 
 
+/**
+ * U3V Control Interface - clear Control IF obect data.
+ * 
+ * @param pCtrlIfObj 
+ */
 static inline void U3VHost_CtrlIfClearObjData(T_U3VControlIfObj *pCtrlIfObj)
 {
     memset(pCtrlIfObj, 0x0U, sizeof(T_U3VControlIfObj));
 }
 
 
-static inline uint32_t U3VHost_LCMui32(uint32_t n1, uint32_t n2)
+/**
+ * Greater Common Divisor calculation with 2 operands.
+ * 
+ * @param n1    (uint32_t)
+ * @param n2    (uint32_t)
+ * @return uint32_t 
+ */
+static inline uint32_t U3VHost_GCDu32(uint32_t n1, uint32_t n2)
 {
-    uint32_t lcm = (n1 > n2) ? n1 : n2;
-
-    if (n1 == 0UL || n2 == 0UL)
+    while (n2 > 0UL)
     {
-        lcm = 0UL;
+        uint32_t temp = n2;
+        n2 = n1 % n2;
+        n1 = temp;
+    }
+    return n1;
+}
+
+
+/**
+ * Least Common Multiplier calculation with 2 operands. 
+ * 
+ * @param n1    (uint32_t)
+ * @param n2    (uint32_t)
+ * @return uint32_t
+ * @warning Depends to 'U3VHost_GCDu32' for calculation.
+ */
+static inline uint32_t U3VHost_LCMu32(uint32_t n1, uint32_t n2)
+{
+    if (n1 > n2)
+    {
+        return ((n1 / U3VHost_GCDu32(n1, n2)) * n2);
     }
     else
     {
-        while (lcm < 0xFFFFFFFFUL)
-        {
-            if (lcm % n1 == 0UL && lcm % n2 == 0UL)
-            {
-                break;
-            }
-            ++lcm;
-        }
+        return ((n2 / U3VHost_GCDu32(n1, n2)) * n1);
     }
-
-    return lcm;
 }
 

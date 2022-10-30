@@ -17,7 +17,18 @@ extern "C" {
 * Macro definitions
 *********************************************************/
 
+/**
+ * U3V Host MAX number calculation for 2 operands.
+ * 
+ * @warning Operands must be of the same type.
+ */
 #define U3VDRV_MAX(a, b)         (((a) > (b)) ? (a) : (b))
+
+/**
+ * U3V Host MIN number calculation for 2 operands.
+ * 
+ * @warning Operands must be of the same type.
+ */
 #define U3VDRV_MIN(a, b)         (((a) < (b)) ? (a) : (b))
 
 
@@ -27,6 +38,10 @@ extern "C" {
 
 #pragma pack(push, 1)
 
+/**
+ * U3V Control Interface ACK header.
+ * 
+ */
 typedef struct
 {
 	uint32_t 	prefix;
@@ -36,18 +51,30 @@ typedef struct
 	uint16_t 	ackId;
 } T_U3VCtrlIfAckHeader;
 
+/**
+ * U3V Control Interface ACK.
+ * 
+ */
 typedef struct
 {
 	T_U3VCtrlIfAckHeader    header;
 	uint8_t                 payload[];
 } T_U3VCtrlIfAcknowledge;
 
+/**
+ * U3V Control Interface pending ACK payload.
+ * 
+ */
 typedef struct
 {
 	uint16_t 	reserved;
 	uint16_t 	timeout;
 } T_U3VCtrlIfPendingAckPayload;
 
+/**
+ * U3V Control Interface CMD header.
+ * 
+ */
 typedef struct
 {
 	uint32_t 	prefix;
@@ -57,12 +84,20 @@ typedef struct
 	uint16_t 	requestId;
 } T_U3VCtrlIfCmdHeader;
 
+/**
+ * U3V Control Interface CMD.
+ * 
+ */
 typedef struct
 {
 	T_U3VCtrlIfCmdHeader    header;
 	uint8_t                 payload[];
 } T_U3VCtrlIfCommand;
 
+/**
+ * U3V Control Interface read memory CMD payload.
+ * 
+ */
 typedef struct 
 {
 	uint64_t 	address;
@@ -70,12 +105,20 @@ typedef struct
 	uint16_t 	byteCount;
 } T_U3VCtrlIfReadMemCmdPayload;
 
+/**
+ * U3V Control Interface write memory CMD payload.
+ * 
+ */
 typedef struct
 {
 	uint64_t    address;
 	uint8_t     data[];
 } T_U3VCtrlIfWriteMemCmdPayload;
 
+/**
+ * U3V Control Interface write memory ACK payload.
+ * 
+ */
 typedef struct
 {
 	uint16_t 	reserved;
@@ -84,8 +127,17 @@ typedef struct
 
 #pragma pack(pop)
 
+/**
+ * U3V Host transfer complete callback handler.
+ * 
+ */
 typedef void (*T_U3VHostTransfCompleteHandler)(T_U3VHostHandle ctrlIfObj, T_U3VHostEvent transfEvent, void *transfData);
 
+/**
+ * U3V Host state.
+ * 
+ * States for the tasks state machine of U3V Host.
+ */
 typedef enum
 {
     U3V_HOST_STATE_ERROR                        = -1,
@@ -96,6 +148,11 @@ typedef enum
     U3V_HOST_STATE_READY,
 } T_U3VHostState;
 
+/**
+ * U3V Host interface handle.
+ * 
+ * Used to manipulate Control, Event and Streaming interface.
+ */
 typedef struct
 {
     uint8_t                             idNum;
@@ -104,6 +161,11 @@ typedef struct
     USB_HOST_PIPE_HANDLE                bulkOutPipeHandle;
 } T_U3VHostInterfHandle;
 
+/**
+ * U3V Host Control Interface object.
+ * 
+ * Contains all essential data for the Control Interface local operations.
+ */
 typedef struct 
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;
@@ -120,6 +182,11 @@ typedef struct
 	T_U3VHostEventWriteCompleteData 	writeReqSts;
 } T_U3VControlIfObj;
 
+/**
+ * U3V Host instance object. 
+ * 
+ * Contains all essential data for the U3V Host local operations.
+ */
 typedef struct
 {
     bool                                inUse;
@@ -140,6 +207,10 @@ typedef struct
     USB_HOST_RESULT                     hostRequestResult;
 } T_U3VHostInstanceObj;
 
+/**
+ * U3V Host attach listener object.
+ * 
+ */
 typedef struct
 {
     bool                                inUse;
