@@ -63,7 +63,7 @@ void U3VCamDriver_Tasks(void)
     {
         if ((u3vDriver_InitStatus == U3V_DRV_INITIALIZATION_OK) && (u3vAppData.state > U3V_APP_STATE_SETUP_U3V_CONTROL_IF))
         {
-            result1 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_DEVICE_RESET, 0x1UL);
+            result1 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_DEVICE_RESET, U3V_DEVICE_RESET_CMD);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
                 u3vAppData.camSwResetRequested = false;
@@ -196,12 +196,12 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_PIXEL_FORMAT:
-            result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_PIXELFORMAT, &u3vAppData.pixelFormat);
+            result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_PIXEL_FORMAT, &u3vAppData.pixelFormat);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
-                if (u3vAppData.pixelFormat != (uint32_t)U3V_CAM_CFG_PIXEL_FORMAT_SEL)
+                if (u3vAppData.pixelFormat != U3V_CAM_CFG_PIXEL_FORMAT_SEL)
                 {
-                    result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_PIXELFORMAT, (uint32_t)U3V_CAM_CFG_PIXEL_FORMAT_SEL);
+                    result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_PIXEL_FORMAT, U3V_CAM_CFG_PIXEL_FORMAT_SEL);
                 }
                 else
                 {
@@ -216,12 +216,12 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
-            result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQUISITION_MODE, &u3vAppData.acquisitionMode);
+            result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_MODE, &u3vAppData.acquisitionMode);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
-                if (u3vAppData.acquisitionMode != (uint32_t)U3V_CAM_CFG_ACQ_MODE_SEL)
+                if (u3vAppData.acquisitionMode != U3V_CAM_CFG_ACQ_MODE_SEL)
                 {
-                    result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQUISITION_MODE, (uint32_t)U3V_CAM_CFG_ACQ_MODE_SEL);
+                    result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_MODE, U3V_CAM_CFG_ACQ_MODE_SEL);
                 }
                 else
                 {
@@ -275,7 +275,7 @@ void U3VCamDriver_Tasks(void)
             if (u3vAppData.imgAcqRequested)
             {
                 result1 = U3VHost_StreamIfControl(u3vAppData.u3vHostHandle, true);
-                result2 = U3VHost_AcquisitionStart(u3vAppData.u3vHostHandle);
+                result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_START, U3V_ACQUISITION_START_CMD);
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
                     u3vAppData.appImgTransfState = U3V_SI_IMG_TRANSF_STATE_START;
@@ -321,7 +321,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
-            result1 = U3VHost_AcquisitionStop(u3vAppData.u3vHostHandle);
+            result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_STOP, U3V_ACQUISITION_STOP_CMD);
             result2 = U3VHost_StreamIfControl(u3vAppData.u3vHostHandle, false);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
             {

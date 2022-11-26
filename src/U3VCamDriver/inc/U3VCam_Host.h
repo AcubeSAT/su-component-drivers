@@ -81,10 +81,17 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_INT_PIXELFORMAT         = 0x10,
-    U3V_MEM_REG_INT_PAYLOAD_SIZE,
-    U3V_MEM_REG_INT_ACQUISITION_MODE,
+    U3V_MEM_REG_INT_ACQ_BURST_FRAME_COUNT,
+    U3V_MEM_REG_INT_ACQ_MODE,
+    U3V_MEM_REG_INT_ACQ_START,
+    U3V_MEM_REG_INT_ACQ_STOP,
     U3V_MEM_REG_INT_DEVICE_RESET,
+    U3V_MEM_REG_INT_PAYLOAD_SIZE,
+    U3V_MEM_REG_INT_PIXEL_FORMAT,
+    U3V_MEM_REG_INT_TRIGGER_MODE,
+    U3V_MEM_REG_INT_TRIGGER_SELECT,
+    U3V_MEM_REG_INT_TRIGGER_SOURCE,
+    U3V_MEM_REG_INT_TRIGGER_SOFTWARE,
 } T_U3VMemRegInteger;
 
 /**
@@ -94,7 +101,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_FLOAT_TEMPERATURE       = 0x20,
+    U3V_MEM_REG_FLOAT_TEMPERATURE,
 } T_U3VMemRegFloat;
 
 /**
@@ -104,7 +111,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_STRING_MANUFACTURER_NAME    = 0x40,
+    U3V_MEM_REG_STRING_MANUFACTURER_NAME,
     U3V_MEM_REG_STRING_MODEL_NAME,
     U3V_MEM_REG_STRING_FAMILY_NAME,
     U3V_MEM_REG_STRING_DEVICE_VERSION,
@@ -320,30 +327,6 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
  * @return T_U3VHostResult 
  */
 T_U3VHostResult U3VHost_StreamIfControl(T_U3VHostHandle u3vObjHandle, bool enable);
-
-/**
- * U3V Host image acquisition start function.
- * 
- * This function shall be called by the application to initiate the image 
- * acquisition procedure, by enabling the AcquisitionStart register. After this 
- * call, image bulk data will start reaching the USB layer in blocks, which can 
- * then be received by the application with U3VHost_StartImgPayldTransfer 
- * function.
- * @param u3vObjHandle 
- * @return T_U3VHostResult 
- * @warning shall be called 
- */
-T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle);
-
-/**
- * U3V Host image acquisition stop function.
- * 
- * This function shall be called by the application to stop the image 
- * acquisition, by enabling the AcquisitionStop register.
- * @param u3vObjHandle 
- * @return T_U3VHostResult 
- */
-T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
 
 /**
  * U3V Host start image payload transfer function.

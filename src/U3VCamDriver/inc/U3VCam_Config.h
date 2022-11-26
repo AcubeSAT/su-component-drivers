@@ -44,35 +44,51 @@ extern "C" {
  * manifest (XML file or datasheet)
  */
 #if (U3V_CAM_MODEL_SELECTED == U3V_FLIR_CM3_U3_12S2C_CS)                                    /* XML manifest info */
-    #define U3V_CAM_CFG_REG_BASE_ADDRESS                ((uint64_t)0xFFFFF0F00000U)         /* CamRegBaseAddress */
-    #define U3V_CAM_CFG_TEMPERATURE_REG                 ((uint64_t)0x082CU)                 /* Temperature_Reg */
-    #define U3V_CAM_CFG_DEVICE_RESET_REG                ((uint64_t)0x400CU)                 /* DeviceReset_CtrlValueReg */
-    #define U3V_CAM_CFG_ACQ_MODE_REG                    ((uint64_t)0x4028U)                 /* AcquisitionMode_Reg */
-    #define U3V_CAM_CFG_ACQ_START_REG                   ((uint64_t)0x4030U)                 /* AcquisitionStart_Reg */
-    #define U3V_CAM_CFG_ACQ_STOP_REG                    ((uint64_t)0x0614U)                 /* AcquisitionStop_Reg */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_REG                ((uint64_t)0x4070U)                 /* ColorCodingID_Reg */
-    #define U3V_CAM_CFG_PAYLOAD_SIZE_REG                ((uint64_t)0x5410U)                 /* PayloadSizeVal_Reg */
+    #define U3V_CAM_CFG_REG_BASE_ADR                    ((uint64_t)0xFFFFF0F00000U)         /* CamRegBaseAddress */
+    #define U3V_CAM_CFG_TEMPERATURE_REG_ADR             ((uint64_t)0x082CU)                 /* Temperature_Reg */
+    #define U3V_CAM_CFG_DEVICE_RESET_REG_ADR            ((uint64_t)0x400CU)                 /* DeviceReset_CtrlValueReg */
+    #define U3V_CAM_CFG_ACQ_BURST_FRAME_CNT_REG_ADR     ((uint64_t)0x402CU)                 /* AcquisitionFrameCount_Reg */
+    #define U3V_CAM_CFG_ACQ_MODE_REG_ADR                ((uint64_t)0x4028U)                 /* AcquisitionMode_Reg */
+    #define U3V_CAM_CFG_ACQ_START_REG_ADR               ((uint64_t)0x4030U)                 /* AcquisitionStart_Reg */
+    #define U3V_CAM_CFG_ACQ_STOP_REG_ADR                ((uint64_t)0x0614U)                 /* AcquisitionStop_Reg */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_REG_ADR            ((uint64_t)0x4070U)                 /* ColorCodingID_Reg */
+    #define U3V_CAM_CFG_PAYLOAD_SIZE_REG_ADR            ((uint64_t)0x5410U)                 /* PayloadSizeVal_Reg */
+    #define U3V_CAM_CFG_TRIGGER_MODE_REG_ADR            ((uint64_t)0x0830U)                 /* Trigger Mode Register (struct reg) */
+    #define U3V_CAM_CFG_TRIGGER_SEL_REG_ADR             ((uint64_t)0x0830U)                 /* TriggerModeCtrlVal_Reg */
+    #define U3V_CAM_CFG_TRIGGER_SRC_REG_ADR             ((uint64_t)0x0830U)                 /* TriggerSourceCtrlVal_Reg */
+    #define U3V_CAM_CFG_TRIGGER_SOFTWARE_REG_ADR        ((uint64_t)0x062CU)                 /* TriggerSoftwareCmd_Reg */
+    #define U3V_CAM_CFG_TRIGGER_SRC_SEL                 (0x00UL)                            /* 0 = Software */
+    #define U3V_CAM_CFG_TRIGGER_SEL                     (0x00UL)                            /* 0 = FrameStart / 1 = ExposureActive (other modes not supported) */
     #define U3V_CAM_CFG_ACQ_MODE_SEL                    (0x01UL)                            /* 0 = CONTINUOUS / 1 = SINGLE_FRAME / 2 = MULTI_FRAME */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (0x04UL)                            /* U3V_PFNC_RGB8 = 0x02180014 -> 04 in PixelFormatCtrlVal_Int formula */
-    #define U3V_CAM_CFG_ACQUISITION_START_CMD           (0x80000000UL)                      /* '1' on bit 31 */
-    #define U3V_CAM_CFG_ACQUISITION_STOP_CMD            (0x00UL)
+    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (0x04UL)                            /* 04 = U3V_PFNC_RGB8 = 0x02180014 in PixelFormatCtrlVal_Int formula */
+    #define U3V_SET_ACQ_START_CMD_CONV(val)             ((val << 31U) & 0x80000000UL)       /* value is stored on bit 31 */
+    #define U3V_SET_ACQ_STOP_CMD_CONV(val)              ((val << 31U) & 0x80000000UL)       /* value is stored on bit 31 */
+    #define U3V_SET_TRIGGER_SW_CONV(val)                ((val << 31U) & 0x80000000UL)       /* value is stored on bit 31 */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)              ((val >> 24U) & 0x000000FFUL)       /* value is stored on high byte (bits 24 to 31) */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)              ((val << 24U) & 0xFF000000UL)       /* value is stored on high byte (bits 24 to 31) */
     #define U3V_GET_TEMPERATURE_CONV(val)               (((float)(val & 0xFFFUL) / 10.0F) - 273.15F) /* convert Kelvin to Celcius (from unsigned int input) */
 
 #elif (U3V_CAM_MODEL_SELECTED == U3V_XIMEA_XIQ_MQ013CG_E2)                                  /* XML manifest info */
-    #define U3V_CAM_CFG_REG_BASE_ADDRESS                ((uint64_t)0x000000U)               /* N/A */
-    #define U3V_CAM_CFG_TEMPERATURE_REG                 ((uint64_t)0x200160U)               /* DeviceTemperatureReg */
-    #define U3V_CAM_CFG_DEVICE_RESET_REG                ((uint64_t)0x201100U)               /* DeviceResetReg */
-    #define U3V_CAM_CFG_ACQ_MODE_REG                    ((uint64_t)0x200300U)               /* AcquisitionModeReg */
-    #define U3V_CAM_CFG_ACQ_START_REG                   ((uint64_t)0x200310U)               /* AcquisitionStartReg */
-    #define U3V_CAM_CFG_ACQ_STOP_REG                    ((uint64_t)0x200320U)               /* AcquisitionStopReg */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_REG                ((uint64_t)0x201060U)               /* PixelFormatReg */
-    #define U3V_CAM_CFG_PAYLOAD_SIZE_REG                ((uint64_t)0x200660U)               /* PayloadSizeVal_Reg */
+    #define U3V_CAM_CFG_REG_BASE_ADR                    ((uint64_t)0x000000U)               /* N/A */
+    #define U3V_CAM_CFG_TEMPERATURE_REG_ADR             ((uint64_t)0x200160U)               /* DeviceTemperatureReg */
+    #define U3V_CAM_CFG_DEVICE_RESET_REG_ADR            ((uint64_t)0x201100U)               /* DeviceResetReg */
+    #define U3V_CAM_CFG_ACQ_BURST_FRAME_CNT_REG_ADR     ((uint64_t)0x201220U)               /* AcquisitionBurstFrameCountReg */
+    #define U3V_CAM_CFG_ACQ_MODE_REG_ADR                ((uint64_t)0x200300U)               /* AcquisitionModeReg */
+    #define U3V_CAM_CFG_ACQ_START_REG_ADR               ((uint64_t)0x200310U)               /* AcquisitionStartReg */
+    #define U3V_CAM_CFG_ACQ_STOP_REG_ADR                ((uint64_t)0x200320U)               /* AcquisitionStopReg */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_REG_ADR            ((uint64_t)0x201060U)               /* PixelFormatReg */
+    #define U3V_CAM_CFG_PAYLOAD_SIZE_REG_ADR            ((uint64_t)0x200660U)               /* PayloadSizeVal_Reg */
+    #define U3V_CAM_CFG_TRIGGER_MODE_REG_ADR            ((uint64_t)0x200370U)               /* TriggerModeReg */
+    #define U3V_CAM_CFG_TRIGGER_SEL_REG_ADR             ((uint64_t)0x200360U)               /* TriggerSelectorReg */
+    #define U3V_CAM_CFG_TRIGGER_SRC_REG_ADR             ((uint64_t)0x200390U)               /* TriggerSourceReg */
+    #define U3V_CAM_CFG_TRIGGER_SOFTWARE_REG_ADR        ((uint64_t)0x200380U)               /* TriggerSoftwareReg */
+    #define U3V_CAM_CFG_TRIGGER_SRC_SEL                 (0x00UL)                            /* 0 = Software */
+    #define U3V_CAM_CFG_TRIGGER_SEL                     (0x00UL)                            /* 0 = FrameStart / 2 = FrameBurstStart / 3 = FrameBurstActive (other modes not supported) */
     #define U3V_CAM_CFG_ACQ_MODE_SEL                    (0x02UL)                            /* 2 = CONTINUOUS (other modes not supported) */
     #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (U3V_PFNC_BayerRG8)                 /* BayerRG8 = 0x01080009 (only suports BayerRG8 & BayerRG10)*/
-    #define U3V_CAM_CFG_ACQUISITION_START_CMD           (0x01UL)
-    #define U3V_CAM_CFG_ACQUISITION_STOP_CMD            (0x00UL)
+    #define U3V_SET_ACQ_START_CMD_CONV(val)             (val)                               /* no conversion */
+    #define U3V_SET_ACQ_STOP_CMD_CONV(val)              (val)                               /* no conversion */
+    #define U3V_SET_TRIGGER_SW_CONV(val)                (val)                               /* no conversion */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)              (val)                               /* no conversion */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)              (val)                               /* no conversion */
     #define U3V_GET_TEMPERATURE_CONV(val)               (*(float*)&(val))                   /* value in Celcius (convert to float type from unsigned int input) */
@@ -157,6 +173,55 @@ extern "C" {
  * segmentation of the payload blocks for the image data transfer.  
  */
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT                  (8U)
+
+/**
+ * U3V Acqusition burst frame counter selection
+ * 
+ * Select the number of captured frames in burst mode (when active).
+ * @note Feature supported when Trigger Mode is set.
+ */
+#define U3V_ACQ_BURST_FRAME_CNT_SEL                     (1U)
+
+/**
+ * U3V Trigger mode ON value.
+ * 
+ * @note Value specified in TriggerMode feature of manifest document (standard).
+ */
+#define U3V_TRIGGER_MODE_ON                             (1U)
+
+/**
+ * U3V Trigger mode OFF value.
+ * 
+ * @note Value specified in TriggerMode feature of manifest document (standard).
+ */
+#define U3V_TRIGGER_MODE_OFF                            (0U)
+
+/**
+ * U3V Trigger software command.
+ * 
+ */
+#define U3V_TRIGGER_SW_CMD                              (1UL)
+
+/**
+ * U3V Trigger reset command value.
+ * 
+ */
+#define U3V_DEVICE_RESET_CMD                            (1UL)
+
+/**
+ * U3V Acquisition start command.
+ * 
+ */
+#define U3V_ACQUISITION_START_CMD                       (1UL)
+
+/**
+ * U3V Acquisition start command.
+ * 
+ */
+#define U3V_ACQUISITION_STOP_CMD                        (0UL)
+
+
+
 
 //TODO: remove on integration all defs below, used for debug (XULT board specific)
 #include "device.h"
