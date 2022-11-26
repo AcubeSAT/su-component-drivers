@@ -31,7 +31,7 @@ extern "C" {
  */
 #define U3V_FLIR_CM3_U3_12S2C_CS                        (0)
 #define U3V_XIMEA_XIQ_MQ013CG_E2                        (1)
-#define U3V_CAM_MODEL_SELECTED                          (U3V_XIMEA_XIQ_MQ013CG_E2)
+#define U3V_CAM_MODEL_SELECTED                          (U3V_FLIR_CM3_U3_12S2C_CS)
 
 
 /**
@@ -53,12 +53,12 @@ extern "C" {
     #define U3V_CAM_CFG_PIXEL_FORMAT_REG                ((uint64_t)0x4070U)                 /* ColorCodingID_Reg */
     #define U3V_CAM_CFG_PAYLOAD_SIZE_REG                ((uint64_t)0x5410U)                 /* PayloadSizeVal_Reg */
     #define U3V_CAM_CFG_ACQ_MODE_SEL                    (0x01UL)                            /* 0 = CONTINUOUS / 1 = SINGLE_FRAME / 2 = MULTI_FRAME */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_CTRL_SEL           (0x04UL)                            /* U3V_PFNC_RGB8 = 0x02180014 -> 04 in PixelFormatCtrlVal_Int formula */
-    #define U3V_CAM_CFG_ACQUISITION_START_CMD           (0x80000000UL)                      /* set '1' to bit 31 */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (0x04UL)                            /* U3V_PFNC_RGB8 = 0x02180014 -> 04 in PixelFormatCtrlVal_Int formula */
+    #define U3V_CAM_CFG_ACQUISITION_START_CMD           (0x80000000UL)                      /* '1' on bit 31 */
     #define U3V_CAM_CFG_ACQUISITION_STOP_CMD            (0x00UL)
-    #define U3V_GET_PIXEL_FORMAT_FORMULA(val)           ((val >> 24U) & 0xFFUL)             /* value is stored on high byte (bits 24 to 31) */
-    #define U3V_SET_PIXEL_FORMAT_FORMULA(val)           ((val << 24U) & 0xFF000000UL)       /* value is stored on high byte (bits 24 to 31) */
-    #define U3V_GET_TEMPERATURE_FORMULA(val)            (((float)(val & 0xFFFUL) / 10.0F) - 273.15F) /* convert Kelvin to Celcius (from unsigned int input) */
+    #define U3V_GET_PIXEL_FORMAT_CONV(val)              ((val >> 24U) & 0x000000FFUL)       /* value is stored on high byte (bits 24 to 31) */
+    #define U3V_SET_PIXEL_FORMAT_CONV(val)              ((val << 24U) & 0xFF000000UL)       /* value is stored on high byte (bits 24 to 31) */
+    #define U3V_GET_TEMPERATURE_CONV(val)               (((float)(val & 0xFFFUL) / 10.0F) - 273.15F) /* convert Kelvin to Celcius (from unsigned int input) */
 
 #elif (U3V_CAM_MODEL_SELECTED == U3V_XIMEA_XIQ_MQ013CG_E2)                                  /* XML manifest info */
     #define U3V_CAM_CFG_REG_BASE_ADDRESS                ((uint64_t)0x000000U)               /* N/A */
@@ -70,12 +70,12 @@ extern "C" {
     #define U3V_CAM_CFG_PIXEL_FORMAT_REG                ((uint64_t)0x201060U)               /* PixelFormatReg */
     #define U3V_CAM_CFG_PAYLOAD_SIZE_REG                ((uint64_t)0x200660U)               /* PayloadSizeVal_Reg */
     #define U3V_CAM_CFG_ACQ_MODE_SEL                    (0x02UL)                            /* 2 = CONTINUOUS (other modes not supported) */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_CTRL_SEL           (0x01080009UL)                      /* BayerRG8 = 0x01080009 */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (U3V_PFNC_BayerRG8)                 /* BayerRG8 = 0x01080009 (only suports BayerRG8 & BayerRG10)*/
     #define U3V_CAM_CFG_ACQUISITION_START_CMD           (0x01UL)
     #define U3V_CAM_CFG_ACQUISITION_STOP_CMD            (0x00UL)
-    #define U3V_GET_PIXEL_FORMAT_FORMULA(val)           (val)                               /* no conversion */
-    #define U3V_SET_PIXEL_FORMAT_FORMULA(val)           (val)                               /* no conversion */
-    #define U3V_GET_TEMPERATURE_FORMULA(val)            (*(float*)&(val))                   /* value in Celcius (convert to float type from unsigned int input) */
+    #define U3V_GET_PIXEL_FORMAT_CONV(val)              (val)                               /* no conversion */
+    #define U3V_SET_PIXEL_FORMAT_CONV(val)              (val)                               /* no conversion */
+    #define U3V_GET_TEMPERATURE_CONV(val)               (*(float*)&(val))                   /* value in Celcius (convert to float type from unsigned int input) */
 
 #else
     #error "Invalid USB3 Vision camera model selected"

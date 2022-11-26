@@ -304,7 +304,7 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
                 regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_PIXEL_FORMAT_REG;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* convert pixel format reading according to camera model */
-                regValue = U3V_GET_PIXEL_FORMAT_FORMULA(regValue);
+                regValue = U3V_GET_PIXEL_FORMAT_CONV(regValue);
                 break;
 
             case U3V_MEM_REG_INT_PAYLOAD_SIZE:
@@ -367,7 +367,7 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
             case U3V_MEM_REG_INT_PIXELFORMAT:
                 regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_PIXEL_FORMAT_REG;
                 /* convert pixel format setting according to camera model */
-                regValue = U3V_SET_PIXEL_FORMAT_FORMULA(regVal);
+                regValue = U3V_SET_PIXEL_FORMAT_CONV(regVal);
                 break;
 
             case U3V_MEM_REG_INT_PAYLOAD_SIZE:
@@ -430,7 +430,7 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
                 regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_TEMPERATURE_REG;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* convert temperature reading in Celcius according to camera model */
-                floatRetVal = U3V_GET_TEMPERATURE_FORMULA(regValue);
+                floatRetVal = U3V_GET_TEMPERATURE_CONV(regValue);
                 break;
 
             default:
@@ -991,18 +991,6 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle)
     {
         /* invalid handle */
     }
-}
-
-
-uint32_t U3VHost_GetSelectedPixelFormat(void)
-{
-    return (uint32_t)U3V_CAM_CFG_PIXEL_FORMAT_CTRL_SEL;
-}
-
-
-uint32_t U3VHost_GetSelectedAcquisitionMode(void)
-{
-    return (uint32_t)U3V_CAM_CFG_ACQ_MODE_SEL;
 }
 
 
