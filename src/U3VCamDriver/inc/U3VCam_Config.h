@@ -33,30 +33,36 @@ extern "C" {
 #define U3V_XIMEA_XIQ_MQ013CG_E2                        (1)
 #define U3V_CAM_MODEL_SELECTED                          (U3V_FLIR_CM3_U3_12S2C_CS)
 
-#if (U3V_CAM_MODEL_SELECTED == U3V_FLIR_CM3_U3_12S2C_CS)
-    #define U3V_CFG_MDL_CAM_REG_BASE_ADDRESS            (0xFFFFF0F00000)    /* CamRegBaseAddress */
-    #define U3V_CFG_MDL_SBRM_OFFSET                     (0x200000)          /* SBRMOffset */
-    #define U3V_CFG_MDL_TEMPERATURE_REG                 (0x82C)             /* Temperature_Reg */
-    #define U3V_CFG_MDL_DEVICE_RESET_REG                (0x400C)            /* DeviceReset_CtrlValueReg */
-    #define U3V_CFG_MDL_SINGLE_FRAME_ACQ_MODE_REG       (0x638)             /* SingleFrameAcquisitionMode_Reg */
-    #define U3V_CFG_MDL_ACQ_MODE_REG                    (0x4028)            /* AcquisitionMode_Reg */
-    #define U3V_CFG_MDL_ACQ_START_REG                   (0x4030)            /* AcquisitionStart_Reg */
-    #define U3V_CFG_MDL_ACQ_STOP_REG                    (0x614)             /* AcquisitionStop_Reg */
-    #define U3V_CFG_MDL_COLOR_CODING_ID_REG             (0x4070)            /* ColorCodingID_Reg */
-    #define U3V_CFG_MDL_PAYLOAD_SIZE_VAL_REG            (0x5410)            /* PayloadSizeVal_Reg */
-    #define U3V_CFG_MDL_PIXEL_FORMAT_CTRL_INT_SEL       (0x04)              /* U3V_PFNC_RGB8 = 0x02180014 -> 04 in PixelFormatCtrlVal_Int formula */
-#elif (U3V_CAM_MODEL_SELECTED == U3V_XIMEA_XIQ_MQ013CG_E2)
-    #define U3V_CFG_MDL_CAM_REG_BASE_ADDRESS            (0x0)               /* CamRegBaseAddress */
-    #define U3V_CFG_MDL_SBRM_OFFSET                     (0x0)               /* SBRMOffset */
-    #define U3V_CFG_MDL_TEMPERATURE_REG                 (0x0)               /* Temperature_Reg */
-    #define U3V_CFG_MDL_DEVICE_RESET_REG                (0x0)               /* DeviceReset_CtrlValueReg */
-    #define U3V_CFG_MDL_SINGLE_FRAME_ACQ_MODE_REG       (0x0)               /* SingleFrameAcquisitionMode_Reg */
-    #define U3V_CFG_MDL_ACQ_MODE_REG                    (0x0)               /* AcquisitionMode_Reg */
-    #define U3V_CFG_MDL_ACQ_START_REG                   (0x0)               /* AcquisitionStart_Reg */
-    #define U3V_CFG_MDL_ACQ_STOP_REG                    (0x0)               /* AcquisitionStop_Reg */
-    #define U3V_CFG_MDL_COLOR_CODING_ID_REG             (0x0)               /* ColorCodingID_Reg */
-    #define U3V_CFG_MDL_PAYLOAD_SIZE_VAL_REG            (0x0)               /* PayloadSizeVal_Reg */
-    #define U3V_CFG_MDL_PIXEL_FORMAT_CTRL_INT_SEL       (0x0)               /* U3V_PFNC_RGB8 = x -> y in PixelFormatCtrlVal_Int formula */
+#if (U3V_CAM_MODEL_SELECTED == U3V_FLIR_CM3_U3_12S2C_CS)                                    /* XML manifest info */
+    #define U3V_CFG_MDL_CAM_REG_BASE_ADDRESS            (0xFFFFF0F00000U)                   /* CamRegBaseAddress */
+    #define U3V_CFG_MDL_TEMPERATURE_REG                 (0x082CU)                           /* Temperature_Reg */
+    #define U3V_CFG_MDL_DEVICE_RESET_REG                (0x400CU)                           /* DeviceReset_CtrlValueReg */
+    #define U3V_CFG_MDL_ACQ_MODE_REG                    (0x4028U)                           /* AcquisitionMode_Reg */
+    #define U3V_CFG_MDL_ACQ_START_REG                   (0x4030U)                           /* AcquisitionStart_Reg */
+    #define U3V_CFG_MDL_ACQ_STOP_REG                    (0x0614U)                           /* AcquisitionStop_Reg */
+    #define U3V_CFG_MDL_PIXEL_FORMAT_REG                (0x4070U)                           /* ColorCodingID_Reg */
+    #define U3V_CFG_MDL_PAYLOAD_SIZE_REG                (0x5410U)                           /* PayloadSizeVal_Reg */
+    #define U3V_CFG_MDL_ACQ_MODE_SEL                    (U3V_ACQUISITION_MODE_SINGLE_FRAME) /* T_U3VImgAcqMode: CONTINUOUS / SINGLE_FRAME / MULTI_FRAME */
+    #define U3V_CFG_MDL_PIXEL_FORMAT_CTRL_SEL           (0x04U)                             /* U3V_PFNC_RGB8 = 0x02180014 -> 04 in PixelFormatCtrlVal_Int formula */
+    #define U3V_GET_PIXEL_FORMAT_FORMULA(val)           ((val >> 24U) & 0xFFUL)             /* value is stored on high byte (bits 24 to 31) */
+    #define U3V_SET_PIXEL_FORMAT_FORMULA(val)           ((val << 24U) & 0xFF000000UL)       /* value is stored on high byte (bits 24 to 31) */
+    #define U3V_GET_TEMPERATURE_FORMULA(val)            (((float)(val & 0xFFFUL) / 10.0F) - 273.15F) /* Kelvin to Celcius */
+
+#elif (U3V_CAM_MODEL_SELECTED == U3V_XIMEA_XIQ_MQ013CG_E2)                                  /* XML manifest info */
+    #define U3V_CFG_MDL_CAM_REG_BASE_ADDRESS            (0x000000U)                         /* N/A */
+    #define U3V_CFG_MDL_TEMPERATURE_REG                 (0x200160U)                         /* DeviceTemperatureReg */
+    #define U3V_CFG_MDL_DEVICE_RESET_REG                (0x201100U)                         /* DeviceResetReg */
+    #define U3V_CFG_MDL_ACQ_MODE_REG                    (0x200300U)                         /* AcquisitionModeReg */
+    #define U3V_CFG_MDL_ACQ_START_REG                   (0x200310U)                         /* AcquisitionStartReg */
+    #define U3V_CFG_MDL_ACQ_STOP_REG                    (0x200320U)                         /* AcquisitionStopReg */
+    #define U3V_CFG_MDL_PIXEL_FORMAT_REG                (0x201060U)                         /* PixelFormatReg */
+    #define U3V_CFG_MDL_PAYLOAD_SIZE_REG                (0x200660U)                         /* PayloadSizeVal_Reg */
+    #define U3V_CFG_MDL_ACQ_MODE_SEL                    (U3V_ACQUISITION_MODE_MULTI_FRAME)  /* T_U3VImgAcqMode: CONTINUOUS / SINGLE_FRAME / MULTI_FRAME */
+    #define U3V_CFG_MDL_PIXEL_FORMAT_CTRL_SEL           (0x01080009U)                       /* BayerRG8 = 0x01080009 */
+    #define U3V_GET_PIXEL_FORMAT_FORMULA(val)           (val)                               /* no conversion */
+    #define U3V_SET_PIXEL_FORMAT_FORMULA(val)           (val)                               /* no conversion */
+    #define U3V_GET_TEMPERATURE_FORMULA(val)            (*(float*)&(val))                   /* convert to float type by ref (already in Celcius) */
+
 #else
     #error "Invalid USB3 Vision camera model selected"
 #endif
@@ -86,34 +92,37 @@ extern "C" {
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER                (1U)
 
 /**
- * U3V Host image data buffer max size.
+ * U3V Host image payload data block max size.
  * 
- * Max buffer size in bytes for the transfer of the image payload data.
+ * Max size in bytes for the transfer block of the image payload data.
  * @warning The size shall be a multiple of the byte alignment size of the MCU 
- * architecture and a value supported by the USB2.0-HS protocol.
- * @note For optimized results, prefer using 1024 or 512 bytes. 
+ * architecture and also supported by the USB2.0-HS protocol (1024 bytes max).
+ * @note For optimized results, prefer using 1024 or 512 bytes, may be camera
+ * model dependent.
  */
-#define U3V_IN_BUFFER_MAX_SIZE                          (1024U)
+#define U3V_PAYLD_BLOCK_MAX_SIZE                        (1024U)
 
 /**
  * U3V Payload leader max size.
  * 
  * Max size supported by the host to hold leader packer data. (Normally a leader
  * packet will not exceed 70 bytes).
+ * @warning Cannot be greater than U3V_PAYLD_BLOCK_MAX_SIZE
  * @note This value will not occupy any buffer space in RAM, but will simply be 
  * sent to the connected U3V device as the USB3 Vision protocol requires.
  */
-#define U3V_LEADER_MAX_SIZE                             (256U)
+#define U3V_LEADER_MAX_SIZE                             (1024U)
 
 /**
  * U3V Payload leader max size.
  * 
  * Max size supported by the host to hold leader packer data. (Normally a 
  * trailer packet will not exceed 40 bytes).
+ * @warning Cannot be greater than U3V_PAYLD_BLOCK_MAX_SIZE
  * @note This value will not occupy any buffer space in RAM, but will simply be 
  * sent to the connected U3V device as the USB3 Vision protocol requires.
  */
-#define U3V_TRAILER_MAX_SIZE                            (256U)
+#define U3V_TRAILER_MAX_SIZE                            (1024U)
 
 /**
  * U3V Host request timeout.
@@ -164,16 +173,16 @@ extern "C" {
 typedef struct
 {
     uint64_t camRegBaseAddress;
-    uint64_t SBRMOffset;
-    uint64_t temperature_Reg;
-    uint64_t deviceReset_Reg;
-    uint64_t singleFrameAcquisitionMode_Reg;
-    uint64_t acquisitionMode_Reg;
-    uint64_t acquisitionStart_Reg;
-    uint64_t acquisitionStop_Reg;
-    uint64_t colorCodingID_Reg;
-    uint64_t payloadSizeVal_Reg;
-    uint32_t pixelFormatCtrlVal_Int_Sel;
+    uint64_t temperatureRegAdr;
+    uint64_t deviceResetRegAdr;
+    uint64_t acquisitionModeRegAdr;
+    uint64_t acqBurstFrameCntRegAdr;
+    uint64_t acquisitionStartRegAdr;
+    uint64_t acquisitionStopRegAdr;
+    uint64_t pixelFormatRegAdr;
+    uint64_t payloadSizeRegAdr;
+    uint32_t acquisitionModeSel;
+    uint32_t pixelFormatSel;
 } T_U3VCamRegisterCfg;
 
 

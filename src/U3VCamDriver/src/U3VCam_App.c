@@ -221,11 +221,11 @@ void U3VCamDriver_Tasks(void)
             result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQUISITION_MODE, &u3vAppData.acquisitionMode);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
-                if (u3vAppData.acquisitionMode != (uint32_t)U3V_ACQUISITION_MODE_SINGLE_FRAME)
+                if (u3vAppData.acquisitionMode != U3VHost_GetSelectedAcquisitionMode())
                 {
                     result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle,
                                                               U3V_MEM_REG_INT_ACQUISITION_MODE,
-                                                              (uint32_t)U3V_ACQUISITION_MODE_SINGLE_FRAME);
+                                                              U3VHost_GetSelectedAcquisitionMode());
                 }
                 else
                 {
@@ -303,7 +303,7 @@ void U3VCamDriver_Tasks(void)
                     u3vAppData.imgAcqReqNewBlock = false;
                     /* size of transfer request for Leader and Trailer packes is much smaller, but there is no issue
                      * with the following size argument being greater, those packes will arrive with their own size */
-                    result1 = U3VHost_StartImgPayldTransfer(u3vAppData.u3vHostHandle, u3vAppData.appImgDataBfr, (size_t)U3V_IN_BUFFER_MAX_SIZE);
+                    result1 = U3VHost_StartImgPayldTransfer(u3vAppData.u3vHostHandle, u3vAppData.appImgDataBfr, (size_t)U3V_PAYLD_BLOCK_MAX_SIZE);
                     if (result1 != U3V_HOST_RESULT_SUCCESS)
                     {
                         U3V_REPORT_ERROR(U3V_DRV_ERR_START_IMG_TRANSF_FAIL);
@@ -506,7 +506,7 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
 
 size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
 {
-    return (size_t)U3V_IN_BUFFER_MAX_SIZE;
+    return (size_t)U3V_PAYLD_BLOCK_MAX_SIZE;
 }
 
 

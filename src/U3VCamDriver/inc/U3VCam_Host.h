@@ -357,7 +357,7 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
  * @param size 
  * @return T_U3VHostResult 
  * @note For optimized results, prefer using 1024 or 512 byte size (same as 
- * U3V_IN_BUFFER_MAX_SIZE), but make sure that the USB Host Layer below is 
+ * U3V_PAYLD_BLOCK_MAX_SIZE), but make sure that the USB Host Layer below is 
  * USB2.0-HS.
  */
 T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void *imgBfr, size_t size);
@@ -395,6 +395,18 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
  * @return uint32_t 
  */
 uint32_t U3VHost_GetSelectedPixelFormat(void);
+
+/**
+ * U3V Host get selected acquisition mode.
+ * 
+ * This function returns the constant value of the selected acquisition mode of 
+ * u3vCamRegisterCfg struct. This value is a preset constant acquired by the XML
+ * file built-in the camera internal memory, and should represent a typical 
+ * acquisition mode (Continuous, Single Frame, Multi Frame).
+ * @return uint32_t 
+ */
+uint32_t U3VHost_GetSelectedAcquisitionMode(void);
+
 
 /**
  * U3V Host Read memory register integer value.
