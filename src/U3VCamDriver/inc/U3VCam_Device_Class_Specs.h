@@ -203,27 +203,6 @@ typedef enum
 } T_U3VPfnc;
 
 /**
- * U3V Image Acquisition mode.
- * 
- */
-typedef enum
-{
-    U3V_ACQUISITION_MODE_CONTINUOUS         =   0x0U,
-    U3V_ACQUISITION_MODE_SINGLE_FRAME       =   0x1U,
-    U3V_ACQUISITION_MODE_MULTI_FRAME        =   0x2U
-} T_U3VImgAcqMode;
-
-/**
- * U3V Acquisition control command value.
- * 
- */
-typedef enum
-{
-    U3V_ACQ_START_CMD_VAL                   =   0x80000000U,
-    U3V_ACQ_STOP_CMD_VAL                    =   0x00000000U
-} T_U3VAcqCmdVal;
-
-/**
  * U3V Stream control command value.
  * 
  */

@@ -388,8 +388,8 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
 /**
  * U3V Host get selected pixel format.
  * 
- * This function returns the constant value of the selected pixel format of 
- * u3vCamRegisterCfg struct. This value is a preset constant acquired by the XML
+ * This function returns the constant value of the selected pixel format for the
+ * current configuration. This value is a preset constant acquired by the XML
  * file built-in the camera internal memory, and should represent a typical 
  * pixel format option (e.g. RGB8).
  * @return uint32_t 
@@ -399,9 +399,9 @@ uint32_t U3VHost_GetSelectedPixelFormat(void);
 /**
  * U3V Host get selected acquisition mode.
  * 
- * This function returns the constant value of the selected acquisition mode of 
- * u3vCamRegisterCfg struct. This value is a preset constant acquired by the XML
- * file built-in the camera internal memory, and should represent a typical 
+ * This function returns the constant value of the selected acquisition mode for 
+ * the current configuration. This value is a preset constant acquired by the 
+ * XML file built-in the camera internal memory, and should represent a typical 
  * acquisition mode (Continuous, Single Frame, Multi Frame).
  * @return uint32_t 
  */

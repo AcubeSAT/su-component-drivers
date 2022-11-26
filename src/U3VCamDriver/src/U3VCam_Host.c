@@ -301,33 +301,27 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
         switch (integerReg)
         {
             case U3V_MEM_REG_INT_PIXELFORMAT:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.pixelFormatRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_PIXEL_FORMAT_REG;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* convert pixel format reading according to camera model */
                 regValue = U3V_GET_PIXEL_FORMAT_FORMULA(regValue);
                 break;
 
             case U3V_MEM_REG_INT_PAYLOAD_SIZE:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.payloadSizeRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_PAYLOAD_SIZE_REG;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* redundant assignment */
                 regValue = regValue;
                 break;
 
             case U3V_MEM_REG_INT_ACQUISITION_MODE:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.acquisitionModeRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_ACQ_MODE_REG;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* redundant assignment */
                 regValue = regValue;
                 break;
 
-            case U3V_MEM_REG_INT_DEVICE_RESET:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.deviceResetRegAdr;
-                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
-                /* value is stored in MSB (bit 31) */
-                regValue = (regValue >> 31U) & 0xFFUL;
-                break;
-
+            case U3V_MEM_REG_INT_DEVICE_RESET: /* N/A */
             default:
                 u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
                 break;
@@ -371,23 +365,23 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
         switch (integerReg)
         {
             case U3V_MEM_REG_INT_PIXELFORMAT:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.pixelFormatRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_PIXEL_FORMAT_REG;
                 /* convert pixel format setting according to camera model */
                 regValue = U3V_SET_PIXEL_FORMAT_FORMULA(regVal);
                 break;
 
             case U3V_MEM_REG_INT_PAYLOAD_SIZE:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.payloadSizeRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_PAYLOAD_SIZE_REG;
                 regValue = regVal;
                 break;
 
             case U3V_MEM_REG_INT_ACQUISITION_MODE:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.acquisitionModeRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_ACQ_MODE_REG;
                 regValue = regVal;
                 break;
 
             case U3V_MEM_REG_INT_DEVICE_RESET:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.deviceResetRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_DEVICE_RESET_REG;
                 regValue = regVal;
                 break;
 
@@ -433,7 +427,7 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
         switch (floatReg)
         {
             case U3V_MEM_REG_FLOAT_TEMPERATURE:
-                regAddr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.temperatureRegAdr;
+                regAddr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_TEMPERATURE_REG;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
                 /* convert temperature reading in Celcius according to camera model */
                 floatRetVal = U3V_GET_TEMPERATURE_FORMULA(regValue);
@@ -551,8 +545,8 @@ T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle)
     T_U3VHostInstanceObj *u3vInstance;
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesWritten;
-    uint64_t acqStartRegAdr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.acquisitionStartRegAdr;
-    uint32_t acqStartCmdVal = (uint32_t)U3V_ACQ_START_CMD_VAL;
+    uint64_t acqStartRegAdr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_ACQ_START_REG;
+    uint32_t acqStartCmdVal = U3V_CAM_CFG_ACQUISITION_START_CMD;
 
     u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -588,8 +582,8 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle)
     T_U3VHostInstanceObj *u3vInstance;
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesWritten;
-    uint64_t acqStopRegAdr = u3vCamRegisterCfg.camRegBaseAddress + u3vCamRegisterCfg.acquisitionStopRegAdr;
-    uint32_t acqStopCmdVal = (uint32_t)U3V_ACQ_STOP_CMD_VAL;
+    uint64_t acqStopRegAdr = U3V_CAM_CFG_REG_BASE_ADDRESS + U3V_CAM_CFG_ACQ_STOP_REG;
+    uint32_t acqStopCmdVal = U3V_CAM_CFG_ACQUISITION_STOP_CMD;
 
     u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
 
@@ -1002,13 +996,13 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle)
 
 uint32_t U3VHost_GetSelectedPixelFormat(void)
 {
-    return u3vCamRegisterCfg.pixelFormatSel;
+    return (uint32_t)U3V_CAM_CFG_PIXEL_FORMAT_CTRL_SEL;
 }
 
 
 uint32_t U3VHost_GetSelectedAcquisitionMode(void)
 {
-    return u3vCamRegisterCfg.acquisitionModeSel;
+    return (uint32_t)U3V_CAM_CFG_ACQ_MODE_SEL;
 }
 
 
