@@ -384,6 +384,22 @@ void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
 T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *pReadValue);
 
 /**
+ * U3V Host Write memory register integer value.
+ * 
+ * This function shall be called by the application in order to write a memory
+ * register of the connected U3V camera, which holds an integer value, with a 
+ * new integer value.
+ * @param u3vObjHandle 
+ * @param integerReg 
+ * @param writeValue 
+ * @return T_U3VHostResult
+ * @warning This function shall only be called after the Control Interface has 
+ * been established.
+ * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
+ */
+T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
+
+/**
  * U3V Host Read memory register float value.
  * 
  * This function shall be called by the application in order to read a memory 
@@ -414,22 +430,6 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
  * @note Available string registers can be seen in enum T_U3VMemRegString.
  */
 T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, void *pReadBfr);
-
-/**
- * U3V Host Write memory register integer value.
- * 
- * This function shall be called by the application in order to write a memory
- * register of the connected U3V camera, which holds an integer value, with a 
- * new integer value.
- * @param u3vObjHandle 
- * @param integerReg 
- * @param writeValue 
- * @return T_U3VHostResult
- * @warning This function shall only be called after the Control Interface has 
- * been established.
- * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
- */
-T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
 
 
 #ifdef __cplusplus

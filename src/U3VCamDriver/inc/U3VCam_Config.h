@@ -20,6 +20,21 @@ extern "C" {
 *********************************************************/
 
 /**
+ * U3VCamDriver image mcquisition methods
+ * 
+ * This specifies the mechanism to acquire an image, in the app state machine 
+ * (single frame or sw triggered 'burst' of 1 frame). Define only one of the 
+ * following options in each model configuration mapping below.
+ * @note Prefer using 'single frame' option when supported by the selected 
+ * model. When using 'single frame' option, all 'trigger' related definitions 
+ * are not used, but they should be defined anyway with any value.
+ * @warning Do not define both.
+ */
+#undef U3V_ACQ_METHOD_SINGLE_FRAME
+#undef U3V_ACQ_METHOD_SW_TRIGGER
+
+
+/**
  * U3VCamDriver Camera model select.
  * 
  * Here are defined the supported 'USB3 Vision' camera models with existing
@@ -41,9 +56,16 @@ extern "C" {
  * addresses, conversion formulas and preset values.
  * @note When adding a new model below, copy all areas of an existing model and
  * replace the corresponding values for each field by using the device's U3V
- * manifest (XML file or datasheet)
+ * manifest (XML file or datasheet).
+ * @warning Some registers of specific models may require a unique conversion
+ * for the get/set of values on registers, check manifest document for each.
+ * When no conversion is necessary simpy use 1:1 conversion macros, this means
+ * that the integer value will be assigned as a full 32bit value on register.
+ * @warning Define U3V_ACQ_METHOD_SINGLE_FRAME in a model configuration mapping
+ * only when 'single frame' acquisition mode is supported by camera model, else 
+ * you may define U3V_ACQ_METHOD_SW_TRIGGER option.
  */
-#if (U3V_CAM_MODEL_SELECTED == U3V_FLIR_CM3_U3_12S2C_CS)                                    /* XML manifest info */
+#if (U3V_CAM_MODEL_SELECTED == U3V_FLIR_CM3_U3_12S2C_CS)                                    /* U3V XML manifest info */
     #define U3V_CAM_CFG_REG_BASE_ADR                    ((uint64_t)0xFFFFF0F00000U)         /* CamRegBaseAddress */
     #define U3V_CAM_CFG_TEMPERATURE_REG_ADR             ((uint64_t)0x082CU)                 /* Temperature_Reg */
     #define U3V_CAM_CFG_DEVICE_RESET_REG_ADR            ((uint64_t)0x400CU)                 /* DeviceReset_CtrlValueReg */
@@ -61,14 +83,27 @@ extern "C" {
     #define U3V_CAM_CFG_TRIGGER_SEL                     (0x00UL)                            /* 0 = FrameStart / 1 = ExposureActive (other modes not supported) */
     #define U3V_CAM_CFG_ACQ_MODE_SEL                    (0x01UL)                            /* 0 = CONTINUOUS / 1 = SINGLE_FRAME / 2 = MULTI_FRAME */
     #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (0x04UL)                            /* 04 = U3V_PFNC_RGB8 = 0x02180014 in PixelFormatCtrlVal_Int formula */
-    #define U3V_SET_ACQ_START_CMD_CONV(val)             ((val << 31U) & 0x80000000UL)       /* value is stored on bit 31 */
-    #define U3V_SET_ACQ_STOP_CMD_CONV(val)              ((val << 31U) & 0x80000000UL)       /* value is stored on bit 31 */
-    #define U3V_SET_TRIGGER_SW_CONV(val)                ((val << 31U) & 0x80000000UL)       /* value is stored on bit 31 */
+    #define U3V_GET_ACQ_BURST_FRAME_CNT_CONV(val)       (val & 0x0000FFFFUL)                /* bits 0 to 15*/
+    #define U3V_SET_ACQ_BURST_FRAME_CNT_CONV(val)       (val & 0x0000FFFFUL)                /* bits 0 to 15*/
+    #define U3V_GET_ACQ_MODE_CONV(val)                  (val)                               /* no conversion */
+    #define U3V_SET_ACQ_MODE_CONV(val)                  (val)                               /* no conversion */ 
+    #define U3V_SET_ACQ_START_CONV(val)                 ((val << 31U) & 0x80000000UL)       /* bit 31 */
+    #define U3V_SET_ACQ_STOP_CONV(val)                  ((val << 31U) & 0x80000000UL)       /* bit 31 */
+    #define U3V_SET_DEVICE_RESET_CONV(val)              (val)                               /* bit 0, no need for conversion */
+    #define U3V_GET_TRIGGER_MODE_CONV(val)              ((val >> 25U) & 0x00000001UL)       /* bit 25 */
+    #define U3V_SET_TRIGGER_MODE_CONV(val)              ((val << 25U) & 0x00200000UL)       /* bit 25 */
+    #define U3V_GET_TRIGGER_SELECT_CONV(val)            ((val >> 16U) & 0x0000000FUL)       /* bits 16 to 19 */
+    #define U3V_SET_TRIGGER_SELECT_CONV(val)            ((val << 16U) & 0x000F0000UL)       /* bits 16 to 19 */
+    #define U3V_GET_TRIGGER_SOURCE_CONV(val)            ((val >> 21U) & 0x00000007UL)       /* bits 21 to 23 */
+    #define U3V_SET_TRIGGER_SOURCE_CONV(val)            ((val << 21U) & 0x00E00000UL)       /* bits 21 to 23 */
+    #define U3V_SET_TRIGGER_SW_CONV(val)                ((val << 31U) & 0x80000000UL)       /* bit 31 */
+    #define U3V_GET_PAYLOAD_SIZE_CONV(val)              (val)                               /* no conversion */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)              ((val >> 24U) & 0x000000FFUL)       /* value is stored on high byte (bits 24 to 31) */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)              ((val << 24U) & 0xFF000000UL)       /* value is stored on high byte (bits 24 to 31) */
     #define U3V_GET_TEMPERATURE_CONV(val)               (((float)(val & 0xFFFUL) / 10.0F) - 273.15F) /* convert Kelvin to Celcius (from unsigned int input) */
+    #define U3V_ACQ_METHOD_SINGLE_FRAME                                                     /* Image acquisition method (use single frame) */
 
-#elif (U3V_CAM_MODEL_SELECTED == U3V_XIMEA_XIQ_MQ013CG_E2)                                  /* XML manifest info */
+#elif (U3V_CAM_MODEL_SELECTED == U3V_XIMEA_XIQ_MQ013CG_E2)                                  /* U3V XML manifest info */
     #define U3V_CAM_CFG_REG_BASE_ADR                    ((uint64_t)0x000000U)               /* N/A */
     #define U3V_CAM_CFG_TEMPERATURE_REG_ADR             ((uint64_t)0x200160U)               /* DeviceTemperatureReg */
     #define U3V_CAM_CFG_DEVICE_RESET_REG_ADR            ((uint64_t)0x201100U)               /* DeviceResetReg */
@@ -86,12 +121,25 @@ extern "C" {
     #define U3V_CAM_CFG_TRIGGER_SEL                     (0x00UL)                            /* 0 = FrameStart / 2 = FrameBurstStart / 3 = FrameBurstActive (other modes not supported) */
     #define U3V_CAM_CFG_ACQ_MODE_SEL                    (0x02UL)                            /* 2 = CONTINUOUS (other modes not supported) */
     #define U3V_CAM_CFG_PIXEL_FORMAT_SEL                (U3V_PFNC_BayerRG8)                 /* BayerRG8 = 0x01080009 (only suports BayerRG8 & BayerRG10)*/
-    #define U3V_SET_ACQ_START_CMD_CONV(val)             (val)                               /* no conversion */
-    #define U3V_SET_ACQ_STOP_CMD_CONV(val)              (val)                               /* no conversion */
+    #define U3V_GET_ACQ_BURST_FRAME_CNT_CONV(val)       (val)                               /* no conversion */
+    #define U3V_SET_ACQ_BURST_FRAME_CNT_CONV(val)       (val)                               /* no conversion */
+    #define U3V_GET_ACQ_MODE_CONV(val)                  (val)                               /* no conversion */
+    #define U3V_SET_ACQ_MODE_CONV(val)                  (val)                               /* no conversion */
+    #define U3V_SET_ACQ_START_CONV(val)                 (val)                               /* no conversion */
+    #define U3V_SET_ACQ_STOP_CONV(val)                  (val)                               /* no conversion */
+    #define U3V_SET_DEVICE_RESET_CONV(val)              (val)                               /* no conversion */ 
+    #define U3V_GET_TRIGGER_MODE_CONV(val)              (val)                               /* no conversion */
+    #define U3V_SET_TRIGGER_MODE_CONV(val)              (val)                               /* no conversion */
+    #define U3V_GET_TRIGGER_SELECT_CONV(val)            (val)                               /* no conversion */
+    #define U3V_SET_TRIGGER_SELECT_CONV(val)            (val)                               /* no conversion */
+    #define U3V_GET_TRIGGER_SOURCE_CONV(val)            (val)                               /* no conversion */
+    #define U3V_SET_TRIGGER_SOURCE_CONV(val)            (val)                               /* no conversion */
     #define U3V_SET_TRIGGER_SW_CONV(val)                (val)                               /* no conversion */
+    #define U3V_GET_PAYLOAD_SIZE_CONV(val)              (val)                               /* no conversion */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)              (val)                               /* no conversion */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)              (val)                               /* no conversion */
     #define U3V_GET_TEMPERATURE_CONV(val)               (*(float*)&(val))                   /* value in Celcius (convert to float type from unsigned int input) */
+    #define U3V_ACQ_METHOD_SW_TRIGGER                                                       /* Image acquisition method (single frame not supported, use sw trigger) */
 
 #else
     #error "Invalid USB3 Vision camera model selected"

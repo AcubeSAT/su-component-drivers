@@ -216,6 +216,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
+#ifdef U3V_ACQ_METHOD_SINGLE_FRAME
             result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_MODE, &u3vAppData.acquisitionMode);
             if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
@@ -228,6 +229,18 @@ void U3VCamDriver_Tasks(void)
                     u3vAppData.state = U3V_APP_STATE_SETUP_U3V_STREAM_IF;
                 }
             }
+#elif defined U3V_ACQ_METHOD_SW_TRIGGER
+            result1 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_BURST_FRAME_COUNT, U3V_ACQ_BURST_FRAME_CNT_SEL);
+            result1 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_TRIGGER_SOURCE, U3V_CAM_CFG_TRIGGER_SRC_SEL);
+            result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_TRIGGER_MODE, U3V_TRIGGER_MODE_ON);
+            result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_TRIGGER_SELECT, U3V_CAM_CFG_TRIGGER_SEL);
+            if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
+            {
+                u3vAppData.state = U3V_APP_STATE_SETUP_U3V_STREAM_IF;
+            }
+#else
+#error "Invalid U3V acquisition method selected"
+#endif
             else
             {
                 U3V_REPORT_ERROR(U3V_DRV_ERR_SET_ACQ_MODE_FAIL);
@@ -276,6 +289,11 @@ void U3VCamDriver_Tasks(void)
             {
                 result1 = U3VHost_StreamIfControl(u3vAppData.u3vHostHandle, true);
                 result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_START, U3V_ACQUISITION_START_CMD);
+#ifdef U3V_ACQ_METHOD_SINGLE_FRAME
+                /* nope */
+#elif defined U3V_ACQ_METHOD_SW_TRIGGER
+                result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_TRIGGER_SOFTWARE, U3V_TRIGGER_SW_CMD);
+#endif
                 if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
                 {
                     u3vAppData.appImgTransfState = U3V_SI_IMG_TRANSF_STATE_START;
