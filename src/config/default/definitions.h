@@ -51,21 +51,20 @@
 #include "peripheral/clk/plib_clk.h"
 #include "peripheral/pio/plib_pio.h"
 #include "peripheral/nvic/plib_nvic.h"
+#include "peripheral/xdmac/plib_xdmac.h"
 #include "peripheral/efc/plib_efc.h"
 #include "peripheral/tc/plib_tc0.h"
-#include "system/time/sys_time.h"
 #include "usb/usb_chapter_9.h"
 #include "usb/usb_host.h"
 #include "driver/usb/usbhsv1/drv_usbhsv1.h"
 #include "driver/usart/drv_usart.h"
-#include "peripheral/twihs/master/plib_twihs0_master.h"
 #include "peripheral/usart/plib_usart1.h"
 #include "system/int/sys_int.h"
 #include "system/cache/sys_cache.h"
 #include "system/dma/sys_dma.h"
-#include "peripheral/xdmac/plib_xdmac.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
+#include "system/time/sys_time.h"
 #include "app.h"
 #include "U3VCamDriver/inc/U3VCamDriver.h"
 
@@ -192,7 +191,6 @@ Remarks:
 
 typedef struct
 {
-	SYS_MODULE_OBJ drvI2C0;
 	SYS_MODULE_OBJ sysTime;
 	SYS_MODULE_OBJ drvUsart0;
 	SYS_MODULE_OBJ usbHostObject0;

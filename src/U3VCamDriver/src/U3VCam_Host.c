@@ -1817,13 +1817,13 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
         {
             /* Wait for write request to complete with retry limit */
             writeRetryCnt++;
-            if ((writeRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
+            if ((writeRetryCnt * U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS) > (ctrlIfInst->u3vTimeout))
             {
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS));
         }
 
         reqAcknowledged = false;
@@ -1862,13 +1862,13 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
-                if ((readRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
+                if ((readRetryCnt * U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS) > (ctrlIfInst->u3vTimeout))
                 {
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                vTaskDelay(pdMS_TO_TICKS(10));
+                vTaskDelay(pdMS_TO_TICKS(U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS));
             }
 
             /* Inspect the acknowledge buffer */
@@ -2032,13 +2032,13 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         {
             /* Wait for write request to complete with retry limit */
             writeRetryCnt++;
-            if ((writeRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
+            if ((writeRetryCnt * U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS) > (ctrlIfInst->u3vTimeout))
             {
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                 u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                 return u3vResult;
             }
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS));
         }
 
         reqAcknowledged = false;
@@ -2077,13 +2077,13 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             {
                 /* Wait for read request to complete with retry limit */
                 readRetryCnt++;
-                if ((readRetryCnt * 10UL) > (ctrlIfInst->u3vTimeout))
+                if ((readRetryCnt * U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS) > (ctrlIfInst->u3vTimeout))
                 {
                     OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
                     u3vResult = U3V_HOST_RESULT_REQUEST_STALLED;
                     return u3vResult;
                 }
-                vTaskDelay(pdMS_TO_TICKS(10));
+                vTaskDelay(pdMS_TO_TICKS(U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS));
             }
             
             /* Inspect the acknowledge buffer */

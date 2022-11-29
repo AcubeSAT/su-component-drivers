@@ -339,7 +339,7 @@ void U3VCamDriver_Tasks(void)
             break;
 
         case U3V_APP_STATE_STOP_IMAGE_ACQ:
-            result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_STOP, U3V_ACQUISITION_STOP_CMD);
+            result1 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_ACQ_STOP, U3V_ACQUISITION_STOP_CMD);
             result2 = U3VHost_StreamIfControl(u3vAppData.u3vHostHandle, false);
             if ((result1 == U3V_HOST_RESULT_SUCCESS) && (result2 == U3V_HOST_RESULT_SUCCESS))
             {

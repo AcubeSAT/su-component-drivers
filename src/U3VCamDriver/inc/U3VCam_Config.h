@@ -170,15 +170,28 @@ extern "C" {
 #define U3V_HOST_ATTACH_LISTENERS_NUMBER                (1U)
 
 /**
+ * U3V Host Control Interface wait for acknowledge delay (ms).
+ * 
+ * Defines the delay time when re-checking the acknowledge message from client
+ * when using CtrlIfReadMemory and CtrlIfWriteMemory functions.
+ * @note Should usually be equal to the task cyclic run time interval, not less.
+ */
+#define U3V_HOST_CTRL_IF_WAIT_FOR_ACK_DELAY_MS          (10U)
+
+/**
  * U3V Host image payload data block max size.
  * 
  * Max size in bytes for the transfer block of the image payload data.
  * @warning The size shall be a multiple of the byte alignment size of the MCU 
- * architecture and also supported by the USB2.0-HS protocol (1024 bytes max).
- * @note For optimized results, prefer using 1024 or 512 bytes, may be camera
- * model dependent.
+ * architecture and preferably a binary multiple on 1024. May be device 
+ * dependent.
+ * @warning Always make sure that the destination buffer of the received image
+ * is at least equal or larger than this, especially when RAM space is used.
+ * @note Devices which integrate an internal buffer memory larger than the image
+ * size, can work with smaller transfers, such as 1024 or 2048. For small size 
+ * buffer memory prefer using a large number, such as 8192, 16384 or more.
  */
-#define U3V_PAYLD_BLOCK_MAX_SIZE                        (1024U)
+#define U3V_PAYLD_BLOCK_MAX_SIZE                        (0x8000)    /* 32768 bytes */
 
 /**
  * U3V Payload leader max size.

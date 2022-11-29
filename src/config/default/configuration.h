@@ -95,11 +95,12 @@ extern "C" {
 // Section: Driver Configuration
 // *****************************************************************************
 // *****************************************************************************
+/* USART Driver Global Configuration Options */
+#define DRV_USART_INSTANCES_NUMBER         1
 /* USART Driver Instance 0 Configuration Options */
 #define DRV_USART_INDEX_0                  0
 #define DRV_USART_CLIENTS_NUMBER_IDX0      1
 #define DRV_USART_XMIT_DMA_CH_IDX0         SYS_DMA_CHANNEL_0
-#define DRV_USART_INSTANCES_NUMBER         1
 
 
 // *****************************************************************************

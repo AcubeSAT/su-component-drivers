@@ -211,15 +211,12 @@ void SYS_Initialize ( void* data )
 
     XDMAC_Initialize();
 
-//	SYSTICK_TimerInitialize();
-
     RSWDT_REGS->RSWDT_MR = RSWDT_MR_WDDIS_Msk;	// Disable RSWDT
 
     WDT_REGS->WDT_MR = WDT_MR_WDDIS_Msk; 		// Disable WDT
 
     TC0_CH0_TimerInitialize();
 
-    TWIHS0_Initialize();
 
     USART1_Initialize();
 
