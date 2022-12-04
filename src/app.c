@@ -121,14 +121,14 @@ void APP_Tasks ( void )
         /* Application's initial state. */
 		case APP_STATE_INIT:
 		{
-      if ((U3V_CAM_DRV_OK == U3VCamDriver_SetImagePayldTransfParams(_APP_U3vImgPldBlkRcvdCbk, appData.imgData)) &&
-          (PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, _APP_PioSw1PrsdCbk, 0)))
-      {
-        appData.usrtDrv = DRV_USART_Open(0, DRV_IO_INTENT_WRITE);
+			if ((U3V_CAM_DRV_OK == U3VCamDriver_SetImagePayldTransfParams(_APP_U3vImgPldBlkRcvdCbk, appData.imgData)) &&
+				(PIO_PinInterruptCallbackRegister(GPIO_PB12_PIN, _APP_PioSw1PrsdCbk, 0)))
+			{
+				appData.usrtDrv = DRV_USART_Open(0, DRV_IO_INTENT_WRITE);
 				PIO_PinInterruptEnable(GPIO_PB12_PIN);
 				appData.state = APP_STATE_SERVICE_TASKS;
-      }
-      break;
+			}
+			break;
 		}
 
 		case APP_STATE_SERVICE_TASKS:
@@ -147,8 +147,8 @@ void APP_Tasks ( void )
 					appData.state = APP_STATE_SERVICE_TASKS; // debug
 				}
 			}
-            break;
-        }
+			break;
+		}
 
         /* TODO: implement your application state machine.*/
 
@@ -171,6 +171,7 @@ static void _APP_U3vImgPldBlkRcvdCbk(T_U3VCamDriverImageAcqPayloadEvent event, v
 	switch (event)
 	{
 		case U3V_CAM_DRV_IMG_LEADER_DATA:
+            appData.payldSizeCnt = 0U;
 			break;
 
 		case U3V_CAM_DRV_IMG_TRAILER_DATA:
@@ -186,6 +187,7 @@ static void _APP_U3vImgPldBlkRcvdCbk(T_U3VCamDriverImageAcqPayloadEvent event, v
 			{
 				size = blockSize; // error breakpoint position, should never pass from here
 			}
+			appData.payldSizeCnt += size;
 			break;
 
 		default:

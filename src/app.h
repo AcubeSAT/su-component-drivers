@@ -89,6 +89,7 @@ typedef struct
     DRV_HANDLE usrtDrv;
     bool imgRequested;
     bool imgPldPending;
+    uint32_t payldSizeCnt;
     uint8_t imgData[0x8000]; //same as U3V_PAYLD_BLOCK_MAX_SIZE
     /* TODO: Define any additional data used by the application. */
 } APP_DATA;
