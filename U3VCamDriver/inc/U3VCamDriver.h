@@ -154,7 +154,7 @@ void U3VCamDriver_Tasks(void);
  * has finished, but can also be called during runtime, as long as the driver is
  * in idle state, not transfering data. The size of the data buffer must be at 
  * least the size of the image payload block size, which is defined  with the 
- * U3V_IN_BUFFER_MAX_SIZE macro (is local). If the buffer size is allocated in 
+ * U3V_PAYLD_BLOCK_MAX_SIZE macro (is local). If the buffer size is allocated in 
  * runtime, the function U3VCamDriver_GetImagePayldMaxBlockSize may be used.
  * @param callback Callback to the app software to notify the app that an image 
  * payload block has been received.
@@ -261,10 +261,10 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
  * constant and the returned value will never change on runtime. May be used in 
  * cases when the buffer size to hold image data is allocated in runtime without
  * a constant size value. Another way to find the appropriate buffer size for 
- * the higher level app, is to check the value of U3V_IN_BUFFER_MAX_SIZE before 
- * build and define a constant with equal or larger size.
+ * the higher level app, is to check the value of U3V_PAYLD_BLOCK_MAX_SIZE 
+ * before build and define a constant with equal or larger size.
  * @return size_t Max size of the image payload block.
- * @note The return value comes from a constant (U3V_IN_BUFFER_MAX_SIZE).
+ * @note The return value comes from a constant (U3V_PAYLD_BLOCK_MAX_SIZE).
  */
 size_t U3VCamDriver_GetImagePayldMaxBlockSize(void);
 

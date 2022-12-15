@@ -81,10 +81,12 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_INT_PIXELFORMAT         = 0x10,
-    U3V_MEM_REG_INT_PAYLOAD_SIZE,
-    U3V_MEM_REG_INT_ACQUISITION_MODE,
+    U3V_MEM_REG_INT_ACQ_MODE,
+    U3V_MEM_REG_INT_ACQ_START,
+    U3V_MEM_REG_INT_ACQ_STOP,
     U3V_MEM_REG_INT_DEVICE_RESET,
+    U3V_MEM_REG_INT_PAYLOAD_SIZE,
+    U3V_MEM_REG_INT_PIXEL_FORMAT,
 } T_U3VMemRegInteger;
 
 /**
@@ -94,7 +96,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_FLOAT_TEMPERATURE       = 0x20,
+    U3V_MEM_REG_FLOAT_TEMPERATURE,
 } T_U3VMemRegFloat;
 
 /**
@@ -104,7 +106,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_STRING_MANUFACTURER_NAME    = 0x40,
+    U3V_MEM_REG_STRING_MANUFACTURER_NAME,
     U3V_MEM_REG_STRING_MODEL_NAME,
     U3V_MEM_REG_STRING_FAMILY_NAME,
     U3V_MEM_REG_STRING_DEVICE_VERSION,
@@ -322,30 +324,6 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 T_U3VHostResult U3VHost_StreamIfControl(T_U3VHostHandle u3vObjHandle, bool enable);
 
 /**
- * U3V Host image acquisition start function.
- * 
- * This function shall be called by the application to initiate the image 
- * acquisition procedure, by enabling the AcquisitionStart register. After this 
- * call, image bulk data will start reaching the USB layer in blocks, which can 
- * then be received by the application with U3VHost_StartImgPayldTransfer 
- * function.
- * @param u3vObjHandle 
- * @return T_U3VHostResult 
- * @warning shall be called 
- */
-T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle);
-
-/**
- * U3V Host image acquisition stop function.
- * 
- * This function shall be called by the application to stop the image 
- * acquisition, by enabling the AcquisitionStop register.
- * @param u3vObjHandle 
- * @return T_U3VHostResult 
- */
-T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
-
-/**
  * U3V Host start image payload transfer function.
  * 
  * This function shall be called by the application to initiate the receive 
@@ -357,7 +335,7 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
  * @param size 
  * @return T_U3VHostResult 
  * @note For optimized results, prefer using 1024 or 512 byte size (same as 
- * U3V_IN_BUFFER_MAX_SIZE), but make sure that the USB Host Layer below is 
+ * U3V_PAYLD_BLOCK_MAX_SIZE), but make sure that the USB Host Layer below is 
  * USB2.0-HS.
  */
 T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void *imgBfr, size_t size);
@@ -386,17 +364,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle);
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
 
 /**
- * U3V Host get selected pixel format.
- * 
- * This function returns the constant value of the selected pixel format of 
- * u3vCamRegisterCfg struct. This value is a preset constant acquired by the XML
- * file built-in the camera internal memory, and should represent a typical 
- * pixel format option (e.g. RGB8).
- * @return uint32_t 
- */
-uint32_t U3VHost_GetSelectedPixelFormat(void);
-
-/**
  * U3V Host Read memory register integer value.
  * 
  * This function shall be called by the application in order to read a memory 
@@ -410,6 +377,22 @@ uint32_t U3VHost_GetSelectedPixelFormat(void);
  * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
  */
 T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *pReadValue);
+
+/**
+ * U3V Host Write memory register integer value.
+ * 
+ * This function shall be called by the application in order to write a memory
+ * register of the connected U3V camera, which holds an integer value, with a 
+ * new integer value.
+ * @param u3vObjHandle 
+ * @param integerReg 
+ * @param writeValue 
+ * @return T_U3VHostResult
+ * @warning This function shall only be called after the Control Interface has 
+ * been established.
+ * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
+ */
+T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
 
 /**
  * U3V Host Read memory register float value.
@@ -442,22 +425,6 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
  * @note Available string registers can be seen in enum T_U3VMemRegString.
  */
 T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, void *pReadBfr);
-
-/**
- * U3V Host Write memory register integer value.
- * 
- * This function shall be called by the application in order to write a memory
- * register of the connected U3V camera, which holds an integer value, with a 
- * new integer value.
- * @param u3vObjHandle 
- * @param integerReg 
- * @param writeValue 
- * @return T_U3VHostResult
- * @warning This function shall only be called after the Control Interface has 
- * been established.
- * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
- */
-T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
 
 
 #ifdef __cplusplus

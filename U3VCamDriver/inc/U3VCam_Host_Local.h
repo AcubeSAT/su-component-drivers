@@ -219,26 +219,6 @@ typedef struct
 } T_U3VHostAttachListenerObj;
 
 
-/********************************************************
-* Local data
-*********************************************************/
-
-static T_U3VCamRegisterCfg u3vCamRegisterCfg =
-{
-	.camRegBaseAddress				= (uint64_t)U3V_CFG_MDL_CAM_REG_BASE_ADDRESS,
-    .SBRMOffset                     = (uint64_t)U3V_CFG_MDL_SBRM_OFFSET,
-    .temperature_Reg                = (uint64_t)U3V_CFG_MDL_TEMPERATURE_REG,
-    .deviceReset_Reg                = (uint64_t)U3V_CFG_MDL_DEVICE_RESET_REG,
-    .singleFrameAcquisitionMode_Reg = (uint64_t)U3V_CFG_MDL_SINGLE_FRAME_ACQ_MODE_REG,
-    .acquisitionMode_Reg            = (uint64_t)U3V_CFG_MDL_ACQ_MODE_REG,
-    .acquisitionStart_Reg           = (uint64_t)U3V_CFG_MDL_ACQ_START_REG,
-    .acquisitionStop_Reg            = (uint64_t)U3V_CFG_MDL_ACQ_STOP_REG,
-    .colorCodingID_Reg              = (uint64_t)U3V_CFG_MDL_COLOR_CODING_ID_REG,
-    .payloadSizeVal_Reg             = (uint64_t)U3V_CFG_MDL_PAYLOAD_SIZE_VAL_REG,
-    .pixelFormatCtrlVal_Int_Sel     = (uint32_t)U3V_CFG_MDL_PIXEL_FORMAT_CTRL_INT_SEL 
-};
-
-
 #ifdef __cplusplus
 }
 #endif //__cplusplus
