@@ -299,12 +299,6 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
     {
         switch (integerReg)
         {
-            case U3V_MEM_REG_INT_ACQ_BURST_FRAME_COUNT:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_ACQ_BURST_FRAME_CNT_REG_ADR;
-                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
-                regValue = U3V_GET_ACQ_BURST_FRAME_CNT_CONV(regValue);
-                break;
-
             case U3V_MEM_REG_INT_ACQ_MODE:
                 regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_ACQ_MODE_REG_ADR;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
@@ -323,29 +317,10 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
                 regValue = U3V_GET_PIXEL_FORMAT_CONV(regValue);
                 break;
 
-            case U3V_MEM_REG_INT_TRIGGER_MODE:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_MODE_REG_ADR;
-                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
-                regValue = U3V_GET_TRIGGER_MODE_CONV(regValue);
-                break;
-
-            case U3V_MEM_REG_INT_TRIGGER_SELECT:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_SEL_REG_ADR;
-                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
-                regValue = U3V_GET_TRIGGER_SELECT_CONV(regValue);
-                break;
-
-            case U3V_MEM_REG_INT_TRIGGER_SOURCE:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_SRC_REG_ADR;
-                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, (void *)&regValue);
-                regValue = U3V_GET_TRIGGER_SOURCE_CONV(regValue);
-                break;
-
             /* N/A */
             case U3V_MEM_REG_INT_ACQ_START:
             case U3V_MEM_REG_INT_ACQ_STOP:
             case U3V_MEM_REG_INT_DEVICE_RESET:
-            case U3V_MEM_REG_INT_TRIGGER_SOFTWARE:
             default:
                 u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
                 break;
@@ -387,11 +362,6 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
     {
         switch (integerReg)
         {
-            case U3V_MEM_REG_INT_ACQ_BURST_FRAME_COUNT:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_ACQ_BURST_FRAME_CNT_REG_ADR;
-                regValue = U3V_SET_ACQ_BURST_FRAME_CNT_CONV(regVal);
-                break;
-
             case U3V_MEM_REG_INT_ACQ_MODE:
                 regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_ACQ_MODE_REG_ADR;
                 regValue = U3V_SET_ACQ_MODE_CONV(regVal);
@@ -415,26 +385,6 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
             case U3V_MEM_REG_INT_PIXEL_FORMAT:
                 regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_PIXEL_FORMAT_REG_ADR;
                 regValue = U3V_SET_PIXEL_FORMAT_CONV(regVal);
-                break;
-
-            case U3V_MEM_REG_INT_TRIGGER_MODE:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_MODE_REG_ADR;
-                regValue = U3V_SET_TRIGGER_MODE_CONV(regVal);
-                break;
-
-            case U3V_MEM_REG_INT_TRIGGER_SELECT:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_SEL_REG_ADR;
-                regValue = U3V_SET_TRIGGER_SELECT_CONV(regVal);
-                break;
-
-            case U3V_MEM_REG_INT_TRIGGER_SOURCE:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_SRC_REG_ADR;
-                regValue = U3V_SET_TRIGGER_SOURCE_CONV(regVal);
-                break;
-
-            case U3V_MEM_REG_INT_TRIGGER_SOFTWARE:
-                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_TRIGGER_SOFTWARE_REG_ADR;
-                regValue = U3V_SET_TRIGGER_SW_CONV(regVal);
                 break;
 
             /* N/A */
