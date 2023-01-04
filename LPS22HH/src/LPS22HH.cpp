@@ -6,7 +6,8 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress) {
     PIO_PinWrite(ssn, false);
 
     uint8_t txData = registerAddress | 0b10000000;
-    SPI_WriteRead(&txData, 1, &rxData, 1);
+    SPI_WriteRead(&txData, 1, nullptr, 1);
+    SPI_WriteRead(nullptr, 1, &rxData, 1);
 
     PIO_PinWrite(ssn, true);
 
@@ -83,4 +84,12 @@ void LPS22HH::setFIFOMode(FIFOModes mode) {
     uint8_t registerData = readFromRegister(FIFO_CTRL);
     registerData = registerData | mode;
     writeToRegister(FIFO_CTRL, registerData);
+}
+
+void LPS22HH::activateOneShotMode(void) {
+
+    /* todo: read CTRL_REG2 first and then write, to preserve any previous config done */
+    uint8_t txData = 0x1; /* ONE_SHOT bit of CTRL_REG2 register is bit 0 */
+    writeToRegister(CTRL_REG2, txData);
+
 }

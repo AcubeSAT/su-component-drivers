@@ -152,4 +152,9 @@ public:
      */
     void setFIFOMode(FIFOModes mode);
 
+    /**
+     * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measuremnt
+     */
+    void activateOneShotMode(void);
+
 };
