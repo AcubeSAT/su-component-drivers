@@ -1,5 +1,9 @@
+#ifndef SHT3xDIS_DRIVER_H
+#define SHT3xDIS_DRIVER_H
+
 #include <etl/array.h>
 #include <cstdint>
+#include "plib_twihs2_master.h"
 
 class SHT3xDIS {
 private:
@@ -110,4 +114,6 @@ public:
      * Final XOR: 0x00
      */
     bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
-}
+};
+
+#endif // SHT3xDIS_DRIVER_H

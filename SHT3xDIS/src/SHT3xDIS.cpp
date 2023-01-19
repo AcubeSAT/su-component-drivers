@@ -1,6 +1,6 @@
 #include "SHT3xDIS.hpp"
 
-void SHT3xDIS::SHT3xDIS(uint8_t address) {
+SHT3xDIS::SHT3xDIS(uint8_t address) {
     I2CAddress = address;
 }
 
