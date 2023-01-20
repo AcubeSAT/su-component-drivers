@@ -1,21 +1,16 @@
-
-#ifndef COMPONENT_DRIVERS_U3VCAM_APP_H
-#define COMPONENT_DRIVERS_U3VCAM_APP_H
-
+#pragma once
 
 #include "U3VCam_Host.h"
 #include "U3VCamDriver.h"
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-
-/********************************************************
+/*******************************************************************************
 * Type definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Cam Driver initialization state.
@@ -133,4 +128,3 @@ typedef enum
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_APP_H

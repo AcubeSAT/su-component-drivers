@@ -1,20 +1,15 @@
-
-#ifndef COMPONENT_DRIVERS_U3VCAMDRIVER_H
-#define COMPONENT_DRIVERS_U3VCAMDRIVER_H
-
+#pragma once
 
 #include <stdint.h>
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-
-/********************************************************
+/*******************************************************************************
 * Type definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3VCamDriver driver status datatype.
@@ -122,10 +117,9 @@ typedef enum
 typedef void (*T_U3VCamDriverPayloadEventCallback) (T_U3VCamDriverImageAcqPayloadEvent event, void *imgData, size_t blockSize, uint32_t blockCnt);
 
 
-
-/********************************************************
+/*******************************************************************************
 * Function declarations
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3VCamDriver Initializer function.
@@ -273,4 +267,3 @@ size_t U3VCamDriver_GetImagePayldMaxBlockSize(void);
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAMDRIVER_H

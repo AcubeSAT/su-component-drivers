@@ -1,12 +1,8 @@
-
-#ifndef COMPONENT_DRIVERS_U3VCAM_HOST_H
-#define COMPONENT_DRIVERS_U3VCAM_HOST_H
-
+#pragma once
 
 #include "U3VCam_Device_Class_Specs.h"
 #include "U3VCam_Config.h"
 #include "usb/usb_host_client_driver.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,19 +10,19 @@ extern "C" {
 
 
 
-/********************************************************
+/*******************************************************************************
 * Macro definitions
-*********************************************************/
+*******************************************************************************/
 
-#define U3V_HOST_RESULT_MIN                         (USB_HOST_RESULT_MIN)
-#define U3V_HOST_HANDLE_INVALID                     ((T_U3VHostHandle)(-1))
-#define U3V_HOST_TRANSFER_HANDLE_INVALID            ((T_U3VHostTransferHandle)(-1))
-#define U3V_INTERFACE                               (&gUSBHostU3VClientDriver)
+#define U3V_HOST_RESULT_MIN                     (USB_HOST_RESULT_MIN)
+#define U3V_HOST_HANDLE_INVALID                 ((T_U3VHostHandle)UINTPTR_MAX)
+#define U3V_HOST_TRANSFER_HANDLE_INVALID        ((T_U3VHostTransferHandle)UINTPTR_MAX)
+#define U3V_INTERFACE                           (&gUSBHostU3VClientDriver)
 
 
-/********************************************************
+/*******************************************************************************
 * Type definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Host handle.
@@ -40,7 +36,12 @@ typedef uintptr_t T_U3VHostHandle;
  */
 typedef uintptr_t T_U3VHostTransferHandle;
 
-
+/**
+ * Area of struct typedefs with forced 1 byte packing.
+ * 
+ * For datatypes used in USB3 Vision protocol frames which require strict 1 byte 
+ * packing when being sent over USB bus.
+ */
 #pragma pack(push, 1)
 
 /**
@@ -56,6 +57,9 @@ typedef struct
     void            *data;
 } T_U3VSiGenericPacket;
 
+U3V_STATIC_ASSERT(sizeof(T_U3VSiGenericPacket) == 20, "Packing error for T_U3VSiGenericPacket");
+
+/* end of forced 1 byte packing */
 #pragma pack(pop)
 
 /**
@@ -134,7 +138,7 @@ typedef struct
  */
 typedef enum
 {
-    U3V_HOST_EVENT_READ_COMPLETE = 0x10,
+    U3V_HOST_EVENT_READ_COMPLETE = 1,
     U3V_HOST_EVENT_WRITE_COMPLETE,
     U3V_HOST_EVENT_IMG_PLD_RECEIVED,
 } T_U3VHostEvent;
@@ -146,7 +150,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_HOST_EVENT_RESPONE_NONE  = 0
+    U3V_HOST_EVENT_RESPONE_NONE
 } T_U3VHostEventResponse;
 
 /**
@@ -185,16 +189,16 @@ typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vObjHandle, uintpt
 typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *eventData, uintptr_t context);
 
 
-/********************************************************
+/*******************************************************************************
 * Global data
-*********************************************************/
+*******************************************************************************/
 
 extern USB_HOST_CLIENT_DRIVER   gUSBHostU3VClientDriver;
 
 
-/********************************************************
+/*******************************************************************************
 * Function declarations
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Host device attach event handler set.
@@ -257,13 +261,13 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  *         case U3V_HOST_EVENT_IMG_PLD_RECEIVED:
  *             pckLeaderOrTrailer = (T_U3VSiGenericPacket*)pUsbU3VAppData->appImgDataBfr;
  *             pUsbU3VAppData->appImgBlockCounter++;
- *             if (pckLeaderOrTrailer->magicKey == U3V_LEADER_MGK_PREFIX)
+ *             if (pckLeaderOrTrailer->magicKey == (uint32_t)U3V_LEADER_MGK_PREFIX)
  *             {
  *                 pUsbU3VAppData->appImgTransfState = U3V_SI_IMG_TRANSF_STATE_LEADER_COMPLETE;
  *                 appPldTransfEvent = U3V_CAM_DRV_IMG_LEADER_DATA;
- *                 pUsbU3VAppData->appImgBlockCounter = 0UL;
+ *                 pUsbU3VAppData->appImgBlockCounter = UINT32_C(0);
  *             }
- *             else if (pckLeaderOrTrailer->magicKey == U3V_TRAILER_MGK_PREFIX)
+ *             else if (pckLeaderOrTrailer->magicKey == (uint32_t)U3V_TRAILER_MGK_PREFIX)
  *             {
  *                 pUsbU3VAppData->appImgTransfState = U3V_SI_IMG_TRANSF_STATE_TRAILER_COMPLETE;
  *                 appPldTransfEvent = U3V_CAM_DRV_IMG_TRAILER_DATA;
@@ -275,7 +279,7 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  *             if (u3vAppData.appImgEvtCbk != NULL)
  *             {
  *                 u3vAppData.appImgEvtCbk(appPldTransfEvent,
- *                                         (void *)u3vAppData.appImgDataBfr,
+ *                                         u3vAppData.appImgDataBfr,
  *                                         readCompleteEventData->length,
  *                                         pUsbU3VAppData->appImgBlockCounter);
  *             }
@@ -431,4 +435,3 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_HOST_H
