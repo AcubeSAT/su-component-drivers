@@ -3,9 +3,9 @@
 
 
 
-/********************************************************
+/*******************************************************************************
 * Local function declarations
-*********************************************************/
+*******************************************************************************/
 
 static T_U3VDriverInitStatus U3VApp_DrvInitStatus(void);
 
@@ -18,18 +18,18 @@ static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_
 static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context);
 
 
-/********************************************************
+/*******************************************************************************
 * Constant & Variable declarations
-*********************************************************/
+*******************************************************************************/
 
-T_U3VDriverInitStatus u3vDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
+static T_U3VDriverInitStatus u3vDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
-T_U3VAppData u3vAppData;
+static T_U3VAppData u3vAppData;
 
 
-/********************************************************
+/*******************************************************************************
 * Function definitions
-*********************************************************/
+*******************************************************************************/
 
 void U3VCamDriver_Initialize(void)
 {
@@ -41,13 +41,13 @@ void U3VCamDriver_Initialize(void)
     u3vAppData.deviceIsAttached     = false;
     u3vAppData.deviceWasDetached    = false;
     u3vAppData.camTemperature       = 0.F;
-    u3vAppData.pixelFormat          = 0UL;
-    u3vAppData.payloadSize          = 0UL;
-    u3vAppData.acquisitionMode      = 0UL;
+    u3vAppData.pixelFormat          = UINT32_C(0);
+    u3vAppData.payloadSize          = UINT32_C(0);
+    u3vAppData.acquisitionMode      = UINT32_C(0);
     u3vAppData.imgAcqRequested      = false;
     u3vAppData.camSwResetRequested  = false;
     u3vAppData.appImgTransfState    = U3V_SI_IMG_TRANSF_STATE_IDLE;
-    u3vAppData.appImgBlockCounter   = 0UL;
+    u3vAppData.appImgBlockCounter   = UINT32_C(0);
     u3vAppData.appImgEvtCbk         = NULL;
     u3vAppData.appImgDataBfr        = NULL;
 
@@ -82,13 +82,13 @@ void U3VCamDriver_Tasks(void)
         u3vAppData.state                = U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
         u3vAppData.deviceWasDetached    = false;
         u3vAppData.camTemperature       = 0.F;
-        u3vAppData.pixelFormat          = 0UL;
-        u3vAppData.payloadSize          = 0UL;
-        u3vAppData.acquisitionMode      = 0UL;
+        u3vAppData.pixelFormat          = UINT32_C(0);
+        u3vAppData.payloadSize          = UINT32_C(0);
+        u3vAppData.acquisitionMode      = UINT32_C(0);
         u3vAppData.camSwResetRequested  = false;
         // U3VAppData.imgAcqRequested      = false;  //TODO: decide if this stays (case reset on error with requested true?)
         u3vAppData.appImgTransfState    = U3V_SI_IMG_TRANSF_STATE_IDLE;
-        u3vAppData.appImgBlockCounter   = 0UL;
+        u3vAppData.appImgBlockCounter   = UINT32_C(0);
 
         U3VHost_CtrlIf_InterfaceDestroy(u3vAppData.u3vHostHandle);
 
@@ -299,7 +299,7 @@ void U3VCamDriver_Tasks(void)
                     u3vAppData.imgAcqReqNewBlock = false;
                     /* size of transfer request for Leader and Trailer packes is much smaller, but there is no issue
                      * with the following size argument being greater, those packes will arrive with their own size */
-                    result1 = U3VHost_StartImgPayldTransfer(u3vAppData.u3vHostHandle, u3vAppData.appImgDataBfr, (size_t)U3V_PAYLD_BLOCK_MAX_SIZE);
+                    result1 = U3VHost_StartImgPayldTransfer(u3vAppData.u3vHostHandle, u3vAppData.appImgDataBfr, U3V_PAYLD_BLOCK_MAX_SIZE);
                     if (result1 != U3V_HOST_RESULT_SUCCESS)
                     {
                         U3V_REPORT_ERROR(U3V_DRV_ERR_START_IMG_TRANSF_FAIL);
@@ -455,7 +455,7 @@ T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDeviceDe
     
     if ((buffer != NULL) && (lclBuffer != NULL))
     {
-        memcpy(buffer, (void *)lclBuffer, size);
+        memcpy(buffer, lclBuffer, size);
     }
 
     return drvSts;
@@ -501,13 +501,13 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
 
 size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
 {
-    return (size_t)U3V_PAYLD_BLOCK_MAX_SIZE;
+    return U3V_PAYLD_BLOCK_MAX_SIZE;
 }
 
 
-/********************************************************
+/*******************************************************************************
 * Local function definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V App driver initialization status.
@@ -535,15 +535,7 @@ static T_U3VDriverInitStatus U3VApp_DrvInitStatus(void)
  */
 static USB_HOST_EVENT_RESPONSE U3VApp_USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context)
 {
-    switch (event)
-    {
-        case USB_HOST_EVENT_DEVICE_UNSUPPORTED:
-            break;
-            
-        default:
-            /* no action */
-            break;
-    }
+    /* do nothing */
     return USB_HOST_EVENT_RESPONSE_NONE;
 }
 
@@ -575,10 +567,10 @@ static void U3VApp_AttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_
  * This callback shall be registered to the USB detach listener mechanism so 
  * that when a connected device gets detached, the device detachment flag can be
  * set and then the App can destruct objects accordingly on next run cycle.
- * @param u3vHandle 
+ * @param u3vObjHandle 
  * @param context 
  */
-static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t context)
+static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context)
 {
     T_U3VAppData *pUsbU3VAppData;
     pUsbU3VAppData = (T_U3VAppData*)context;
@@ -592,13 +584,13 @@ static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vHandle, uintptr_t c
  * This callback shall be registered to the U3V Host, to be called when a U3V 
  * Host event occurs. In this implementation the main scope of this callback is 
  * to handle incoming image payload data.
- * @param u3vHandle 
+ * @param u3vObjHandle 
  * @param event 
  * @param pEventData 
  * @param context 
  * @return T_U3VHostEventResponse 
  */
-static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
+static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
 {
     T_U3VHostEventReadCompleteData  *readCompleteEventData;
     T_U3VAppData                    *pUsbU3VAppData;
@@ -613,14 +605,14 @@ static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vHand
         case U3V_HOST_EVENT_IMG_PLD_RECEIVED:
             pckLeaderOrTrailer = (T_U3VSiGenericPacket*)pUsbU3VAppData->appImgDataBfr;
             pUsbU3VAppData->appImgBlockCounter++;
-            if (pckLeaderOrTrailer->magicKey == U3V_LEADER_MGK_PREFIX)
+            if (pckLeaderOrTrailer->magicKey == (uint32_t)U3V_LEADER_MGK_PREFIX)
             {
                 /* Img Leader packet received */
                 pUsbU3VAppData->appImgTransfState = U3V_SI_IMG_TRANSF_STATE_LEADER_COMPLETE;
                 appPldTransfEvent = U3V_CAM_DRV_IMG_LEADER_DATA;
-                pUsbU3VAppData->appImgBlockCounter = 0UL;
+                pUsbU3VAppData->appImgBlockCounter = UINT32_C(0);
             }
-            else if (pckLeaderOrTrailer->magicKey == U3V_TRAILER_MGK_PREFIX)
+            else if (pckLeaderOrTrailer->magicKey == (uint32_t)U3V_TRAILER_MGK_PREFIX)
             {
                 /* Img Trailer packet received, end of transfer */
                 pUsbU3VAppData->appImgTransfState = U3V_SI_IMG_TRANSF_STATE_TRAILER_COMPLETE;
@@ -634,7 +626,7 @@ static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vHand
             if (u3vAppData.appImgEvtCbk != NULL)
             {
                 u3vAppData.appImgEvtCbk(appPldTransfEvent,
-                                        (void *)u3vAppData.appImgDataBfr,
+                                        u3vAppData.appImgDataBfr,
                                         readCompleteEventData->length,
                                         pUsbU3VAppData->appImgBlockCounter);
             }

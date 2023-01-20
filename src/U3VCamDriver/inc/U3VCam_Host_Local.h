@@ -1,21 +1,16 @@
-
-#ifndef COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
-#define COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
-
+#pragma once
 
 #include "U3VCam_Host.h"
 #include "osal/osal.h"
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-
-/********************************************************
+/*******************************************************************************
 * Macro definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Host MAX number calculation for 2 operands.
@@ -32,10 +27,16 @@ extern "C" {
 #define U3VDRV_MIN(a, b)         (((a) < (b)) ? (a) : (b))
 
 
-/********************************************************
+/*******************************************************************************
 * Type definitions
-*********************************************************/
+*******************************************************************************/
 
+/**
+ * Area of struct typedefs with forced 1 byte packing.
+ * 
+ * For datatypes used in USB3 Vision protocol frames which require strict 1 byte 
+ * packing when being sent over USB bus.
+ */
 #pragma pack(push, 1)
 
 /**
@@ -51,6 +52,8 @@ typedef struct
 	uint16_t 	ackId;
 } T_U3VCtrlIfAckHeader;
 
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfAckHeader) == 12, "Packing error for T_U3VCtrlIfAckHeader");
+
 /**
  * U3V Control Interface ACK.
  * 
@@ -61,6 +64,8 @@ typedef struct
 	uint8_t                 payload[];
 } T_U3VCtrlIfAcknowledge;
 
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfAcknowledge) == 12, "Packing error for T_U3VCtrlIfAcknowledge");
+
 /**
  * U3V Control Interface pending ACK payload.
  * 
@@ -70,6 +75,8 @@ typedef struct
 	uint16_t 	reserved;
 	uint16_t 	timeout;
 } T_U3VCtrlIfPendingAckPayload;
+
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfPendingAckPayload) == 4, "Packing error for T_U3VCtrlIfPendingAckPayload");
 
 /**
  * U3V Control Interface CMD header.
@@ -84,6 +91,8 @@ typedef struct
 	uint16_t 	requestId;
 } T_U3VCtrlIfCmdHeader;
 
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfCmdHeader) == 12, "Packing error for T_U3VCtrlIfCmdHeader");
+
 /**
  * U3V Control Interface CMD.
  * 
@@ -93,6 +102,8 @@ typedef struct
 	T_U3VCtrlIfCmdHeader    header;
 	uint8_t                 payload[];
 } T_U3VCtrlIfCommand;
+
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfCommand) == 12, "Packing error for T_U3VCtrlIfCommand");
 
 /**
  * U3V Control Interface read memory CMD payload.
@@ -105,6 +116,8 @@ typedef struct
 	uint16_t 	byteCount;
 } T_U3VCtrlIfReadMemCmdPayload;
 
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfReadMemCmdPayload) == 12, "Packing error for T_U3VCtrlIfReadMemCmdPayload");
+
 /**
  * U3V Control Interface write memory CMD payload.
  * 
@@ -114,6 +127,8 @@ typedef struct
 	uint64_t    address;
 	uint8_t     data[];
 } T_U3VCtrlIfWriteMemCmdPayload;
+
+U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfWriteMemCmdPayload) == 8, "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
 
 /**
  * U3V Control Interface write memory ACK payload.
@@ -125,7 +140,11 @@ typedef struct
 	uint16_t 	bytesWritten;
 } T_U3V_CtrlIfWriteMemAckPayload;
 
+U3V_STATIC_ASSERT(sizeof(T_U3V_CtrlIfWriteMemAckPayload) == 4, "Packing error for T_U3V_CtrlIfWriteMemAckPayload");
+
+/* end of forced 1 byte packing */
 #pragma pack(pop)
+
 
 /**
  * U3V Host transfer complete callback handler.
@@ -140,10 +159,10 @@ typedef void (*T_U3VHostTransfCompleteHandler)(T_U3VHostHandle ctrlIfObj, T_U3VH
  */
 typedef enum
 {
-    U3V_HOST_STATE_ERROR                        = -1,
-    U3V_HOST_STATE_NOT_READY                    =  0,
+    U3V_HOST_STATE_ERROR                    = -1,
+    U3V_HOST_STATE_NOT_READY                =  0,
     U3V_HOST_STATE_SET_CONFIGURATION,
-    U3V_HOST_STATE_WAIT_FOR_CONFIGURATION_SET,
+    U3V_HOST_STATE_WAIT_FOR_CONFIG_SET,
     U3V_HOST_STATE_WAIT_FOR_INTERFACES,
     U3V_HOST_STATE_READY,
 } T_U3VHostState;
@@ -169,17 +188,17 @@ typedef struct
 typedef struct 
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;
-	OSAL_MUTEX_DECLARE					(readWriteLock); //TODO: possibly use FreeRTOS mutex instead?
-	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)];
-	uint32_t							maxAckTransfSize;
-	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)];
-	uint32_t 							maxCmdTransfSize;
-	uint16_t 							requestId;
-	uint16_t 							maxRequestId;
-	uint32_t 							u3vTimeout;     /* ms */
+	OSAL_MUTEX_DECLARE                  (readWriteLock); //TODO: possibly use FreeRTOS mutex instead?
+	uint8_t                             ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)];
+	uint32_t                            maxAckTransfSize;
+	uint8_t                             cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)];
+	uint32_t                            maxCmdTransfSize;
+	uint16_t                            requestId;
+	uint16_t                            maxRequestId;
+	uint32_t                            u3vTimeout;     /* ms */
     T_U3VHostTransfCompleteHandler      transfReqCompleteCbk;
-	T_U3VHostEventReadCompleteData 		readReqSts;
-	T_U3VHostEventWriteCompleteData 	writeReqSts;
+	T_U3VHostEventReadCompleteData      readReqSts;
+	T_U3VHostEventWriteCompleteData     writeReqSts;
 } T_U3VControlIfObj;
 
 /**
@@ -223,4 +242,3 @@ typedef struct
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
