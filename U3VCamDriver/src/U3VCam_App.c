@@ -628,6 +628,7 @@ static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vObjH
             }
             break;
 
+        /* not used cases, fallthrough */
         case U3V_HOST_EVENT_WRITE_COMPLETE:
         case U3V_HOST_EVENT_READ_COMPLETE:
         default:

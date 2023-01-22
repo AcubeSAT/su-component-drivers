@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdalign.h>
 #include "U3VCam_Host.h"
 #include "osal/osal.h"
 
@@ -52,7 +53,7 @@ typedef struct
 	uint16_t    ackId;
 } T_U3VCtrlIfAckHeader;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfAckHeader) == 12, "Packing error for T_U3VCtrlIfAckHeader");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAckHeader) == 1), "Packing error for T_U3VCtrlIfAckHeader");
 
 /**
  * U3V Control Interface ACK.
@@ -64,7 +65,7 @@ typedef struct
 	uint8_t                 payload[];
 } T_U3VCtrlIfAcknowledge;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfAcknowledge) == 12, "Packing error for T_U3VCtrlIfAcknowledge");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAcknowledge) == 1), "Packing error for T_U3VCtrlIfAcknowledge");
 
 /**
  * U3V Control Interface pending ACK payload.
@@ -76,7 +77,7 @@ typedef struct
 	uint16_t    timeout;
 } T_U3VCtrlIfPendingAckPayload;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfPendingAckPayload) == 4, "Packing error for T_U3VCtrlIfPendingAckPayload");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfPendingAckPayload) == 1), "Packing error for T_U3VCtrlIfPendingAckPayload");
 
 /**
  * U3V Control Interface CMD header.
@@ -91,7 +92,7 @@ typedef struct
 	uint16_t    requestId;
 } T_U3VCtrlIfCmdHeader;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfCmdHeader) == 12, "Packing error for T_U3VCtrlIfCmdHeader");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfCmdHeader) == 1), "Packing error for T_U3VCtrlIfCmdHeader");
 
 /**
  * U3V Control Interface CMD.
@@ -103,7 +104,7 @@ typedef struct
 	uint8_t                 payload[];
 } T_U3VCtrlIfCommand;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfCommand) == 12, "Packing error for T_U3VCtrlIfCommand");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfCommand) == 1), "Packing error for T_U3VCtrlIfCommand");
 
 /**
  * U3V Control Interface read memory CMD payload.
@@ -116,7 +117,7 @@ typedef struct
 	uint16_t    byteCount;
 } T_U3VCtrlIfReadMemCmdPayload;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfReadMemCmdPayload) == 12, "Packing error for T_U3VCtrlIfReadMemCmdPayload");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCmdPayload) == 1), "Packing error for T_U3VCtrlIfReadMemCmdPayload");
 
 /**
  * U3V Control Interface write memory CMD payload.
@@ -128,7 +129,7 @@ typedef struct
 	uint8_t     data[];
 } T_U3VCtrlIfWriteMemCmdPayload;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VCtrlIfWriteMemCmdPayload) == 8, "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemCmdPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
 
 /**
  * U3V Control Interface write memory ACK payload.
@@ -138,12 +139,27 @@ typedef struct
 {
 	uint16_t    reserved;
 	uint16_t    bytesWritten;
-} T_U3V_CtrlIfWriteMemAckPayload;
+} T_U3VCtrlIfWriteMemAckPayload;
 
-U3V_STATIC_ASSERT(sizeof(T_U3V_CtrlIfWriteMemAckPayload) == 4, "Packing error for T_U3V_CtrlIfWriteMemAckPayload");
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemAckPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemAckPayload");
 
 /* end of forced 1 byte packing */
 #pragma pack(pop)
+
+
+/**
+ * U3V String buffer type for text descriptors.
+ * 
+ * For handling uint8_t data or string related operations when accessing device
+ * text descriptors. 
+ */
+typedef union 
+{
+    uint8_t     asU8[U3V_MAX_DESCR_STR_LENGTH];
+    char        asChar[U3V_MAX_DESCR_STR_LENGTH];
+} T_U3VStringBuffer;
+
+U3V_STATIC_ASSERT((sizeof(T_U3VStringBuffer) == sizeof(uint8_t[U3V_MAX_DESCR_STR_LENGTH])), "Alignment of uint8_t and char arrays not equal");
 
 
 /**

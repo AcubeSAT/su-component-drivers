@@ -317,7 +317,7 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
                 regValue = U3V_GET_PIXEL_FORMAT_CONV(regValue);
                 break;
 
-            /* N/A */
+            /* N/A, fallthrough */
             case U3V_MEM_REG_INT_ACQ_START:
             case U3V_MEM_REG_INT_ACQ_STOP:
             case U3V_MEM_REG_INT_DEVICE_RESET:
@@ -387,7 +387,7 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
                 regValue = U3V_SET_PIXEL_FORMAT_CONV(regVal);
                 break;
 
-            /* N/A */
+            /* N/A, fallthrough */
             case U3V_MEM_REG_INT_PAYLOAD_SIZE:
             default:
                 u3vResult = U3V_HOST_RESULT_INVALID_PARAMETER;
@@ -464,7 +464,7 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
     T_U3VControlIfObj *ctrlIfInstance;
     uint32_t bytesRead;
     size_t stringSize;
-    uint8_t stringBfr[U3V_REG_MANUFACTURER_NAME_SIZE];
+    T_U3VStringBuffer stringBfr;
     uint64_t regAddr;
 
     u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
@@ -520,13 +520,13 @@ T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3
 
         if (u3vResult == U3V_HOST_RESULT_SUCCESS)
         {
-            u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, stringSize, &bytesRead, stringBfr);
+            u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, stringSize, &bytesRead, stringBfr.asU8);
 
             if (u3vResult == U3V_HOST_RESULT_SUCCESS)
             {
                 if (bytesRead == (uint32_t)stringSize)
                 {
-                    memcpy(pReadBfr, stringBfr, stringSize);
+                    memcpy(pReadBfr, stringBfr.asChar, stringSize);
                 }
                 else
                 {
@@ -569,17 +569,17 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
         return u3vResult;
     }
 
-    uint64_t sirmAddress = u3vInstance->u3vDevInfo.sirmAddr;
+    const uint64_t sirmAddress = u3vInstance->u3vDevInfo.sirmAddr;
     /* image payload size, never overflows 32bit unsigned int, usually a few MBs */
-    uint32_t u32ImageSize = imgPayloadSize;
-    uint32_t siMaxLeaderSize = (uint32_t)U3V_LEADER_MAX_SIZE;
-    uint32_t siMaxTrailerSize = (uint32_t)U3V_TRAILER_MAX_SIZE;
+    const uint32_t u32ImageSize = imgPayloadSize;
+    const uint32_t siMaxLeaderSize = (uint32_t)U3V_LEADER_MAX_SIZE;
+    const uint32_t siMaxTrailerSize = (uint32_t)U3V_TRAILER_MAX_SIZE;
     /* transfer size is the size of each payload block */
-    uint32_t siPayloadTransfSize = (uint32_t)U3V_PAYLD_BLOCK_MAX_SIZE;
+    const uint32_t siPayloadTransfSize = (uint32_t)U3V_PAYLD_BLOCK_MAX_SIZE;
     /* transfer count is the total count of payload blocks, minus the transf1 & transf2 */
-    uint32_t siPayloadTransfCount = u32ImageSize / siPayloadTransfSize;
+    const uint32_t siPayloadTransfCount = u32ImageSize / siPayloadTransfSize;
     /* transfer1 size is the remainder of the total payload with padding of U3V_TARGET_ARCH_BYTE_ALIGNMENT, sent as an extra payload block */
-    uint32_t siPayloadFinalTransf1Size = ((u32ImageSize % siPayloadTransfSize) / U3V_TARGET_ARCH_BYTE_ALIGNMENT) * U3V_TARGET_ARCH_BYTE_ALIGNMENT;
+    const uint32_t siPayloadFinalTransf1Size = ((u32ImageSize % siPayloadTransfSize) / U3V_TARGET_ARCH_BYTE_ALIGNMENT) * U3V_TARGET_ARCH_BYTE_ALIGNMENT;
     /* transfer2 size is the remainder of the transfer1 block payload, padded to U3V_TARGET_ARCH_BYTE_ALIGNMENT and rounded up, sent (if > 0) as the final payload block */
     uint32_t siPayloadFinalTransf2Size = u32ImageSize - siPayloadTransfCount * siPayloadTransfSize - siPayloadFinalTransf1Size;
     /* if transfer2 padding is not an integer, round up to padding */
@@ -733,8 +733,8 @@ T_U3VHostResult U3VHost_StreamIfControl(T_U3VHostHandle u3vObjHandle, bool enabl
         return u3vResult;
     }
 
-    uint64_t sirmAddress = u3vInstance->u3vDevInfo.sirmAddr;
-    uint32_t siControlCmd = (enable) ? (uint32_t)U3V_SI_CTRL_CMD_ENABLE : (uint32_t)U3V_SI_CTRL_CMD_DISABLE;
+    const uint64_t sirmAddress = u3vInstance->u3vDevInfo.sirmAddr;
+    const uint32_t siControlCmd = (enable) ? (uint32_t)U3V_SI_CTRL_CMD_ENABLE : (uint32_t)U3V_SI_CTRL_CMD_DISABLE;
 
     u3vResult = U3VHost_CtrlIfWriteMemory(ctrlIfInstance,
                                           NULL,
@@ -1184,7 +1184,7 @@ static void U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces
 static void U3VHost_InterfaceRelease(USB_HOST_DEVICE_INTERFACE_HANDLE interfaceHandle)
 {
     T_U3VHostInstanceObj *u3vInstance;
-    uint32_t index = U3VHost_InterfaceHandleToInstance(interfaceHandle);
+    const uint32_t index = U3VHost_InterfaceHandleToInstance(interfaceHandle);
 
     if (index < UINT32_MAX)
     {
@@ -1249,9 +1249,9 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE U3VHost_InterfaceEventHandler(US
                                                                               uintptr_t context)
 {
     T_U3VHostInstanceObj *u3vInstance;
-    uint32_t index = U3VHost_InterfaceHandleToInstance(interfaceHandle);
+    const uint32_t index = U3VHost_InterfaceHandleToInstance(interfaceHandle);
+    const T_U3VHostEvent u3vEvent = (T_U3VHostEvent)(context);
     USB_HOST_DEVICE_INTERFACE_EVENT_TRANSFER_COMPLETE_DATA *dataTransferEvent;
-    T_U3VHostEvent u3vEvent = (T_U3VHostEvent)(context);
     T_U3VHostEventWriteCompleteData u3vTransferCompleteData;
  
     u3vInstance = &gUSBHostU3VObj[index];
@@ -1276,6 +1276,7 @@ static USB_HOST_DEVICE_INTERFACE_EVENT_RESPONSE U3VHost_InterfaceEventHandler(US
             }
             break;
 
+        /* not used cases, fallthrough */
         case USB_HOST_DEVICE_INTERFACE_EVENT_SET_INTERFACE_COMPLETE:
         case USB_HOST_DEVICE_INTERFACE_EVENT_PIPE_HALT_CLEAR_COMPLETE:
         default:
@@ -1397,7 +1398,7 @@ static void U3VHost_DeviceAssign(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle,
 static void U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     T_U3VHostInstanceObj *u3vInstance;
-    uint32_t index = U3VHost_DeviceHandleToInstance(deviceHandle);
+    const uint32_t index = U3VHost_DeviceHandleToInstance(deviceHandle);
 
     if (index < UINT32_MAX)
     {
@@ -1453,7 +1454,7 @@ static void U3VHost_DeviceRelease(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 static void U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
 {
     T_U3VHostInstanceObj *u3vInstance;
-    uint32_t index = U3VHost_DeviceHandleToInstance(deviceHandle);
+    const uint32_t index = U3VHost_DeviceHandleToInstance(deviceHandle);
     USB_HOST_RESULT result;
     USB_HOST_REQUEST_HANDLE requestHandle;
 
@@ -1510,6 +1511,7 @@ static void U3VHost_DeviceTasks(USB_HOST_DEVICE_CLIENT_HANDLE deviceHandle)
                     break;
 
                 case U3V_HOST_STATE_READY:
+                    /* do nothing */
                     break;
 
                 case U3V_HOST_STATE_ERROR:
@@ -1674,7 +1676,7 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
     bool reqAcknowledged;
     T_U3VCtrlIfAcknowledge *ack = NULL;
     T_U3VCtrlIfPendingAckPayload *pendingAck = NULL;
-    size_t cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(T_U3VCtrlIfReadMemCmdPayload);
+    const size_t cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(T_U3VCtrlIfReadMemCmdPayload);
     size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + transfSize;
 
     u3vResult = (u3vCtrlIf == NULL) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
@@ -1710,9 +1712,9 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
         return u3vResult;
     }
     
-    while (totalBytesRead < transfSize)
+    while (totalBytesRead < (uint32_t)transfSize)
     {
-        uint32_t bytesThisIteration = U3VDRV_MIN((uint32_t)(transfSize - totalBytesRead), maxBytesPerRead);
+        const uint32_t bytesThisIteration = U3VDRV_MIN(((uint32_t)transfSize - totalBytesRead), maxBytesPerRead);
         T_U3VCtrlIfCommand *command = (T_U3VCtrlIfCommand *)(ctrlIfInst->cmdBuffer);
         T_U3VCtrlIfReadMemCmdPayload *payload = (T_U3VCtrlIfReadMemCmdPayload *)(command->payload);
         uint32_t writeRetryCnt = UINT32_C(0);
@@ -1838,7 +1840,7 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
         totalBytesRead += bytesThisIteration;
     } /* loop until totalBytesRead == transfSize */
 
-    if (totalBytesRead != transfSize)
+    if (totalBytesRead != (uint32_t)transfSize)
     {
         OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
         u3vResult = U3V_HOST_RESULT_FAILURE;
@@ -1887,9 +1889,9 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
     bool reqAcknowledged;
     T_U3VCtrlIfAcknowledge *ack = NULL;
     T_U3VCtrlIfPendingAckPayload *pendingAck = NULL;
-    T_U3V_CtrlIfWriteMemAckPayload *writeMemAck = NULL;
+    T_U3VCtrlIfWriteMemAckPayload *writeMemAck = NULL;
     size_t cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(T_U3VCtrlIfWriteMemCmdPayload);
-    size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + U3VDRV_MAX(sizeof(T_U3V_CtrlIfWriteMemAckPayload), sizeof(T_U3VCtrlIfPendingAckPayload));
+    const size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + U3VDRV_MAX(sizeof(T_U3VCtrlIfWriteMemAckPayload), sizeof(T_U3VCtrlIfPendingAckPayload));
 
     u3vResult = (u3vCtrlIf == NULL)    ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
     u3vResult = (bytesWritten == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
@@ -1906,7 +1908,7 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
     ctrlIfHandle = ctrlIfInst->ctrlIntfHandle;
 
     u3vResult = (cmdBufferSize > ctrlIfInst->maxCmdTransfSize)                    ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (maxBytesPerWrite == UINT32_C(0))                                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (maxBytesPerWrite == UINT32_C(0))                                 ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
     u3vResult = (ctrlIfHandle->bulkInPipeHandle == USB_HOST_PIPE_HANDLE_INVALID)  ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
     u3vResult = (ctrlIfHandle->bulkOutPipeHandle == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
 
@@ -1924,9 +1926,9 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         return u3vResult;
     }
 
-    while (totalBytesWritten < transfSize)
+    while (totalBytesWritten < (uint32_t)transfSize)
     {
-        uint32_t bytesThisIteration = U3VDRV_MIN((uint32_t)(transfSize - totalBytesWritten), maxBytesPerWrite);
+        const uint32_t bytesThisIteration = U3VDRV_MIN(((uint32_t)transfSize - totalBytesWritten), maxBytesPerWrite);
         T_U3VCtrlIfCommand *command = (T_U3VCtrlIfCommand *)(ctrlIfInst->cmdBuffer);
         T_U3VCtrlIfWriteMemCmdPayload *payload = (T_U3VCtrlIfWriteMemCmdPayload *)(command->payload);
         uint32_t writeRetryCnt = UINT32_C(0);
@@ -2007,7 +2009,7 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             }
             
             ack = (T_U3VCtrlIfAcknowledge *)(ctrlIfInst->ackBuffer);
-            writeMemAck = (T_U3V_CtrlIfWriteMemAckPayload *)(ack->payload);
+            writeMemAck = (T_U3VCtrlIfWriteMemAckPayload *)(ack->payload);
 
             while ((ctrlIfInst->readReqSts.length != ackBufferSize) ||
                    (ctrlIfInst->readReqSts.result != U3V_HOST_RESULT_SUCCESS) ||
@@ -2030,8 +2032,8 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
                 (ack->header.prefix != (uint32_t)U3V_CONTROL_MGK_PREFIX) ||
                 (ack->header.status != (uint16_t)U3V_ERR_NO_ERROR) ||
                 (ack->header.ackId != ctrlIfInst->requestId) ||
-                ((ack->header.cmd == (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3V_CtrlIfWriteMemAckPayload)) && (ack->header.length != 0U)) ||
-                ((ack->header.cmd == (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3V_CtrlIfWriteMemAckPayload)) && (writeMemAck->bytesWritten != bytesThisIteration)) ||
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.length != sizeof(T_U3VCtrlIfWriteMemAckPayload)) && (ack->header.length != 0U)) ||
+                ((ack->header.cmd == (uint16_t)U3V_CTRL_WRITEMEM_ACK) && (ack->header.length == sizeof(T_U3VCtrlIfWriteMemAckPayload)) && (writeMemAck->bytesWritten != bytesThisIteration)) ||
                 ((ack->header.cmd == (uint16_t)U3V_CTRL_PENDING_ACK) && (ack->header.length != sizeof(T_U3VCtrlIfPendingAckPayload))))
             {
                 OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
@@ -2052,7 +2054,7 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
         totalBytesWritten += bytesThisIteration;
     } /* loop until totalBytesWritten == transfSize */
 
-    if (totalBytesWritten != transfSize)
+    if (totalBytesWritten != (uint32_t)transfSize)
     {
         OSAL_MUTEX_Unlock(&(ctrlIfInst->readWriteLock));
         u3vResult = U3V_HOST_RESULT_FAILURE;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdalign.h>
 #include "U3VCam_Device_Class_Specs.h"
 #include "U3VCam_Config.h"
 #include "usb/usb_host_client_driver.h"
@@ -57,7 +58,7 @@ typedef struct
     void            *data;
 } T_U3VSiGenericPacket;
 
-U3V_STATIC_ASSERT(sizeof(T_U3VSiGenericPacket) == 20, "Packing error for T_U3VSiGenericPacket");
+U3V_STATIC_ASSERT((alignof(T_U3VSiGenericPacket) == 1), "Packing error for T_U3VSiGenericPacket");
 
 /* end of forced 1 byte packing */
 #pragma pack(pop)
@@ -285,6 +286,7 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  *             }
  *             break;
  * 
+ *         // not used cases, fallthrough
  *         case U3V_HOST_EVENT_WRITE_COMPLETE:
  *         case U3V_HOST_EVENT_READ_COMPLETE:
  *         default:
