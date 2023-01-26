@@ -4,12 +4,12 @@ This is a generic driver for atsamv71 SPI0 and SPI1 peripherals based on [LPS22H
 
 To test the driver SPI0 from atsamv71q21b dev board can used, as shown below
 
-| SPI0 | ADXRS453 | 
-|----------|:-------------:|
-| MOSI (PD20)| SI |
-| MISO (PD21)| SO | 
-| NPCS0 (PB2)| SSN|
-| NPCL (PD22)| CLK|
+| SPI0        | LPS22H | 
+|-------------|:------:|
+| MOSI (PD21) |   SI   |
+| MISO (PD20) |   SO   | 
+| CS0 (PB2)   |  SSN   |
+| NPCL (PD22) |  CLK   |
 
 where NPCS0 (PB2) was used as a GPIO pin.
 
