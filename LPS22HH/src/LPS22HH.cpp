@@ -5,9 +5,9 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress) {
 
     PIO_PinWrite(ssn, false);
 
-    uint8_t txData = registerAddress | 0b10000000;
-    SPI_WriteRead(&txData, 1, nullptr, 1);
-    SPI_WriteRead(nullptr, 1, &rxData, 1);
+    uint8_t txData = registerAddress | SPI_READ_COMMAND;
+    SPI_Write(&txData, 1);
+    SPI_Read(&rxData, 1);
 
     PIO_PinWrite(ssn, true);
 
@@ -17,8 +17,8 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress) {
 void LPS22HH::writeToRegister(RegisterAddress registerAddress, uint8_t txData) {
     PIO_PinWrite(ssn, false);
 
-    SPI_WriteRead(&registerAddress, 1, nullptr, 0);
-    SPI_WriteRead(&txData, 1, nullptr, 0);
+    uint16_t spiCommand = (registerAddress << 8) | txData;
+    SPI_Write(&spiCommand, 2);
 
     PIO_PinWrite(ssn, true);
 }

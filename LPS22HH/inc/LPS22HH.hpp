@@ -9,6 +9,9 @@
 #define SPI_WriteRead SPI1_WriteRead
 #else
 #define SPI_WriteRead SPI0_WriteRead
+#define SPI_Write   SPI0_Write
+#define SPI_Read    SPI0_Read
+
 #endif
 
 /**
@@ -39,6 +42,14 @@ private:
         FIFO_DATA_OUT_TEMP_H = 0x7C,
     };
 
+    /**
+     * SPI Command Type (Write/Read)
+     */
+    enum SPICommandType : uint8_t {
+
+        SPI_WRITE_COMMAND = 0x0,
+        SPI_READ_COMMAND  = 0x80,
+    };
     /**
      * The output data rate (Hz) set in Control Register 1
      */
