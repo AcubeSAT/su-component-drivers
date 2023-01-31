@@ -33,18 +33,10 @@ extern "C" {
 *******************************************************************************/
 
 /**
- * Area of struct typedefs with forced 1 byte packing.
- * 
- * For datatypes used in USB3 Vision protocol frames which require strict 1 byte 
- * packing when being sent over USB bus.
- */
-#pragma pack(push, 1)
-
-/**
  * U3V Control Interface ACK header.
  * 
  */
-typedef struct
+typedef struct __attribute__((packed))
 {
 	uint32_t    prefix;
 	uint16_t    status;
@@ -56,34 +48,58 @@ typedef struct
 U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAckHeader) == 1), "Packing error for T_U3VCtrlIfAckHeader");
 
 /**
- * U3V Control Interface ACK.
- * 
- */
-typedef struct
-{
-	T_U3VCtrlIfAckHeader    header;
-	uint8_t                 payload[];
-} T_U3VCtrlIfAcknowledge;
-
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAcknowledge) == 1), "Packing error for T_U3VCtrlIfAcknowledge");
-
-/**
  * U3V Control Interface pending ACK payload.
  * 
  */
-typedef struct
+typedef union __attribute__((packed))
 {
-	uint16_t    reserved;
-	uint16_t    timeout;
+    struct
+    {
+        uint16_t reserved;
+        uint16_t timeout;
+    }S;
+    uint8_t B[4];
 } T_U3VCtrlIfPendingAckPayload;
 
 U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfPendingAckPayload) == 1), "Packing error for T_U3VCtrlIfPendingAckPayload");
 
 /**
+ * U3V Control Interface write memory ACK payload.
+ * 
+ */
+typedef union __attribute__((packed))
+{
+    struct
+    {
+        uint16_t reserved;
+        uint16_t bytesWritten;
+    }S;
+    uint8_t B[4];
+} T_U3VCtrlIfWriteMemAckPayload;
+
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemAckPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemAckPayload");
+
+/**
+ * U3V Control Interface ACK.
+ * 
+ */
+typedef union __attribute__((packed))
+{
+    struct
+    {
+        T_U3VCtrlIfAckHeader    header;
+        uint8_t                 payload[];
+    } S;
+    uint8_t B[U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE];
+} T_U3VCtrlIfAcknowledge;
+
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAcknowledge) == 1), "Packing error for T_U3VCtrlIfAcknowledge");
+
+/**
  * U3V Control Interface CMD header.
  * 
  */
-typedef struct
+typedef struct __attribute__((packed))
 {
 	uint32_t    prefix;
 	uint16_t    flags;
@@ -95,22 +111,10 @@ typedef struct
 U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfCmdHeader) == 1), "Packing error for T_U3VCtrlIfCmdHeader");
 
 /**
- * U3V Control Interface CMD.
- * 
- */
-typedef struct
-{
-	T_U3VCtrlIfCmdHeader    header;
-	uint8_t                 payload[];
-} T_U3VCtrlIfCommand;
-
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfCommand) == 1), "Packing error for T_U3VCtrlIfCommand");
-
-/**
  * U3V Control Interface read memory CMD payload.
  * 
  */
-typedef struct 
+typedef struct __attribute__((packed))
 {
 	uint64_t    address;
 	uint16_t    reserved;
@@ -120,10 +124,26 @@ typedef struct
 U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCmdPayload) == 1), "Packing error for T_U3VCtrlIfReadMemCmdPayload");
 
 /**
+ * U3V Control Interface read memory CMD.
+ * 
+ */
+typedef union __attribute__((packed))
+{
+    struct
+    {
+        T_U3VCtrlIfCmdHeader            header;
+        T_U3VCtrlIfReadMemCmdPayload    payload;
+    }S;
+    uint8_t B[24];
+} T_U3VCtrlIfReadMemCommand;
+
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCommand) == 1), "Packing error for T_U3VCtrlIfReadMemCommand");
+
+/**
  * U3V Control Interface write memory CMD payload.
  * 
  */
-typedef struct
+typedef struct __attribute__((packed))
 {
 	uint64_t    address;
 	uint8_t     data[];
@@ -132,20 +152,20 @@ typedef struct
 U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemCmdPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
 
 /**
- * U3V Control Interface write memory ACK payload.
+ * U3V Control Interface write memory CMD.
  * 
  */
-typedef struct
+typedef union __attribute__((packed))
 {
-	uint16_t    reserved;
-	uint16_t    bytesWritten;
-} T_U3VCtrlIfWriteMemAckPayload;
+    struct
+    {
+        T_U3VCtrlIfCmdHeader            header;
+        T_U3VCtrlIfWriteMemCmdPayload   payload;
+    } S;
+    uint8_t B[U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE];
+} T_U3VCtrlIfWriteMemCommand;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemAckPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemAckPayload");
-
-/* end of forced 1 byte packing */
-#pragma pack(pop)
-
+U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemCommand) == 1), "Packing error for T_U3VCtrlIfWriteMemCommand");
 
 /**
  * U3V String buffer type for text descriptors.
@@ -160,7 +180,6 @@ typedef union
 } T_U3VStringBuffer;
 
 U3V_STATIC_ASSERT((sizeof(T_U3VStringBuffer) == sizeof(uint8_t[U3V_MAX_DESCR_STR_LENGTH])), "Alignment of uint8_t and char arrays not equal");
-
 
 /**
  * U3V Host transfer complete callback handler.
@@ -205,9 +224,7 @@ typedef struct
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;
 	OSAL_MUTEX_DECLARE                  (readWriteLock); //TODO: possibly use FreeRTOS mutex instead?
-	uint8_t                             ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)];
 	uint32_t                            maxAckTransfSize;
-	uint8_t                             cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)];
 	uint32_t                            maxCmdTransfSize;
 	uint16_t                            requestId;
 	uint16_t                            maxRequestId;

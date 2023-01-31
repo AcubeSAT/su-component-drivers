@@ -185,6 +185,26 @@ extern "C" {
 #define U3V_TARGET_ARCH_BYTE_ALIGNMENT              UINT32_C(8)
 
 /**
+ * U3V Control Interface Command buffer max size.
+ * 
+ * Defines the maximum size of the command (CMD) buffer used by the Control
+ * Interface.
+ * @note Minimum size shall be at least the size of T_U3VCtrlIfCmdHeader + 
+ * U3V_MAX_DESCR_STR_LENGTH.  
+ */
+#define U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE             ((size_t)84)
+
+/**
+ * U3V Control Interface Acknowledge buffer max size.
+ * 
+ * Defines the maximum size of the acknowledge (ACK) buffer used by the Control
+ * Interface.
+ * @note Minimum size shall be at least the size of T_U3VCtrlIfAckHeader + 
+ * U3V_MAX_DESCR_STR_LENGTH.
+ */
+#define U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE             ((size_t)80)
+
+/**
  * U3V Trigger reset command value.
  * 
  */
@@ -202,6 +222,17 @@ extern "C" {
  */
 #define U3V_ACQUISITION_STOP_CMD                    UINT32_C(0)
 
+/**
+ * U3V Streaming interface control enable command.
+ * 
+ */
+#define U3V_SI_CTRL_ENABLE_CMD                      UINT32_C(1)
+
+/**
+ * U3V Streaming interface control disable command.
+ * 
+ */
+#define U3V_SI_CTRL_DISABLE_CMD                     UINT32_C(0)
 
 
 

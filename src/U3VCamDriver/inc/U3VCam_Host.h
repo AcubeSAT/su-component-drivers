@@ -38,18 +38,10 @@ typedef uintptr_t T_U3VHostHandle;
 typedef uintptr_t T_U3VHostTransferHandle;
 
 /**
- * Area of struct typedefs with forced 1 byte packing.
- * 
- * For datatypes used in USB3 Vision protocol frames which require strict 1 byte 
- * packing when being sent over USB bus.
- */
-#pragma pack(push, 1)
-
-/**
  * U3V Stream Interface generic packet.
  * 
  */
-typedef struct 
+typedef struct __attribute__((packed))
 {
     uint32_t        magicKey;           /* "U3VL" for Leader / "U3VT" for Trailer */
 	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
@@ -59,9 +51,6 @@ typedef struct
 } T_U3VSiGenericPacket;
 
 U3V_STATIC_ASSERT((alignof(T_U3VSiGenericPacket) == 1), "Packing error for T_U3VSiGenericPacket");
-
-/* end of forced 1 byte packing */
-#pragma pack(pop)
 
 /**
  * U3V Host result.
