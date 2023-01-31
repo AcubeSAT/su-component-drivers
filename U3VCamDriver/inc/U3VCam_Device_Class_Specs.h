@@ -373,26 +373,6 @@ typedef enum
 } T_U3VPfnc;
 
 /**
- * U3V Acquisition control command value.
- * 
- */
-typedef enum
-{
-    U3V_ACQ_START_CMD_VAL                     = 0x01,
-    U3V_ACQ_STOP_CMD_VAL                      = 0x00
-} T_U3VAcqCmdVal;
-
-/**
- * U3V Stream control command value.
- * 
- */
-typedef enum
-{
-    U3V_SI_CTRL_CMD_ENABLE                    = 0x01,
-    U3V_SI_CTRL_CMD_DISABLE                   = 0x00
-} T_U3VSiCtrlCmd;
-
-/**
  * U3V Stream payload type identifier.
  * 
  */
