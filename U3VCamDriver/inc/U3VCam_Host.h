@@ -10,10 +10,22 @@ extern "C" {
 #endif
 
 
-
 /*******************************************************************************
 * Macro definitions
 *******************************************************************************/
+
+#ifdef __has_attribute
+    #define U3V_HAS_ATTRIBUTE(x) __has_attribute(x)
+#else
+    #define U3V_HAS_ATTRIBUTE(x) 0
+#endif
+
+#if U3V_HAS_ATTRIBUTE(packed)
+    #define U3V_PACKED __attribute__((packed))
+#else
+    #define U3V_PACKED
+    #pragma message "Warning! [[gnu::packed]] was not found, proceed with caution"
+#endif
 
 #define U3V_HOST_RESULT_MIN                     (USB_HOST_RESULT_MIN)
 #define U3V_HOST_HANDLE_INVALID                 ((T_U3VHostHandle)UINTPTR_MAX)
@@ -41,7 +53,7 @@ typedef uintptr_t T_U3VHostTransferHandle;
  * U3V Stream Interface generic packet.
  * 
  */
-typedef struct __attribute__((packed))
+typedef struct U3V_PACKED
 {
     uint32_t        magicKey;           /* "U3VL" for Leader / "U3VT" for Trailer */
 	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */

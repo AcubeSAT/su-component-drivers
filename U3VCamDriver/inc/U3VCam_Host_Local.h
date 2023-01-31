@@ -36,7 +36,7 @@ extern "C" {
  * U3V Control Interface ACK header.
  * 
  */
-typedef struct __attribute__((packed))
+typedef struct U3V_PACKED
 {
 	uint32_t    prefix;
 	uint16_t    status;
@@ -51,7 +51,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAckHeader) == 1), "Packing error for T_U3V
  * U3V Control Interface pending ACK payload.
  * 
  */
-typedef union __attribute__((packed))
+typedef union U3V_PACKED
 {
     struct
     {
@@ -67,7 +67,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfPendingAckPayload) == 1), "Packing error f
  * U3V Control Interface write memory ACK payload.
  * 
  */
-typedef union __attribute__((packed))
+typedef union U3V_PACKED
 {
     struct
     {
@@ -83,7 +83,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemAckPayload) == 1), "Packing error 
  * U3V Control Interface ACK.
  * 
  */
-typedef union __attribute__((packed))
+typedef union U3V_PACKED
 {
     struct
     {
@@ -99,7 +99,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAcknowledge) == 1), "Packing error for T_U
  * U3V Control Interface CMD header.
  * 
  */
-typedef struct __attribute__((packed))
+typedef struct U3V_PACKED
 {
 	uint32_t    prefix;
 	uint16_t    flags;
@@ -114,7 +114,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfCmdHeader) == 1), "Packing error for T_U3V
  * U3V Control Interface read memory CMD payload.
  * 
  */
-typedef struct __attribute__((packed))
+typedef struct U3V_PACKED
 {
 	uint64_t    address;
 	uint16_t    reserved;
@@ -127,7 +127,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCmdPayload) == 1), "Packing error f
  * U3V Control Interface read memory CMD.
  * 
  */
-typedef union __attribute__((packed))
+typedef union U3V_PACKED
 {
     struct
     {
@@ -143,7 +143,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCommand) == 1), "Packing error for 
  * U3V Control Interface write memory CMD payload.
  * 
  */
-typedef struct __attribute__((packed))
+typedef struct U3V_PACKED
 {
 	uint64_t    address;
 	uint8_t     data[];
@@ -155,7 +155,7 @@ U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemCmdPayload) == 1), "Packing error 
  * U3V Control Interface write memory CMD.
  * 
  */
-typedef union __attribute__((packed))
+typedef union U3V_PACKED
 {
     struct
     {
