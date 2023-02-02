@@ -62,7 +62,7 @@ typedef struct U3V_PACKED
     void            *data;
 } T_U3VSiGenericPacket;
 
-U3V_STATIC_ASSERT((alignof(T_U3VSiGenericPacket) == 1), "Packing error for T_U3VSiGenericPacket");
+U3V_STATIC_ASSERT((sizeof(T_U3VSiGenericPacket) == 20), "Packing error for T_U3VSiGenericPacket");
 
 /**
  * U3V Host result.

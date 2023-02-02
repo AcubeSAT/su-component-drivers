@@ -907,12 +907,11 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle)
 {
     T_U3VControlIfObj *u3vCtrlIntfObj = NULL;
-    T_U3VHostInstanceObj *u3vInstance = NULL;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
 
-    if (u3vObjHandle != 0)
+    if (u3vInstance != NULL)
     {
-        u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-        u3vCtrlIntfObj = (T_U3VControlIfObj *)(&u3vInstance->controlIfObj);
+        u3vCtrlIntfObj = &u3vInstance->controlIfObj;
         U3VHost_CtrlIfClearObjData(u3vCtrlIntfObj);
     }
 }
@@ -1045,8 +1044,7 @@ static void U3VHost_InterfaceAssign(USB_HOST_DEVICE_INTERFACE_HANDLE *interfaces
 
             for (iterator = UINT32_C(0); iterator < nInterfaces; iterator++)
             {
-                interfaceDescriptor = USB_HOST_DeviceGeneralInterfaceDescriptorQuery((USB_INTERFACE_ASSOCIATION_DESCRIPTOR *)(descriptor),
-                                                                                     &interfaceDescriptorQuery);
+                interfaceDescriptor = USB_HOST_DeviceGeneralInterfaceDescriptorQuery(descriptor, &interfaceDescriptorQuery);
 
                 if (interfaceDescriptor != NULL)
                 {

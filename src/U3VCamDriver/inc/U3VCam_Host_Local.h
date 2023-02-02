@@ -45,7 +45,7 @@ typedef struct U3V_PACKED
 	uint16_t    ackId;
 } T_U3VCtrlIfAckHeader;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAckHeader) == 1), "Packing error for T_U3VCtrlIfAckHeader");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfAckHeader) == 12), "Packing error for T_U3VCtrlIfAckHeader");
 
 /**
  * U3V Control Interface pending ACK payload.
@@ -61,7 +61,7 @@ typedef union U3V_PACKED
     uint8_t B[4];
 } T_U3VCtrlIfPendingAckPayload;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfPendingAckPayload) == 1), "Packing error for T_U3VCtrlIfPendingAckPayload");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfPendingAckPayload) == 4), "Packing error for T_U3VCtrlIfPendingAckPayload");
 
 /**
  * U3V Control Interface write memory ACK payload.
@@ -77,7 +77,7 @@ typedef union U3V_PACKED
     uint8_t B[4];
 } T_U3VCtrlIfWriteMemAckPayload;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemAckPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemAckPayload");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfWriteMemAckPayload) == 4), "Packing error for T_U3VCtrlIfWriteMemAckPayload");
 
 /**
  * U3V Control Interface ACK.
@@ -93,7 +93,7 @@ typedef union U3V_PACKED
     uint8_t B[U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE];
 } T_U3VCtrlIfAcknowledge;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfAcknowledge) == 1), "Packing error for T_U3VCtrlIfAcknowledge");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfAcknowledge) == U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE), "Packing error for T_U3VCtrlIfAcknowledge");
 
 /**
  * U3V Control Interface CMD header.
@@ -108,7 +108,7 @@ typedef struct U3V_PACKED
 	uint16_t    requestId;
 } T_U3VCtrlIfCmdHeader;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfCmdHeader) == 1), "Packing error for T_U3VCtrlIfCmdHeader");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfCmdHeader) == 12), "Packing error for T_U3VCtrlIfCmdHeader");
 
 /**
  * U3V Control Interface read memory CMD payload.
@@ -121,7 +121,7 @@ typedef struct U3V_PACKED
 	uint16_t    byteCount;
 } T_U3VCtrlIfReadMemCmdPayload;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCmdPayload) == 1), "Packing error for T_U3VCtrlIfReadMemCmdPayload");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfReadMemCmdPayload) == 12), "Packing error for T_U3VCtrlIfReadMemCmdPayload");
 
 /**
  * U3V Control Interface read memory CMD.
@@ -137,7 +137,7 @@ typedef union U3V_PACKED
     uint8_t B[24];
 } T_U3VCtrlIfReadMemCommand;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfReadMemCommand) == 1), "Packing error for T_U3VCtrlIfReadMemCommand");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfReadMemCommand) == 24), "Packing error for T_U3VCtrlIfReadMemCommand");
 
 /**
  * U3V Control Interface write memory CMD payload.
@@ -149,7 +149,7 @@ typedef struct U3V_PACKED
 	uint8_t     data[];
 } T_U3VCtrlIfWriteMemCmdPayload;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemCmdPayload) == 1), "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfWriteMemCmdPayload) == 8), "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
 
 /**
  * U3V Control Interface write memory CMD.
@@ -165,7 +165,7 @@ typedef union U3V_PACKED
     uint8_t B[U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE];
 } T_U3VCtrlIfWriteMemCommand;
 
-U3V_STATIC_ASSERT((alignof(T_U3VCtrlIfWriteMemCommand) == 1), "Packing error for T_U3VCtrlIfWriteMemCommand");
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfWriteMemCommand) == U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE), "Packing error for T_U3VCtrlIfWriteMemCommand");
 
 /**
  * U3V String buffer type for text descriptors.

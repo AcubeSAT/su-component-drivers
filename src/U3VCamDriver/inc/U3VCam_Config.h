@@ -202,7 +202,7 @@ extern "C" {
  * @note Minimum size shall be at least the size of T_U3VCtrlIfAckHeader + 
  * U3V_MAX_DESCR_STR_LENGTH.
  */
-#define U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE             ((size_t)80)
+#define U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE             ((size_t)76)
 
 /**
  * U3V Trigger reset command value.
