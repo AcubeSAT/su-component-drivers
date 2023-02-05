@@ -93,9 +93,12 @@ extern "C" {
  * U3VCamDriver static assert
  * 
  * Macro used for static assertion during compile time for critical entities.
- * @note Uses the C11 standard _Static_assert keyword
  */
-#define U3V_STATIC_ASSERT                           _Static_assert
+#ifdef __cplusplus
+    #define U3V_STATIC_ASSERT                       static_assert
+#else
+    #define U3V_STATIC_ASSERT                       _Static_assert
+#endif
 
 /**
  * U3VCamDriver error report callout function.
