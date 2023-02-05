@@ -219,13 +219,13 @@ T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventH
  * 
  * This function shall be used by the U3V application to assign a callback 
  * function that will be called when a connected U3V device is detached.
- * @param handle 
+ * @param u3vObjHandle 
  * @param detachEventHandler 
  * @param context 
  * @return T_U3VHostResult
  * @note callback type to set 'T_U3VHostDetachEventHandler'
  */
-T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context);
+T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle u3vObjHandle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context);
 
 /**
  * U3V Host open obj handle.
@@ -243,12 +243,12 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  * This function shall be used by the U3V application to assign a callback 
  * function that will be called when a host (transfer) event occurs. A typical 
  * code example can be seen below.
- * @param handle 
+ * @param u3vObjHandle 
  * @param eventHandler 
  * @param context 
  * @return T_U3VHostResult 
  * @code
- * static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
+ * static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
  * {
  *     T_U3VHostEventReadCompleteData  *readCompleteEventData;
  *     T_U3VAppData                    *pUsbU3VAppData;
@@ -297,7 +297,7 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  * }
  * @endcode
  */
-T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
+T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle u3vObjHandle, T_U3VHostEventHandler eventHandler, uintptr_t context);
 
 /**
  * U3V Host get Stream Interface capabilities.

@@ -66,7 +66,7 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
                                                  uint32_t *bytesWritten,
                                                  const void *buffer);
 
-static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vHostHandle, T_U3VHostEvent transfEvent, void *transfData);
+static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent transfEvent, void *transfData);
 
 static inline void U3VHost_CtrlIfClearObjData(T_U3VControlIfObj *pCtrlIfObj);
 
@@ -135,15 +135,14 @@ T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventH
 T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle)
 {
     T_U3VHostHandle result = U3V_HOST_HANDLE_INVALID;
-    T_U3VHostInstanceObj *u3vInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
 
     /* Single client only */
-    if (u3vObjHandle != 0)
+    if (u3vInstance != NULL)
     {
-        u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
         if ((u3vInstance->inUse) && (u3vInstance->state == U3V_HOST_STATE_READY))
         {
-            result = (T_U3VHostHandle)(u3vObjHandle);
+            result = u3vObjHandle;
         }
     }
 
@@ -151,10 +150,10 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle)
 }
 
 
-T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context)
+T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle u3vObjHandle, T_U3VHostEventHandler eventHandler, uintptr_t context)
 {
     T_U3VHostResult result = U3V_HOST_RESULT_HANDLE_INVALID;
-    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)(handle);
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
 
     if (u3vInstance != NULL)
     {
@@ -167,10 +166,10 @@ T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHa
 }
 
 
-T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context)
+T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle u3vObjHandle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context)
 {
     T_U3VHostResult result = U3V_HOST_RESULT_HANDLE_INVALID;
-    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)(handle);
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
 
     if (u3vInstance != NULL)
     {
@@ -186,8 +185,8 @@ T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle, T_U3VHostD
 T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t bytesRead;
     uint64_t sbrmAddress;
     uint64_t u3vCapability;
@@ -195,16 +194,7 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
     uint32_t siInfo;
     uint32_t deviceByteAlignment;
 
-    u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
     u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
@@ -282,18 +272,15 @@ T_U3VHostResult U3VHost_GetStreamCapabilities(T_U3VHostHandle u3vObjHandle)
 T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *pReadValue)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t bytesRead;
     uint32_t regValue;
     uint64_t regAddr;
 
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
-    u3vResult = (u3vObjHandle == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
     u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
-    u3vResult = (pReadValue == NULL)     ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (pReadValue     == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
     if (u3vResult == U3V_HOST_RESULT_SUCCESS)
     {
@@ -346,17 +333,14 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
 T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t regVal)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t bytesWritten;
     uint32_t regValue;
     uint64_t regAddr;
 
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
-    u3vResult = (u3vObjHandle == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
-    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult == U3V_HOST_RESULT_SUCCESS)
     {
@@ -411,19 +395,16 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
 T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegFloat floatReg, float *const pReadValue)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t bytesRead;
     uint32_t regValue;
     float floatRetVal;
     uint64_t regAddr;
 
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
-    u3vResult = (u3vObjHandle == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
     u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
-    u3vResult = (pReadValue == NULL)     ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (pReadValue     == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
     if (u3vResult == U3V_HOST_RESULT_SUCCESS)
     {
@@ -460,19 +441,16 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
 T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, void *pReadBfr)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t bytesRead;
     size_t stringSize;
     T_U3VStringBuffer stringBfr;
     uint64_t regAddr;
 
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
-    u3vResult = (u3vObjHandle == 0U)     ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
     u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
-    u3vResult = (pReadBfr == NULL)       ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (pReadBfr       == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
     if (u3vResult == U3V_HOST_RESULT_SUCCESS)
     {
@@ -544,25 +522,16 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 {
     USB_HOST_RESULT hostResult;
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t siRequiredLeaderSize;
     uint64_t siRequiredPayloadSize;
     uint32_t siRequiredTrailerSize;
     uint32_t bytesRead;
 
-    u3vResult = (u3vObjHandle == 0)             ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (u3vInstance    == NULL)        ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL)        ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
     u3vResult = (imgPayloadSize == UINT32_C(0)) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
-    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -712,20 +681,11 @@ T_U3VHostResult U3VHost_StreamIfControl(T_U3VHostHandle u3vObjHandle, bool enabl
 {
     USB_HOST_RESULT hostResult;
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     uint32_t bytesRead;
 
-    u3vResult = (u3vObjHandle == 0U) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
-
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
     u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
@@ -756,21 +716,15 @@ T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void
 {
     USB_HOST_RESULT hostResult;
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VHostInstanceObj *u3vInstance;
-    T_U3VControlIfObj *ctrlIfInstance;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
     T_U3VHostTransferHandle tempTransferHandle;
 
-    u3vResult = (u3vObjHandle == 0U)    ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    u3vResult = (imgBfr == NULL)        ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    u3vResult = (size == 0U)            ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
-    ctrlIfInstance = &u3vInstance->controlIfObj;
+    u3vResult = (u3vInstance    == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (imgBfr         == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (size           == 0U)   ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
-    u3vResult = (ctrlIfInstance == NULL) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
         return u3vResult;
@@ -791,22 +745,15 @@ T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void
 T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
     T_U3VControlIfObj *ctrlIfInst = NULL;
-    T_U3VHostInstanceObj *u3vInstance = NULL;
     uint64_t sbrmAddress;
     uint32_t bytesRead;
     uint32_t maxResponse;
     uint32_t cmdBfrSize;
     uint32_t ackBfrSize;
 
-    u3vResult = (u3vObjHandle == 0) ? U3V_HOST_RESULT_HANDLE_INVALID : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    u3vResult = (u3vInstance        == NULL)                 ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
     u3vResult = (u3vInstance->state != U3V_HOST_STATE_READY) ? U3V_HOST_RESULT_DEVICE_UNKNOWN : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
@@ -906,13 +853,12 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle)
 
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle)
 {
-    T_U3VControlIfObj *u3vCtrlIntfObj = NULL;
     T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
 
-    if (u3vInstance != NULL)
+    if ((u3vInstance != NULL) && (ctrlIfInstance != NULL))
     {
-        u3vCtrlIntfObj = &u3vInstance->controlIfObj;
-        U3VHost_CtrlIfClearObjData(u3vCtrlIntfObj);
+        U3VHost_CtrlIfClearObjData(ctrlIfInstance);
     }
 }
 
@@ -1317,7 +1263,7 @@ static USB_HOST_DEVICE_EVENT_RESPONSE U3VHost_DeviceEventHandler(USB_HOST_DEVICE
                                                                  void *eventData,
                                                                  uintptr_t context)
 {
-   T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)(context);
+   T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)context;
    USB_HOST_DEVICE_EVENT_CONFIGURATION_SET_DATA *configSetEventData;
 
    switch (event)
@@ -1666,7 +1612,7 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
                                                 void *buffer)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VControlIfObj *ctrlIfInst = NULL;
+    T_U3VControlIfObj *ctrlIfInst = u3vCtrlIf;
     T_U3VHostInterfHandle *ctrlIfHandle = NULL;
     T_U3VHostTransferHandle tempTransferHandle;
     USB_HOST_RESULT hostResult;
@@ -1676,25 +1622,19 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
     T_U3VCtrlIfAcknowledge ack = {0};
     const size_t cmdBufferSize = sizeof(T_U3VCtrlIfReadMemCommand);
 
-    u3vResult = (u3vCtrlIf == NULL) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
-    u3vResult = (bytesRead == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (buffer == NULL)    ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (transfSize == 0)   ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-
-    ctrlIfInst = u3vCtrlIf;
-    maxBytesPerRead = ctrlIfInst->maxAckTransfSize - (uint32_t)sizeof(T_U3VCtrlIfAckHeader);
     ctrlIfHandle = ctrlIfInst->ctrlIntfHandle;
+    maxBytesPerRead = ctrlIfInst->maxAckTransfSize - (uint32_t)sizeof(T_U3VCtrlIfAckHeader);
 
-    u3vResult = ((uint32_t)transfSize > maxBytesPerRead)                          ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = ((uint32_t)cmdBufferSize > ctrlIfInst->maxCmdTransfSize)          ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (maxBytesPerRead == UINT32_C(0))                                  ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (ctrlIfHandle->bulkInPipeHandle == USB_HOST_PIPE_HANDLE_INVALID)  ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
-    u3vResult = (ctrlIfHandle->bulkOutPipeHandle == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInst                      == NULL)                         ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (ctrlIfHandle                    == NULL)                         ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (ctrlIfHandle->bulkInPipeHandle  == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (ctrlIfHandle->bulkOutPipeHandle == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (bytesRead                       == NULL)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (buffer                          == NULL)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (transfSize                      == 0)                            ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (maxBytesPerRead                 == UINT32_C(0))                  ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = ((uint32_t)transfSize            >  maxBytesPerRead)              ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = ((uint32_t)cmdBufferSize         >  ctrlIfInst->maxCmdTransfSize) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -1875,7 +1815,7 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
                                                  const void *buffer)
 {
     T_U3VHostResult u3vResult = U3V_HOST_RESULT_SUCCESS;
-    T_U3VControlIfObj *ctrlIfInst = NULL;
+    T_U3VControlIfObj *ctrlIfInst = u3vCtrlIf;
     T_U3VHostInterfHandle *ctrlIfHandle = NULL;
     T_U3VHostTransferHandle tempTransferHandle;
     USB_HOST_RESULT hostResult;
@@ -1885,25 +1825,19 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
     size_t cmdBufferSize = sizeof(T_U3VCtrlIfWriteMemCommand);
     const size_t ackBufferSize = sizeof(T_U3VCtrlIfAckHeader) + U3VDRV_MAX(sizeof(T_U3VCtrlIfWriteMemAckPayload), sizeof(T_U3VCtrlIfPendingAckPayload));
 
-    u3vResult = (u3vCtrlIf == NULL)    ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
-    u3vResult = (bytesWritten == NULL) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (buffer == NULL)       ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (transfSize == 0)      ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-
-    if (u3vResult != U3V_HOST_RESULT_SUCCESS)
-    {
-        return u3vResult;
-    }
-    
-    ctrlIfInst = u3vCtrlIf;
-    maxBytesPerWrite = ctrlIfInst->maxAckTransfSize - (uint32_t)sizeof(T_U3VCtrlIfAckHeader);
     ctrlIfHandle = ctrlIfInst->ctrlIntfHandle;
+    maxBytesPerWrite = ctrlIfInst->maxAckTransfSize - (uint32_t)sizeof(T_U3VCtrlIfAckHeader);
 
-    u3vResult = ((uint32_t)transfSize > maxBytesPerWrite)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = ((uint32_t)cmdBufferSize > ctrlIfInst->maxCmdTransfSize)          ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (maxBytesPerWrite == UINT32_C(0))                                 ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
-    u3vResult = (ctrlIfHandle->bulkInPipeHandle == USB_HOST_PIPE_HANDLE_INVALID)  ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
-    u3vResult = (ctrlIfHandle->bulkOutPipeHandle == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_DEVICE_UNKNOWN    : u3vResult;
+    u3vResult = (ctrlIfInst                      == NULL)                         ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (ctrlIfHandle                    == NULL)                         ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (ctrlIfHandle->bulkInPipeHandle  == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (ctrlIfHandle->bulkOutPipeHandle == USB_HOST_PIPE_HANDLE_INVALID) ? U3V_HOST_RESULT_HANDLE_INVALID    : u3vResult;
+    u3vResult = (bytesWritten                    == NULL)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (buffer                          == NULL)                         ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (transfSize                      == 0)                            ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = (maxBytesPerWrite                == UINT32_C(0))                  ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = ((uint32_t)transfSize            >  maxBytesPerWrite)             ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
+    u3vResult = ((uint32_t)cmdBufferSize         >  ctrlIfInst->maxCmdTransfSize) ? U3V_HOST_RESULT_INVALID_PARAMETER : u3vResult;
 
     if (u3vResult != U3V_HOST_RESULT_SUCCESS)
     {
@@ -2066,23 +2000,21 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
  *
  * This callback is called when a transfer request over the Control Interface
  * has been completed.
- * @param u3vHostHandle
+ * @param u3vObjHandle
  * @param transfEvent
  * @param transfData
  * @warning Shall only be used for Control Interface transfers.
  * @note callback type is 'T_U3VHostTransfCompleteHandler'
  */
-static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vHostHandle, T_U3VHostEvent transfEvent, void *transfData)
+static void U3VHost_CtrlIfTransferReqCompleteCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent transfEvent, void *transfData)
 {
     T_U3VHostEventWriteCompleteData *writeCompleteEventData;
     T_U3VHostEventReadCompleteData  *readCompleteEventData;
-    T_U3VHostInstanceObj *u3vInstance = NULL;
-    T_U3VControlIfObj *ctrlIfInstance = NULL;
-    u3vInstance = (T_U3VHostInstanceObj *)u3vHostHandle;
+    T_U3VHostInstanceObj *u3vInstance = (T_U3VHostInstanceObj *)u3vObjHandle;
+    T_U3VControlIfObj *ctrlIfInstance = &u3vInstance->controlIfObj;
 
-    if (u3vInstance != NULL)
+    if ((u3vInstance != NULL) && (ctrlIfInstance != NULL))
     {
-        ctrlIfInstance = &u3vInstance->controlIfObj;
         switch (transfEvent)
         {
             case U3V_HOST_EVENT_READ_COMPLETE:
