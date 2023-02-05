@@ -1714,7 +1714,7 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
     {
         const uint32_t bytesThisIteration = U3VDRV_MIN(((uint32_t)transfSize - totalBytesRead), maxBytesPerRead);
         uint32_t writeRetryCnt = UINT32_C(0);
-        T_U3VCtrlIfReadMemCommand cmdStr = {0};
+        T_U3VCtrlIfReadMemCommand readCmd = {0};
 
         ctrlIfInst->writeReqSts.length = 0;
         ctrlIfInst->writeReqSts.result = U3V_HOST_RESULT_FAILURE;
@@ -1725,18 +1725,18 @@ static T_U3VHostResult U3VHost_CtrlIfReadMemory(T_U3VControlIfObj *u3vCtrlIf,
             ctrlIfInst->requestId = 0U;
         }
 
-        cmdStr.S.header.prefix    = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
-        cmdStr.S.header.flags     = (uint16_t)(U3V_CTRL_REQ_ACK);
-        cmdStr.S.header.cmd       = (uint16_t)(U3V_CTRL_READMEM_CMD);
-        cmdStr.S.header.length    = (uint16_t)sizeof(T_U3VCtrlIfReadMemCmdPayload);
-        cmdStr.S.header.requestId = (++(ctrlIfInst->requestId));
-        cmdStr.S.payload.address  = memAddress + (uint64_t)totalBytesRead;
-        cmdStr.S.payload.reserved = 0U;
-        cmdStr.S.payload.byteCount = (uint16_t)(bytesThisIteration);
+        readCmd.S.header.prefix     = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
+        readCmd.S.header.flags      = (uint16_t)(U3V_CTRL_REQ_ACK);
+        readCmd.S.header.cmd        = (uint16_t)(U3V_CTRL_READMEM_CMD);
+        readCmd.S.header.length     = (uint16_t)(sizeof(T_U3VCtrlIfReadMemCommand) - sizeof(T_U3VCtrlIfCmdHeader));
+        readCmd.S.header.requestId  = (++(ctrlIfInst->requestId));
+        readCmd.S.address           = memAddress + (uint64_t)totalBytesRead;
+        readCmd.S.reserved          = 0U;
+        readCmd.S.byteCount         = (uint16_t)(bytesThisIteration);
 
         hostResult = USB_HOST_DeviceTransfer(ctrlIfHandle->bulkOutPipeHandle,
                                              &tempTransferHandle,
-                                             cmdStr.B,
+                                             readCmd.B,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
 
@@ -1922,11 +1922,11 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
     while (totalBytesWritten < (uint32_t)transfSize)
     {
         const uint32_t bytesThisIteration = U3VDRV_MIN(((uint32_t)transfSize - totalBytesWritten), maxBytesPerWrite);
-        T_U3VCtrlIfWriteMemCommand cmnd = {0};
+        T_U3VCtrlIfWriteMemCommand writeCmd = {0};
         T_U3VCtrlIfPendingAckPayload pendingAck = {0};
         uint32_t writeRetryCnt = UINT32_C(0);
 
-        cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(T_U3VCtrlIfWriteMemCmdPayload) + bytesThisIteration;
+        cmdBufferSize = sizeof(T_U3VCtrlIfCmdHeader) + sizeof(writeCmd.S.address) + bytesThisIteration;
 
         ctrlIfInst->writeReqSts.length = 0;
         ctrlIfInst->writeReqSts.result = U3V_HOST_RESULT_FAILURE;
@@ -1937,18 +1937,18 @@ static T_U3VHostResult U3VHost_CtrlIfWriteMemory(T_U3VControlIfObj *u3vCtrlIf,
             ctrlIfInst->requestId = 0U;
         }
 
-        cmnd.S.header.prefix = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
-        cmnd.S.header.flags  = (uint16_t)(U3V_CTRL_REQ_ACK);
-        cmnd.S.header.cmd    = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
-        cmnd.S.header.length = (uint16_t)(sizeof(T_U3VCtrlIfWriteMemCmdPayload) + bytesThisIteration);
-        cmnd.S.header.requestId = (++(ctrlIfInst->requestId));
-        cmnd.S.payload.address = memAddress + (uint64_t)totalBytesWritten;
+        writeCmd.S.header.prefix    = (uint32_t)(U3V_CONTROL_MGK_PREFIX);
+        writeCmd.S.header.flags     = (uint16_t)(U3V_CTRL_REQ_ACK);
+        writeCmd.S.header.cmd       = (uint16_t)(U3V_CTRL_WRITEMEM_CMD);
+        writeCmd.S.header.length    = (uint16_t)(sizeof(writeCmd.S.address) + bytesThisIteration);
+        writeCmd.S.header.requestId = (++(ctrlIfInst->requestId));
+        writeCmd.S.address          = memAddress + (uint64_t)totalBytesWritten;
 
-        memcpy(cmnd.S.payload.data, ((uint8_t *)buffer) + totalBytesWritten, bytesThisIteration);
+        memcpy(writeCmd.S.data, ((uint8_t *)buffer) + totalBytesWritten, bytesThisIteration);
 
         hostResult = USB_HOST_DeviceTransfer(ctrlIfHandle->bulkOutPipeHandle,
                                              &tempTransferHandle,
-                                             cmnd.B,
+                                             writeCmd.B,
                                              cmdBufferSize,
                                              (uintptr_t)(U3V_HOST_EVENT_WRITE_COMPLETE));
 
