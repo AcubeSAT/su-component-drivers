@@ -88,7 +88,7 @@ typedef union U3V_PACKED
     struct
     {
         T_U3VCtrlIfAckHeader    header;
-        uint8_t                 payload[];
+        uint8_t                 payload[U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE - sizeof(T_U3VCtrlIfAckHeader)];
     } S;
     uint8_t B[U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE];
 } T_U3VCtrlIfAcknowledge;
@@ -111,28 +111,17 @@ typedef struct U3V_PACKED
 U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfCmdHeader) == 12), "Packing error for T_U3VCtrlIfCmdHeader");
 
 /**
- * U3V Control Interface read memory CMD payload.
- * 
- */
-typedef struct U3V_PACKED
-{
-	uint64_t    address;
-	uint16_t    reserved;
-	uint16_t    byteCount;
-} T_U3VCtrlIfReadMemCmdPayload;
-
-U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfReadMemCmdPayload) == 12), "Packing error for T_U3VCtrlIfReadMemCmdPayload");
-
-/**
  * U3V Control Interface read memory CMD.
  * 
  */
 typedef union U3V_PACKED
 {
-    struct
+    struct U3V_PACKED
     {
-        T_U3VCtrlIfCmdHeader            header;
-        T_U3VCtrlIfReadMemCmdPayload    payload;
+        T_U3VCtrlIfCmdHeader    header;
+        uint64_t                address;
+	    uint16_t                reserved;
+	    uint16_t                byteCount;
     }S;
     uint8_t B[24];
 } T_U3VCtrlIfReadMemCommand;
@@ -140,27 +129,16 @@ typedef union U3V_PACKED
 U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfReadMemCommand) == 24), "Packing error for T_U3VCtrlIfReadMemCommand");
 
 /**
- * U3V Control Interface write memory CMD payload.
- * 
- */
-typedef struct U3V_PACKED
-{
-	uint64_t    address;
-	uint8_t     data[];
-} T_U3VCtrlIfWriteMemCmdPayload;
-
-U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfWriteMemCmdPayload) == 8), "Packing error for T_U3VCtrlIfWriteMemCmdPayload");
-
-/**
  * U3V Control Interface write memory CMD.
  * 
  */
 typedef union U3V_PACKED
 {
-    struct
+    struct U3V_PACKED
     {
-        T_U3VCtrlIfCmdHeader            header;
-        T_U3VCtrlIfWriteMemCmdPayload   payload;
+        T_U3VCtrlIfCmdHeader    header;
+        uint64_t                address;
+        uint8_t                 data[U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE - sizeof(T_U3VCtrlIfCmdHeader) - sizeof(uint64_t)];
     } S;
     uint8_t B[U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE];
 } T_U3VCtrlIfWriteMemCommand;
