@@ -20,8 +20,8 @@ extern "C" {
  * values, are enabled in the model configuration mapping below.
  * @warning Define only one model at a time, and undefine the rest.
  */
-#define U3V_FLIR_CM3_U3_12S2C_CS
-#undef  U3V_NEW_MODEL_UNDEFINED
+#undef  U3V_FLIR_CM3_U3_12S2C_CS
+#define  U3V_FLIR_BFS_U3_16S2C_CS
 
 
 /**
@@ -50,7 +50,12 @@ extern "C" {
     #define U3V_CAM_CFG_PIXEL_FORMAT_REG_ADR    (UINT64_C(0x4070))              /* ColorCodingID_Reg */
     #define U3V_CAM_CFG_PAYLOAD_SIZE_REG_ADR    (UINT64_C(0x5410))              /* PayloadSizeVal_Reg */
     #define U3V_CAM_CFG_ACQ_MODE_SEL            (UINT32_C(0x1))                 /* 0 = CONTINUOUS / 1 = SINGLE_FRAME / 2 = MULTI_FRAME */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL        (UINT32_C(0x4))                 /* 04 = U3V_PFNC_RGB8 = 0x02180014 in PixelFormatCtrlVal_Int formula */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL        (UINT32_C(0x4))                 /* 4 = 0x02180014 = U3V_PFNC_RGB8 in PixelFormatCtrlVal_Int formula */
+    #define U3V_DEVICE_RESET_CMD                (UINT32_C(0x1))                 /* 1 = reset true */
+    #define U3V_ACQUISITION_START_CMD           (UINT32_C(0x1))                 /* 1 = acq start true */
+    #define U3V_ACQUISITION_STOP_CMD            (UINT32_C(0x0))                 /* 0 = acq stop true */
+    #define U3V_SI_CTRL_ENABLE_CMD              (UINT32_C(0x1))                 /* 1 = SI control enable true */
+    #define U3V_SI_CTRL_DISABLE_CMD             (UINT32_C(0x0))                 /* 1 = SI control disable true */
     #define U3V_GET_ACQ_MODE_CONV(val)          (val)                           /* no conversion */
     #define U3V_SET_ACQ_MODE_CONV(val)          (val)                           /* no conversion */ 
     #define U3V_SET_ACQ_START_CONV(val)         ((val & 0x00000001) << 31)      /* bit 31 */
@@ -61,19 +66,24 @@ extern "C" {
     #define U3V_SET_PIXEL_FORMAT_CONV(val)      ((val & 0x000000FF) << 24)      /* value is stored on high byte (bits 24 to 31) */
     #define U3V_GET_TEMPERATURE_CONV(val)       (((float)(val & 0x00000FFF) / 10.0F) - 273.15F) /* convert Kelvin to Celcius (from unsigned int input) */
 /*******************************************************************************
- * undefined model, tbd
+ * FLIR Blackfly S BFS-U3-16S2C-CS
  ******************************************************************************/
-#elif defined(U3V_NEW_MODEL_UNDEFINED)                                          /* U3V XML manifest info */
+#elif defined(U3V_FLIR_BFS_U3_16S2C_CS)                                         /* U3V XML manifest info */
     #define U3V_CAM_CFG_REG_BASE_ADR            (UINT64_C(0x0))                 /* CamRegBaseAddress (use 0 when N/A) */
-    #define U3V_CAM_CFG_TEMPERATURE_REG_ADR     (UINT64_C(0x0))                 /* DeviceTemperatureReg */
-    #define U3V_CAM_CFG_DEVICE_RESET_REG_ADR    (UINT64_C(0x0))                 /* DeviceResetReg */
-    #define U3V_CAM_CFG_ACQ_MODE_REG_ADR        (UINT64_C(0x0))                 /* AcquisitionModeReg */
-    #define U3V_CAM_CFG_ACQ_START_REG_ADR       (UINT64_C(0x0))                 /* AcquisitionStartReg */
-    #define U3V_CAM_CFG_ACQ_STOP_REG_ADR        (UINT64_C(0x0))                 /* AcquisitionStopReg */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_REG_ADR    (UINT64_C(0x0))                 /* PixelFormatReg */
-    #define U3V_CAM_CFG_PAYLOAD_SIZE_REG_ADR    (UINT64_C(0x0))                 /* PayloadSizeVal_Reg */
-    #define U3V_CAM_CFG_ACQ_MODE_SEL            (UINT32_C(0x1))                 /* use value for single image acq */
-    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL        (UINT32_C(0x0))                 /* PFNC option */
+    #define U3V_CAM_CFG_TEMPERATURE_REG_ADR     (UINT64_C(0x00041004))          /* DeviceTemperatureSensor_Val */
+    #define U3V_CAM_CFG_DEVICE_RESET_REG_ADR    (UINT64_C(0x00042004))          /* DeviceReset_Val */
+    #define U3V_CAM_CFG_ACQ_MODE_REG_ADR        (UINT64_C(0x000C00C8))          /* AcquisitionMode_Val */
+    #define U3V_CAM_CFG_ACQ_START_REG_ADR       (UINT64_C(0x000C0004))          /* AcquisitionStart_Val */
+    #define U3V_CAM_CFG_ACQ_STOP_REG_ADR        (UINT64_C(0x000C0024))          /* AcquisitionStop_Val */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_REG_ADR    (UINT64_C(0x00086008))          /* PixelFormat_Val */
+    #define U3V_CAM_CFG_PAYLOAD_SIZE_REG_ADR    (UINT64_C(0x20002008))          /* PayloadSize_Val */
+    #define U3V_CAM_CFG_ACQ_MODE_SEL            (UINT32_C(0x1))                 /* 0 = CONTINUOUS / 1 = SINGLE_FRAME / 2 = MULTI_FRAME */
+    #define U3V_CAM_CFG_PIXEL_FORMAT_SEL        (UINT32_C(0x02180014))          /* 0x02180014 = U3V_PFNC_RGB8 */
+    #define U3V_DEVICE_RESET_CMD                (UINT32_C(0x1))                 /* 1 = reset true */
+    #define U3V_ACQUISITION_START_CMD           (UINT32_C(0x1))                 /* 1 = acq start true */
+    #define U3V_ACQUISITION_STOP_CMD            (UINT32_C(0x1))                 /* 1 = acq stop true */
+    #define U3V_SI_CTRL_ENABLE_CMD              (UINT32_C(0x1))                 /* 1 = SI control enable true */
+    #define U3V_SI_CTRL_DISABLE_CMD             (UINT32_C(0x0))                 /* 1 = SI control disable true */
     #define U3V_GET_ACQ_MODE_CONV(val)          (val)                           /* no conversion */
     #define U3V_SET_ACQ_MODE_CONV(val)          (val)                           /* no conversion */
     #define U3V_SET_ACQ_START_CONV(val)         (val)                           /* no conversion */
@@ -82,7 +92,7 @@ extern "C" {
     #define U3V_GET_PAYLOAD_SIZE_CONV(val)      (val)                           /* no conversion */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)      (val)                           /* no conversion */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)      (val)                           /* no conversion */
-    #define U3V_GET_TEMPERATURE_CONV(val)       (val)                           /* value in Celcius (convert to float type from unsigned int input) */
+    #define U3V_GET_TEMPERATURE_CONV(val)       (((float)(val & 0x0000FFFF) / 10.0F)) /* Celcius (from unsigned int input) */
 /******************************************************************************/
 #else
     #error "Invalid USB3 Vision camera model selected"
@@ -206,36 +216,6 @@ extern "C" {
  * U3V_MAX_DESCR_STR_LENGTH.
  */
 #define U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE             ((size_t)76)
-
-/**
- * U3V Trigger reset command value.
- * 
- */
-#define U3V_DEVICE_RESET_CMD                        UINT32_C(1)
-
-/**
- * U3V Acquisition start command.
- * 
- */
-#define U3V_ACQUISITION_START_CMD                   UINT32_C(1)
-
-/**
- * U3V Acquisition start command.
- * 
- */
-#define U3V_ACQUISITION_STOP_CMD                    UINT32_C(0)
-
-/**
- * U3V Streaming interface control enable command.
- * 
- */
-#define U3V_SI_CTRL_ENABLE_CMD                      UINT32_C(1)
-
-/**
- * U3V Streaming interface control disable command.
- * 
- */
-#define U3V_SI_CTRL_DISABLE_CMD                     UINT32_C(0)
 
 
 
