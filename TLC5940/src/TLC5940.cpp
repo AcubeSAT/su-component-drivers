@@ -24,11 +24,9 @@ void TLC5940::setPWM(uint8_t channel, uint16_t value) {
 }
 
 void TLC5940::setAllPWM(uint16_t value) {
-    void TLC5940::setAllPWM(uint16_t value) {
-        // Set the same PWM value for all channels
-        for (size_t i = 0; i < numChannels; i++) {
-            pwmData.at(i) = value;
-        }
+    // Set the same PWM value for all channels
+    for (size_t i = 0; i < MaxChannels; i++) {
+        pwmData.at(i) = value;
     }
 }
 
