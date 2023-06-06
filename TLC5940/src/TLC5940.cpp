@@ -1,6 +1,8 @@
 #include "TLC5940.hpp"
 
-TLC5940::TLC5940(PIO_PIN latchPin, PIO_PIN blankPin) : latchPin(latchPin), blankPin(blankPin) {
+TLC5940::TLC5940(PIO_PIN latchPin, PIO_PIN blankPin, PIO_Pin gsclkPin) : latchPin(latchPin),
+                                                                         blankPin(blankPin),
+                                                                         gsclkPin(gsclkPin) {
     PIO_PinWrite(latchPin, false);
     PIO_PinWrite(blankPin, true);
     setAllPWM(static_cast<uint16_t>(0))

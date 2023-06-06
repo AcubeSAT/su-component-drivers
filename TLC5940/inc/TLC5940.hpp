@@ -18,11 +18,18 @@ public:
     static constexpr size_t MaxDrivers = 1;
 
     /**
+     * Frequency of GSCLK clock signal
+     */
+    static constexpr uint16_t GSCLKFrequency = 0x4E20;
+
+public:
+
+    /**
      * @brief TLC5940 constructor
      * @param latchPin Pin connected to the LATCH (LAT) pin of the TLC5940
      * @param blankPin Pin connected to the BLANK (BLK) pin of the TLC5940
      */
-    TLC5940(PIO_Pin latchPin, PIO_Pin blankPin);
+    TLC5940(PIO_Pin latchPin, PIO_Pin blankPin, PIO_Pin gsclkPin);
 
     /**
      * @brief Initialize the TLC5940
@@ -81,6 +88,11 @@ private:
      * BLANK pin
      */
     PIO_Pin blankPin;
+
+    /**
+     * GSCLK pin
+     */
+    PIO_Pin gsclkPin;
 
     /**
      * PWM data array
