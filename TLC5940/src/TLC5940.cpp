@@ -8,6 +8,7 @@ TLC5940::TLC5940(PIO_PIN latchPin, PIO_PIN blankPin, PIO_Pin gsclkPin)
 void TLC5940::initialize(etl::array<uint16_t, MaxChannels * MaxDrivers> initData) {
     PIO_PinWrite(latchPin, false);
     PIO_PinWrite(blankPin, true);
+    PIO_PinWrite(gsclkPin, false);
 
     for (size_t i = 0; i < MaxChannels; i++)
         pwmData.at(i) = initData.at(i);
@@ -17,6 +18,7 @@ void TLC5940::begin() {
     writePWMData();
     latchData();
     setBlank(false);
+    generateGSCLKPulses();
 }
 
 void TLC5940::setPWM(uint8_t channel, uint16_t value) {
@@ -60,4 +62,11 @@ void TLC5940::setBlank(bool enableBlank) {
 void TLC5940::latchData() {
     PIO_PinWrite(latchPin, true);
     PIO_PinWrite(latchPin, false);
+}
+
+void TLC5940::generateGSCLKPulses() {
+    for (uint16_t i = 0; i < numberOfPulses; ++i) {
+        PIO_PinWrite(gsclkPin, true);
+        PIO_PinWrite(gsclkPin, false);
+    }
 }

@@ -82,6 +82,11 @@ private:
     PIO_Pin gsclkPin;
 
     /**
+     * Number of GSCLK pulses
+     */
+    static constexpr uint16_t numberOfPulses = 0x1000;
+
+    /**
      * PWM data array
      */
     etl::array<uint16_t, MaxChannels * MaxDrivers> pwmData;
@@ -107,5 +112,11 @@ private:
      * @param enableBlank Set the pin HIGH or LOW
      */
     void setBlank(bool enableBlank);
+
+    /**
+     * @brief Generate GSCLK pulses through GPIO
+     * @param numberOfPulses The number of pulses, usually 4096
+     */
+    void generateGSCLKPulses();
 
 };
