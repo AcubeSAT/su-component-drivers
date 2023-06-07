@@ -14,14 +14,35 @@ class TLC5940 {
 public:
 
     /**
+     * Maximum number of channels per TLC5940 driver
+     */
+    static constexpr size_t MaxChannels = 16;
+
+    /**
+     * Maximum number of TLC5940 drivers
+     */
+    static constexpr size_t MaxDrivers = 1;
+
+    /**
+     * Frequency of GSCLK clock signal
+     */
+    static constexpr uint16_t GSCLKFrequency = 0x4E20;
+
+    /**
      * @brief TLC5940 constructor
      * @param latchPin Pin connected to the LATCH (LAT) pin of the TLC5940
      * @param blankPin Pin connected to the BLANK (BLK) pin of the TLC5940
      */
-    TLC5940(PIO_Pin latchPin, PIO_Pin blankPin, PIO_Pin gsclkPin);
+    constexpr TLC5940(PIO_Pin latchPin, PIO_Pin blankPin, PIO_Pin gsclkPin);
 
     /**
-     * @brief Initialize the TLC5940
+     * @brief Initialize the PWM data
+     * @param initData An array containing the initial PWM data
+     */
+    void initialize(etl::array<uint16_t, MaxChannels * MaxDrivers> initData);
+
+    /**
+     * @brief Start the Grayscale cycle
      */
     void begin();
 
@@ -46,21 +67,6 @@ public:
 private:
 
     /**
-     * Maximum number of channels per TLC5940 driver
-     */
-    static constexpr size_t MaxChannels = 16;
-
-    /**
-     * Maximum number of TLC5940 drivers
-     */
-    static constexpr size_t MaxDrivers = 1;
-
-    /**
-     * Frequency of GSCLK clock signal
-     */
-    static constexpr uint16_t GSCLKFrequency = 0x4E20;
-
-    /**
      * Latch (XLAT) pin
      */
     PIO_Pin latchPin;
@@ -79,8 +85,6 @@ private:
      * PWM data array
      */
     etl::array<uint16_t, MaxChannels * MaxDrivers> pwmData;
-
-private:
 
     /**
      * @brief Send data to the TLC5940 via SPI

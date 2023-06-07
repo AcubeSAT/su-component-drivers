@@ -1,11 +1,16 @@
 #include "TLC5940.hpp"
 
-TLC5940::TLC5940(PIO_PIN latchPin, PIO_PIN blankPin, PIO_Pin gsclkPin) : latchPin(latchPin),
-                                                                         blankPin(blankPin),
-                                                                         gsclkPin(gsclkPin) {
+TLC5940::TLC5940(PIO_PIN latchPin, PIO_PIN blankPin, PIO_Pin gsclkPin)
+        : latchPin(latchPin),
+          blankPin(blankPin),
+          gsclkPin(gsclkPin) { }
+
+void TLC5940::initialize(etl::array<uint16_t, MaxChannels * MaxDrivers> initData) {
     PIO_PinWrite(latchPin, false);
     PIO_PinWrite(blankPin, true);
-    setAllPWM(static_cast<uint16_t>(0))
+
+    for (size_t i = 0; i < MaxChannels; i++)
+        pwmData.at(i) = initData.at(i);
 }
 
 void TLC5940::begin() {
@@ -43,7 +48,7 @@ void TLC5940::sendSPI(uint16_t data) {
 }
 
 void TLC5940::writePWMData() {
-    for (uint16_t data : pwmData) {
+    for (uint16_t data: pwmData) {
         sendSPI(data);
     }
 }
