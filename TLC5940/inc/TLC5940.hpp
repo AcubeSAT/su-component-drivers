@@ -2,7 +2,13 @@
 #include <etl/array.h>
 
 /**
- * TLC5940 class for controlling TLC5940
+ * A class for controlling TLC5940 using the ATSAMV71Q21B MCU.
+ *
+ * @class TLC5940
+ * @brief Provides methods to set the PWM values for individual channels,
+ * update the TLC5940 to apply the changes, and control the timing
+ * and behavior of the LED driver.
+ * @author [ggkogkou](https://gitlab.com/ggkogkou)
  */
 class TLC5940 {
 public:
@@ -37,6 +43,8 @@ public:
      */
     void update();
 
+private:
+
     /**
      * Maximum number of channels per TLC5940 driver
      */
@@ -51,6 +59,26 @@ public:
      * Frequency of GSCLK clock signal
      */
     static constexpr uint16_t GSCLKFrequency = 0x4E20;
+
+    /**
+     * Latch (XLAT) pin
+     */
+    PIO_Pin latchPin;
+
+    /**
+     * BLANK pin
+     */
+    PIO_Pin blankPin;
+
+    /**
+     * GSCLK pin
+     */
+    PIO_Pin gsclkPin;
+
+    /**
+     * PWM data array
+     */
+    etl::array<uint16_t, MaxChannels * MaxDrivers> pwmData;
 
 private:
 
@@ -72,27 +100,8 @@ private:
 
     /**
      * @brief Set the BLANK pin to apply the PWM data to the outputs
+     * @param enableBlank Set the pin HIGH or LOW
      */
     void setBlank(bool enableBlank);
-
-    /**
-     * XLAT pin
-     */
-    PIO_Pin latchPin;
-
-    /**
-     * BLANK pin
-     */
-    PIO_Pin blankPin;
-
-    /**
-     * GSCLK pin
-     */
-    PIO_Pin gsclkPin;
-
-    /**
-     * PWM data array
-     */
-    etl::array<uint16_t, MaxChannels * MaxDrivers> pwmData;
 
 };

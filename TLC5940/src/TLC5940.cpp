@@ -15,16 +15,13 @@ void TLC5940::begin() {
 }
 
 void TLC5940::setPWM(uint8_t channel, uint16_t value) {
-    // Check for invalid channel number
     if (channel >= MaxChannels)
         return;
 
-    // Set the PWM value for the specified channel
     pwmData.at(channel) = value;
 }
 
 void TLC5940::setAllPWM(uint16_t value) {
-    // Set the same PWM value for all channels
     for (size_t i = 0; i < MaxChannels; i++) {
         pwmData.at(i) = value;
     }
@@ -46,7 +43,6 @@ void TLC5940::sendSPI(uint16_t data) {
 }
 
 void TLC5940::writePWMData() {
-    // Iterate over the stored PWM data and send it to the TLC5940 chip
     for (uint16_t data : pwmData) {
         sendSPI(data);
     }
