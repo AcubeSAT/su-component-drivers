@@ -51,7 +51,7 @@ public:
      * @param channel Channel index (0 to MaxChannels - 1)
      * @param value PWM value (0 to 4095)
      */
-    void setPWM(uint8_t channel, uint16_t value);
+    inline void setPWM(uint8_t channel, uint16_t value);
 
     /**
      * @brief Set the PWM value for all channels

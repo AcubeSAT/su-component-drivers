@@ -22,10 +22,8 @@ void TLC5940::begin() {
 }
 
 void TLC5940::setPWM(uint8_t channel, uint16_t value) {
-    if (channel >= MaxChannels)
-        return;
-
-    pwmData.at(channel) = value;
+    if (channel < MaxChannels)
+        pwmData.at(channel) = value;
 }
 
 void TLC5940::setAllPWM(uint16_t value) {
