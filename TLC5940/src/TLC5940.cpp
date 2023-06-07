@@ -9,7 +9,7 @@ TLC5940::TLC5940(PIO_PIN latchPin, PIO_PIN blankPin, PIO_Pin gsclkPin) : latchPi
 }
 
 void TLC5940::begin() {
-    writeData();
+    writePWMData();
     latchData();
     setBlank(false);
 }
@@ -45,7 +45,7 @@ void TLC5940::sendSPI(uint16_t data) {
     SPI1_WriteRead(txData, sizeof(txData), nullptr, 0);
 }
 
-void TLC5940::writeData() {
+void TLC5940::writePWMData() {
     // Iterate over the stored PWM data and send it to the TLC5940 chip
     for (uint16_t data : pwmData) {
         sendSPI(data);

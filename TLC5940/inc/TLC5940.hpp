@@ -8,23 +8,6 @@ class TLC5940 {
 public:
 
     /**
-     * Maximum number of channels per TLC5940 driver
-     */
-    static constexpr size_t MaxChannels = 16;
-
-    /**
-     * Maximum number of TLC5940 drivers
-     */
-    static constexpr size_t MaxDrivers = 1;
-
-    /**
-     * Frequency of GSCLK clock signal
-     */
-    static constexpr uint16_t GSCLKFrequency = 0x4E20;
-
-public:
-
-    /**
      * @brief TLC5940 constructor
      * @param latchPin Pin connected to the LATCH (LAT) pin of the TLC5940
      * @param blankPin Pin connected to the BLANK (BLK) pin of the TLC5940
@@ -54,6 +37,21 @@ public:
      */
     void update();
 
+    /**
+     * Maximum number of channels per TLC5940 driver
+     */
+    static constexpr size_t MaxChannels = 16;
+
+    /**
+     * Maximum number of TLC5940 drivers
+     */
+    static constexpr size_t MaxDrivers = 1;
+
+    /**
+     * Frequency of GSCLK clock signal
+     */
+    static constexpr uint16_t GSCLKFrequency = 0x4E20;
+
 private:
 
     /**
@@ -65,7 +63,7 @@ private:
     /**
      * @brief Write the PWM data to the TLC5940
      */
-    void writeData();
+    void writePWMData();
 
     /**
      * @brief Set the XLAT (LATCH) pin to latch the PWM data
@@ -76,8 +74,6 @@ private:
      * @brief Set the BLANK pin to apply the PWM data to the outputs
      */
     void setBlank(bool enableBlank);
-
-private:
 
     /**
      * XLAT pin
