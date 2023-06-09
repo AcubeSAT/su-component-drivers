@@ -1,21 +1,17 @@
+#pragma once
 
-#ifndef COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
-#define COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H
-
-
+#include <stdalign.h>
 #include "U3VCam_Host.h"
 #include "osal/osal.h"
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-
-/********************************************************
+/*******************************************************************************
 * Macro definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Host MAX number calculation for 2 operands.
@@ -32,100 +28,136 @@ extern "C" {
 #define U3VDRV_MIN(a, b)         (((a) < (b)) ? (a) : (b))
 
 
-/********************************************************
+/*******************************************************************************
 * Type definitions
-*********************************************************/
-
-#pragma pack(push, 1)
+*******************************************************************************/
 
 /**
  * U3V Control Interface ACK header.
  * 
  */
-typedef struct
+typedef struct U3V_PACKED
 {
-	uint32_t 	prefix;
-	uint16_t 	status;
-	uint16_t 	cmd;
-	uint16_t 	length;
-	uint16_t 	ackId;
+	uint32_t    prefix;
+	uint16_t    status;
+	uint16_t    cmd;
+	uint16_t    length;
+	uint16_t    ackId;
 } T_U3VCtrlIfAckHeader;
 
-/**
- * U3V Control Interface ACK.
- * 
- */
-typedef struct
-{
-	T_U3VCtrlIfAckHeader    header;
-	uint8_t                 payload[];
-} T_U3VCtrlIfAcknowledge;
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfAckHeader) == 12), "Packing error for T_U3VCtrlIfAckHeader");
 
 /**
  * U3V Control Interface pending ACK payload.
  * 
  */
-typedef struct
+typedef union U3V_PACKED
 {
-	uint16_t 	reserved;
-	uint16_t 	timeout;
+    struct
+    {
+        uint16_t reserved;
+        uint16_t timeout;
+    }S;
+    uint8_t B[4];
 } T_U3VCtrlIfPendingAckPayload;
 
-/**
- * U3V Control Interface CMD header.
- * 
- */
-typedef struct
-{
-	uint32_t 	prefix;
-	uint16_t 	flags;
-	uint16_t 	cmd;
-	uint16_t 	length;
-	uint16_t 	requestId;
-} T_U3VCtrlIfCmdHeader;
-
-/**
- * U3V Control Interface CMD.
- * 
- */
-typedef struct
-{
-	T_U3VCtrlIfCmdHeader    header;
-	uint8_t                 payload[];
-} T_U3VCtrlIfCommand;
-
-/**
- * U3V Control Interface read memory CMD payload.
- * 
- */
-typedef struct 
-{
-	uint64_t 	address;
-	uint16_t 	reserved;
-	uint16_t 	byteCount;
-} T_U3VCtrlIfReadMemCmdPayload;
-
-/**
- * U3V Control Interface write memory CMD payload.
- * 
- */
-typedef struct
-{
-	uint64_t    address;
-	uint8_t     data[];
-} T_U3VCtrlIfWriteMemCmdPayload;
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfPendingAckPayload) == 4), "Packing error for T_U3VCtrlIfPendingAckPayload");
 
 /**
  * U3V Control Interface write memory ACK payload.
  * 
  */
-typedef struct
+typedef union U3V_PACKED
 {
-	uint16_t 	reserved;
-	uint16_t 	bytesWritten;
-} T_U3V_CtrlIfWriteMemAckPayload;
+    struct
+    {
+        uint16_t reserved;
+        uint16_t bytesWritten;
+    }S;
+    uint8_t B[4];
+} T_U3VCtrlIfWriteMemAckPayload;
 
-#pragma pack(pop)
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfWriteMemAckPayload) == 4), "Packing error for T_U3VCtrlIfWriteMemAckPayload");
+
+/**
+ * U3V Control Interface ACK.
+ * 
+ */
+typedef union U3V_PACKED
+{
+    struct
+    {
+        T_U3VCtrlIfAckHeader    header;
+        uint8_t                 payload[U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE - sizeof(T_U3VCtrlIfAckHeader)];
+    } S;
+    uint8_t B[U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE];
+} T_U3VCtrlIfAcknowledge;
+
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfAcknowledge) == U3V_CTRL_IF_ACK_BUFFER_MAX_SIZE), "Packing error for T_U3VCtrlIfAcknowledge");
+
+/**
+ * U3V Control Interface CMD header.
+ * 
+ */
+typedef struct U3V_PACKED
+{
+	uint32_t    prefix;
+	uint16_t    flags;
+	uint16_t    cmd;
+	uint16_t    length;
+	uint16_t    requestId;
+} T_U3VCtrlIfCmdHeader;
+
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfCmdHeader) == 12), "Packing error for T_U3VCtrlIfCmdHeader");
+
+/**
+ * U3V Control Interface read memory CMD.
+ * 
+ */
+typedef union U3V_PACKED
+{
+    struct U3V_PACKED
+    {
+        T_U3VCtrlIfCmdHeader    header;
+        uint64_t                address;
+	    uint16_t                reserved;
+	    uint16_t                byteCount;
+    }S;
+    uint8_t B[24];
+} T_U3VCtrlIfReadMemCommand;
+
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfReadMemCommand) == 24), "Packing error for T_U3VCtrlIfReadMemCommand");
+
+/**
+ * U3V Control Interface write memory CMD.
+ * 
+ */
+typedef union U3V_PACKED
+{
+    struct U3V_PACKED
+    {
+        T_U3VCtrlIfCmdHeader    header;
+        uint64_t                address;
+        uint8_t                 data[U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE - sizeof(T_U3VCtrlIfCmdHeader) - sizeof(uint64_t)];
+    } S;
+    uint8_t B[U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE];
+} T_U3VCtrlIfWriteMemCommand;
+
+U3V_STATIC_ASSERT((sizeof(T_U3VCtrlIfWriteMemCommand) == U3V_CTRL_IF_CMD_BUFFER_MAX_SIZE), "Packing error for T_U3VCtrlIfWriteMemCommand");
+
+/**
+ * U3V String buffer type for text descriptors.
+ * 
+ * For handling uint8_t data or string related operations when accessing device
+ * text descriptors. 
+ */
+typedef union 
+{
+    uint8_t     asU8[U3V_MAX_DESCR_STR_LENGTH];
+    char        asChar[U3V_MAX_DESCR_STR_LENGTH];
+} T_U3VStringBuffer;
+
+U3V_STATIC_ASSERT((sizeof(T_U3VStringBuffer) == sizeof(uint8_t[U3V_MAX_DESCR_STR_LENGTH])), "Alignment of uint8_t and char arrays not equal");
 
 /**
  * U3V Host transfer complete callback handler.
@@ -140,10 +172,10 @@ typedef void (*T_U3VHostTransfCompleteHandler)(T_U3VHostHandle ctrlIfObj, T_U3VH
  */
 typedef enum
 {
-    U3V_HOST_STATE_ERROR                        = -1,
-    U3V_HOST_STATE_NOT_READY                    =  0,
+    U3V_HOST_STATE_ERROR                    = -1,
+    U3V_HOST_STATE_NOT_READY                =  0,
     U3V_HOST_STATE_SET_CONFIGURATION,
-    U3V_HOST_STATE_WAIT_FOR_CONFIGURATION_SET,
+    U3V_HOST_STATE_WAIT_FOR_CONFIG_SET,
     U3V_HOST_STATE_WAIT_FOR_INTERFACES,
     U3V_HOST_STATE_READY,
 } T_U3VHostState;
@@ -169,17 +201,15 @@ typedef struct
 typedef struct 
 {
     T_U3VHostInterfHandle               *ctrlIntfHandle;
-	OSAL_MUTEX_DECLARE					(readWriteLock); //TODO: possibly use FreeRTOS mutex instead?
-	uint8_t 							ackBuffer[128U + sizeof(T_U3VCtrlIfAckHeader)];
-	uint32_t							maxAckTransfSize;
-	uint8_t 							cmdBuffer[128U + sizeof(T_U3VCtrlIfCmdHeader)];
-	uint32_t 							maxCmdTransfSize;
-	uint16_t 							requestId;
-	uint16_t 							maxRequestId;
-	uint32_t 							u3vTimeout;     /* ms */
+	OSAL_MUTEX_DECLARE                  (readWriteLock); //TODO: possibly use FreeRTOS mutex instead?
+	uint32_t                            maxAckTransfSize;
+	uint32_t                            maxCmdTransfSize;
+	uint16_t                            requestId;
+	uint16_t                            maxRequestId;
+	uint32_t                            u3vTimeout;     /* ms */
     T_U3VHostTransfCompleteHandler      transfReqCompleteCbk;
-	T_U3VHostEventReadCompleteData 		readReqSts;
-	T_U3VHostEventWriteCompleteData 	writeReqSts;
+	T_U3VHostEventReadCompleteData      readReqSts;
+	T_U3VHostEventWriteCompleteData     writeReqSts;
 } T_U3VControlIfObj;
 
 /**
@@ -219,28 +249,7 @@ typedef struct
 } T_U3VHostAttachListenerObj;
 
 
-/********************************************************
-* Local data
-*********************************************************/
-
-static T_U3VCamRegisterCfg u3vCamRegisterCfg =
-{
-	.camRegBaseAddress				= (uint64_t)U3V_CFG_MDL_CAM_REG_BASE_ADDRESS,
-    .SBRMOffset                     = (uint64_t)U3V_CFG_MDL_SBRM_OFFSET,
-    .temperature_Reg                = (uint64_t)U3V_CFG_MDL_TEMPERATURE_REG,
-    .deviceReset_Reg                = (uint64_t)U3V_CFG_MDL_DEVICE_RESET_REG,
-    .singleFrameAcquisitionMode_Reg = (uint64_t)U3V_CFG_MDL_SINGLE_FRAME_ACQ_MODE_REG,
-    .acquisitionMode_Reg            = (uint64_t)U3V_CFG_MDL_ACQ_MODE_REG,
-    .acquisitionStart_Reg           = (uint64_t)U3V_CFG_MDL_ACQ_START_REG,
-    .acquisitionStop_Reg            = (uint64_t)U3V_CFG_MDL_ACQ_STOP_REG,
-    .colorCodingID_Reg              = (uint64_t)U3V_CFG_MDL_COLOR_CODING_ID_REG,
-    .payloadSizeVal_Reg             = (uint64_t)U3V_CFG_MDL_PAYLOAD_SIZE_VAL_REG,
-    .pixelFormatCtrlVal_Int_Sel     = (uint32_t)U3V_CFG_MDL_PIXEL_FORMAT_CTRL_INT_SEL 
-};
-
-
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_HOST_LOCAL_H

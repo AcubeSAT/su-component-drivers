@@ -1,32 +1,41 @@
+#pragma once
 
-#ifndef COMPONENT_DRIVERS_U3VCAM_HOST_H
-#define COMPONENT_DRIVERS_U3VCAM_HOST_H
-
-
+#include <stdalign.h>
 #include "U3VCam_Device_Class_Specs.h"
 #include "U3VCam_Config.h"
 #include "usb/usb_host_client_driver.h"
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-
-/********************************************************
+/*******************************************************************************
 * Macro definitions
-*********************************************************/
+*******************************************************************************/
 
-#define U3V_HOST_RESULT_MIN                         (USB_HOST_RESULT_MIN)
-#define U3V_HOST_HANDLE_INVALID                     ((T_U3VHostHandle)(-1))
-#define U3V_HOST_TRANSFER_HANDLE_INVALID            ((T_U3VHostTransferHandle)(-1))
-#define U3V_INTERFACE                               (&gUSBHostU3VClientDriver)
+#ifdef __has_attribute
+    #define U3V_HAS_ATTRIBUTE(x) __has_attribute(x)
+#else
+    #define U3V_HAS_ATTRIBUTE(x) 0
+#endif
+
+#if U3V_HAS_ATTRIBUTE(packed)
+    #define U3V_PACKED __attribute__((packed))
+#else
+    #define U3V_PACKED
+    #pragma message "Warning! [[gnu::packed]] was not found, proceed with caution"
+#endif
+
+#define U3V_HOST_RESULT_MIN                     (USB_HOST_RESULT_MIN)
+#define U3V_HOST_HANDLE_INVALID                 ((T_U3VHostHandle)UINTPTR_MAX)
+#define U3V_HOST_TRANSFER_HANDLE_INVALID        ((T_U3VHostTransferHandle)UINTPTR_MAX)
+#define U3V_INTERFACE                           (&gUSBHostU3VClientDriver)
 
 
-/********************************************************
+/*******************************************************************************
 * Type definitions
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Host handle.
@@ -40,14 +49,11 @@ typedef uintptr_t T_U3VHostHandle;
  */
 typedef uintptr_t T_U3VHostTransferHandle;
 
-
-#pragma pack(push, 1)
-
 /**
  * U3V Stream Interface generic packet.
  * 
  */
-typedef struct 
+typedef struct U3V_PACKED
 {
     uint32_t        magicKey;           /* "U3VL" for Leader / "U3VT" for Trailer */
 	uint16_t        reserved0;          /* Set 0 on Tx, ignore on Rx */
@@ -56,7 +62,7 @@ typedef struct
     void            *data;
 } T_U3VSiGenericPacket;
 
-#pragma pack(pop)
+U3V_STATIC_ASSERT((sizeof(T_U3VSiGenericPacket) == 20), "Packing error for T_U3VSiGenericPacket");
 
 /**
  * U3V Host result.
@@ -81,10 +87,12 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_INT_PIXELFORMAT         = 0x10,
-    U3V_MEM_REG_INT_PAYLOAD_SIZE,
-    U3V_MEM_REG_INT_ACQUISITION_MODE,
+    U3V_MEM_REG_INT_ACQ_MODE,
+    U3V_MEM_REG_INT_ACQ_START,
+    U3V_MEM_REG_INT_ACQ_STOP,
     U3V_MEM_REG_INT_DEVICE_RESET,
+    U3V_MEM_REG_INT_PAYLOAD_SIZE,
+    U3V_MEM_REG_INT_PIXEL_FORMAT,
 } T_U3VMemRegInteger;
 
 /**
@@ -94,7 +102,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_FLOAT_TEMPERATURE       = 0x20,
+    U3V_MEM_REG_FLOAT_TEMPERATURE,
 } T_U3VMemRegFloat;
 
 /**
@@ -104,7 +112,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_MEM_REG_STRING_MANUFACTURER_NAME    = 0x40,
+    U3V_MEM_REG_STRING_MANUFACTURER_NAME,
     U3V_MEM_REG_STRING_MODEL_NAME,
     U3V_MEM_REG_STRING_FAMILY_NAME,
     U3V_MEM_REG_STRING_DEVICE_VERSION,
@@ -132,7 +140,7 @@ typedef struct
  */
 typedef enum
 {
-    U3V_HOST_EVENT_READ_COMPLETE = 0x10,
+    U3V_HOST_EVENT_READ_COMPLETE = 1,
     U3V_HOST_EVENT_WRITE_COMPLETE,
     U3V_HOST_EVENT_IMG_PLD_RECEIVED,
 } T_U3VHostEvent;
@@ -144,7 +152,7 @@ typedef enum
  */
 typedef enum
 {
-    U3V_HOST_EVENT_RESPONE_NONE  = 0
+    U3V_HOST_EVENT_RESPONE_NONE
 } T_U3VHostEventResponse;
 
 /**
@@ -183,16 +191,16 @@ typedef void (*T_U3VHostDetachEventHandler)(T_U3VHostHandle u3vObjHandle, uintpt
 typedef T_U3VHostEventResponse (*T_U3VHostEventHandler)(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *eventData, uintptr_t context);
 
 
-/********************************************************
+/*******************************************************************************
 * Global data
-*********************************************************/
+*******************************************************************************/
 
 extern USB_HOST_CLIENT_DRIVER   gUSBHostU3VClientDriver;
 
 
-/********************************************************
+/*******************************************************************************
 * Function declarations
-*********************************************************/
+*******************************************************************************/
 
 /**
  * U3V Host device attach event handler set.
@@ -211,13 +219,13 @@ T_U3VHostResult U3VHost_AttachEventHandlerSet(T_U3VHostAttachEventHandler eventH
  * 
  * This function shall be used by the U3V application to assign a callback 
  * function that will be called when a connected U3V device is detached.
- * @param handle 
+ * @param u3vObjHandle 
  * @param detachEventHandler 
  * @param context 
  * @return T_U3VHostResult
  * @note callback type to set 'T_U3VHostDetachEventHandler'
  */
-T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle handle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context);
+T_U3VHostResult U3VHost_DetachEventHandlerSet(T_U3VHostHandle u3vObjHandle, T_U3VHostDetachEventHandler detachEventHandler, uintptr_t context);
 
 /**
  * U3V Host open obj handle.
@@ -235,12 +243,12 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  * This function shall be used by the U3V application to assign a callback 
  * function that will be called when a host (transfer) event occurs. A typical 
  * code example can be seen below.
- * @param handle 
+ * @param u3vObjHandle 
  * @param eventHandler 
  * @param context 
  * @return T_U3VHostResult 
  * @code
- * static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
+ * static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context)
  * {
  *     T_U3VHostEventReadCompleteData  *readCompleteEventData;
  *     T_U3VAppData                    *pUsbU3VAppData;
@@ -255,13 +263,13 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  *         case U3V_HOST_EVENT_IMG_PLD_RECEIVED:
  *             pckLeaderOrTrailer = (T_U3VSiGenericPacket*)pUsbU3VAppData->appImgDataBfr;
  *             pUsbU3VAppData->appImgBlockCounter++;
- *             if (pckLeaderOrTrailer->magicKey == U3V_LEADER_MGK_PREFIX)
+ *             if (pckLeaderOrTrailer->magicKey == (uint32_t)U3V_LEADER_MGK_PREFIX)
  *             {
  *                 pUsbU3VAppData->appImgTransfState = U3V_SI_IMG_TRANSF_STATE_LEADER_COMPLETE;
  *                 appPldTransfEvent = U3V_CAM_DRV_IMG_LEADER_DATA;
- *                 pUsbU3VAppData->appImgBlockCounter = 0UL;
+ *                 pUsbU3VAppData->appImgBlockCounter = UINT32_C(0);
  *             }
- *             else if (pckLeaderOrTrailer->magicKey == U3V_TRAILER_MGK_PREFIX)
+ *             else if (pckLeaderOrTrailer->magicKey == (uint32_t)U3V_TRAILER_MGK_PREFIX)
  *             {
  *                 pUsbU3VAppData->appImgTransfState = U3V_SI_IMG_TRANSF_STATE_TRAILER_COMPLETE;
  *                 appPldTransfEvent = U3V_CAM_DRV_IMG_TRAILER_DATA;
@@ -273,12 +281,13 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  *             if (u3vAppData.appImgEvtCbk != NULL)
  *             {
  *                 u3vAppData.appImgEvtCbk(appPldTransfEvent,
- *                                         (void *)u3vAppData.appImgDataBfr,
+ *                                         u3vAppData.appImgDataBfr,
  *                                         readCompleteEventData->length,
  *                                         pUsbU3VAppData->appImgBlockCounter);
  *             }
  *             break;
  * 
+ *         // not used cases, fallthrough
  *         case U3V_HOST_EVENT_WRITE_COMPLETE:
  *         case U3V_HOST_EVENT_READ_COMPLETE:
  *         default:
@@ -288,7 +297,7 @@ T_U3VHostHandle U3VHost_Open(T_U3VHostHandle u3vObjHandle);
  * }
  * @endcode
  */
-T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle handle, T_U3VHostEventHandler eventHandler, uintptr_t context);
+T_U3VHostResult U3VHost_EventHandlerSet(T_U3VHostHandle u3vObjHandle, T_U3VHostEventHandler eventHandler, uintptr_t context);
 
 /**
  * U3V Host get Stream Interface capabilities.
@@ -322,30 +331,6 @@ T_U3VHostResult U3VHost_SetupStreamIfTransfer(T_U3VHostHandle u3vObjHandle, uint
 T_U3VHostResult U3VHost_StreamIfControl(T_U3VHostHandle u3vObjHandle, bool enable);
 
 /**
- * U3V Host image acquisition start function.
- * 
- * This function shall be called by the application to initiate the image 
- * acquisition procedure, by enabling the AcquisitionStart register. After this 
- * call, image bulk data will start reaching the USB layer in blocks, which can 
- * then be received by the application with U3VHost_StartImgPayldTransfer 
- * function.
- * @param u3vObjHandle 
- * @return T_U3VHostResult 
- * @warning shall be called 
- */
-T_U3VHostResult U3VHost_AcquisitionStart(T_U3VHostHandle u3vObjHandle);
-
-/**
- * U3V Host image acquisition stop function.
- * 
- * This function shall be called by the application to stop the image 
- * acquisition, by enabling the AcquisitionStop register.
- * @param u3vObjHandle 
- * @return T_U3VHostResult 
- */
-T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
-
-/**
  * U3V Host start image payload transfer function.
  * 
  * This function shall be called by the application to initiate the receive 
@@ -357,7 +342,7 @@ T_U3VHostResult U3VHost_AcquisitionStop(T_U3VHostHandle u3vObjHandle);
  * @param size 
  * @return T_U3VHostResult 
  * @note For optimized results, prefer using 1024 or 512 byte size (same as 
- * U3V_IN_BUFFER_MAX_SIZE), but make sure that the USB Host Layer below is 
+ * U3V_PAYLD_BLOCK_MAX_SIZE), but make sure that the USB Host Layer below is 
  * USB2.0-HS.
  */
 T_U3VHostResult U3VHost_StartImgPayldTransfer(T_U3VHostHandle u3vObjHandle, void *imgBfr, size_t size);
@@ -386,17 +371,6 @@ T_U3VHostResult U3VHost_CtrlIf_InterfaceCreate(T_U3VHostHandle u3vObjHandle);
 void U3VHost_CtrlIf_InterfaceDestroy(T_U3VHostHandle u3vObjHandle);
 
 /**
- * U3V Host get selected pixel format.
- * 
- * This function returns the constant value of the selected pixel format of 
- * u3vCamRegisterCfg struct. This value is a preset constant acquired by the XML
- * file built-in the camera internal memory, and should represent a typical 
- * pixel format option (e.g. RGB8).
- * @return uint32_t 
- */
-uint32_t U3VHost_GetSelectedPixelFormat(void);
-
-/**
  * U3V Host Read memory register integer value.
  * 
  * This function shall be called by the application in order to read a memory 
@@ -410,6 +384,22 @@ uint32_t U3VHost_GetSelectedPixelFormat(void);
  * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
  */
 T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t *pReadValue);
+
+/**
+ * U3V Host Write memory register integer value.
+ * 
+ * This function shall be called by the application in order to write a memory
+ * register of the connected U3V camera, which holds an integer value, with a 
+ * new integer value.
+ * @param u3vObjHandle 
+ * @param integerReg 
+ * @param writeValue 
+ * @return T_U3VHostResult
+ * @warning This function shall only be called after the Control Interface has 
+ * been established.
+ * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
+ */
+T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
 
 /**
  * U3V Host Read memory register float value.
@@ -443,25 +433,8 @@ T_U3VHostResult U3VHost_ReadMemRegFloatValue(T_U3VHostHandle u3vObjHandle, T_U3V
  */
 T_U3VHostResult U3VHost_ReadMemRegStringValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegString stringReg, void *pReadBfr);
 
-/**
- * U3V Host Write memory register integer value.
- * 
- * This function shall be called by the application in order to write a memory
- * register of the connected U3V camera, which holds an integer value, with a 
- * new integer value.
- * @param u3vObjHandle 
- * @param integerReg 
- * @param writeValue 
- * @return T_U3VHostResult
- * @warning This function shall only be called after the Control Interface has 
- * been established.
- * @note Available integer registers can be seen in enum T_U3VMemRegInteger.
- */
-T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U3VMemRegInteger integerReg, uint32_t writeValue);
-
 
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
-#endif //COMPONENT_DRIVERS_U3VCAM_HOST_H
