@@ -1,8 +1,6 @@
 #include "SHT3xDIS.hpp"
 
-SHT3xDIS::SHT3xDIS(uint8_t address) {
-    I2CAddress = address;
-}
+SHT3xDIS::SHT3xDIS(uint8_t address) : I2CAddress(address) {}
 
 void SHT3xDIS::writeCommand(uint16_t command) {
     uint8_t txData[] = {I2CAddress,
@@ -21,13 +19,11 @@ void SHT3xDIS::writeCommand(uint16_t command) {
     }
 }
 
-etl::array<float, 2> SHT3xDIS::readMeasurements() {
+void SHT3xDIS::readRawMeasurements() {
     uint8_t data[6];
     etl::array<float, 2> measurements = {};
-    uint16_t rawTemperature;
-    uint16_t rawHumidity;
     uint8_t ackData = 0;
-    uint8_t command[4] = {0x24, 0, 0, 0};
+    uint8_t command[2] = {HIGH_DISABLED >> 8, static_cast<uint8_t>(HIGH_DISABLED << 8)};
 
     TWIHS2_Write(I2CAddress, &ackData, 1);
     while (TWIHS2_IsBusy());
@@ -37,18 +33,21 @@ etl::array<float, 2> SHT3xDIS::readMeasurements() {
     while (TWIHS2_IsBusy());
     error = TWIHS2_ErrorGet();
 
-    if(TWIHS2_Read(I2CAddress, data, 6));
+    vTaskDelay(pdMS_TO_TICKS(20));
+    if (TWIHS2_Read(I2CAddress, data, 6));
     while (TWIHS2_IsBusy());
     error = TWIHS2_ErrorGet();
 
+    rawTemperature = (data[0] << 8) | (data[1] & 0xff);
+    rawHumidity = (data[3] << 8) | (data[4] & 0xff);
+}
 
-    rawTemperature = (data[0] << 8 ) | (data[1] & 0xff);
-    rawHumidity = (data[3] << 8 ) | (data[4] & 0xff);
-    float temperature = -45 + 175 * (static_cast<float>(rawTemperature)/0xFFFF);
-    float humidity = 100 * (static_cast<float>(rawHumidity)/0xFFFF);
+float SHT3xDIS::getTemperature() {
+    return -45 + 175 * (static_cast<float>(rawTemperature) / 0xFFFF);
+}
 
-
-    return {temperature, humidity};
+float SHT3xDIS::getHumidity() {
+    return 100 * (static_cast<float>(rawHumidity) / 0xFFFF);
 }
 
 void SHT3xDIS::setMeasurement(SHT3xDIS::Measurement command) {

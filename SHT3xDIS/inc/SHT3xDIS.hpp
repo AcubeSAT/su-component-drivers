@@ -1,9 +1,11 @@
-#ifndef SHT3xDIS_DRIVER_H
-#define SHT3xDIS_DRIVER_H
+#pragma once
 
 #include <etl/array.h>
 #include <cstdint>
 #include "plib_twihs2_master.h"
+#include "plib_systick.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 class SHT3xDIS {
 private:
@@ -11,7 +13,7 @@ private:
     /**
      * I2C device address.
      */
-    uint8_t I2CAddress;
+    const uint8_t I2CAddress;
 
     /**
      * I2C transaction error
@@ -19,18 +21,14 @@ private:
     TWIHS_ERROR error;
 
     /**
-	 * Transforms the raw temperature that is measured into the physical (result in %).
-	 */
-    inline float convertTemperature(uint16_t temperature) {
-        return 175 * (static_cast<float>(temperature) / 65535) - 45;
-    }
+     * Raw temperature read from the device
+     */
+    uint16_t rawTemperature;
 
     /**
-     * Transforms the relative humidity that is measured into the physical (result in degrees Celsius).
+     * Raw humidity read from the device
      */
-    inline float convertHumidity(uint16_t relativeHumidity) {
-        return 100 * (static_cast<float>(relativeHumidity) / 65535);
-    }
+    uint16_t rawHumidity;
 
 public:
     /**
@@ -67,7 +65,19 @@ public:
      * Reads the measurements given by the SHT3xDIS sensor.
      * @return an array containing the temperature and humidity measured.
      */
-    etl::array<float, 2> readMeasurements();
+    void readRawMeasurements();
+
+    /**
+     * Transforms the raw temperature value to a real value and returns it.
+     * @return the real temperature measured in Celsius.
+     */
+    float getTemperature();
+
+    /**
+     * Transforms the raw humidity value to a real value and returns it.
+     * @return the real temperature as a percentage.
+     */
+    float getHumidity();
 
     /**
      * Writes a command to register so that it starts the measurement
@@ -115,5 +125,3 @@ public:
      */
     bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 };
-
-#endif // SHT3xDIS_DRIVER_H
