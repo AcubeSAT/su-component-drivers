@@ -26,20 +26,29 @@ etl::array<float, 2> SHT3xDIS::readMeasurements() {
     etl::array<float, 2> measurements = {};
     uint16_t rawTemperature;
     uint16_t rawHumidity;
+    uint8_t ackData = 0;
+    uint8_t command[4] = {0x24, 0, 0, 0};
 
-    if (TWIHS2_Read(I2CAddress, data, 6)) {
-        while (TWIHS2_IsBusy());
-        error = TWIHS2_ErrorGet();
+    TWIHS2_Write(I2CAddress, &ackData, 1);
+    while (TWIHS2_IsBusy());
+    TWIHS_ERROR error = TWIHS2_ErrorGet();
 
-        if (crc8(data[0], data[1], data[2]) && crc8(data[3], data[4], data[5])) {
-            rawTemperature = (data[0] << 8) | data[1];
-            rawHumidity = (data[3] << 8) | data[4];
+    TWIHS2_Write(I2CAddress, command, 4);
+    while (TWIHS2_IsBusy());
+    error = TWIHS2_ErrorGet();
 
-            measurements[0] = convertTemperature(rawTemperature);
-            measurements[1] = convertHumidity(rawHumidity);
-        }
-    }
-    return measurements;
+    if(TWIHS2_Read(I2CAddress, data, 6));
+    while (TWIHS2_IsBusy());
+    error = TWIHS2_ErrorGet();
+
+
+    rawTemperature = (data[0] << 8 ) | (data[1] & 0xff);
+    rawHumidity = (data[3] << 8 ) | (data[4] & 0xff);
+    float temperature = -45 + 175 * (static_cast<float>(rawTemperature)/0xFFFF);
+    float humidity = 100 * (static_cast<float>(rawHumidity)/0xFFFF);
+
+
+    return {temperature, humidity};
 }
 
 void SHT3xDIS::setMeasurement(SHT3xDIS::Measurement command) {
