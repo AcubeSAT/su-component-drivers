@@ -23,7 +23,7 @@ void SHT3xDIS::readRawMeasurements() {
     uint8_t data[6];
     etl::array<float, 2> measurements = {};
     uint8_t ackData = 0;
-    uint8_t command[2] = {HIGH_DISABLED >> 8, static_cast<uint8_t>(HIGH_DISABLED << 8)};
+    uint8_t command[2] = {DISABLED, HIGH_DISABLED};
 
     TWIHS2_Write(I2CAddress, &ackData, 1);
     while (TWIHS2_IsBusy());
@@ -50,7 +50,7 @@ float SHT3xDIS::getHumidity() {
     return 100 * (static_cast<float>(rawHumidity) / 0xFFFF);
 }
 
-void SHT3xDIS::setMeasurement(SHT3xDIS::Measurement command) {
+void SHT3xDIS::setRepeatability(SHT3xDIS::Repeatability command) {
     writeCommand(command);
 }
 

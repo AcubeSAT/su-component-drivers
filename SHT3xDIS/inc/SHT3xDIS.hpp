@@ -34,15 +34,19 @@ public:
     /**
     * All the available commands for the single shot mode.
     */
-    enum Measurement {
-        HIGH_ENABLED = 0x2C06,
-        MEDIUM_ENABLED = 0x2C0D,
-        LOW_ENABLED = 0x2C10,
-        HIGH_DISABLED = 0x2400,
-        MEDIUM_DISABLED = 0x240B,
-        LOW_DISABLED = 0x2416
+    enum Repeatability {
+        HIGH_ENABLED = 0x06,
+        MEDIUM_ENABLED = 0x0D,
+        LOW_ENABLED = 0x10,
+        HIGH_DISABLED = 0x00,
+        MEDIUM_DISABLED = 0x0B,
+        LOW_DISABLED = 0x16
     };
 
+    enum ClockStretching {
+        ENABLED = 0x2C,
+        DISABLED = 0x24
+    };
     /**
      * Commands for Heater
      */
@@ -87,7 +91,7 @@ public:
     /**
      * Sets the type of measurement the sensor will execute.
      */
-    void setMeasurement(Measurement command);
+    void setRepeatability(Repeatability command);
 
     /**
      * Sets the heater (On/Off).
