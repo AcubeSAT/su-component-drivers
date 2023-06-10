@@ -5,10 +5,54 @@
 #include "plib_twihs2_master.h"
 #include "plib_systick.h"
 #include "FreeRTOS.h"
+#include "Logger.hpp"
 #include "task.h"
+#include "Peripheral_Definitions.h"
+
+/**
+ * The MCP9808_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71Q21B MCU will be used.
+ * By giving the corresponding value to MCP9808_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
+ * For the OBC microcontroller MCP9808_TWI_PORT = 1,
+ * For the ADCS microcontroller and ATSAMV71 development board, MCP9808_TWI_PORT = 2.
+ * Each subsystem shall define MCP9808_TWI_PORT in a platform specific header file.
+ */
+#if MCP9808_TWI_PORT == 0
+
+#include "plib_twihs0_master.h"
+#define TWIHS_Write TWIHS0_Write
+#define TWIHS_ErrorGet TWIHS0_ErrorGet
+#define TWIHS_Read TWIHS0_Read
+#define TWIHS_Initialize TWIHS0_Initialize
+#define TWIHS_IsBusy TWIHS0_IsBusy
+
+#elif MCP9808_TWI_PORT == 1
+
+#include "plib_twihs1_master.h"
+#define TWIHS_Write TWIHS1_Write
+#define TWIHS_ErrorGet TWIHS1_ErrorGet
+#define TWIHS_Read TWIHS1_Read
+#define TWIHS_Initialize TWIHS1_Initialize
+#define TWIHS_IsBusy TWIHS1_IsBusy
+
+#elif MCP9808_TWI_PORT == 2
+
+#include "plib_twihs2_master.h"
+
+#define TWIHS_Write TWIHS2_Write
+#define TWIHS_ErrorGet TWIHS2_ErrorGet
+#define TWIHS_Read TWIHS2_Read
+#define TWIHS_Initialize TWIHS2_Initialize
+#define TWIHS_IsBusy TWIHS2_IsBusy
+#endif
+
 
 class SHT3xDIS {
 private:
+
+    /**
+    * Wait period before a sensor read is skipped
+    */
+    const uint8_t TimeoutTicks = 100;
 
     /**
      * I2C device address.
@@ -29,6 +73,21 @@ private:
      * Raw humidity read from the device
      */
     uint16_t rawHumidity;
+
+    /**
+     * Function that prevents hanging when a I2C device is not responding.
+        */
+    inline void waitForResponse() {
+        auto start = xTaskGetTickCount();
+        while (TWIHS_IsBusy()) {
+            if (xTaskGetTickCount() - start > TimeoutTicks) {
+                LOG_ERROR << "Temperature/Humidity sensor with address " << I2CAddress
+                          << " has timed out";
+                TWIHS_Initialize();
+            }
+            taskYIELD();
+        }
+    };
 
 public:
     /**
@@ -75,13 +134,13 @@ public:
      * Transforms the raw temperature value to a real value and returns it.
      * @return the real temperature measured in Celsius.
      */
-    float getTemperature();
+    float getTemperature() const;
 
     /**
      * Transforms the raw humidity value to a real value and returns it.
      * @return the real temperature as a percentage.
      */
-    float getHumidity();
+    float getHumidity() const;
 
     /**
      * Writes a command to register so that it starts the measurement
