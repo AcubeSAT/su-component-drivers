@@ -1,0 +1,8 @@
+//
+// Created by jimisk on 13/6/2023.
+//
+
+#ifndef SU_SOFTWARE_AD590_DRIVER_HPP
+#define SU_SOFTWARE_AD590_DRIVER_HPP
+
+#endif //SU_SOFTWARE_AD590_DRIVER_HPP
