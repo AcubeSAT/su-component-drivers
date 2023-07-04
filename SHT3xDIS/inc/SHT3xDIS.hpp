@@ -118,7 +118,7 @@ private:
     /**
      *
      */
-    enum ClockStretching : uint8_t {
+    enum class ClockStretching : uint8_t {
         ENABLED = 0x2C,
         DISABLED = 0x24
     };
@@ -126,17 +126,17 @@ private:
     /**
      * Commands for Heater
      */
-    enum Heater : uint16_t {
-        HEATER_ENABLED = 0x306D,
-        HEATER_DISABLED = 0x3066
+    enum class Heater : uint16_t {
+        ENABLED = 0x306D,
+        DISABLED = 0x3066
     };
 
     /**
      * All commands for the status register.
      */
-    enum StatusRegister : uint16_t {
-        READ_STATUS_REGISTER = 0xF32D,
-        CLEAR_STATUS_REGISTER = 0x3041
+    enum class StatusRegister : uint16_t {
+        READ = 0xF32D,
+        CLEAR = 0x3041
     };
 
 public:
