@@ -1,7 +1,5 @@
 #include "SHT3xDIS.hpp"
 
-SHT3xDIS::SHT3xDIS(uint8_t address) : I2CAddress(address) {}
-
 void SHT3xDIS::readRawMeasurements() {
     inline constexpr uint8_t DataSize = 6;
     etl::array<uint8_t, DataSize> data = {};

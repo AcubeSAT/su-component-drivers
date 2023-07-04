@@ -38,6 +38,17 @@
 
 
 class SHT3xDIS {
+public:
+    /**
+     * User defined I2C address.
+     * I2C_ADDRESS_A : ADDR (pin 2) is connected to logic low (default)
+     * I2C_ADDRESS_B : ADDR (pin 2) is connected to logic high
+     */
+    enum SHT3xDIS_I2C_Address : uint8_t {
+        I2C_ADDRESS_A = 0x44,
+        I2C_ADDRESS_B = 0x45
+    };
+
 private:
     /**
     * Wait period before a sensor read is skipped
@@ -45,9 +56,9 @@ private:
     constexpr uint8_t TimeoutTicks = 100;
 
     /**
-     * I2C device address.
+     * I2C device address
      */
-    constexpr uint8_t I2CAddress = 0;
+    constexpr SHT3xDIS_I2C_Address I2CAddress = 0x00;
 
     /**
      * I2C transaction error
@@ -65,8 +76,8 @@ private:
     uint16_t rawHumidity;
 
     /**
-     * Function that prevents hanging when a I2C device is not responding.
-        */
+     * Function that prevents hanging when a I2C device is not responding
+    */
     inline void waitForResponse() {
         auto start = xTaskGetTickCount();
         while (TWIHS_IsBusy()) {
@@ -79,7 +90,6 @@ private:
         }
     };
 
-public:
     /**
     * All the available commands for the single shot mode.
     */
@@ -112,7 +122,12 @@ public:
         CLEAR_STATUS_REGISTER = 0x3041
     };
 
-    SHT3xDIS(uint8_t address);
+public:
+    /**
+     *
+     * @param i2cUserAddress
+     */
+    constexpr SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
 
     /**
      * Reads the measurements given by the SHT3x-DIS sensor.
