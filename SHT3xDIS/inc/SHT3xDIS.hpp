@@ -42,12 +42,12 @@ private:
     /**
     * Wait period before a sensor read is skipped
     */
-    const uint8_t TimeoutTicks = 100;
+    constexpr uint8_t TimeoutTicks = 100;
 
     /**
      * I2C device address.
      */
-    const uint8_t I2CAddress;
+    constexpr uint8_t I2CAddress = 0;
 
     /**
      * I2C transaction error
@@ -92,14 +92,14 @@ public:
         LOW_DISABLED = 0x16
     };
 
-    enum ClockStretching {
+    enum ClockStretching : uint8_t {
         ENABLED = 0x2C,
         DISABLED = 0x24
     };
     /**
      * Commands for Heater
      */
-    enum Heater {
+    enum Heater : uint16_t {
         HEATER_ENABLED = 0x306D,
         HEATER_DISABLED = 0x3066
     };
@@ -107,7 +107,7 @@ public:
     /**
      * All commands for the status register.
      */
-    enum StatusRegister {
+    enum StatusRegister : uint16_t {
         READ_STATUS_REGISTER = 0xF32D,
         CLEAR_STATUS_REGISTER = 0x3041
     };
