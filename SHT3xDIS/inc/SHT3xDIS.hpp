@@ -48,7 +48,6 @@
 
 class SHT3xDIS {
 private:
-
     /**
     * Wait period before a sensor read is skipped
     */
