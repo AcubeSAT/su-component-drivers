@@ -44,7 +44,7 @@
 
 /**
  * Driver for the SHT3x-DIS family of Humidity and Temperature Sensors.
- * This is a simple driver to use a SHT3x-DIS sensor with the ATSAMV71Q21B microcontroller. All Microchip-specific
+ * This is a driver to operate a SHT3x-DIS sensor with the ATSAMV71Q21B microcontroller. All Microchip-specific
  * functions are used solely within the core read and write functions.
  *
  * For more details about the operation of the sensor, see the datasheet found at:
