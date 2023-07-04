@@ -8,9 +8,9 @@
 #include "Peripheral_Definitions.h"
 
 /**
- * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71Q21B MCU will be used.
+ * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
- * If experimenting with the SAM V71 XPLAINED ULTRA EVALUATION KIT, TW0 on the J500 connector or TW2 on the J505 connector can be used.
+ * If experimenting with the SAMV71 Xplained Ultra evaluation kit, TW0 on the J500 connector or TW2 on the J505 connector can be used.
  */
 
 #if SHT3xDIS_TWI_PORT == 0
@@ -44,7 +44,7 @@
 
 /**
  * Driver for the SHT3x-DIS family of Humidity and Temperature Sensors.
- * This is a driver to operate a SHT3x-DIS sensor with the ATSAMV71Q21B microcontroller. All Microchip-specific
+ * This is a driver to operate a SHT3x-DIS sensor with the ATSAMV71 microcontroller. All Microchip-specific
  * functions are used solely within the core read and write functions.
  *
  * For more details about the operation of the sensor, see the datasheet found at:

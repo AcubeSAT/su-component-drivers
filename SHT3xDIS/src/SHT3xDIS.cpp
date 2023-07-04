@@ -30,8 +30,8 @@ void SHT3xDIS::readRawMeasurements() {
         error = TWIHS2_ErrorGet();
     }
 
-    rawTemperature = (static_cast<uint16_t>(data[0]) << 8) | (data[1] & 0xff);
-    rawHumidity = (static_cast<uint16_t>(data[3]) << 8) | (data[4] & 0xff);
+    rawTemperature = (static_cast<uint16_t>(data[0]) << 8) | (data[1] & 0xFF);
+    rawHumidity = (static_cast<uint16_t>(data[3]) << 8) | (data[4] & 0xFF);
 }
 
 float SHT3xDIS::getTemperature() const {
