@@ -3,10 +3,15 @@
 SHT3xDIS::SHT3xDIS(uint8_t address) : I2CAddress(address) {}
 
 void SHT3xDIS::readRawMeasurements() {
-    uint8_t data[6];
-    etl::array<float, 2> measurements = {};
+    inline constexpr uint8_t DataSize = 6;
+    etl::array<uint8_t, DataSize> data = {};
+
+    inline constexpr uint8_t NumberOfMeasurements = 2;
+    etl::array<float, NumberOfMeasurements> measurements = {};
+
     uint8_t ackData = 0;
-    uint8_t command[2] = {DISABLED, HIGH_DISABLED};
+    inline constexpr uint8_t NumberOfCommands = 2;
+    uint8_t command[NumberOfCommands] = {DISABLED, HIGH_DISABLED};
 
     if (TWIHS2_Write(I2CAddress, &ackData, 1)) {
         waitForResponse();
