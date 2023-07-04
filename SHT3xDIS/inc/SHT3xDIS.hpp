@@ -80,19 +80,19 @@ private:
     */
     inline void waitForResponse() {
         auto start = xTaskGetTickCount();
-        while (TWIHS_IsBusy()) {
+        while (SHT3xDIS_IsBusy()) {
             if (xTaskGetTickCount() - start > TimeoutTicks) {
-                LOG_ERROR << "Temperature/Humidity sensor with address " << I2CAddress
+                LOG_ERROR << "Humidity sensor with address " << I2CAddress
                           << " has timed out";
-                TWIHS_Initialize();
+                SHT3xDIS_Initialize();
             }
             taskYIELD();
         }
     };
 
     /**
-    * All the available commands for the single shot mode.
-    */
+     * All the available commands for the single shot mode
+     */
     enum Repeatability : uint8_t {
         HIGH_ENABLED = 0x06,
         MEDIUM_ENABLED = 0x0D,
@@ -102,10 +102,14 @@ private:
         LOW_DISABLED = 0x16
     };
 
+    /**
+     *
+     */
     enum ClockStretching : uint8_t {
         ENABLED = 0x2C,
         DISABLED = 0x24
     };
+
     /**
      * Commands for Heater
      */
