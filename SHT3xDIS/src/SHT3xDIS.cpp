@@ -17,14 +17,16 @@ void SHT3xDIS::readRawMeasurements() {
     }
 
     if (TWIHS2_Write(I2CAddress, command, 4)) {
-        while (TWIHS2_IsBusy());
+        while (TWIHS2_IsBusy()) {}
+
         error = TWIHS2_ErrorGet();
     }
 
     vTaskDelay(pdMS_TO_TICKS(20));
 
     if (TWIHS2_Read(I2CAddress, data, 6)) {
-        while (TWIHS2_IsBusy());
+        while (TWIHS2_IsBusy()) {}
+
         error = TWIHS2_ErrorGet();
     }
 
