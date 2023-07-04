@@ -10,7 +10,6 @@
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
- * If experimenting with the SAMV71 Xplained Ultra evaluation kit, TW0 on the J500 connector or TW2 on the J505 connector can be used.
  */
 
 #if SHT3xDIS_TWI_PORT == 0
@@ -74,11 +73,6 @@ private:
     constexpr SHT3xDIS_I2C_Address I2CAddress = 0x00;
 
     /**
-     * I2C transaction error
-     */
-    TWIHS_ERROR error;
-
-    /**
      * Raw temperature read from the device
      */
     uint16_t rawTemperature;
@@ -89,23 +83,20 @@ private:
     uint16_t rawHumidity;
 
     /**
-     * Control commands for the single shot mode
+     *
      */
-    enum class SingleShotRepeatability : uint8_t {
-        HIGH_ENABLED = 0x06,
-        MEDIUM_ENABLED = 0x0D,
-        LOW_ENABLED = 0x10,
-        HIGH_DISABLED = 0x00,
-        MEDIUM_DISABLED = 0x0B,
-        LOW_DISABLED = 0x16
-    };
+    inline constexpr bool UseCRC = true;
 
     /**
-     * Control commands for the Clock stretching mode
+     * Control commands for the single shot mode
      */
-    enum class ClockStretching : uint8_t {
-        ENABLE = 0x2C,
-        DISABLE = 0x24
+    enum class SingleShotCommands : uint16_t {
+        HIGH_ENABLED = 0x2C06,
+        MEDIUM_ENABLED = 0x2C0D,
+        LOW_ENABLED = 0x2C10,
+        HIGH_DISABLED = 0x2400,
+        MEDIUM_DISABLED = 0x240B,
+        LOW_DISABLED = 0x2416
     };
 
     /**
@@ -137,7 +128,17 @@ private:
             }
         }
     }
-};
+
+    /**
+     * Writes a command to register so that it starts the measurement
+     * @param command
+     */
+    void sendCommand(uint16_t command);
+
+    /**
+     *
+     */
+    void readHumidityAndTemperature();
 
 public:
     /**
@@ -146,32 +147,27 @@ public:
      */
     SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
 
-    uint16_t composeTwoByteCommand();
+//    uint16_t composeTwoByteCommand();
+//
+//    /**
+//     * Reads the measurements given by the SHT3x-DIS sensor.
+//     * @return an array containing the temperature and humidity measured.
+//     */
+//    void readRawMeasurements();
+//
+//    /**
+//     * Transforms the raw temperature value to a real value and returns it.
+//     * @return the real temperature measured in Celsius.
+//     */
+//    float getTemperature() const;
+//
+//    /**
+//     * Transforms the raw humidity value to a real value and returns it.
+//     * @return the real temperature as a percentage.
+//     */
+//    float getHumidity() const;
 
-    /**
-     * Reads the measurements given by the SHT3x-DIS sensor.
-     * @return an array containing the temperature and humidity measured.
-     */
-    void readRawMeasurements();
-
-    /**
-     * Transforms the raw temperature value to a real value and returns it.
-     * @return the real temperature measured in Celsius.
-     */
-    float getTemperature() const;
-
-    /**
-     * Transforms the raw humidity value to a real value and returns it.
-     * @return the real temperature as a percentage.
-     */
-    float getHumidity() const;
-
-    /**
-     * Writes a command to register so that it starts the measurement
-     */
-    void sendCommand(uint16_t command);
-
-    /**
+/**
      * Sets the type of measurement the sensor will execute.
      */
     void setRepeatability(Repeatability command);
@@ -187,7 +183,7 @@ public:
     void setStatusRegisterCommand(StatusRegister command);
 
     /**
-     * Reads the data sent by the status register.
+     * Read the status register.
      */
     etl::array<uint16_t, 2> readStatusRegister();
 

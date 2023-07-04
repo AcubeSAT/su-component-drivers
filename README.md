@@ -14,7 +14,9 @@ SpaceDot members: don't forget to check the guidelines [here](https://mm.spacedo
 ## Playing with Hardware
 
 ### SHT3x-DIS
-If you are using the SHT3x-DIS evaluation board along with a SAMV71 Xplained Ultra evaluation kit follow, the pinout
+If you are using the SHT3x-DIS evaluation board along with a SAMV71 Xplained Ultra evaluation kit follow, the pinout.
+You can use the `TW0` pins on the J500 connector or the `TW2` pins on the J505 connector.
+
 
 | Pin Number | Name   | Comments                                                                                                                              |
 | ------ |--------|---------------------------------------------------------------------------------------------------------------------------------------|
