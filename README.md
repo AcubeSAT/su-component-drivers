@@ -7,7 +7,9 @@ SpaceDot members: don't forget to check the guidelines [here](https://mm.spacedo
 ## Drivers Implemented
 
 - [Camera Driver](https://gitlab.com/acubesat/su/on-board-software/su-component-drivers/-/tree/master/U3VCamDriver) and its [wikipage](https://gitlab.com/groups/acubesat/su/on-board-software/-/wikis/USB3-Vision-Camera-Driver)
-- SHT3x-DIS Driver, [Datasheet](https://sensirion.com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.pdf)
+- SHT3x-DIS Driver (only the single-shot mode), [Datasheet](https://sensirion.
+  com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.
+  pdf)
 
 ## Playing with Hardware
 

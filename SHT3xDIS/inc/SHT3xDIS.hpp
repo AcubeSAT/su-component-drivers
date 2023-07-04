@@ -89,24 +89,9 @@ private:
     uint16_t rawHumidity;
 
     /**
-     * Function that prevents hanging when a I2C device is not responding
-    */
-    inline void waitForResponse() {
-        auto start = xTaskGetTickCount();
-        while (SHT3xDIS_IsBusy()) {
-            if (xTaskGetTickCount() - start > TimeoutTicks) {
-                LOG_ERROR << "Humidity-Temperature sensor with address " << I2CAddress
-                          << " has timed out";
-                SHT3xDIS_Initialize();
-            }
-            taskYIELD();
-        }
-    };
-
-    /**
-     * All the available commands for the single shot mode
+     * Control commands for the single shot mode
      */
-    enum Repeatability : uint8_t {
+    enum class SingleShotRepeatability : uint8_t {
         HIGH_ENABLED = 0x06,
         MEDIUM_ENABLED = 0x0D,
         LOW_ENABLED = 0x10,
@@ -116,35 +101,52 @@ private:
     };
 
     /**
-     *
+     * Control commands for the Clock stretching mode
      */
     enum class ClockStretching : uint8_t {
-        ENABLED = 0x2C,
-        DISABLED = 0x24
+        ENABLE = 0x2C,
+        DISABLE = 0x24
     };
 
     /**
-     * Commands for Heater
+     * Control commands for the Heater
      */
     enum class Heater : uint16_t {
-        ENABLED = 0x306D,
-        DISABLED = 0x3066
+        ENABLE = 0x306D,
+        DISABLE = 0x3066
     };
 
     /**
-     * All commands for the status register.
+     * Control commands for the Status register
      */
     enum class StatusRegister : uint16_t {
         READ = 0xF32D,
         CLEAR = 0x3041
     };
 
+    /**
+     * Function that prevents hanging when a I2C device is not responding
+     */
+    inline void waitForResponse() {
+        while (not SHT3xDIS_Read(I2CAddress, nullptr, 0)) { // use if instead of while
+            while (SHT3xDIS_IsBusy()) {}
+
+            if (SHT3xDIS_ErrorGet() == TWIHS_ERROR_NACK) {
+                LOG_ERROR << "Humidity-Temperature sensor with address " << I2CAddress << " was not found";
+                vTaskSuspend();
+            }
+        }
+    }
+};
+
 public:
     /**
      *
      * @param i2cUserAddress
      */
-    constexpr SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
+    SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
+
+    uint16_t composeTwoByteCommand();
 
     /**
      * Reads the measurements given by the SHT3x-DIS sensor.
@@ -167,7 +169,7 @@ public:
     /**
      * Writes a command to register so that it starts the measurement
      */
-    void writeCommand(uint16_t command);
+    void sendCommand(uint16_t command);
 
     /**
      * Sets the type of measurement the sensor will execute.
@@ -192,7 +194,7 @@ public:
     /**
      * Performs a soft reset to the sensor.
      */
-    void setSoftReset();
+    void performSoftReset();
 
     /**
      * Performs a general call reset on the whole I2C Bus.
