@@ -2,47 +2,38 @@
 
 #include <etl/array.h>
 #include <cstdint>
-#include "plib_twihs2_master.h"
-#include "plib_systick.h"
 #include "FreeRTOS.h"
 #include "Logger.hpp"
 #include "task.h"
 #include "Peripheral_Definitions.h"
 
-/**
- * The MCP9808_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71Q21B MCU will be used.
- * By giving the corresponding value to MCP9808_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
- * For the OBC microcontroller MCP9808_TWI_PORT = 1,
- * For the ADCS microcontroller and ATSAMV71 development board, MCP9808_TWI_PORT = 2.
- * Each subsystem shall define MCP9808_TWI_PORT in a platform specific header file.
- */
-#if MCP9808_TWI_PORT == 0
+#if SHT3xDIS_TWI_PORT == 0
 
 #include "plib_twihs0_master.h"
-#define SHT_Write TWIHS0_Write
-#define SHT_ErrorGet TWIHS0_ErrorGet
-#define SHT_Read TWIHS0_Read
-#define SHT_Initialize TWIHS0_Initialize
-#define SHT_IsBusy TWIHS0_IsBusy
+#define SHT3xDIS_Write TWIHS0_Write
+#define SHT3xDIS_ErrorGet TWIHS0_ErrorGet
+#define SHT3xDIS_Read TWIHS0_Read
+#define SHT3xDIS_Initialize TWIHS0_Initialize
+#define SHT3xDIS_IsBusy TWIHS0_IsBusy
 
-#elif MCP9808_TWI_PORT == 1
+#elif SHT3xDIS_TWI_PORT == 1
 
 #include "plib_twihs1_master.h"
-#define TWIHS_Write TWIHS1_Write
-#define TWIHS_ErrorGet TWIHS1_ErrorGet
-#define TWIHS_Read TWIHS1_Read
-#define TWIHS_Initialize TWIHS1_Initialize
-#define TWIHS_IsBusy TWIHS1_IsBusy
+#define SHT3xDIS_TWIHS_Write TWIHS1_Write
+#define SHT3xDIS_TWIHS_ErrorGet TWIHS1_ErrorGet
+#define SHT3xDIS_TWIHS_Read TWIHS1_Read
+#define SHT3xDIS_TWIHS_Initialize TWIHS1_Initialize
+#define SHT3xDIS_TWIHS_IsBusy TWIHS1_IsBusy
 
-#elif MCP9808_TWI_PORT == 2
+#elif SHT3xDIS_TWI_PORT == 2
 
 #include "plib_twihs2_master.h"
 
-#define TWIHS_Write TWIHS2_Write
-#define TWIHS_ErrorGet TWIHS2_ErrorGet
-#define TWIHS_Read TWIHS2_Read
-#define TWIHS_Initialize TWIHS2_Initialize
-#define TWIHS_IsBusy TWIHS2_IsBusy
+#define SHT3xDIS_TWIHS_Write TWIHS2_Write
+#define SHT3xDIS_TWIHS_ErrorGet TWIHS2_ErrorGet
+#define SHT3xDIS_TWIHS_Read TWIHS2_Read
+#define SHT3xDIS_TWIHS_Initialize TWIHS2_Initialize
+#define SHT3xDIS_TWIHS_IsBusy TWIHS2_IsBusy
 #endif
 
 
@@ -92,7 +83,7 @@ public:
     /**
     * All the available commands for the single shot mode.
     */
-    enum Repeatability {
+    enum Repeatability : uint8_t {
         HIGH_ENABLED = 0x06,
         MEDIUM_ENABLED = 0x0D,
         LOW_ENABLED = 0x10,
@@ -124,7 +115,7 @@ public:
     SHT3xDIS(uint8_t address);
 
     /**
-     * Reads the measurements given by the SHT3xDIS sensor.
+     * Reads the measurements given by the SHT3x-DIS sensor.
      * @return an array containing the temperature and humidity measured.
      */
     void readRawMeasurements();
