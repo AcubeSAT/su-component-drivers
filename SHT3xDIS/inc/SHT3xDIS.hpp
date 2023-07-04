@@ -19,11 +19,11 @@
 #if MCP9808_TWI_PORT == 0
 
 #include "plib_twihs0_master.h"
-#define TWIHS_Write TWIHS0_Write
-#define TWIHS_ErrorGet TWIHS0_ErrorGet
-#define TWIHS_Read TWIHS0_Read
-#define TWIHS_Initialize TWIHS0_Initialize
-#define TWIHS_IsBusy TWIHS0_IsBusy
+#define SHT_Write TWIHS0_Write
+#define SHT_ErrorGet TWIHS0_ErrorGet
+#define SHT_Read TWIHS0_Read
+#define SHT_Initialize TWIHS0_Initialize
+#define SHT_IsBusy TWIHS0_IsBusy
 
 #elif MCP9808_TWI_PORT == 1
 
