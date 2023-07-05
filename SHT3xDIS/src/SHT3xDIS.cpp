@@ -86,6 +86,10 @@ etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
             convertRawHumidityValueToPhysicalScale(concatenateTwoBytesToHalfWord(sensorData[3], sensorData[4]))};
 }
 
+void SHT3xDIS::setHeater(SHT3xDIS::HeaterCommands command) {
+    sendCommandToSensor(command);
+}
+
 void SHT3xDIS::clearStatusRegister() {
     sendCommandToSensor(StatusRegisterCommands::CLEAR);
 }
@@ -97,4 +101,10 @@ uint16_t SHT3xDIS::readStatusRegister() {
     executeWriteReadTransaction(statusRegisterData, NumberOfBytesToRead);
 
     return concatenateTwoBytesToHalfWord(statusRegisterData[0], statusRegisterData[1]);
+}
+
+void SHT3xDIS::performSoftReset() {
+    PIO_PinWrite(NResetPin, false);
+    vTaskDelay(pdMS_TO_TICKS(msToWait));
+    PIO_PinWrite(NResetPin, true);
 }

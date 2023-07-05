@@ -5,6 +5,7 @@
 #include "FreeRTOS.h"
 #include "Logger.hpp"
 #include "task.h"
+#include "peripheral/pio/plib_pio.h"
 //#include "Peripheral_Definitions.h"
 #define SHT3xDIS_TWI_PORT 2
 /**
@@ -34,6 +35,7 @@
 #elif SHT3xDIS_TWI_PORT == 2
 
 #include "plib_twihs2_master.h"
+
 #define SHT3xDIS_TWIHS_WriteRead TWIHS2_WriteRead
 #define SHT3xDIS_TWIHS_Write TWIHS2_Write
 #define SHT3xDIS_TWIHS_ErrorGet TWIHS2_ErrorGet
@@ -69,12 +71,24 @@ private:
     const SHT3xDIS_I2C_Address I2CAddress;
 
     /**
-    * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode.
+     * GPIO pin connected to the nRESET pin of the sensor
+     * @Note the GPIO pin must be programmed as output, active low
+     */
+    const PIO_PIN NResetPin = PIO_PIN_NONE;
+
+    /**
+     * GPIO connected to the Alert pin of the sensor
+     * @Note the GPIO pin must be programmed as input
+     */
+    const PIO_PIN AlertPin = PIO_PIN_NONE;
+
+    /**
+    * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
     */
     static inline constexpr uint8_t msToWait = 10;
 
     /**
-     *
+     * The number of bytes a command consists of.
      */
     static inline constexpr uint8_t NumberOfBytesInCommand = 2;
 
@@ -111,6 +125,12 @@ private:
     enum StatusRegisterCommands : uint16_t {
         READ = 0xF32D,
         CLEAR = 0x3041
+    };
+
+    enum ResetSensorCommands : uint16_t {
+        INTERFACE_RESET = 0x00,
+        SOFT_RESET = 0x30A2,
+        GENERAL_CALL_RESET = 0x0006
     };
 
     /**
@@ -157,14 +177,14 @@ private:
      * @param dataToRead the data the sensor will return as a byte-array
      * @param numberOfdataToRead number of bytes to read
      */
-    void executeWriteReadTransaction(uint8_t* statusRegisterData, uint8_t NumberOfBytesToRead);
+    void executeWriteReadTransaction(uint8_t *statusRegisterData, uint8_t NumberOfBytesToRead);
 
     /**
      * Attempts to read temperature and humidity data the sensor measured. 6 bytes are to be read in total, 2 raw
      * sensor data bytes for each physical measurement plus 1 byte each for the checksum.
      * @param sensorData
      */
-    void readSensorDataSingleShotMode(uint8_t* sensorData);
+    void readSensorDataSingleShotMode(uint8_t *sensorData);
 
     /**
      * Converts the raw temperature data to the physical scale according to the section 4.13 of the datasheet.
@@ -201,10 +221,11 @@ private:
     }
 
     /**
-     *
+     * Initialize the sensor by clearing the Status Register and pulling the nRESET pin High.
      */
-    inline void resetSensor() {
+    inline void initializeSensor() {
         clearStatusRegister();
+        PIO_PinWrite(NResetPin, true);
     }
 
 public:
@@ -212,8 +233,9 @@ public:
      * Constructor used for initializing the sensor I2C address
      * @param i2cUserAddress the I2C address. Must be of type SHT3xDIS_I2C_Address
      */
-    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {
-        resetSensor();
+    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin, PIO_PIN alertPin) :
+            I2CAddress(i2cUserAddress), NResetPin(nResetPin), AlertPin(alertPin) {
+        initializeSensor();
     }
 
     /**
@@ -242,11 +264,6 @@ public:
      * Soft resets the sensor.
      */
     void performSoftReset();
-
-    /**
-     * Soft resets the sensor.
-     */
-    void performHardReset();
 
     /**
      * Performs a general call reset on the whole I2C Bus.
