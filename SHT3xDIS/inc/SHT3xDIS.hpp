@@ -6,8 +6,8 @@
 #include "Logger.hpp"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
-//#include "Peripheral_Definitions.h"
-#define SHT3xDIS_TWI_PORT 2
+#include "Peripheral_Definitions.h"
+
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
