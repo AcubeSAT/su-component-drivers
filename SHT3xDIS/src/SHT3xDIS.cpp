@@ -5,7 +5,7 @@ void SHT3xDIS::sendCommandToSensor(uint16_t command) {
     uint8_t command[NumberOfCommandBytes] = {static_cast<uint8_t>((command >> 8) & 0xFF), static_cast<uint8_t>(command & 0xFF)};
 
     if (SHT3xDIS_Write(I2CAddress, command, NumberOfCommandBytes)) {
-        while (SHT3xDIS_IsBusy()) {}
+        while (SHT3xDIS_IsBusy()) {} // TODO preferably add timeouts, while loops are dangerous
     }
 }
 
@@ -16,7 +16,8 @@ void SHT3xDIS::readSensorDataSingleShotMode(uint8_t* sensorData) {
         while (SHT3xDIS_IsBusy()) {}
     }
     else {
-
+        LOG_INFO << "Humidity sensor: I2C bus is busy";
+        return
     }
 
     if constexpr (UseCRC) {
@@ -35,9 +36,9 @@ etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
     inline constexpr uint8_t DataSizeWithCRC = 6;
     uint8_t sensorData[DataSizeWithCRC];
 
-    sendCommandToSensor(SingleShotCommands::HIGH_DISABLED);
+    sendCommandToSensor(SingleShotModeCommands::DISABLED_HIGH);
 
-    vTaskDelay(pdMS_TO_TICKS(msToWait));
+    vTaskDelay(pdMS_TO_TICKS(msToWait)); //TODO this is safer than continuously polling the bus
 
     readSensorDataSingleShotMode(sensorData);
 
