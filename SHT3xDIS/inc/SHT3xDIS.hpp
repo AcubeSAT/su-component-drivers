@@ -5,8 +5,8 @@
 #include "FreeRTOS.h"
 #include "Logger.hpp"
 #include "task.h"
-#include "Peripheral_Definitions.h"
-
+//#include "Peripheral_Definitions.h"
+#define SHT3xDIS_TWI_PORT 2
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
@@ -64,14 +64,19 @@ public:
 
 private:
     /**
+     * I2C device address.
+     */
+    const SHT3xDIS_I2C_Address I2CAddress;
+
+    /**
     * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode.
     */
     static inline constexpr uint8_t msToWait = 10;
 
     /**
-     * I2C device address.
+     *
      */
-    const SHT3xDIS_I2C_Address I2CAddress;
+    static inline constexpr uint8_t NumberOfBytesInCommand = 2;
 
     /**
      * Variable to select the between using or not the checksum for the sensor data.
@@ -109,7 +114,7 @@ private:
     };
 
     /**
-     * Function that prevents starvation of the task waiting to send data and limits congestion on the bus.
+     * Function that prevents starvation of the task waiting to send data and limits congestion on the bus. //TODO WIP
      */
     inline void waitForResponse() {
         while (not SHT3xDIS_TWIHS_Read(I2CAddress, nullptr, 0)) { // use if instead of while
@@ -131,12 +136,12 @@ private:
      * Reflect output: False
      * Final XOR: 0x00
      */
-    bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
+    static bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 
     /**
      * Function that prevents hanging when a I2C device is not responding.
      */
-    void checkForNACK();
+    static void checkForNACK();
 
     /**
      * Sends a command to the sensor.
@@ -152,7 +157,7 @@ private:
      * @param dataToRead the data the sensor will return as a byte-array
      * @param numberOfdataToRead number of bytes to read
      */
-    void executeWriteReadTransaction(uint8_t* bytesToWrite, uint8_t numberOfBytesToWrite, uint8_t* bytesToRead, uint8_t numberOfBytesToRead);
+    void executeWriteReadTransaction(uint8_t* statusRegisterData, uint8_t NumberOfBytesToRead);
 
     /**
      * Attempts to read temperature and humidity data the sensor measured. 6 bytes are to be read in total, 2 raw
@@ -167,7 +172,7 @@ private:
      * @param rawTemperature raw temperature data as received from the sensor
      * @return temperature in Celsius
      */
-    static inline float convertRawTemperatureValueToPhysicalScale(uint16_t rawTemperature) {
+    [[nodiscard]] static inline float convertRawTemperatureValueToPhysicalScale(uint16_t rawTemperature) {
         return -45 + 175 * (static_cast<float>(rawTemperature) / 0xFFFF);
     }
 
@@ -176,7 +181,7 @@ private:
      * @param rawHumidity raw humidity data as received from the sensor
      * @return humidity in Relative humidity %
      */
-    static inline float convertRawHumidityValueToPhysicalScale(uint16_t rawHumidity) {
+    [[nodiscard]] static inline float convertRawHumidityValueToPhysicalScale(uint16_t rawHumidity) {
         return 100 * (static_cast<float>(rawHumidity) / 0xFFFF);
     }
 
@@ -186,8 +191,20 @@ private:
      * @param lsb the last 8 bits of the half word
      * @return the half word
      */
-    static inline uint16_t concatenateTwoBytesToHalfWord(uint8_t msb, uint8_t lsb) {
+    [[nodiscard]] static inline uint16_t concatenateTwoBytesToHalfWord(uint8_t msb, uint8_t lsb) {
         return (static_cast<uint16_t>(msb) << 8) | (lsb & 0xFF);
+    }
+
+    static inline void splitHalfWordToByteArray(uint8_t dataArray[NumberOfBytesInCommand], uint16_t halfWord) {
+        dataArray[0] = static_cast<uint8_t>((halfWord >> 8) & 0xFF);
+        dataArray[1] = static_cast<uint8_t>(halfWord & 0xFF);
+    }
+
+    /**
+     *
+     */
+    inline void resetSensor() {
+        clearStatusRegister();
     }
 
 public:
@@ -195,7 +212,9 @@ public:
      * Constructor used for initializing the sensor I2C address
      * @param i2cUserAddress the I2C address. Must be of type SHT3xDIS_I2C_Address
      */
-    SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
+    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {
+        resetSensor();
+    }
 
     /**
      * Get temperature and humidity data from the sensor in physical scale with the Single Shot Data Acquisition Mode.
@@ -209,19 +228,25 @@ public:
     void setHeater(HeaterCommands command);
 
     /**
-     * Writes a command to the Status register so it reads from it or clears it.
+     * Clears the Status Register.
      */
-    void setStatusRegisterCommand(StatusRegisterCommands command);
+    void clearStatusRegister();
 
     /**
-     * Read the status register.
+     * Reads the Status Register.
+     * @return the 16-bits of the Status Register
      */
     uint16_t readStatusRegister();
 
     /**
-     * Performs a soft reset to the sensor.
+     * Soft resets the sensor.
      */
     void performSoftReset();
+
+    /**
+     * Soft resets the sensor.
+     */
+    void performHardReset();
 
     /**
      * Performs a general call reset on the whole I2C Bus.
