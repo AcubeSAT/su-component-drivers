@@ -88,21 +88,23 @@ private:
     inline constexpr bool UseCRC = true;
 
     /**
-     * Control commands for the single shot mode
+     * Control commands for the single shot mode. The commands are in the form
+     * Clock-StretchingConfiguration_RepeatabilityConfiguration
+     * i.e ENABLED_HIGH means Clock-Stretching Enabled, Repeatability High
      */
-    enum class SingleShotCommands : uint16_t {
-        HIGH_ENABLED = 0x2C06,
-        MEDIUM_ENABLED = 0x2C0D,
-        LOW_ENABLED = 0x2C10,
-        HIGH_DISABLED = 0x2400,
-        MEDIUM_DISABLED = 0x240B,
-        LOW_DISABLED = 0x2416
+    enum class SingleShotModeCommands : uint16_t {
+        ENABLED_HIGH = 0x2C06,
+        ENABLED_MEDIUM = 0x2C0D,
+        ENABLED_LOW = 0x2C10,
+        DISABLED_HIGH = 0x2400,
+        DISABLED_MEDIUM = 0x240B,
+        DISABLED_LOW = 0x2416
     };
 
     /**
      * Control commands for the Heater
      */
-    enum class Heater : uint16_t {
+    enum class HeaterCommands : uint16_t {
         ENABLE = 0x306D,
         DISABLE = 0x3066
     };
@@ -110,7 +112,7 @@ private:
     /**
      * Control commands for the Status register
      */
-    enum class StatusRegister : uint16_t {
+    enum class StatusRegisterCommands : uint16_t {
         READ = 0xF32D,
         CLEAR = 0x3041
     };
@@ -138,14 +140,33 @@ private:
     /**
      *
      */
-    void readHumidityAndTemperature();
+    void readSensorDataSingleShotMode();
+
+    /**
+     *
+     * @Note Negative values are converted properly
+     * @param rawTemperature
+     * @return
+     */
+    static inline float convertRawTemperatureValueToPhysicalScale(uint16_t rawTemperature) {
+        return -45 + 175 * (static_cast<float>(rawTemperature) / 0xFFFF);
+    }
+
+    /**
+     *
+     * @param rawHumidity
+     * @return
+     */
+    static inline float convertRawHumidityValueToPhysicalScale(uint16_t rawHumidity) {
+        return 100 * (static_cast<float>(rawHumidity) / 0xFFFF);
+    }
 
 public:
     /**
      *
      * @param i2cUserAddress
      */
-    SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
+    constexpr SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
 
 //    uint16_t composeTwoByteCommand();
 //

@@ -9,10 +9,10 @@ void SHT3xDIS::sendCommand(uint16_t command) {
     }
 }
 
-void SHT3xDIS::readHumidityAndTemperature(uint8_t* data) {
+void SHT3xDIS::readSensorDataSingleShotMode(uint8_t* sensorData) {
     inline constexpr uint8_t DataSizeWithCRC = 6;
 
-    if (SHT3xDIS_Read(I2CAddress, data, DataSizeWithCRC)) {
+    if (SHT3xDIS_Read(I2CAddress, sensorData, DataSizeWithCRC)) {
         while (SHT3xDIS_IsBusy()) {}
     }
     else {
@@ -25,15 +25,15 @@ void SHT3xDIS::readHumidityAndTemperature(uint8_t* data) {
 
 }
 
-etl::pair<float, float> SHT3xDIS::getOneShotMeasurements() {
+etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
     inline constexpr uint8_t DataSizeWithCRC = 6;
-    uint8_t data[DataSizeWithCRC];
+    uint8_t sensorData[DataSizeWithCRC];
 
     sendCommand(SingleShotCommands::HIGH_DISABLED);
 
     vTaskDelay(pdMS_TO_TICKS(1));
 
-    readHumidityAndTemperature(data);
+    readHumidityAndTemperature(sensorData);
 
     uint16_t rawTemperature = (static_cast<uint16_t>(data[0]) << 8) | (data[1] & 0xFF);
     uint16_t rawHumidity = (static_cast<uint16_t>(data[3]) << 8) | (data[4] & 0xFF);
