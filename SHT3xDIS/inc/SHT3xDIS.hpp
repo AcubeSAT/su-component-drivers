@@ -151,7 +151,7 @@ private:
     /**
      *
      */
-    void readSensorMeasurementsSingleShotMode();
+    void readSensorDataSingleShotMode();
 
     /**
      *

@@ -37,7 +37,7 @@ void SHT3xDIS::executeWriteReadTransaction(i2cAddress, uint8_t bytesToWrite, uin
 }
 
 
-void SHT3xDIS::readSensorMeasurementsSingleShotMode(uint8_t* sensorData) {
+void SHT3xDIS::readSensorDataSingleShotMode(uint8_t* sensorData) {
     inline constexpr uint8_t DataSizeWithCRC = 6;
 
     if (SHT3xDIS_Read(I2CAddress, sensorData, DataSizeWithCRC)) {
