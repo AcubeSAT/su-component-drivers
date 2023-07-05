@@ -130,12 +130,22 @@ private:
             }
         }
     }
+    /**
+     * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
+     *
+     * Polynomial: 0x31 (x^8 + x^5 + x^4 + 1)
+     * Initialization: 0xFF
+     * Reflect input: False
+     * Reflect output: False
+     * Final XOR: 0x00
+     */
+    bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 
     /**
      * Writes a command to register so that it starts the measurement
      * @param command
      */
-    void sendCommand(uint16_t command);
+    void sendCommandToSensor(uint16_t command);
 
     /**
      *
@@ -159,6 +169,16 @@ private:
      */
     static inline float convertRawHumidityValueToPhysicalScale(uint16_t rawHumidity) {
         return 100 * (static_cast<float>(rawHumidity) / 0xFFFF);
+    }
+
+    /**
+     *
+     * @param msb
+     * @param lsb
+     * @return
+     */
+    static inline uint16_t convertBytesToHalfWord(uint8_t msb, uint8_t lsb) {
+        return (static_cast<uint16_t>(msb) << 8) | (lsb & 0xFF);
     }
 
 public:
@@ -218,14 +238,4 @@ public:
      */
     void generalCallReset();
 
-    /**
-     * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
-     *
-     * Polynomial: 0x31 (x^8 + x^5 + x^4 + 1)
-     * Initialization: 0xFF
-     * Reflect input: False
-     * Reflect output: False
-     * Final XOR: 0x00
-     */
-    bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 };
