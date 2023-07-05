@@ -1,6 +1,7 @@
 #pragma once
 
 #include <etl/utility.h>
+#include <etl/array.h>
 #include <cstdint>
 #include "FreeRTOS.h"
 #include "Logger.hpp"
@@ -93,6 +94,18 @@ private:
     static inline constexpr uint8_t NumberOfBytesInCommand = 2;
 
     /**
+     * The number of bytes that are sent from the sensor after sending the command to read the Status Register.
+     * The Status Register consists of 2 bytes plus 1 CRC byte.
+     */
+    static inline constexpr uint8_t NumberOfBytesOfStatusRegisterWithCRC = 3;
+
+    /**
+     * The number of bytes hat are sent from the sensor after sending the command for Single-Shot Mode.
+     * The data consist of 6 bytes, 2 raw sensor data bytes for each physical measurement plus 1 byte each for the checksum.
+     */
+    static inline constexpr uint8_t NumberOfBytesOfMeasurementsWithCRC = 6;
+
+    /**
      * Variable to select the between using or not the checksum for the sensor data.
      */
     static inline constexpr bool UseCRC = false;
@@ -177,14 +190,14 @@ private:
      * @param dataToRead the data the sensor will return as a byte-array
      * @param numberOfdataToRead number of bytes to read
      */
-    void executeWriteReadTransaction(uint8_t *statusRegisterData, uint8_t NumberOfBytesToRead);
+    void executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData, uint8_t NumberOfBytesToRead);
 
     /**
      * Attempts to read temperature and humidity data the sensor measured. 6 bytes are to be read in total, 2 raw
      * sensor data bytes for each physical measurement plus 1 byte each for the checksum.
      * @param sensorData
      */
-    void readSensorDataSingleShotMode(uint8_t *sensorData);
+    void readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC>& sensorData);
 
     /**
      * Converts the raw temperature data to the physical scale according to the section 4.13 of the datasheet.
@@ -215,9 +228,13 @@ private:
         return (static_cast<uint16_t>(msb) << 8) | (lsb & 0xFF);
     }
 
-    static inline void splitHalfWordToByteArray(uint8_t dataArray[NumberOfBytesInCommand], uint16_t halfWord) {
-        dataArray[0] = static_cast<uint8_t>((halfWord >> 8) & 0xFF);
-        dataArray[1] = static_cast<uint8_t>(halfWord & 0xFF);
+    /**
+     * Split 16-bit data into a byte-array in order to transmit them through the HAL I2C functions
+     * @param dataArray the byte-array passed as parameter to the HAL functions
+     * @param halfWord the 16-bit data to split
+     */
+    static inline void splitHalfWordToByteArray(etl::array<uint8_t, NumberOfBytesInCommand>& dataArray, uint16_t halfWord) {
+        dataArray = {static_cast<uint8_t>((halfWord >> 8) & 0xFF), static_cast<uint8_t>(halfWord & 0xFF)};
     }
 
     /**
@@ -264,10 +281,4 @@ public:
      * Soft resets the sensor.
      */
     void performSoftReset();
-
-    /**
-     * Performs a general call reset on the whole I2C Bus.
-     */
-    void generalCallReset();
-
 };
