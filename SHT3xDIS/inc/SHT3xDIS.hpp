@@ -108,6 +108,7 @@ private:
         CLEAR = 0x3041
     };
 
+
     /**
      * Function that prevents hanging when a I2C device is not responding
      */
@@ -133,6 +134,11 @@ private:
     bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 
     /**
+     *
+     */
+    void checkForNACK();
+
+    /**
      * Writes a command to register so that it starts the measurement
      * @param command
      */
@@ -149,6 +155,7 @@ private:
 
     /**
      *
+     * @param sensorData
      */
     void readSensorDataSingleShotMode(uint8_t* sensorData);
 
@@ -193,11 +200,6 @@ public:
      * @return
      */
     etl::pair<float, float> getOneShotMeasurement();
-
-//    /**
-//     * Sets the type of measurement the sensor will execute.
-//     */
-//    void setRepeatability(Repeatability command);
 
     /**
      * Sets the heater (On/Off).
