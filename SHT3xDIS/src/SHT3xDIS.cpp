@@ -82,8 +82,8 @@ etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
 
     readSensorDataSingleShotMode(sensorData);
 
-    return etl::pair<float, float> (convertRawTemperatureValueToPhysicalScale(convertBytesToHalfWord(sensorData[0], sensorData[1])),
-                                    convertRawHumidityValueToPhysicalScale(convertBytesToHalfWord(sensorData[3], sensorData[4])));
+    return etl::pair<float, float> (convertRawTemperatureValueToPhysicalScale(concatenateTwoBytesToHalfWord(sensorData[0], sensorData[1])),
+                                    convertRawHumidityValueToPhysicalScale(concatenateTwoBytesToHalfWord(sensorData[3], sensorData[4])));
 }
 
 uint16_t SHT3xDIS::readStatusRegister() {

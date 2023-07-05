@@ -95,7 +95,7 @@ private:
     /**
      * Control commands for the Heater
      */
-    enum class HeaterCommands : uint16_t {
+    enum HeaterCommands : uint16_t {
         ENABLE = 0x306D,
         DISABLE = 0x3066
     };
@@ -103,7 +103,7 @@ private:
     /**
      * Control commands for the Status register
      */
-    enum class StatusRegisterCommands : uint16_t {
+    enum StatusRegisterCommands : uint16_t {
         READ = 0xF32D,
         CLEAR = 0x3041
     };
@@ -184,7 +184,7 @@ private:
      * @param lsb
      * @return
      */
-    static inline uint16_t convertBytesToHalfWord(uint8_t msb, uint8_t lsb) {
+    static inline uint16_t concatenateTwoBytesToHalfWord(uint8_t msb, uint8_t lsb) {
         return (static_cast<uint16_t>(msb) << 8) | (lsb & 0xFF);
     }
 
