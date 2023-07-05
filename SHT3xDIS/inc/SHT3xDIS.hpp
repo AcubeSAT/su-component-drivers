@@ -15,6 +15,7 @@
 #if SHT3xDIS_TWI_PORT == 0
 
 #include "plib_twihs0_master.h"
+#define SHT3xDIS_WriteRead TWIHS0_WriteRead
 #define SHT3xDIS_Write TWIHS0_Write
 #define SHT3xDIS_ErrorGet TWIHS0_ErrorGet
 #define SHT3xDIS_Read TWIHS0_Read
@@ -24,6 +25,7 @@
 #elif SHT3xDIS_TWI_PORT == 1
 
 #include "plib_twihs1_master.h"
+#define SHT3xDIS_WriteRead TWIHS1_WriteRead
 #define SHT3xDIS_TWIHS_Write TWIHS1_Write
 #define SHT3xDIS_TWIHS_ErrorGet TWIHS1_ErrorGet
 #define SHT3xDIS_TWIHS_Read TWIHS1_Read
@@ -33,7 +35,7 @@
 #elif SHT3xDIS_TWI_PORT == 2
 
 #include "plib_twihs2_master.h"
-
+#define SHT3xDIS_WriteRead TWIHS2_WriteRead
 #define SHT3xDIS_TWIHS_Write TWIHS2_Write
 #define SHT3xDIS_TWIHS_ErrorGet TWIHS2_ErrorGet
 #define SHT3xDIS_TWIHS_Read TWIHS2_Read
@@ -139,8 +141,17 @@ private:
 
     /**
      *
+     * @param dataToWrite
+     * @param numberOfdataToWrite
+     * @param dataToRead
+     * @param numberOfdataToRead
      */
-    void readSensorDataSingleShotMode();
+    void executeWriteReadTransaction(i2cAddress, uint8_t bytesToWrite, uint8_t numberOfBytesToWrite, uint8_t bytesToRead, uint8_t numberOfBytesToRead);
+
+    /**
+     *
+     */
+    void readSensorMeasurementsSingleShotMode();
 
     /**
      *
@@ -196,7 +207,7 @@ public:
     /**
      * Read the status register.
      */
-    etl::array<uint16_t, 2> readStatusRegister();
+    uint16_t readStatusRegister();
 
     /**
      * Performs a soft reset to the sensor.
