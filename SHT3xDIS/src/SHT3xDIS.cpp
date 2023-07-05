@@ -20,7 +20,13 @@ void SHT3xDIS::readSensorDataSingleShotMode(uint8_t* sensorData) {
     }
 
     if constexpr (UseCRC) {
+        if (not crc8(sensorData[0], sensorData[1], sensorData[2])) {
+            LOG_ERROR << "Error in Humidity Sensor temperature value checksum";
+        }
 
+        if (not crc8(sensorData[3], sensorData[4], sensorData[5])) {
+            LOG_ERROR << "Error in Humidity Sensor humidity value checksum";
+        }
     }
 
 }
