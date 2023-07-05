@@ -31,14 +31,27 @@ etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
 
     sendCommandToSensor(SingleShotCommands::HIGH_DISABLED);
 
-    vTaskDelay(pdMS_TO_TICKS(1));
+    vTaskDelay(pdMS_TO_TICKS(msToWait));
 
     readSensorDataSingleShotMode(sensorData);
 
-    return etl::pair<float, float> (convertRawTemperatureValueToPhysicalScale(convertBytesToHalfWord(data[0], data[1])),
-                                    convertRawHumidityValueToPhysicalScale(convertBytesToHalfWord(data[3], data[4])))
+    return etl::pair<float, float> (convertRawTemperatureValueToPhysicalScale(convertBytesToHalfWord(sensorData[0], sensorData[1])),
+                                    convertRawHumidityValueToPhysicalScale(convertBytesToHalfWord(sensorData[3], sensorData[4])))
 }
 
 bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
+    uint8_t CRC = 0xFF;
+    uint8_t polynomial = 0x31;
 
+    CRC ^= msb;
+    for (uint8_t index = 0; index < 8; index++) {
+        CRC = CRC & 0x80 ? (CRC << 1) ^ polynomial : CRC << 1;
+    }
+
+    CRC ^= lsb;
+    for (uint8_t index = 0; index < 8; index++) {
+        CRC = CRC & 0x80 ? (CRC << 1) ^ polynomial : CRC << 1;
+    }
+
+    return CRC == checksum;
 }

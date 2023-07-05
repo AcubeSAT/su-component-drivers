@@ -63,24 +63,14 @@ public:
 
 private:
     /**
-    * Wait period before a sensor read is skipped
+    * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode
     */
-    constexpr uint8_t TimeoutTicks = 100;
+    inline constexpr uint8_t msToWait = 10;
 
     /**
      * I2C device address
      */
     constexpr SHT3xDIS_I2C_Address I2CAddress = 0x00;
-
-    /**
-     * Raw temperature read from the device
-     */
-    uint16_t rawTemperature;
-
-    /**
-     * Raw humidity read from the device
-     */
-    uint16_t rawHumidity;
 
     /**
      *
@@ -93,9 +83,9 @@ private:
      * i.e ENABLED_HIGH means Clock-Stretching Enabled, Repeatability High
      */
     enum class SingleShotModeCommands : uint16_t {
-        ENABLED_HIGH = 0x2C06,
-        ENABLED_MEDIUM = 0x2C0D,
-        ENABLED_LOW = 0x2C10,
+        ENABLED_HIGH = 0x2C06, ///> not yet implemented
+        ENABLED_MEDIUM = 0x2C0D, ///> not yet implemented
+        ENABLED_LOW = 0x2C10, ///> not yet implemented
         DISABLED_HIGH = 0x2400,
         DISABLED_MEDIUM = 0x240B,
         DISABLED_LOW = 0x2416
@@ -188,27 +178,7 @@ public:
      */
     constexpr SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
 
-//    uint16_t composeTwoByteCommand();
-//
-//    /**
-//     * Reads the measurements given by the SHT3x-DIS sensor.
-//     * @return an array containing the temperature and humidity measured.
-//     */
-//    void readRawMeasurements();
-//
-//    /**
-//     * Transforms the raw temperature value to a real value and returns it.
-//     * @return the real temperature measured in Celsius.
-//     */
-//    float getTemperature() const;
-//
-//    /**
-//     * Transforms the raw humidity value to a real value and returns it.
-//     * @return the real temperature as a percentage.
-//     */
-//    float getHumidity() const;
-
-/**
+    /**
      * Sets the type of measurement the sensor will execute.
      */
     void setRepeatability(Repeatability command);
