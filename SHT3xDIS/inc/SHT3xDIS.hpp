@@ -64,19 +64,19 @@ public:
 
 private:
     /**
-    * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode
+    * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode.
     */
     static inline constexpr uint8_t msToWait = 10;
 
     /**
-     * I2C device address
+     * I2C device address.
      */
     const SHT3xDIS_I2C_Address I2CAddress;
 
     /**
-     *
+     * Variable to select the between using or not the checksum for the sensor data.
      */
-    static inline constexpr bool UseCRC = true;
+    static inline constexpr bool UseCRC = false;
 
     /**
      * Control commands for the single shot mode. The commands are in the form
@@ -93,7 +93,7 @@ private:
     };
 
     /**
-     * Control commands for the Heater
+     * Control commands for the Heater.
      */
     enum HeaterCommands : uint16_t {
         ENABLE = 0x306D,
@@ -101,16 +101,15 @@ private:
     };
 
     /**
-     * Control commands for the Status register
+     * Control commands for the Status register.
      */
     enum StatusRegisterCommands : uint16_t {
         READ = 0xF32D,
         CLEAR = 0x3041
     };
 
-
     /**
-     * Function that prevents hanging when a I2C device is not responding
+     * Function that prevents starvation of the task waiting to send data and limits congestion on the bus.
      */
     inline void waitForResponse() {
         while (not SHT3xDIS_TWIHS_Read(I2CAddress, nullptr, 0)) { // use if instead of while
@@ -122,6 +121,7 @@ private:
             }
         }
     }
+
     /**
      * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
      *
@@ -134,55 +134,57 @@ private:
     bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 
     /**
-     *
+     * Function that prevents hanging when a I2C device is not responding.
      */
     void checkForNACK();
 
     /**
-     * Writes a command to register so that it starts the measurement
-     * @param command
+     * Sends a command to the sensor.
+     * @param command can be one of the command enum types
      */
     void sendCommandToSensor(uint16_t command);
 
     /**
-     *
-     * @param dataToWrite
-     * @param numberOfdataToWrite
-     * @param dataToRead
-     * @param numberOfdataToRead
+     * Executes a continues Write-Read Transaction with a Repeated start condition as it is required for the Status
+     * Register commands
+     * @param dataToWrite command to send to the sensor as a byte-array
+     * @param numberOfdataToWrite number of bytes to send
+     * @param dataToRead the data the sensor will return as a byte-array
+     * @param numberOfdataToRead number of bytes to read
      */
     void executeWriteReadTransaction(uint8_t* bytesToWrite, uint8_t numberOfBytesToWrite, uint8_t* bytesToRead, uint8_t numberOfBytesToRead);
 
     /**
-     *
+     * Attempts to read temperature and humidity data the sensor measured. 6 bytes are to be read in total, 2 raw
+     * sensor data bytes for each physical measurement plus 1 byte each for the checksum.
      * @param sensorData
      */
     void readSensorDataSingleShotMode(uint8_t* sensorData);
 
     /**
-     *
+     * Converts the raw temperature data to the physical scale according to the section 4.13 of the datasheet.
      * @Note Negative values are converted properly
-     * @param rawTemperature
-     * @return
+     * @param rawTemperature raw temperature data as received from the sensor
+     * @return temperature in Celsius
      */
     static inline float convertRawTemperatureValueToPhysicalScale(uint16_t rawTemperature) {
         return -45 + 175 * (static_cast<float>(rawTemperature) / 0xFFFF);
     }
 
     /**
-     *
-     * @param rawHumidity
-     * @return
+     * Converts the raw humidity data to the physical scale according to the section 4.13 of the datasheet.
+     * @param rawHumidity raw humidity data as received from the sensor
+     * @return humidity in Relative humidity %
      */
     static inline float convertRawHumidityValueToPhysicalScale(uint16_t rawHumidity) {
         return 100 * (static_cast<float>(rawHumidity) / 0xFFFF);
     }
 
     /**
-     *
-     * @param msb
-     * @param lsb
-     * @return
+     * Create 16-bit data by concatenating 2 bytes
+     * @param msb the first 8 bits of the half word
+     * @param lsb the last 8 bits of the half word
+     * @return the half word
      */
     static inline uint16_t concatenateTwoBytesToHalfWord(uint8_t msb, uint8_t lsb) {
         return (static_cast<uint16_t>(msb) << 8) | (lsb & 0xFF);
@@ -190,14 +192,14 @@ private:
 
 public:
     /**
-     *
-     * @param i2cUserAddress
+     * Constructor used for initializing the sensor I2C address
+     * @param i2cUserAddress the I2C address. Must be of type SHT3xDIS_I2C_Address
      */
     SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {}
 
     /**
-     *
-     * @return
+     * Get temperature and humidity data from the sensor in physical scale with the Single Shot Data Acquisition Mode.
+     * @return a pair of float types. The first is the temperature and second one is the humidity
      */
     etl::pair<float, float> getOneShotMeasurement();
 
