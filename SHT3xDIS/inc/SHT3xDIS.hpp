@@ -162,8 +162,8 @@ private:
             if (xTaskGetTickCount() - start > TimeoutTicks) {
                 LOG_ERROR << "Humidity sensor with address " << I2CAddress << " , communication has timed out";
                 SHT3xDIS_TWIHS_Initialize();
+                break;
             }
-            taskYIELD()
         }
     };
 
