@@ -7,8 +7,8 @@
 #include "Logger.hpp"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
-//#include "Peripheral_Definitions.h"
-#define SHT3xDIS_TWI_PORT 2
+#include "Peripheral_Definitions.h"
+
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
@@ -65,6 +65,20 @@ public:
         I2C_ADDRESS_B = 0x45
     };
 
+    /**
+     * Control commands for the single shot mode. The commands are in the form
+     * Clock-StretchingConfiguration_RepeatabilityConfiguration
+     * i.e ENABLED_HIGH means Clock-Stretching Enabled, Repeatability High
+     */
+    enum SingleShotModeCommands : uint16_t {
+        ENABLED_HIGH = 0x2C06, ///> not yet implemented
+        ENABLED_MEDIUM = 0x2C0D, ///> not yet implemented
+        ENABLED_LOW = 0x2C10, ///> not yet implemented
+        DISABLED_HIGH = 0x2400,
+        DISABLED_MEDIUM = 0x240B,
+        DISABLED_LOW = 0x2416
+    };
+
 private:
     /**
      * I2C device address.
@@ -84,8 +98,10 @@ private:
     const PIO_PIN AlertPin = PIO_PIN_NONE;
 
     /**
-    * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
-    */
+     *
+     * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
+     * This value was chosen arbitrarily and seems to be working, it is not stated in the datasheet.
+     */
     static inline constexpr uint8_t msToWait = 10;
 
     /**
@@ -114,21 +130,6 @@ private:
      * Wait period before for abandoning an I2C transaction because the send/receive buffer does not get unloaded/gets loaded.
      */
     const uint16_t TimeoutTicks = 1000;
-
-
-    /**
-     * Control commands for the single shot mode. The commands are in the form
-     * Clock-StretchingConfiguration_RepeatabilityConfiguration
-     * i.e ENABLED_HIGH means Clock-Stretching Enabled, Repeatability High
-     */
-    enum SingleShotModeCommands : uint16_t {
-        ENABLED_HIGH = 0x2C06, ///> not yet implemented
-        ENABLED_MEDIUM = 0x2C0D, ///> not yet implemented
-        ENABLED_LOW = 0x2C10, ///> not yet implemented
-        DISABLED_HIGH = 0x2400,
-        DISABLED_MEDIUM = 0x240B,
-        DISABLED_LOW = 0x2416
-    };
 
     /**
      * Control commands for the Heater.
@@ -159,16 +160,15 @@ private:
         auto start = xTaskGetTickCount();
         while (SHT3xDIS_TWIHS_IsBusy()) {
             if (xTaskGetTickCount() - start > TimeoutTicks) {
-                LOG_ERROR << "Humidity sensor communication has timed out";
+                LOG_ERROR << "Humidity sensor with address " << I2CAddress << " , communication has timed out";
                 SHT3xDIS_TWIHS_Initialize();
             }
-            taskYIELD();
+            taskYIELD()
         }
     };
 
     /**
      * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
-     *
      * Polynomial: 0x31 (x^8 + x^5 + x^4 + 1)
      * Initialization: 0xFF
      * Reflect input: False
@@ -192,7 +192,7 @@ private:
     /**
      * Function that prevents hanging when a I2C device is not responding.
      */
-    static void checkForNACK();
+    void checkForNACK();
 
     /**
      * Sends a command to the sensor.
@@ -277,7 +277,7 @@ public:
      * Get temperature and humidity data from the sensor in physical scale with the Single Shot Data Acquisition Mode.
      * @return a pair of float types. The first is the temperature and second one is the humidity
      */
-    etl::pair<float, float> getOneShotMeasurement();
+    etl::pair<float, float> getOneShotMeasurement(SingleShotModeCommands command);
 
     /**
      * Sets the heater (On/Off).

@@ -5,13 +5,13 @@ bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
     uint8_t polynomial = 0x31;
 
     CRC ^= msb;
-    for (uint8_t index = 0; index < 8; index++) {
-        CRC = CRC & 0x80 ? (CRC << 1) ^ polynomial : CRC << 1;
+    for (uint8_t index = 0; index < 8; ++index) {
+        CRC = (CRC & 0x80) ? ((CRC & 0x7f) << 1) ^ polynomial : (CRC & 0x7f) << 1;
     }
 
     CRC ^= lsb;
-    for (uint8_t index = 0; index < 8; index++) {
-        CRC = CRC & 0x80 ? (CRC << 1) ^ polynomial : CRC << 1;
+    for (uint8_t index = 0; index < 8; ++index) {
+        CRC = (CRC & 0x80) ? ((CRC & 0x7f) << 1) ^ polynomial : (CRC & 0x7f) << 1;
     }
 
     return CRC == checksum;
@@ -24,14 +24,14 @@ bool SHT3xDIS::executeI2CTransaction(F i2cFunction, Arguments... arguments) {
         checkForNACK();
         return true;
     } else {
-        LOG_INFO << "Humidity sensor: I2C bus is busy";
+        LOG_INFO << "Humidity sensor with address " << I2CAddress << ": I2C bus is busy";
         return false;
     }
 }
 
 void SHT3xDIS::checkForNACK() {
     if (SHT3xDIS_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
-        LOG_ERROR << "Humidity-Temperature sensor is disconnected, suspending task";
+        LOG_ERROR << "Humidity-Temperature sensor with address " << I2CAddress << " , is disconnected, suspending task";
         vTaskSuspend(nullptr);
     }
 }
@@ -43,13 +43,13 @@ void SHT3xDIS::sendCommandToSensor(uint16_t command) {
     executeI2CTransaction(SHT3xDIS_TWIHS_Write, commandBytes.data(), NumberOfBytesInCommand);
 }
 
-void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData) {
+void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC> &statusRegisterData) {
     etl::array<uint8_t, NumberOfBytesInCommand> commandBytes{};
 
     splitHalfWordToByteArray(commandBytes, StatusRegisterCommands::READ);
 
-    if(not executeI2CTransaction(SHT3xDIS_TWIHS_WriteRead, commandBytes.data(), NumberOfBytesInCommand, statusRegisterData.data(),
-                        NumberOfBytesOfStatusRegisterWithCRC)) {
+    if (not executeI2CTransaction(SHT3xDIS_TWIHS_WriteRead, commandBytes.data(), NumberOfBytesInCommand,
+                                  statusRegisterData.data(), NumberOfBytesOfStatusRegisterWithCRC)) {
         return;
     }
 
@@ -60,8 +60,8 @@ void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfSt
     }
 }
 
-void SHT3xDIS::readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC>& sensorData) {
-    if(not executeI2CTransaction(SHT3xDIS_TWIHS_Read, sensorData.data(), NumberOfBytesOfMeasurementsWithCRC)) {
+void SHT3xDIS::readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC> &sensorData) {
+    if (not executeI2CTransaction(SHT3xDIS_TWIHS_Read, sensorData.data(), NumberOfBytesOfMeasurementsWithCRC)) {
         return;
     }
 
@@ -77,10 +77,10 @@ void SHT3xDIS::readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfM
 
 }
 
-etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
+etl::pair<float, float> SHT3xDIS::getOneShotMeasurement(SingleShotModeCommands command) {
     etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC> sensorData{};
 
-    sendCommandToSensor(SingleShotModeCommands::DISABLED_HIGH);
+    sendCommandToSensor(command);
 
     vTaskDelay(pdMS_TO_TICKS(msToWait));
 
