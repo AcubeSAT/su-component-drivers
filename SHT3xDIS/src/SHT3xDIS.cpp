@@ -17,6 +17,18 @@ bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
     return CRC == checksum;
 }
 
+template<typename F, typename... Arguments>
+bool SHT3xDIS::executeI2CTransaction(F i2cFunction, Arguments... arguments) {
+    if (i2cFunction(I2CAddress, arguments...)) {
+        waitForI2CBuffer();
+        checkForNACK();
+        return true;
+    } else {
+        LOG_INFO << "Humidity sensor: I2C bus is busy";
+        return false;
+    }
+}
+
 void SHT3xDIS::checkForNACK() {
     if (SHT3xDIS_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
         LOG_ERROR << "Humidity-Temperature sensor is disconnected, suspending task";
@@ -28,24 +40,17 @@ void SHT3xDIS::sendCommandToSensor(uint16_t command) {
     etl::array<uint8_t, NumberOfBytesInCommand> commandBytes{};
     splitHalfWordToByteArray(commandBytes, command);
 
-    if (SHT3xDIS_TWIHS_Write(I2CAddress, commandBytes.data(), NumberOfBytesInCommand)) {
-        while (SHT3xDIS_TWIHS_IsBusy()) {} // TODO preferably add timeouts, while loops are dangerous
-        checkForNACK();
-    } else {
-        LOG_INFO << "Humidity sensor: I2C bus is busy";
-    }
+    executeI2CTransaction(SHT3xDIS_TWIHS_Write, commandBytes.data(), NumberOfBytesInCommand);
 }
 
-void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData, uint8_t NumberOfBytesToRead) {
+void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData) {
     etl::array<uint8_t, NumberOfBytesInCommand> commandBytes{};
 
     splitHalfWordToByteArray(commandBytes, StatusRegisterCommands::READ);
 
-    if (SHT3xDIS_TWIHS_WriteRead(I2CAddress, commandBytes.data(), NumberOfBytesInCommand, statusRegisterData.data(), NumberOfBytesToRead)) {
-        while (SHT3xDIS_TWIHS_IsBusy()) {}
-        checkForNACK();
-    } else {
-        LOG_INFO << "Humidity sensor: I2C bus is busy";
+    if(not executeI2CTransaction(SHT3xDIS_TWIHS_WriteRead, commandBytes.data(), NumberOfBytesInCommand, statusRegisterData.data(),
+                        NumberOfBytesOfStatusRegisterWithCRC)) {
+        return;
     }
 
     if constexpr (UseCRC) {
@@ -56,11 +61,7 @@ void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfSt
 }
 
 void SHT3xDIS::readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC>& sensorData) {
-    if (SHT3xDIS_TWIHS_Read(I2CAddress, sensorData.data(), NumberOfBytesOfMeasurementsWithCRC)) {
-        while (SHT3xDIS_TWIHS_IsBusy()) {}
-        checkForNACK();
-    } else {
-        LOG_INFO << "Humidity sensor: I2C bus is busy";
+    if(not executeI2CTransaction(SHT3xDIS_TWIHS_Read, sensorData.data(), NumberOfBytesOfMeasurementsWithCRC)) {
         return;
     }
 
@@ -81,7 +82,7 @@ etl::pair<float, float> SHT3xDIS::getOneShotMeasurement() {
 
     sendCommandToSensor(SingleShotModeCommands::DISABLED_HIGH);
 
-    vTaskDelay(pdMS_TO_TICKS(msToWait)); //TODO this is safer than continuously polling the bus and clock stretching
+    vTaskDelay(pdMS_TO_TICKS(msToWait));
 
     readSensorDataSingleShotMode(sensorData);
 
@@ -100,7 +101,7 @@ void SHT3xDIS::clearStatusRegister() {
 uint16_t SHT3xDIS::readStatusRegister() {
     etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC> statusRegisterData{};
 
-    executeWriteReadTransaction(statusRegisterData, NumberOfBytesOfStatusRegisterWithCRC);
+    executeWriteReadTransaction(statusRegisterData);
 
     return concatenateTwoBytesToHalfWord(statusRegisterData[0], statusRegisterData[1]);
 }

@@ -7,8 +7,8 @@
 #include "Logger.hpp"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
-#include "Peripheral_Definitions.h"
-
+//#include "Peripheral_Definitions.h"
+#define SHT3xDIS_TWI_PORT 2
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
@@ -111,6 +111,12 @@ private:
     static inline constexpr bool UseCRC = false;
 
     /**
+     * Wait period before for abandoning an I2C transaction because the send/receive buffer does not get unloaded/gets loaded.
+     */
+    const uint16_t TimeoutTicks = 1000;
+
+
+    /**
      * Control commands for the single shot mode. The commands are in the form
      * Clock-StretchingConfiguration_RepeatabilityConfiguration
      * i.e ENABLED_HIGH means Clock-Stretching Enabled, Repeatability High
@@ -147,18 +153,18 @@ private:
     };
 
     /**
-     * Function that prevents starvation of the task waiting to send data and limits congestion on the bus. //TODO WIP
+     * Function that prevents hanging when a I2C device is not responding.
      */
-    inline void waitForResponse() {
-        while (not SHT3xDIS_TWIHS_Read(I2CAddress, nullptr, 0)) { // use if instead of while
-            while (SHT3xDIS_TWIHS_IsBusy()) {}
-
-            if (SHT3xDIS_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
-                LOG_ERROR << "Humidity-Temperature sensor with address " << I2CAddress << " was not found";
-                vTaskSuspend(nullptr);
+    inline void waitForI2CBuffer() const {
+        auto start = xTaskGetTickCount();
+        while (SHT3xDIS_TWIHS_IsBusy()) {
+            if (xTaskGetTickCount() - start > TimeoutTicks) {
+                LOG_ERROR << "Humidity sensor communication has timed out";
+                SHT3xDIS_TWIHS_Initialize();
             }
+            taskYIELD();
         }
-    }
+    };
 
     /**
      * Implementation of CRC8 algorithm, parameters are set according to the manual (paragraph 4.12).
@@ -170,6 +176,18 @@ private:
      * Final XOR: 0x00
      */
     static bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
+
+    /**
+     * An abstraction layer function that is the only one that interacts with the HAL. Executes one of the Read, Write or ReadWrite functions of
+     * the HAL with the correct number of parameters.
+     * @tparam F function template
+     * @tparam Arguments template for arbitrary number of arguments
+     * @param i2cFunction the HAL I2C function to execute
+     * @param arguments the arguments for the I2C function
+     * @return
+     */
+    template<typename F, typename... Arguments>
+    bool executeI2CTransaction(F i2cFunction, Arguments... arguments);
 
     /**
      * Function that prevents hanging when a I2C device is not responding.
@@ -190,7 +208,7 @@ private:
      * @param dataToRead the data the sensor will return as a byte-array
      * @param numberOfdataToRead number of bytes to read
      */
-    void executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData, uint8_t NumberOfBytesToRead);
+    void executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData);
 
     /**
      * Attempts to read temperature and humidity data the sensor measured. 6 bytes are to be read in total, 2 raw
@@ -250,7 +268,7 @@ public:
      * Constructor used for initializing the sensor I2C address
      * @param i2cUserAddress the I2C address. Must be of type SHT3xDIS_I2C_Address
      */
-    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin, PIO_PIN alertPin) :
+    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin, PIO_PIN alertPin = PIO_PIN_NONE) :
             I2CAddress(i2cUserAddress), NResetPin(nResetPin), AlertPin(alertPin) {
         initializeSensor();
     }
