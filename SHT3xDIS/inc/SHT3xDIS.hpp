@@ -243,7 +243,7 @@ private:
      * @return the half word
      */
     [[nodiscard]] static inline uint16_t concatenateTwoBytesToHalfWord(uint8_t msb, uint8_t lsb) {
-        return (static_cast<uint16_t>(msb) << 8) | (lsb & 0xFF);
+        return ((static_cast<uint16_t>(msb) << 8) & 0xFF00) | ((static_cast<uint16_t>(lsb) & 0xFF);
     }
 
     /**
