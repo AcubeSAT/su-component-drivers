@@ -124,7 +124,7 @@ private:
     /**
      * Variable to select the between using or not the checksum for the sensor data.
      */
-    static inline constexpr bool UseCRC = false;
+    static inline constexpr bool UseCRC = true;
 
     /**
      * Wait period before for abandoning an I2C transaction because the send/receive buffer does not get unloaded/gets loaded.
