@@ -98,7 +98,6 @@ private:
     const PIO_PIN AlertPin = PIO_PIN_NONE;
 
     /**
-     *
      * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
      * This value was chosen arbitrarily and seems to be working, it is not stated in the datasheet.
      */
