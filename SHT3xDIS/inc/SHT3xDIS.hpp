@@ -200,14 +200,11 @@ private:
      */
     void sendCommandToSensor(uint16_t command);
 
-    /**
-     * Executes a continues Write-Read Transaction with a Repeated start condition as it is required for the Status
-     * Register commands
-     * @param dataToWrite command to send to the sensor as a byte-array
-     * @param numberOfdataToWrite number of bytes to send
-     * @param dataToRead the data the sensor will return as a byte-array
-     * @param numberOfdataToRead number of bytes to read
-     */
+     /**
+      * Executes a continues Write-Read Transaction with a Repeated start condition as it is required for the Status
+      * Register commands
+      * @param statusRegisterData the Status Register data as a byte array
+      */
     void executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData);
 
     /**
@@ -267,6 +264,8 @@ public:
     /**
      * Constructor used for initializing the sensor I2C address
      * @param i2cUserAddress the I2C address. Must be of type SHT3xDIS_I2C_Address
+     * @param nResetPin the GPIO of the MCU connected to the nRESET pin (pin 6) of the sensor
+     * @param alertPin the GPIO of the MCU connected to the Alert pin (pin 3) of the sensor
      */
     explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin, PIO_PIN alertPin = PIO_PIN_NONE) :
             I2CAddress(i2cUserAddress), NResetPin(nResetPin), AlertPin(alertPin) {
@@ -275,12 +274,14 @@ public:
 
     /**
      * Get temperature and humidity data from the sensor in physical scale with the Single Shot Data Acquisition Mode.
+     * @param command the Single Shot sensor measurement configuration, @see SingleShotModeCommands
      * @return a pair of float types. The first is the temperature and second one is the humidity
      */
     etl::pair<float, float> getOneShotMeasurement(SingleShotModeCommands command);
 
     /**
      * Sets the heater (On/Off).
+     * @param command the command to either turn the heater off or on
      */
     void setHeater(HeaterCommands command);
 
