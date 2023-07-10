@@ -33,6 +33,11 @@ public:
 private:
 
     /**
+     * Pulse's time duration for latching operation
+     */
+    static constexpr uint16_t LatchPulseDuration = 500;
+
+    /**
      * The GPIO pin number for opening the valve.
      */
     PIO_Pin openPin_;
