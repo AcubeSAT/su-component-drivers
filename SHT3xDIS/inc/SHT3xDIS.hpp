@@ -183,7 +183,7 @@ private:
      * @tparam Arguments template for arbitrary number of arguments
      * @param i2cFunction the HAL I2C function to execute
      * @param arguments the arguments for the I2C function
-     * @return
+     * @return true if transaction was successful, false otherwise
      */
     template<typename F, typename... Arguments>
     bool executeI2CTransaction(F i2cFunction, Arguments... arguments);

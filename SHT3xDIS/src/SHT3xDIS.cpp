@@ -6,12 +6,12 @@ bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
 
     CRC ^= msb;
     for (uint8_t index = 0; index < 8; ++index) {
-        CRC = (CRC & 0x80) ? ((CRC & 0x7f) << 1) ^ polynomial : (CRC & 0x7f) << 1;
+        CRC = (CRC & 0x80) ? ((CRC & 0x7F) << 1) ^ polynomial : (CRC & 0x7F) << 1;
     }
 
     CRC ^= lsb;
     for (uint8_t index = 0; index < 8; ++index) {
-        CRC = (CRC & 0x80) ? ((CRC & 0x7f) << 1) ^ polynomial : (CRC & 0x7f) << 1;
+        CRC = (CRC & 0x80) ? ((CRC & 0x7F) << 1) ^ polynomial : (CRC & 0x7F) << 1;
     }
 
     return CRC == checksum;
