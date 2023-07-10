@@ -3,20 +3,17 @@
 FlowValve::FlowValve(PIO_Pin openPin, PIO_Pin closePin) : openPin_(openPin), closePin_(closePin) {
     PIO_PinWrite(openPin_, false);
     PIO_PinWrite(closePin_, true);
+    vTaskDelay(pdMS_TO_TICKS(50));
 }
 
 void FlowValve::open() {
-    PIO_PinWrite(closePin_, false);
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
     PIO_PinWrite(openPin_, true);
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    vTaskDelay(pdMS_TO_TICKS(500));
     PIO_PinWrite(openPin_, false);
 }
 
 void FlowValve::close() {
-    PIO_PinWrite(openPin_, false);
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
     PIO_PinWrite(closePin_, true);
-    std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Simulating valve operation
+    vTaskDelay(pdMS_TO_TICKS(500));
     PIO_PinWrite(closePin_, false);
 }
