@@ -6,4 +6,5 @@ SpaceDot members: don't forget to check the guidelines [here](https://mm.spacedo
 
 ## Drivers Implemented
 
+- [Camera Driver](https://gitlab.com/acubesat/su/on-board-software/su-component-drivers/-/tree/master/U3VCamDriver) and its [wikipage](https://gitlab.com/groups/acubesat/su/on-board-software/-/wikis/USB3-Vision-Camera-Driver)
 - LPS22HH Pressure Sensor
