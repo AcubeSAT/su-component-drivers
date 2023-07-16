@@ -128,7 +128,7 @@ private:
     /**
      * Wait period before for abandoning an I2C transaction because the send/receive buffer does not get unloaded/gets loaded.
      */
-    const uint16_t TimeoutTicks = 1000;
+    static inline constexpr uint16_t TimeoutTicks = 1000;
 
     /**
      * Control commands for the Heater.
