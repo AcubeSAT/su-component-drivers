@@ -18,7 +18,6 @@
  * This is a generic driver implementation for LPS22HH, based on its datasheet.
  * @ingroup drivers
  * @see https://gr.mouser.com/datasheet/2/389/lps22hh-1395924.pdf
- * @author Efthymia Amarantidou <efthimia145@gmail.com>
  */
 class LPS22HH {
 private:
@@ -40,16 +39,18 @@ private:
         FIFO_DATA_OUT_PRESS_H = 0x7A,
         FIFO_DATA_OUT_TEMP_L = 0x7B,
         FIFO_DATA_OUT_TEMP_H = 0x7C,
+        WHO_AM_I = 0F
     };
 
-    /**
-     * SPI Command Type (Write/Read)
-     */
-    enum SPICommandType : uint8_t {
+//    /**
+//     * SPI Command Type (Write/Read)
+//     */
+//    enum SPICommandType : uint8_t {
+//        SPI_WRITE_COMMAND = 0x0,
+//        SPI_READ_COMMAND  = 0x80,
+//    };
+    inline constexpr uint8_t whoAmIRegisterDefaultValue = 0b10110011;
 
-        SPI_WRITE_COMMAND = 0x0,
-        SPI_READ_COMMAND  = 0x80,
-    };
     /**
      * The output data rate (Hz) set in Control Register 1
      */
@@ -126,7 +127,9 @@ public:
     /**
      * @param ssn is the chip select pin of the SPI peripheral.
      */
-    LPS22HH(PIO_PIN ssn);
+    LPS22HH(PIO_PIN ssn) : ssn(ssn) {
+        PIO_PinWrite(ssn, true);
+    };
 
     /**
      * Read the current pressure measurement in hPa.
@@ -166,6 +169,10 @@ public:
     /**
      * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measuremnt
      */
-    void activateOneShotMode(void);
+    void activateOneShotMode();
 
+    /**
+     *
+     */
+    void performAreYouAliveCheck();
 };
