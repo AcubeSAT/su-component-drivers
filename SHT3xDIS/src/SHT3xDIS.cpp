@@ -17,12 +17,6 @@ bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
     return CRC == checksum;
 }
 
-
-void SHT3xDIS::wakeUpDevice() {
-    uint8_t zero = 0;
-    executeI2CTransaction(SHT3xDIS_TWIHS_Write, &zero, 1);
-}
-
 template<typename F, typename... Arguments>
 bool SHT3xDIS::executeI2CTransaction(F i2cFunction, Arguments... arguments) {
     if (i2cFunction(I2CAddress, arguments...)) {
@@ -86,7 +80,6 @@ void SHT3xDIS::readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfM
 
 etl::pair<float, float> SHT3xDIS::getOneShotMeasurement(SingleShotModeCommands command) {
     etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC> sensorData{};
-    wakeUpDevice();
     sendCommandToSensor(command);
     vTaskDelay(pdMS_TO_TICKS(msToWait));
 
@@ -100,7 +93,6 @@ void SHT3xDIS::setHeater(SHT3xDIS::HeaterCommands command) {
 }
 
 void SHT3xDIS::clearStatusRegister() {
-    wakeUpDevice();
     sendCommandToSensor(StatusRegisterCommands::CLEAR);
 }
 

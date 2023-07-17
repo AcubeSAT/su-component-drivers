@@ -177,11 +177,6 @@ private:
     static bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 
     /**
-     * Lowers the SDA line to begin a TWIHS transaction
-     */
-    void wakeUpDevice();
-
-    /**
      * An abstraction layer function that is the only one that interacts with the HAL. Executes one of the Read, Write or ReadWrite functions of
      * the HAL with the correct number of parameters.
      * @tparam F function template
