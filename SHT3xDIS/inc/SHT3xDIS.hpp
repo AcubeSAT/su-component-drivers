@@ -261,8 +261,8 @@ private:
      * Initialize the sensor by clearing the Status Register and pulling the nRESET pin High.
      */
     inline void initializeSensor() {
-//        clearStatusRegister();
-//        PIO_PinWrite(NResetPin, true);
+        clearStatusRegister();
+        PIO_PinWrite(NResetPin, true);
     }
 
 
