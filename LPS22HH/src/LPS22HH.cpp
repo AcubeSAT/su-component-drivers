@@ -27,10 +27,6 @@ uint8_t LPS22HH::getStatus() {
     return readFromRegister(STATUS);
 }
 
-LPS22HH::LPS22HH(PIO_PIN ssn) : ssn(ssn) {
-    PIO_PinWrite(ssn, true);
-}
-
 float LPS22HH::readPressure() {
     int32_t pressureData;
 
@@ -86,10 +82,14 @@ void LPS22HH::setFIFOMode(FIFOModes mode) {
     writeToRegister(FIFO_CTRL, registerData);
 }
 
-void LPS22HH::activateOneShotMode(void) {
+void LPS22HH::activateOneShotMode() {
 
     /* todo: read CTRL_REG2 first and then write, to preserve any previous config done */
     uint8_t txData = 0x1; /* ONE_SHOT bit of CTRL_REG2 register is bit 0 */
     writeToRegister(CTRL_REG2, txData);
 
 }
+
+void LPS22HH::performAreYouAliveCheck() {
+    
+};
