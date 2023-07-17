@@ -17,6 +17,12 @@ bool SHT3xDIS::crc8(uint8_t msb, uint8_t lsb, uint8_t checksum) {
     return CRC == checksum;
 }
 
+
+void SHT3xDIS::wakeUpDevice() {
+    uint8_t zero = 0;
+    executeI2CTransaction(SHT3xDIS_TWIHS_Write, &zero, 1);
+}
+
 template<typename F, typename... Arguments>
 bool SHT3xDIS::executeI2CTransaction(F i2cFunction, Arguments... arguments) {
     if (i2cFunction(I2CAddress, arguments...)) {
@@ -30,7 +36,8 @@ bool SHT3xDIS::executeI2CTransaction(F i2cFunction, Arguments... arguments) {
 }
 
 void SHT3xDIS::checkForNACK() {
-    if (SHT3xDIS_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
+    auto error = SHT3xDIS_TWIHS_ErrorGet();
+    if (error == TWIHS_ERROR_NACK) {
         LOG_ERROR << "Humidity-Temperature sensor with address " << I2CAddress << " , is disconnected, suspending task";
         vTaskSuspend(nullptr);
     }
@@ -39,11 +46,11 @@ void SHT3xDIS::checkForNACK() {
 void SHT3xDIS::sendCommandToSensor(uint16_t command) {
     etl::array<uint8_t, NumberOfBytesInCommand> commandBytes{};
     splitHalfWordToByteArray(commandBytes, command);
-
     executeI2CTransaction(SHT3xDIS_TWIHS_Write, commandBytes.data(), NumberOfBytesInCommand);
 }
 
-void SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC> &statusRegisterData) {
+void
+SHT3xDIS::executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC> &statusRegisterData) {
     etl::array<uint8_t, NumberOfBytesInCommand> commandBytes{};
 
     splitHalfWordToByteArray(commandBytes, StatusRegisterCommands::READ);
@@ -79,13 +86,11 @@ void SHT3xDIS::readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfM
 
 etl::pair<float, float> SHT3xDIS::getOneShotMeasurement(SingleShotModeCommands command) {
     etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC> sensorData{};
-
+    wakeUpDevice();
     sendCommandToSensor(command);
-
     vTaskDelay(pdMS_TO_TICKS(msToWait));
 
     readSensorDataSingleShotMode(sensorData);
-
     return {convertRawTemperatureValueToPhysicalScale(concatenateTwoBytesToHalfWord(sensorData[0], sensorData[1])),
             convertRawHumidityValueToPhysicalScale(concatenateTwoBytesToHalfWord(sensorData[3], sensorData[4]))};
 }
@@ -95,6 +100,7 @@ void SHT3xDIS::setHeater(SHT3xDIS::HeaterCommands command) {
 }
 
 void SHT3xDIS::clearStatusRegister() {
+    wakeUpDevice();
     sendCommandToSensor(StatusRegisterCommands::CLEAR);
 }
 

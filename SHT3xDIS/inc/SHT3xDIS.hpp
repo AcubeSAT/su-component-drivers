@@ -7,7 +7,7 @@
 #include "Logger.hpp"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
-#include "Peripheral_Definitions.h"
+#include "Peripheral_Definitions.hpp"
 
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
@@ -101,7 +101,7 @@ private:
      * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
      * This value was chosen arbitrarily and seems to be working, it is not stated in the datasheet.
      */
-    static inline constexpr uint8_t msToWait = 10;
+    static inline constexpr uint8_t msToWait = 20;
 
     /**
      * The number of bytes a command consists of.
@@ -177,6 +177,11 @@ private:
     static bool crc8(uint8_t msb, uint8_t lsb, uint8_t checksum);
 
     /**
+     * Lowers the SDA line to begin a TWIHS transaction
+     */
+    void wakeUpDevice();
+
+    /**
      * An abstraction layer function that is the only one that interacts with the HAL. Executes one of the Read, Write or ReadWrite functions of
      * the HAL with the correct number of parameters.
      * @tparam F function template
@@ -199,19 +204,19 @@ private:
      */
     void sendCommandToSensor(uint16_t command);
 
-     /**
-      * Executes a continues Write-Read Transaction with a Repeated start condition as it is required for the Status
-      * Register commands
-      * @param statusRegisterData the Status Register data as a byte array
-      */
-    void executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC>& statusRegisterData);
+    /**
+     * Executes a continues Write-Read Transaction with a Repeated start condition as it is required for the Status
+     * Register commands
+     * @param statusRegisterData the Status Register data as a byte array
+     */
+    void executeWriteReadTransaction(etl::array<uint8_t, NumberOfBytesOfStatusRegisterWithCRC> &statusRegisterData);
 
     /**
      * Attempts to read temperature and humidity data the sensor measured. 6 bytes are to be read in total, 2 raw
      * sensor data bytes for each physical measurement plus 1 byte each for the checksum.
      * @param sensorData
      */
-    void readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC>& sensorData);
+    void readSensorDataSingleShotMode(etl::array<uint8_t, NumberOfBytesOfMeasurementsWithCRC> &sensorData);
 
     /**
      * Converts the raw temperature data to the physical scale according to the section 4.13 of the datasheet.
@@ -239,7 +244,7 @@ private:
      * @return the half word
      */
     [[nodiscard]] static inline uint16_t concatenateTwoBytesToHalfWord(uint8_t msb, uint8_t lsb) {
-        return ((static_cast<uint16_t>(msb) << 8) & 0xFF00) | ((static_cast<uint16_t>(lsb) & 0xFF);
+        return ((static_cast<uint16_t>(msb) << 8) & 0xFF00) | ((static_cast<uint16_t>(lsb) & 0xFF));
     }
 
     /**
@@ -247,7 +252,8 @@ private:
      * @param dataArray the byte-array passed as parameter to the HAL functions
      * @param halfWord the 16-bit data to split
      */
-    static inline void splitHalfWordToByteArray(etl::array<uint8_t, NumberOfBytesInCommand>& dataArray, uint16_t halfWord) {
+    static inline void
+    splitHalfWordToByteArray(etl::array<uint8_t, NumberOfBytesInCommand> &dataArray, uint16_t halfWord) {
         dataArray = {static_cast<uint8_t>((halfWord >> 8) & 0xFF), static_cast<uint8_t>(halfWord & 0xFF)};
     }
 
@@ -255,9 +261,10 @@ private:
      * Initialize the sensor by clearing the Status Register and pulling the nRESET pin High.
      */
     inline void initializeSensor() {
-        clearStatusRegister();
-        PIO_PinWrite(NResetPin, true);
+//        clearStatusRegister();
+//        PIO_PinWrite(NResetPin, true);
     }
+
 
 public:
     /**
@@ -266,7 +273,8 @@ public:
      * @param nResetPin the GPIO of the MCU connected to the nRESET pin (pin 6) of the sensor
      * @param alertPin the GPIO of the MCU connected to the Alert pin (pin 3) of the sensor
      */
-    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin, PIO_PIN alertPin = PIO_PIN_NONE) :
+    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin = PIO_PIN_NONE,
+                      PIO_PIN alertPin = PIO_PIN_NONE) :
             I2CAddress(i2cUserAddress), NResetPin(nResetPin), AlertPin(alertPin) {
         initializeSensor();
     }
