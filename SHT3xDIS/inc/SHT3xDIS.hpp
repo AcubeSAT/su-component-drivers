@@ -101,7 +101,7 @@ private:
      * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
      * This value was chosen arbitrarily and seems to be working, it is not stated in the datasheet.
      */
-    static inline constexpr uint8_t msToWait = 20;
+    static inline constexpr uint8_t msToWait = 30;
 
     /**
      * The number of bytes a command consists of.
@@ -268,8 +268,7 @@ public:
      * @param nResetPin the GPIO of the MCU connected to the nRESET pin (pin 6) of the sensor
      * @param alertPin the GPIO of the MCU connected to the Alert pin (pin 3) of the sensor
      */
-    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin = PIO_PIN_NONE,
-                      PIO_PIN alertPin = PIO_PIN_NONE) :
+    explicit SHT3xDIS(SHT3xDIS_I2C_Address i2cUserAddress, PIO_PIN nResetPin = PIO_PIN_NONE, PIO_PIN alertPin = PIO_PIN_NONE) :
             I2CAddress(i2cUserAddress), NResetPin(nResetPin), AlertPin(alertPin) {
         initializeSensor();
     }

@@ -4,17 +4,19 @@ This repository will be added as a git-submodule.
 
 SpaceDot members: don't forget to check the guidelines [here](https://mm.spacedot.gr/acubesat/pl/i9qt3t7cyirbxysramwzybk1se)
 
-## Drivers Implemented
+# Drivers Implemented
+
+## Camera Driver
 
 - [Camera Driver](https://gitlab.com/acubesat/su/on-board-software/su-component-drivers/-/tree/master/U3VCamDriver) and its [wikipage](https://gitlab.com/groups/acubesat/su/on-board-software/-/wikis/USB3-Vision-Camera-Driver)
-- SHT3x-DIS Driver (only the single-shot mode), [Datasheet](https://sensirion.
-  com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.
-  pdf)
 
-## Playing with Hardware
+## Humidity Sensor Driver
 
-### SHT3x-DIS
-If you are using the SHT3x-DIS evaluation board along with a SAMV71 Xplained Ultra evaluation kit follow, the pinout.
+SHT3x-DIS Driver (only the single-shot mode)
+
+[Datasheet](https://sensirion.com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.pdf)
+
+If you are using the SHT3x-DIS evaluation board along with a SAMV71 Xplained Ultra evaluation kit, follow the pinout below.
 You can use the `TW0` pins on the J500 connector or the `TW2` pins on the J505 connector.
 
 
