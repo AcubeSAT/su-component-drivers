@@ -1,17 +1,29 @@
 #pragma once
+
 #include <etl/array.h>
 #include <cstdint>
 #include "definitions.h"
+#include "Task.hpp"
 
 #define LPS22HH_SPI_PORT 0
 
-#if LPS22HH_SPI_PORT
-#define SPI_WriteRead SPI1_WriteRead
-#else
-#define SPI_WriteRead SPI0_WriteRead
-#define SPI_Write   SPI0_Write
-#define SPI_Read    SPI0_Read
+#if LPS22HH_SPI_PORT == 0
+#define LPS22HH_SPI_WriteRead SPI0_WriteRead
+#define LPS22HH_SPI_Write   SPI0_Write
+#define LPS22HH_SPI_Read    SPI0_Read
+#define LPS22HH_SPI_IsBusy  SPI0_IsBusy
 
+#elif LPS22HH_SPI_PORT == 1
+#define LPS22HH_SPI_WriteRead SPI1_WriteRead
+#define LPS22HH_SPI_Write   SPI1_Write
+#define LPS22HH_SPI_Read    SPI1_Read
+#define LPS22HH_SPI_IsBusy  SPI1_IsBusy
+
+#elif LPS22HH_SPI_PORT == 2
+#define LPS22HH_SPI_WriteRead SPI2_WriteRead
+#define LPS22HH_SPI_Write   SPI2_Write
+#define LPS22HH_SPI_Read    SPI2_Read
+#define LPS22HH_SPI_IsBusy  SPI2_IsBusy
 #endif
 
 /**
@@ -39,17 +51,17 @@ private:
         FIFO_DATA_OUT_PRESS_H = 0x7A,
         FIFO_DATA_OUT_TEMP_L = 0x7B,
         FIFO_DATA_OUT_TEMP_H = 0x7C,
-        WHO_AM_I = 0F
+        WHO_AM_I = 0x0F
     };
 
-//    /**
-//     * SPI Command Type (Write/Read)
-//     */
-//    enum SPICommandType : uint8_t {
-//        SPI_WRITE_COMMAND = 0x0,
-//        SPI_READ_COMMAND  = 0x80,
-//    };
-    inline constexpr uint8_t whoAmIRegisterDefaultValue = 0b10110011;
+    /**
+     * SPI Command Type (Write/Read)
+     */
+    enum SPICommandType : uint8_t {
+        SPI_WRITE_COMMAND = 0x0,
+        SPI_READ_COMMAND = 0x80,
+    };
+    inline static constexpr uint8_t whoAmIRegisterDefaultValue = 0b10110011;
 
     /**
      * The output data rate (Hz) set in Control Register 1
@@ -108,14 +120,14 @@ private:
      * Reads from a specific register of the LPS22HH device.
      * @param registerAddress is the value of a register address.
      */
-    uint8_t readFromRegister(RegisterAddress registerAddress);
+    [[nodiscard]] uint8_t readFromRegister(RegisterAddress registerAddress) const;
 
     /**
      * Writes a byte to a specific address.
      * @param registerAddress is the specific address in which a byte is going to be written.
      * @param data is the byte which will be written to the specific register.
      */
-    void writeToRegister(RegisterAddress registerAddress, uint8_t data);
+    void writeToRegister(RegisterAddress registerAddress, uint8_t data) const;
 
     /**
      * Get the STATUS of the sensor.

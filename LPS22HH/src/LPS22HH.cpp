@@ -1,24 +1,27 @@
 #include "LPS22HH.hpp"
 
-uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress) {
+uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress) const {
     uint8_t rxData;
 
     PIO_PinWrite(ssn, false);
 
     uint8_t txData = registerAddress | SPI_READ_COMMAND;
-    SPI_Write(&txData, 1);
-    SPI_Read(&rxData, 1);
+    LPS22HH_SPI_Write(&txData, 1);
+    while (SPI0_IsBusy()) {}
+
+    LPS22HH_SPI_Read(&rxData, 1);
+    while (SPI0_IsBusy()) {}
 
     PIO_PinWrite(ssn, true);
 
     return rxData;
 }
 
-void LPS22HH::writeToRegister(RegisterAddress registerAddress, uint8_t txData) {
+void LPS22HH::writeToRegister(RegisterAddress registerAddress, uint8_t txData) const {
     PIO_PinWrite(ssn, false);
 
     uint16_t spiCommand = (registerAddress << 8) | txData;
-    SPI_Write(&spiCommand, 2);
+    LPS22HH_SPI_Write(&spiCommand, 2);
 
     PIO_PinWrite(ssn, true);
 }
@@ -47,15 +50,22 @@ float LPS22HH::readPressure() {
 }
 
 float LPS22HH::readTemperature() {
-    int16_t temperatureData;
+    PIO_PinWrite(ssn, false);
+    uint8_t data[2] = {0x11, 1};
+
+    LPS22HH_SPI_Write(&data, 2);
+    while (LPS22HH_SPI_IsBusy()) {}
+    PIO_PinWrite(ssn, true);
+
+    vTaskDelay(pdMS_TO_TICKS(500));
 
     uint8_t temperatureOutH = readFromRegister(TEMP_OUT_H);
     uint8_t temperatureOutL = readFromRegister(TEMP_OUT_L);
 
-    uint16_t unsigned_value = static_cast<uint16_t> (temperatureOutH) << 8 | temperatureOutL;
-    temperatureData = unsigned_value | 0b10000000'00000000;
+    auto signedValue = static_cast<int16_t>(((static_cast<uint16_t>(temperatureOutH) << 8) & 0xFF00) | temperatureOutL);
+//    temperatureData = unsigned_value | 0b10000000'00000000;
 
-    temperatureValue = static_cast<float>(temperatureData) / TemperatureSensitivity;
+    temperatureValue = static_cast<float>(signedValue) / TemperatureSensitivity;
 
     return temperatureValue;
 }
@@ -91,5 +101,5 @@ void LPS22HH::activateOneShotMode() {
 }
 
 void LPS22HH::performAreYouAliveCheck() {
-    
+
 };
