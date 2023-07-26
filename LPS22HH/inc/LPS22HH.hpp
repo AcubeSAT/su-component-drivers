@@ -93,7 +93,7 @@ private:
     /**
      * Wait period before for abandoning an SPI transfer because the send/receive buffer does not get unloaded/gets loaded.
      */
-    static inline constexpr uint16_t TimeoutTicks = 1000;
+    static inline constexpr uint16_t TimeoutTicks = 5000;
 
 
     /**

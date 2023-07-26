@@ -20,8 +20,8 @@ uint8_t LPS22HH::readFromRegister(RegisterAddress registerAddress) const {
 void LPS22HH::writeToRegister(RegisterAddress registerAddress, uint8_t txData) const {
     PIO_PinWrite(ssn, false);
 
-    uint16_t spiCommand = (registerAddress << 8) | txData;
-    LPS22HH_SPI_Write(&spiCommand, 2);
+    uint8_t sendData[2] = {registerAddress, txData};
+    LPS22HH_SPI_Write(sendData, 2);
     waitForTransfer();
 
     PIO_PinWrite(ssn, true);
@@ -32,6 +32,8 @@ uint8_t LPS22HH::getStatus() {
 }
 
 float LPS22HH::readPressure() {
+    triggerOneShotMode();
+
     int32_t pressureData;
 
     uint8_t pressureOutH = readFromRegister(PRESSURE_OUT_H);
@@ -51,7 +53,7 @@ float LPS22HH::readPressure() {
 }
 
 float LPS22HH::readTemperature() {
-
+    triggerOneShotMode();
 
     uint8_t temperatureOutH = readFromRegister(TEMP_OUT_H);
     uint8_t temperatureOutL = readFromRegister(TEMP_OUT_L);
@@ -95,9 +97,12 @@ void LPS22HH::triggerOneShotMode() {
 }
 
 void LPS22HH::performAreYouAliveCheck() {
-    if(readFromRegister(RegisterAddress::WHO_AM_I) != whoAmIRegisterDefaultValue) {
+    if (readFromRegister(RegisterAddress::WHO_AM_I) != whoAmIRegisterDefaultValue) {
         LOG_ERROR << "Pressure Sensor is disconnected, shutting down task";
         vTaskSuspend(nullptr);
+    }
+    else {
+        LOG_DEBUG << "Pressure Sensor is alive";
     }
 }
 
