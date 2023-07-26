@@ -1,6 +1,49 @@
 #pragma once
 
 #include <cstdint>
+#include <etl/utility.h>
+#include <etl/array.h>
+#include "FreeRTOS.h"
+#include "Logger.hpp"
+#include "task.h"
+#include "peripheral/pio/plib_pio.h"
+#include "Peripheral_Definitions.hpp"
+
+/**
+ * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
+ * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
+ */
+#if INA228_TWI_PORT == 0
+
+#include "plib_twihs0_master.h"
+#define INA228_TWIHS_WriteRead TWIHS0_WriteRead
+#define INA228_TWIHS_Write TWIHS0_Write
+#define INA228_TWIHS_ErrorGet TWIHS0_ErrorGet
+#define INA228_TWIHS_Read TWIHS0_Read
+#define INA228_TWIHS_Initialize TWIHS0_Initialize
+#define INA228_TWIHS_IsBusy TWIHS0_IsBusy
+
+#elif INA228_TWI_PORT == 1
+
+#include "plib_twihs1_master.h"
+#define INA228_TWIHS_WriteRead TWIHS1_WriteRead
+#define INA228_TWIHS_Write TWIHS1_Write
+#define INA228_TWIHS_ErrorGet TWIHS1_ErrorGet
+#define INA228_TWIHS_Read TWIHS1_Read
+#define INA228_TWIHS_Initialize TWIHS1_Initialize
+#define INA228_TWIHS_IsBusy TWIHS1_IsBusy
+
+#elif INA228_TWI_PORT == 2
+
+#include "plib_twihs2_master.h"
+
+#define INA228_TWIHS_WriteRead TWIHS2_WriteRead
+#define INA228_TWIHS_Write TWIHS2_Write
+#define INA228_TWIHS_ErrorGet TWIHS2_ErrorGet
+#define INA228_TWIHS_Read TWIHS2_Read
+#define INA228_TWIHS_Initialize TWIHS2_Initialize
+#define INA228_TWIHS_IsBusy TWIHS2_IsBusy
+#endif
 
 /**
  * @brief C++ class for interfacing with the INA228 Current Monitor.
@@ -28,7 +71,6 @@ public:
      * @return The power value in watts.
      */
     float getPower();
-
 
 private:
 

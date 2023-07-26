@@ -5,19 +5,20 @@ constexpr INA228::INA228() {
 }
 
 float INA228::getCurrent() {
-    int32_t current = readFromRegister();
+    uint32_t current = static_cast<uint32_t>(readRegister());
 
-    uint8_t sign = current & (1 << 12);
+    current = (current >> 4) & 0xFFFFF;
 
-    if(sign == 1)
-        current = !current;
+    uint8_t sign = current & 0x80000;
 
-    return current * CurrentLSB;
+    if (sign == 1)
+        current = (!current & 0xFFFFF) + 1;
+
+    return static_cast<float>(current) * CurrentLSB;
 }
 
 float INA228::getPower() {
     uint32_t power = static_cast<uint32_t>(readRegister());
 
-    return 3.2f * CurrentLSB * static_cast<float>(power) / 256.0f;
+    return 3.2f * CurrentLSB * static_cast<float>(power);
 }
-
