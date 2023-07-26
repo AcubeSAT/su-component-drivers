@@ -27,7 +27,7 @@
 #endif
 
 /**
- * This is a generic driver implementation for LPS22HH, based on its datasheet.
+ * This is a generic driver implementation for LPS22HH based on the SPI protocol.
  * @ingroup drivers
  * @see https://gr.mouser.com/datasheet/2/389/lps22hh-1395924.pdf
  */
@@ -61,6 +61,10 @@ private:
         SPI_WRITE_COMMAND = 0x0,
         SPI_READ_COMMAND = 0x80,
     };
+
+    /**
+     *
+     */
     inline static constexpr uint8_t whoAmIRegisterDefaultValue = 0b10110011;
 
     /**
@@ -85,6 +89,12 @@ private:
         BYPASS_TO_CONTINUOUS = 0x2,
         CONTINUOUS_TO_FIFO = 0x3,
     };
+
+    /**
+     * Wait period before for abandoning an SPI transfer because the send/receive buffer does not get unloaded/gets loaded.
+     */
+    static inline constexpr uint16_t TimeoutTicks = 1000;
+
 
     /**
      * The pressure sensitivity value according to the datasheet in LSB/hPa. It is used to calculate the pressure.
@@ -137,7 +147,7 @@ private:
 
 public:
     /**
-     * @param ssn is the chip select pin of the SPI peripheral.
+     * @param ssn the chip select pin for the SPI protocol
      */
     LPS22HH(PIO_PIN ssn) : ssn(ssn) {
         PIO_PinWrite(ssn, true);
@@ -181,10 +191,15 @@ public:
     /**
      * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measuremnt
      */
-    void activateOneShotMode();
+    void triggerOneShotMode();
 
     /**
      *
      */
     void performAreYouAliveCheck();
+
+    /**
+     *
+     */
+    void waitForTransfer() const;
 };
