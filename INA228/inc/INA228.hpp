@@ -95,6 +95,12 @@ public:
      */
     float getEnergy();
 
+    /**
+     * @brief Reads the shunt voltage from the INA228 device.
+     * @return The shunt voltage in millivolts.
+     */
+    float getShuntVoltage();
+
 private:
 
     /**
@@ -124,6 +130,13 @@ private:
      * value reported through the CURRENT register is also zero
      */
     static constexpr uint16_t ShuntCalValue = 13107.2 * 1000000 * CurrentLSB * RShuntResistor;
+
+    /**
+     * Bit 4 of the CONFIG register
+     *
+     * @brief Configure this value in order to acquire shunt full scale range selection across IN+ and IN–.
+     */
+    static constexpr uint8_t ADCRange = 0;
 
 	/**
      * @enum Holds the addresses of the INA228 registers

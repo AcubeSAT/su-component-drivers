@@ -13,7 +13,9 @@ INA228::INA228() {
 void INA228::readRegister(RegisterAddress registerAddress, uint8_t* returnedData, uint8_t numberOfBytesToRead) {
     INA228_TWIHS_WriteRead(i2cAddress, reinterpret_cast<uint8_t *>(&registerAddress), 1, returnedData, numberOfBytesToRead);
 
-    while(TWIHS2_IsBusy()) {}
+    while(TWIHS2_IsBusy()) {
+
+    }
 
 }
 
@@ -89,4 +91,25 @@ float INA228::getEnergy() {
                                             ((static_cast<uint64_t>(returnedData[4])) & 0xFF));
 
     return 16.0f * 3.2f * CurrentLSB * static_cast<float>(energy);
+}
+
+float INA228::getShuntVoltage() {
+    float conversionFactor = (ADCRange == 0) ? 0.0003125 : 0.000078125;
+
+    uint8_t returnedData[3];
+    readRegister(RegisterAddress::VSHUNT, returnedData, 3);
+
+    uint32_t shuntVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
+                                                    | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
+                                                    | static_cast<uint32_t>(returnedData[2] & 0xFF));
+
+    shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
+
+    uint8_t sign = shuntVoltage & 0x80000;
+
+    if (sign != 0) {
+        shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
+    }
+
+    return static_cast<float>(shuntVoltage) * conversionFactor;
 }
