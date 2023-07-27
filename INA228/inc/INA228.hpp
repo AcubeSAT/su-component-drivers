@@ -81,6 +81,14 @@ public:
      */
     float getVoltage();
 
+    /**
+     * Reads the internal die temperature from the INA228 device.
+     *
+     * @brief The temperature is calculated using a conversion factor 7.8125 m°C/LSB
+     * @return The die temperature in degrees Celsius.
+     */
+    float getDieTemperature();
+
 private:
 
     /**

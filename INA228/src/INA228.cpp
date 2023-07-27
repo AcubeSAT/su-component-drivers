@@ -22,7 +22,7 @@ float INA228::getCurrent() {
     readRegister(RegisterAddress::CURRENT, returnedData, 3);
 
     uint32_t current = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                                | static_cast<uint32_t>((returnedData[1] <<8) & 0xFF00)
+                                                | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
                                                 | static_cast<uint32_t>(returnedData[2] & 0xFF));
 
     current = (current >> 4) & 0xFFFFF;
@@ -41,7 +41,7 @@ float INA228::getPower() {
     readRegister(RegisterAddress::POWER, returnedData, 3);
 
     uint32_t power = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                             | static_cast<uint32_t>((returnedData[1] <<8) & 0xFF00)
+                                             | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
                                              | static_cast<uint32_t>(returnedData[2] & 0xFF));
 
     return 3.2f * CurrentLSB * static_cast<float>(power);
@@ -52,7 +52,7 @@ float INA228::getVoltage() {
     readRegister(RegisterAddress::VBUS, returnedData, 3);
 
     uint32_t busVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                                  | static_cast<uint32_t>((returnedData[1] <<8) & 0xFF00)
+                                                  | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
                                                   | static_cast<uint32_t>(returnedData[2] & 0xFF));
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
@@ -64,4 +64,16 @@ float INA228::getVoltage() {
     }
 
     return static_cast<float>(busVoltage) * CurrentLSB
+}
+
+float INA228::getDieTemperature() {
+    float conversionFactor = 0.0078125;
+
+    uint8_t returnedData[2];
+    readRegister(RegisterAddress::DIETEMP, returnedData, 2);
+
+    uint16_t internalTemperature = static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0] << 8) & 0xFF00)
+                                                            | static_cast<uint16_t>(returnedData[1] & 0xFF));
+
+    return static_cast<float>(internalTemperature) * conversionFactor;
 }
