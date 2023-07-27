@@ -73,6 +73,12 @@ float INA228::getDieTemperature() {
     uint16_t internalTemperature = static_cast<uint16_t>(static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00)
                                                             | static_cast<uint16_t>(returnedData[1] & 0xFF));
 
+    uint8_t sign = internalTemperature & 0x8000;
+
+    if(sign != 0) {
+        internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
+    }
+
     return static_cast<float>(internalTemperature) * resolutionSize;
 }
 
