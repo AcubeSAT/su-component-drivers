@@ -75,6 +75,12 @@ public:
      */
     float getPower();
 
+    /**
+     * @brief Reads the bus voltage from the INA228 device.
+     * @return The bus voltage in volts.
+     */
+    float getVoltage();
+
 private:
 
     /**
