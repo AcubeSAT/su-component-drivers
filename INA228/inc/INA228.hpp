@@ -9,6 +9,8 @@
 #include "peripheral/pio/plib_pio.h"
 #include "Peripheral_Definitions.hpp"
 
+#define INA228_TWI_PORT 2
+
 /**
  * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
@@ -53,12 +55,13 @@
  */
 class INA228 {
 public:
+    uint8_t i2cAddress = 0b1000000;
 
     /**
      * @brief Constructor for the INA228 class.
      * @param something The I2C master port number used for communication.
      */
-    constexpr INA228();
+    INA228();
 
     /**
      * @brief Reads the current value from the INA228 device.
@@ -77,7 +80,7 @@ private:
     /**
      * @brief The maximum expected current, used to calculate CurrentLSB
      */
-    static constexpr float MaximumExpectedCurrent = 500;
+    static constexpr float MaximumExpectedCurrent = 1;
 
     /**
      * The LSB step size for the CURRENT register where the current in Amperes is stored
@@ -86,12 +89,12 @@ private:
      * it is common to select a higher round-number (no higher than 8x) value for the CurrentLSB
      * in order to simplify the conversion of the CURRENT
      */
-    static constexpr float CurrentLSB = MaximumExpectedCurrent / static_cast<float>(1 << 19);
+    static constexpr float CurrentLSB = MaximumExpectedCurrent / (static_cast<float>(1 << 19));
 
     /**
      * Value of current-sensing resistor
      */
-    static constexpr float RShuntResistor = 100;
+    static constexpr float RShuntResistor = 0.05;
 
     /**
      * Value that is going to be written in SHUNT_CAL register
@@ -100,7 +103,7 @@ private:
      * in the SHUNT_CAL register. If the value loaded into the SHUNT_CAL register is zero, the current
      * value reported through the CURRENT register is also zero
      */
-    static constexpr float SHUNT_CAL = 13107.2 * 1000000 * CurrentLSB * RShuntResistor;
+    static constexpr uint16_t ShuntCalValue = 13107.2 * 1000000 * CurrentLSB * RShuntResistor;
 
 	/**
      * @enum Holds the addresses of the INA228 registers
@@ -128,4 +131,5 @@ private:
         DEVICE_ID = 0x3F
     };
 
+    void readRegister(RegisterAddress registerAddress, uint8_t* returnedData, uint8_t numberOfBytesToRead);
 };
