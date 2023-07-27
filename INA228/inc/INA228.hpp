@@ -76,7 +76,7 @@ public:
     float getPower();
 
     /**
-     * @brief Reads the bus voltage from the INA228 device.
+     * @brief Reads the bus voltage from the INA228 device. Resolution size 195.3125 μV/LSB
      * @return The bus voltage in volts.
      */
     float getVoltage();

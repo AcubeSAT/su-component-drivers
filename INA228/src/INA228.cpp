@@ -50,6 +50,8 @@ float INA228::getPower() {
 }
 
 float INA228::getVoltage() {
+    float resolutionSize = 0.0001953125; // in volts
+
     uint8_t returnedData[3];
     readRegister(RegisterAddress::VBUS, returnedData, 3);
 
@@ -59,17 +61,11 @@ float INA228::getVoltage() {
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
 
-    uint8_t sign = busVoltage & 0x80000;
-
-    if (sign != 0) {
-        busVoltage = (~busVoltage & 0xFFFFF) + 1;
-    }
-
-    return static_cast<float>(busVoltage) * CurrentLSB
+    return static_cast<float>(busVoltage) * resolutionSize
 }
 
 float INA228::getDieTemperature() {
-    float conversionFactor = 0.0078125;
+    float resolutionSize = 0.0078125;
 
     uint8_t returnedData[2];
     readRegister(RegisterAddress::DIETEMP, returnedData, 2);
@@ -77,7 +73,7 @@ float INA228::getDieTemperature() {
     uint16_t internalTemperature = static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0] << 8) & 0xFF00)
                                                             | static_cast<uint16_t>(returnedData[1] & 0xFF));
 
-    return static_cast<float>(internalTemperature) * conversionFactor;
+    return static_cast<float>(internalTemperature) * resolutionSize;
 }
 
 float INA228::getEnergy() {
@@ -94,7 +90,7 @@ float INA228::getEnergy() {
 }
 
 float INA228::getShuntVoltage() {
-    float conversionFactor = (ADCRange == 0) ? 0.0003125 : 0.000078125;
+    float resolutionSize = (ADCRange == 0) ? 0.0003125 : 0.000078125;
 
     uint8_t returnedData[3];
     readRegister(RegisterAddress::VSHUNT, returnedData, 3);
@@ -111,5 +107,5 @@ float INA228::getShuntVoltage() {
         shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
     }
 
-    return static_cast<float>(shuntVoltage) * conversionFactor;
+    return static_cast<float>(shuntVoltage) * resolutionSize;
 }
