@@ -89,6 +89,12 @@ public:
      */
     float getDieTemperature();
 
+    /**
+     * @brief Reads the energy value from the INA228 device.
+     * @return The energy value in joules.
+     */
+    float getEnergy();
+
 private:
 
     /**

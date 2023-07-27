@@ -77,3 +77,16 @@ float INA228::getDieTemperature() {
 
     return static_cast<float>(internalTemperature) * conversionFactor;
 }
+
+float INA228::getEnergy() {
+    uint8_t returnedData[5];
+    readRegister(RegisterAddress::ENERGY, returnedData, 5);
+
+    uint64_t energy = static_cast<uint64_t>(((static_cast<uint64_t>(returnedData[0]) << 32) & 0xFF00000000) |
+                                            ((static_cast<uint64_t>(returnedData[1]) << 24) & 0xFF000000) |
+                                            ((static_cast<uint64_t>(returnedData[2]) << 16) & 0xFF0000) |
+                                            ((static_cast<uint64_t>(returnedData[3]) << 8) & 0xFF00) |
+                                            ((static_cast<uint64_t>(returnedData[4])) & 0xFF));
+
+    return 16.0f * 3.2f * CurrentLSB * static_cast<float>(energy);
+}
