@@ -12,8 +12,8 @@
 #define INA228_TWI_PORT 2
 
 /**
- * The SHT3xDIS_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
- * By giving the corresponding value to SHT3xDIS_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
+ * The INA228_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
+ * By giving the corresponding value to INA228_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
  */
 #if INA228_TWI_PORT == 0
 

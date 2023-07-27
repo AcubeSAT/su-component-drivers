@@ -70,7 +70,7 @@ float INA228::getDieTemperature() {
     uint8_t returnedData[2];
     readRegister(RegisterAddress::DIETEMP, returnedData, 2);
 
-    uint16_t internalTemperature = static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0] << 8) & 0xFF00)
+    uint16_t internalTemperature = static_cast<uint16_t>(static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00)
                                                             | static_cast<uint16_t>(returnedData[1] & 0xFF));
 
     return static_cast<float>(internalTemperature) * resolutionSize;
