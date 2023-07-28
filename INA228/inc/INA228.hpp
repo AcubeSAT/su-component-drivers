@@ -226,7 +226,7 @@ private:
      * @brief The register provides the device with a conversion constant value that represents shunt resistance
      * used to calculate current value in Amperes.
      */
-    void setShuntCalRegister(INA228::Configuration configuration);
+    void setShuntCalRegister(Configuration configuration);
 
     /**
      * Function that reads from a specified register of the INA228 device.

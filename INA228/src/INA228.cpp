@@ -5,7 +5,7 @@ INA228::INA228(INA228::I2CAddress i2cAddress, INA228::Configuration configuratio
 
     setConfig(configuration);
     setADCConfig(adcConfiguration);
-    setShuntCalRegister();
+    setShuntCalRegister(configuration);
 }
 
 void INA228::setConfig(INA228::Configuration configuration) {
