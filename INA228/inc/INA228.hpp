@@ -186,7 +186,7 @@ private:
     /**
      * The 4th bit of the CONFIG register.
      */
-    static uint16_t adcrangeValue;
+    static uint16_t ADCRANGEValue;
 
     /**
      * @enum RegisterAddress

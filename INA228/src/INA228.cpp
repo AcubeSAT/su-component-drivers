@@ -34,9 +34,9 @@ void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
 
 void INA228::setShuntCalRegister(INA228::Configuration configuration) {
     // Determine whether ADCRANGE is 0 or 1
-    adcrangeValue = static_cast<uint16_t>(configuration) & 0b10000;
+    ADCRANGEValue = static_cast<uint16_t>(configuration) & 0b10000;
 
-    if(adcrangeValue != 0) {
+    if(ADCRANGEValue != 0) {
         ShuntCalValue = ShuntCalValue * 4;
     }
 
@@ -137,7 +137,7 @@ float INA228::getEnergy() {
 }
 
 float INA228::getShuntVoltage() {
-    float resolutionSize = (adcrangeValue == 0) ? 0.0003125 : 0.000078125;
+    float resolutionSize = (ADCRANGEValue == 0) ? 0.0003125 : 0.000078125;
 
     uint8_t returnedData[3];
     readRegister(RegisterAddress::VSHUNT, returnedData, 3);
