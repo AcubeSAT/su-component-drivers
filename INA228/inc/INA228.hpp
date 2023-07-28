@@ -123,15 +123,6 @@ private:
     static constexpr float RShuntResistor = 0.05;
 
     /**
-     * Value that is going to be written in SHUNT_CAL register
-     *
-     * @brief The current is calculated following a shunt voltage measurement based on the value set
-     * in the SHUNT_CAL register. If the value loaded into the SHUNT_CAL register is zero, the current
-     * value reported through the CURRENT register is also zero
-     */
-    static constexpr uint16_t ShuntCalValue = 13107.2 * 1000000 * CurrentLSB * RShuntResistor;
-
-    /**
      * Bit 4 of the CONFIG register
      *
      * @brief Configure this value in order to acquire shunt full scale range selection across IN+ and IN–.
@@ -139,7 +130,17 @@ private:
     static constexpr uint8_t ADCRange = 0;
 
     /**
-     * @enum Contains the I2C addresses, depending on the two address pins, A0 and A1.
+     * Value that is going to be written in SHUNT_CAL register
+     *
+     * @brief The current is calculated following a shunt voltage measurement based on the value set
+     * in the SHUNT_CAL register. If the value loaded into the SHUNT_CAL register is zero, the current
+     * value reported through the CURRENT register is also zero
+     */
+    static constexpr uint16_t ShuntCalValue = 13107.2f * 1000000 * CurrentLSB * RShuntResistor;
+
+    /**
+     * @enum I2CAddress
+     * @brief Contains the I2C addresses, depending on the two address pins, A0 and A1.
      */
     enum class I2CAddress {
         /// A1 -> GND
@@ -168,7 +169,17 @@ private:
     };
 
     /**
-     * @enum Contains the addresses of the INA228 registers
+     * @enum Configuration
+     * @brief Contains the various configurations of the INA228 device after power up.
+     */
+     enum class Configuration : uint16_t {
+         Configuration1 = 0x0, /// Default configuration (ADCRANGE = 0)
+         Configuration2 = 0x10 /// ADCRANGE = 1
+     };
+
+    /**
+     * @enum RegisterAddress
+     * @brief Contains the addresses of the INA228 registers
      */
     enum class RegisterAddress : uint8_t {
         CONFIG = 0x00,
@@ -193,5 +204,12 @@ private:
         DEVICE_ID = 0x3F
     };
 
+    /**
+     * Function that reads from a specified register of the INA228 device.
+     *
+     * @param registerAddress The address of the register.
+     * @param returnedData  The response of the device as an array of bytes.
+     * @param numberOfBytesToRead The number of bytes that are sent to the register.
+     */
     void readRegister(RegisterAddress registerAddress, uint8_t* returnedData, uint8_t numberOfBytesToRead);
 };
