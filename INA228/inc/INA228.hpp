@@ -184,6 +184,11 @@ private:
     static inline uint16_t ShuntCalValue = 13107.2f * 1000000 * CurrentLSB * RShuntResistor;
 
     /**
+     * The 4th bit of the CONFIG register.
+     */
+    static uint16_t adcrangeValue;
+
+    /**
      * @enum RegisterAddress
      * @brief Contains the addresses of the INA228 registers
      */
