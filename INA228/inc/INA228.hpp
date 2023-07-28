@@ -60,7 +60,7 @@ public:
      * @enum I2CAddress
      * @brief Contains the I2C addresses, depending on the two address pins, A0 and A1.
      */
-    enum class I2CAddress {
+    enum class I2CAddress : uint8_t {
         /// A1 -> GND
         Address1 = 0b1000000, /// A0 -> GND
         Address2 = 0b1000001, /// A0 -> Vs

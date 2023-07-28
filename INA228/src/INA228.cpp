@@ -13,7 +13,7 @@ void INA228::setConfig(INA228::Configuration configuration) {
             ,static_cast<uint8_t>((static_cast<uint16_t>(configuration) >> 8) & 0xFF)
             ,static_cast<uint8_t>(static_cast<uint16_t>(configuration) & 0xFF)};
 
-    INA228_TWIHS_Write(i2cAddress, data, 3);
+    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), data, 3);
 
     while(TWIHS2_IsBusy()) {
 
@@ -25,7 +25,7 @@ void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
             ,static_cast<uint8_t>((static_cast<uint16_t>(adcConfiguration) >> 8) & 0xFF)
             ,static_cast<uint8_t>(static_cast<uint16_t>(adcConfiguration) & 0xFF)};
 
-    INA228_TWIHS_Write(i2cAddress, data, 3);
+    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), data, 3);
 
     while(TWIHS2_IsBusy()) {
 
@@ -44,7 +44,7 @@ void INA228::setShuntCalRegister(INA228::Configuration configuration) {
             ,static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF)
             ,static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
 
-    INA228_TWIHS_Write(i2cAddress, data, 3);
+    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), data, 3);
 
     while(TWIHS2_IsBusy()) {
 
@@ -52,7 +52,7 @@ void INA228::setShuntCalRegister(INA228::Configuration configuration) {
 }
 
 void INA228::readRegister(RegisterAddress registerAddress, uint8_t* returnedData, uint8_t numberOfBytesToRead) {
-    INA228_TWIHS_WriteRead(i2cAddress, reinterpret_cast<uint8_t *>(&registerAddress), 1, returnedData, numberOfBytesToRead);
+    INA228_TWIHS_WriteRead(static_cast<uint8_t>(i2cAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, returnedData, numberOfBytesToRead);
 
     while(TWIHS2_IsBusy()) {
 
@@ -102,7 +102,7 @@ float INA228::getVoltage() {
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
 
-    return static_cast<float>(busVoltage) * resolutionSize
+    return static_cast<float>(busVoltage) * resolutionSize;
 }
 
 float INA228::getDieTemperature() {
