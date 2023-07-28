@@ -177,6 +177,15 @@ private:
          Configuration2 = 0x10 /// ADCRANGE = 1
      };
 
+     /**
+      * @enum ADCConfiguration
+      * @brief Contains the various ADC configurations of the INA228 device after power up.
+      */
+     enum class ADCConfiguration : uint16_t {
+         Configuration1 = 0xFB68, /// Default configuration, Continuous measurements
+         Configuration2 = 0x7B68 /// Single-shot measurements
+     };
+
     /**
      * @enum RegisterAddress
      * @brief Contains the addresses of the INA228 registers
