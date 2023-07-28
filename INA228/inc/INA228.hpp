@@ -138,8 +138,37 @@ private:
      */
     static constexpr uint8_t ADCRange = 0;
 
-	/**
-     * @enum Holds the addresses of the INA228 registers
+    /**
+     * @enum Contains the I2C addresses, depending on the two address pins, A0 and A1.
+     */
+    enum class I2CAddress {
+        /// A1 -> GND
+        Address1 = 0b1000000, /// A0 -> GND
+        Address2 = 0b1000001, /// A0 -> Vs
+        Address3 = 0b1000010, /// A0 -> SDA
+        Address4 = 0b1000011, /// A0 -> SCL
+
+        /// A1 -> Vs
+        Address5 = 0b1000100, /// A0 -> GND
+        Address6 = 0b1000101, /// A0 -> Vs
+        Address7 = 0b1000110, /// A0 -> SDA
+        Address8 = 0b1000111, /// A0 -> SCL
+
+        /// A1 -> SDA
+        Address9 = 0b1001000,  /// A0 -> GND
+        Address10 = 0b1001001, /// A0 -> Vs
+        Address11 = 0b1001010, /// A0 -> SDA
+        Address12 = 0b1001011, /// A0 -> SCL
+
+        /// A1 -> SCL
+        Address13 = 0b1001100, /// A0 -> GND
+        Address14 = 0b1001101, /// A0 -> Vs
+        Address15 = 0b1001110, /// A0 -> SDA
+        Address16 = 0b1001111  /// A0 -> SCL
+    };
+
+    /**
+     * @enum Contains the addresses of the INA228 registers
      */
     enum class RegisterAddress : uint8_t {
         CONFIG = 0x00,
