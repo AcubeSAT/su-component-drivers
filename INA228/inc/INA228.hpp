@@ -48,9 +48,9 @@
 #endif
 
 /**
- * @brief C++ class for interfacing with the INA228 Current Monitor.
+ * C++ class for interfacing with the INA228 Current Monitor.
  *
- * This class provides functions to read various electrical parameters from the INA228 device,
+ * @brief This class provides functions to read various electrical parameters from the INA228 device,
  * such as voltage, temperature, current, power, energy, and charge.
  */
 class INA228 {
