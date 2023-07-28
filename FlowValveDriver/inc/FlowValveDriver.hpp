@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "peripheral/pio/plib_pio.h"
 #include "FreeRTOS.h"
+#include "Task.hpp"
 
 /**
  * @class FlowValve
@@ -16,7 +17,7 @@ public:
      * @param openPin The GPIO pin number for opening the valve.
      * @param closePin The GPIO pin number for closing the valve.
      */
-    constexpr FlowValve(PIO_Pin openPin, PIO_Pin closePin) : openPin_(openPin), closePin_(closePin);
+    FlowValve(PIO_PIN openPin, PIO_PIN closePin);
 
     /**
      * @brief Opens the valve by sending a latching pulse to the open pin. A delay is used to ensure smooth transition
@@ -40,11 +41,11 @@ private:
     /**
      * The GPIO pin number for opening the valve.
      */
-    PIO_Pin openPin_;
+    PIO_PIN openPin_;
 
     /**
      * The GPIO pin number for closing the valve.
      */
-    PIO_Pin closePin_;
+    PIO_PIN closePin_;
 
 };
