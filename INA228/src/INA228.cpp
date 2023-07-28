@@ -1,13 +1,47 @@
 #include "INA228.hpp"
 
-INA228::INA228() {
-    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::SHUNT_CAL)
-                       , static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF)
-                       , static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
+INA228::INA228(INA228::I2CAddress i2cAddress, INA228::Configuration configuration,
+               INA228::ADCConfiguration adcConfiguration) : i2cAddress(i2cAddress) {
+
+    setConfig(configuration);
+    setADCConfig(adcConfiguration);
+    setShuntCalRegister();
+}
+
+void INA228::setConfig(INA228::Configuration configuration) {
+    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::CONFIG)
+            ,static_cast<uint8_t>((static_cast<uint16_t>(configuration) >> 8) & 0xFF)
+            ,static_cast<uint8_t>(static_cast<uint16_t>(configuration) & 0xFF)};
 
     INA228_TWIHS_Write(i2cAddress, data, 3);
 
-    while(TWIHS2_IsBusy()) {}
+    while(TWIHS2_IsBusy()) {
+
+    }
+}
+
+void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
+    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::ADC_CONFIG)
+            ,static_cast<uint8_t>((static_cast<uint16_t>(adcConfiguration) >> 8) & 0xFF)
+            ,static_cast<uint8_t>(static_cast<uint16_t>(adcConfiguration) & 0xFF)};
+
+    INA228_TWIHS_Write(i2cAddress, data, 3);
+
+    while(TWIHS2_IsBusy()) {
+
+    }
+}
+
+void INA228::setShuntCalRegister() {
+    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::SHUNT_CAL)
+            ,static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF)
+            ,static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
+
+    INA228_TWIHS_Write(i2cAddress, data, 3);
+
+    while(TWIHS2_IsBusy()) {
+
+    }
 }
 
 void INA228::readRegister(RegisterAddress registerAddress, uint8_t* returnedData, uint8_t numberOfBytesToRead) {

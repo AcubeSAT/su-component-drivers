@@ -55,13 +55,60 @@
  */
 class INA228 {
 public:
-    uint8_t i2cAddress = 0b1000000;
+
+    /**
+     * @enum I2CAddress
+     * @brief Contains the I2C addresses, depending on the two address pins, A0 and A1.
+     */
+    enum class I2CAddress {
+        /// A1 -> GND
+        Address1 = 0b1000000, /// A0 -> GND
+        Address2 = 0b1000001, /// A0 -> Vs
+        Address3 = 0b1000010, /// A0 -> SDA
+        Address4 = 0b1000011, /// A0 -> SCL
+
+        /// A1 -> Vs
+        Address5 = 0b1000100, /// A0 -> GND
+        Address6 = 0b1000101, /// A0 -> Vs
+        Address7 = 0b1000110, /// A0 -> SDA
+        Address8 = 0b1000111, /// A0 -> SCL
+
+        /// A1 -> SDA
+        Address9 = 0b1001000,  /// A0 -> GND
+        Address10 = 0b1001001, /// A0 -> Vs
+        Address11 = 0b1001010, /// A0 -> SDA
+        Address12 = 0b1001011, /// A0 -> SCL
+
+        /// A1 -> SCL
+        Address13 = 0b1001100, /// A0 -> GND
+        Address14 = 0b1001101, /// A0 -> Vs
+        Address15 = 0b1001110, /// A0 -> SDA
+        Address16 = 0b1001111  /// A0 -> SCL
+    };
+
+    /**
+     * @enum Configuration
+     * @brief Contains the various configurations of the INA228 device after power up.
+     */
+    enum class Configuration : uint16_t {
+        Configuration1 = 0x0, /// Default configuration (ADCRANGE = 0)
+        Configuration2 = 0x10 /// ADCRANGE = 1
+    };
+
+    /**
+     * @enum ADCConfiguration
+     * @brief Contains the various ADC configurations of the INA228 device after power up.
+     */
+    enum class ADCConfiguration : uint16_t {
+        Configuration1 = 0xFB68, /// Default configuration, Continuous measurements
+        Configuration2 = 0x7B68  /// Single-shot measurements
+    };
 
     /**
      * @brief Constructor for the INA228 class.
      * @param something The I2C master port number used for communication.
      */
-    INA228();
+    explicit INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration);
 
     /**
      * @brief Reads the current value from the INA228 device.
@@ -104,6 +151,11 @@ public:
 private:
 
     /**
+     * The address of the I2C protocol of the INA228 device.
+     */
+    I2CAddress i2cAddress;
+
+    /**
      * @brief The maximum expected current, used to calculate CurrentLSB
      */
     static constexpr float MaximumExpectedCurrent = 1;
@@ -139,54 +191,6 @@ private:
     static constexpr uint16_t ShuntCalValue = 13107.2f * 1000000 * CurrentLSB * RShuntResistor;
 
     /**
-     * @enum I2CAddress
-     * @brief Contains the I2C addresses, depending on the two address pins, A0 and A1.
-     */
-    enum class I2CAddress {
-        /// A1 -> GND
-        Address1 = 0b1000000, /// A0 -> GND
-        Address2 = 0b1000001, /// A0 -> Vs
-        Address3 = 0b1000010, /// A0 -> SDA
-        Address4 = 0b1000011, /// A0 -> SCL
-
-        /// A1 -> Vs
-        Address5 = 0b1000100, /// A0 -> GND
-        Address6 = 0b1000101, /// A0 -> Vs
-        Address7 = 0b1000110, /// A0 -> SDA
-        Address8 = 0b1000111, /// A0 -> SCL
-
-        /// A1 -> SDA
-        Address9 = 0b1001000,  /// A0 -> GND
-        Address10 = 0b1001001, /// A0 -> Vs
-        Address11 = 0b1001010, /// A0 -> SDA
-        Address12 = 0b1001011, /// A0 -> SCL
-
-        /// A1 -> SCL
-        Address13 = 0b1001100, /// A0 -> GND
-        Address14 = 0b1001101, /// A0 -> Vs
-        Address15 = 0b1001110, /// A0 -> SDA
-        Address16 = 0b1001111  /// A0 -> SCL
-    };
-
-    /**
-     * @enum Configuration
-     * @brief Contains the various configurations of the INA228 device after power up.
-     */
-     enum class Configuration : uint16_t {
-         Configuration1 = 0x0, /// Default configuration (ADCRANGE = 0)
-         Configuration2 = 0x10 /// ADCRANGE = 1
-     };
-
-     /**
-      * @enum ADCConfiguration
-      * @brief Contains the various ADC configurations of the INA228 device after power up.
-      */
-     enum class ADCConfiguration : uint16_t {
-         Configuration1 = 0xFB68, /// Default configuration, Continuous measurements
-         Configuration2 = 0x7B68 /// Single-shot measurements
-     };
-
-    /**
      * @enum RegisterAddress
      * @brief Contains the addresses of the INA228 registers
      */
@@ -212,6 +216,24 @@ private:
         MANUFACTURER_ID = 0x3E,
         DEVICE_ID = 0x3F
     };
+
+    /**
+     * Set the INA228 device configuration on power up.
+     */
+    void setConfig(Configuration configuration);
+
+     /**
+      * Set the INA228 device ADC configuration on power up.
+      */
+    void setADCConfig(ADCConfiguration adcConfiguration);
+
+    /**
+     * Set the INA228 device SHUNT_CAL register on power up.
+     *
+     * @brief The register provides the device with a conversion constant value that represents shunt resistance
+     * used to calculate current value in Amperes.
+     */
+    void setShuntCalRegister();
 
     /**
      * Function that reads from a specified register of the INA228 device.
