@@ -151,7 +151,7 @@ public:
 private:
 
     /**
-     * The address of the I2C protocol of the INA228 device.
+     * The address for the I2C protocol of the INA228 device.
      */
     I2CAddress i2cAddress;
 
@@ -175,20 +175,13 @@ private:
     static constexpr float RShuntResistor = 0.05;
 
     /**
-     * Bit 4 of the CONFIG register
-     *
-     * @brief Configure this value in order to acquire shunt full scale range selection across IN+ and IN–.
-     */
-    static constexpr uint8_t ADCRange = 0;
-
-    /**
      * Value that is going to be written in SHUNT_CAL register
      *
      * @brief The current is calculated following a shunt voltage measurement based on the value set
      * in the SHUNT_CAL register. If the value loaded into the SHUNT_CAL register is zero, the current
      * value reported through the CURRENT register is also zero
      */
-    static constexpr uint16_t ShuntCalValue = 13107.2f * 1000000 * CurrentLSB * RShuntResistor;
+    static inline uint16_t ShuntCalValue = 13107.2f * 1000000 * CurrentLSB * RShuntResistor;
 
     /**
      * @enum RegisterAddress
@@ -233,7 +226,7 @@ private:
      * @brief The register provides the device with a conversion constant value that represents shunt resistance
      * used to calculate current value in Amperes.
      */
-    void setShuntCalRegister();
+    void setShuntCalRegister(INA228::Configuration configuration);
 
     /**
      * Function that reads from a specified register of the INA228 device.

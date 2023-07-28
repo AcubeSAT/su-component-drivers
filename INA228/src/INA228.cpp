@@ -32,7 +32,14 @@ void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
     }
 }
 
-void INA228::setShuntCalRegister() {
+void INA228::setShuntCalRegister(INA228::Configuration configuration) {
+    // Determine whether adcrange is 0 or 1
+    uint16_t adcrange = static_cast<uint16_t>(configuration) & 0b10000;
+
+    if(adcrange != 0) {
+        ShuntCalValue = ShuntCalValue * 4;
+    }
+
     uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::SHUNT_CAL)
             ,static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF)
             ,static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
