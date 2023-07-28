@@ -101,7 +101,7 @@ public:
      */
     enum class ADCConfiguration : uint16_t {
         Configuration1 = 0xFB68, /// Default configuration, Continuous measurements
-        Configuration2 = 0x7B68  /// Single-shot measurements
+        Configuration2 = 0x7B68  /// Single-shot measurements of voltages and temperature
     };
 
     /**
