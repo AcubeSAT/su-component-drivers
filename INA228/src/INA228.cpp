@@ -45,17 +45,33 @@ void INA228::setShuntCalRegister(INA228::Configuration configuration) {
 void INA228::readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
     bool success = INA228_TWIHS_WriteRead(static_cast<uint8_t>(i2cAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead);
 
-    while(TWIHS2_IsBusy()) {
+    if (!success) {
+        LOG_INFO << "Current monitor with address " << i2cAddress << ": I2C bus is busy";
+        return;
+    }
 
+    while(TWIHS2_IsBusy());
+
+    if(INA228_TWIHS_ErrorGet != TWIHS_ERROR_NONE) {
+        LOG_ERROR << "Current monitor with address " << i2cAddress << " , is disconnected, suspending task";
+        vTaskDelay(0);
     }
 
 }
 
 void INA228::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
-    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), tData, numberOfBytesToWrite);
+    bool success = INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), tData, numberOfBytesToWrite);
 
-    while(TWIHS2_IsBusy()) {
+    if (!success) {
+        LOG_INFO << "Current monitor with address " << i2cAddress << ": I2C bus is busy";
+        return;
+    }
 
+    while(TWIHS2_IsBusy());
+
+    if(INA228_TWIHS_ErrorGet != TWIHS_ERROR_NONE) {
+        LOG_ERROR << "Current monitor with address " << i2cAddress << " , is disconnected, suspending task";
+        vTaskDelay(0);
     }
 }
 
