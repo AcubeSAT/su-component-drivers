@@ -9,27 +9,21 @@ INA228::INA228(INA228::I2CAddress i2cAddress, INA228::Configuration configuratio
 }
 
 void INA228::setConfig(INA228::Configuration configuration) {
-    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::CONFIG)
+    uint8_t tData[3] = {static_cast<uint8_t>(RegisterAddress::CONFIG)
             ,static_cast<uint8_t>((static_cast<uint16_t>(configuration) >> 8) & 0xFF)
             ,static_cast<uint8_t>(static_cast<uint16_t>(configuration) & 0xFF)};
 
-    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), data, 3);
+    writeRegister(tData, sizeof(tData));
 
-    while(TWIHS2_IsBusy()) {
-
-    }
 }
 
 void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
-    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::ADC_CONFIG)
+    uint8_t tData[3] = {static_cast<uint8_t>(RegisterAddress::ADC_CONFIG)
             ,static_cast<uint8_t>((static_cast<uint16_t>(adcConfiguration) >> 8) & 0xFF)
             ,static_cast<uint8_t>(static_cast<uint16_t>(adcConfiguration) & 0xFF)};
 
-    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), data, 3);
+    writeRegister(tData, sizeof(tData));
 
-    while(TWIHS2_IsBusy()) {
-
-    }
 }
 
 void INA228::setShuntCalRegister(INA228::Configuration configuration) {
@@ -40,24 +34,29 @@ void INA228::setShuntCalRegister(INA228::Configuration configuration) {
         ShuntCalValue = ShuntCalValue * 4;
     }
 
-    uint8_t data[3] = {static_cast<uint8_t>(RegisterAddress::SHUNT_CAL)
+    uint8_t tData[3] = {static_cast<uint8_t>(RegisterAddress::SHUNT_CAL)
             ,static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF)
             ,static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
 
-    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), data, 3);
+    writeRegister(tData, sizeof(tData));
 
-    while(TWIHS2_IsBusy()) {
-
-    }
 }
 
-void INA228::readRegister(RegisterAddress registerAddress, uint8_t* returnedData, uint8_t numberOfBytesToRead) {
-    INA228_TWIHS_WriteRead(static_cast<uint8_t>(i2cAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, returnedData, numberOfBytesToRead);
+void INA228::readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
+    bool success = INA228_TWIHS_WriteRead(static_cast<uint8_t>(i2cAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead);
 
     while(TWIHS2_IsBusy()) {
 
     }
 
+}
+
+void INA228::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
+    INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), tData, numberOfBytesToWrite);
+
+    while(TWIHS2_IsBusy()) {
+
+    }
 }
 
 float INA228::getCurrent() {
