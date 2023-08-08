@@ -39,7 +39,7 @@ public:
      * @param openPin The GPIO pin number for opening the valve.
      * @param closePin The GPIO pin number for closing the valve.
      */
-    FlowValve(PIO_PIN openPin, PIO_PIN closePin);
+    explicit FlowValve(PIO_PIN openPin, PIO_PIN closePin);
 
     /**
      * @brief Opens the valve by sending a latching pulse to the open pin. A delay is used to ensure smooth transition
@@ -52,5 +52,4 @@ public:
      * to the next latching state.
      */
     void closeValve();
-
 };

@@ -1,4 +1,4 @@
-#include "FlowValveDriver.hpp"
+#include "FlowValve.hpp"
 
 FlowValve::FlowValve(PIO_PIN openPin, PIO_PIN closePin) : openPin(openPin), closePin(closePin) {
     PIO_PinWrite(openPin, false);
