@@ -10,6 +10,28 @@
  * @brief Class for controlling a latching flow valve using GPIO pins.
  */
 class FlowValve {
+private:
+
+    /**
+     * Pulse's time duration for latching operation
+     */
+    static constexpr uint16_t LatchPulseDuration = 500;
+
+    /**
+     * The GPIO pin number for opening the valve.
+     */
+    const PIO_PIN openPin;
+
+    /**
+     * The GPIO pin number for closing the valve.
+     */
+    const PIO_PIN closePin;
+
+    /**
+     * A variable to select whether to close the valve, thus changing the state of the valve if it was open, each time the MCU boots.
+     */
+    static inline constexpr bool CloseValveAtMCUStartup = true;
+
 public:
 
     /**
@@ -23,29 +45,12 @@ public:
      * @brief Opens the valve by sending a latching pulse to the open pin. A delay is used to ensure smooth transition
      * to the next latching state.
      */
-    void open();
+    void openValve();
 
     /**
      * @brief Closes the valve by sending a latching pulse to the close pin. A delay is used to ensure smooth transition
      * to the next latching state.
      */
-    void close();
-
-private:
-
-    /**
-     * Pulse's time duration for latching operation
-     */
-    static constexpr uint16_t LatchPulseDuration = 500;
-
-    /**
-     * The GPIO pin number for opening the valve.
-     */
-    PIO_PIN openPin_;
-
-    /**
-     * The GPIO pin number for closing the valve.
-     */
-    PIO_PIN closePin_;
+    void closeValve();
 
 };
