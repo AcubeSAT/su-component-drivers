@@ -55,4 +55,4 @@ ref_type=heads) as part of the TLC5940-47 breakout PCB.
   pin of 
   the 
   valve when the pins of the valve are phasing the ground and not the ceiling.
-- Driving the Open and Close pins High simultaneously will result in short circuit and damage the H-bridge.
+- Driving the Open and Close pins High simultaneously will result in short circuit and damage to the H-bridge.
