@@ -20,3 +20,4 @@ void FlowValve::closeValve() {
     vTaskDelay(pdMS_TO_TICKS(LatchPulseDuration));
     PIO_PinWrite(closePin, false);
 }
+
