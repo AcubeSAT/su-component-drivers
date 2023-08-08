@@ -12,7 +12,7 @@
 class FlowValve {
 private:
     /**
-     * Pulse's time duration for latching operation
+     * Pulse's time duration for latching operation in milliseconds.
      */
     static constexpr uint16_t LatchPulseDuration = 500;
 
