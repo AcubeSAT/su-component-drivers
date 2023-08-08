@@ -11,7 +11,6 @@
  */
 class FlowValve {
 private:
-
     /**
      * Pulse's time duration for latching operation
      */
