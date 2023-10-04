@@ -2,9 +2,8 @@
 
 PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
 
-    setConfig(configuration);
-    setADCConfig(adcConfiguration);
-    setShuntCalRegister(configuration);
+    slaveAddressWrite = ((static_cast<uint8_t>(i2cAddress) << 1) | static_cast<uint8_t>(0b10000000));
+    slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
 }
 
 void PCA9685::readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {

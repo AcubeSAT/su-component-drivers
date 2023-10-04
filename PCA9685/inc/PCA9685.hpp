@@ -141,6 +141,16 @@ private:
     I2CAddress i2cAddress;
 
     /**
+     * Slave address to select READ operation
+     */
+    uint8_t slaveAddressRead;
+
+    /**
+     * Slave address to select WRITE operation
+     */
+    uint8_t slaveAddressWrite;
+
+    /**
      * Function that reads from a specified register of the PCA9685 device.
      *
      * @param registerAddress The address of the register.
