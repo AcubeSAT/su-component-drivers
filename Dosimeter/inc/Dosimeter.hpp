@@ -1,6 +1,7 @@
 #pragma once
 
 #include "definitions.h"
+#include "Peripheral_Definitions.hpp"
 
 class Dosimeter {
 public:
@@ -8,10 +9,29 @@ public:
         pullUpChipSelect();
     };
 
+    void setTargetRegister(uint8_t value);
+
+    void setThresholdRegister(uint8_t value);
+
+    void waitForTransfer();
+
+    void quickSetup();
+
 private:
+    /**
+     * SPI Command Type (Write/Read)
+     */
+    enum SPICommandType : uint8_t {
+        SPI_WRITE_COMMAND = 0x0,
+        SPI_READ_COMMAND = 0x80,
+    };
+
     PIO_PIN ChipSelect = PIO_PIN_NONE;
 
-    enum class Register: uint8_t {
+    constexpr static inline uint8_t RegisterSizeInBytes = 1;
+    constexpr static inline uint8_t RegisterAddressSizeInBytes = 1;
+
+    enum class RegisterAddress : uint8_t {
         TEMP = 0x00, ///> Read-only
         RECHARGE_STATUS = 0x01, ///> Read-only
         // REGISTER = 0x02, Not supported
@@ -99,7 +119,7 @@ private:
         PIO_PinWrite(ChipSelect, true);
     }
 
-    void readRegister();
+    uint8_t readRegister(RegisterAddress readRegister);
 
-    void writeRegister();
+    void writeRegister(RegisterAddress writeRegister, RegisterSpecifiedValue registerSpecifiedValue, uint8_t data);
 };
