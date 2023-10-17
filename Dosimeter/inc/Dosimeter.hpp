@@ -39,7 +39,7 @@ private:
     constexpr static inline uint16_t TimeoutTicks = 5000;
 
 
-    enum class RegisterAddress : uint8_t {
+    enum RegisterAddress : uint8_t {
         TEMP = 0x00, ///> Read-only
         RECHARGE_STATUS = 0x01, ///> Read-only
         // REGISTER = 0x02, Not supported
@@ -64,10 +64,10 @@ private:
     };
 
     enum RegisterSpecifiedValue : uint8_t {
-        TARGET = 0b0001'1111, // value AND TARGET
-        THRESHOLD = 0b0001'1111, // value AND THRESHOLD
-        MISC2 = 0b0111'1000, // value OR MISC2
-        MISC4 = 0b0000'0111 // value AND MISC4
+        TARGET_DEFAULT = 0b0001'1111, // value AND TARGET_DEFAULT
+        THRESHOLD_DEFAULT = 0b0001'1111, // value AND THRESHOLD_DEFAULT
+        MISC2_DEFAULT = 0b0111'1000, // value OR MISC2_DEFAULT
+        MISC4_DEFAULT = 0b0000'0111 // value AND MISC4_DEFAULT
     };
 
     enum RegisterBitMask : uint8_t {
@@ -132,6 +132,6 @@ private:
 
     uint8_t readRegister(RegisterAddress readRegister);
 
-    void writeRegister(RegisterAddress writeRegister, RegisterSpecifiedValue registerSpecifiedValue, uint8_t data);
+    void writeRegister(RegisterAddress writeRegister, uint8_t data);
 
 };
