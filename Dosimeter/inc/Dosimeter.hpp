@@ -35,51 +35,55 @@ private:
         RESERVED = 0x14 // check if bits need to have a specific value
     };
 
+    enum RegisterSpecifiedValue : uint8_t {
+        TARGET = 0b0001'1111, // value AND TARGET
+        THRESHOLD = 0b0001'1111, // value AND THRESHOLD
+        MISC2 = 0b0111'1000, // value OR MISC2
+        MISC4 = 0b0000'0111 // value AND MISC4
+    };
+
     enum RegisterBitMask : uint8_t {
-        RECHEV = 0b10000000,
-        EAWR = 0b10000000,
-        FCH = 0b10000000,
-        ENMC = 0b10000000,
+        RECHEV = 0b1000'0000,
+        EAWR = 0b1000'0000,
+        FCH = 0b1000'0000,
+        ENMC = 0b1000'0000,
 
-        EVBCHP = 0b01000000,
-        NEBUF = 0b01000000,
-        ECH = 0b01000000,
+        EVBCHP = 0b0100'0000,
+        NEBUF = 0b0100'0000,
+        ECH = 0b0100'0000,
 
-        NCHP = 0b00100000,
-        ENTEMP = 0b00100000,
-        EPWR = 0b00100000,
+        NCHP = 0b0010'0000,
+        ENTEMP = 0b0010'0000,
+        EPWR = 0b0010'0000,
 
-        ENDCH = 0b00010000,
-        NELF = 0b00010000,
-        NEASNR = 0b00010000,
+        ENDCH = 0b0001'0000,
+        NELF = 0b0001'0000,
+        NEASNR = 0b0001'0000,
 
-        WINDOW = 0b00001100,
+        WINDOW = 0b0000'1100,
 
-        SET = 0b00000011,
-        RCHCNT = 0b01111111,
+        SET = 0b0000'0011,
+        RCHCNT = 0b0111'1111,
 
-        F1R_MSB = 0b00000001,
-        F1S_MSB = 0b00000001,
-        TDIV = 0b00000001,
-        E9S = 0b00000001,
-        ENGATE = 0b00000001,
+        F1R_MSB = 0b0000'0001,
+        F1S_MSB = 0b0000'0001,
+        TDIV = 0b0000'0001,
+        E9S = 0b0000'0001,
+        ENGATE = 0b0000'0001,
 
-        F1ROVF = 0b00000010,
-        F1SOVF = 0b00000010,
-        SNRF = 0b00000010,
-        NIRQOC = 0b00000010,
+        F1ROVF = 0b0000'0010,
+        F1SOVF = 0b0000'0010,
+        SNRF = 0b0000'0010,
+        NIRQOC = 0b0000'0010,
 
-        DNEWR = 0b00000100,
-        DNEWS = 0b00000100,
-        NEIDCM = 0b00000100,
-        EDIRT = 0b00000100,
+        DNEWR = 0b0000'0100,
+        DNEWS = 0b0000'0100,
+        NEIDCM = 0b0000'0100,
+        EDIRT = 0b0000'0100,
 
-        TARGET = 0b00011111,
-        THRESHOLD = 0b00011111,
-
-        ENOSC = 0b00001000,
-        E2V = 0b00001000,
-        LOWN = 0b00001000
+        ENOSC = 0b0000'1000,
+        E2V = 0b0000'1000,
+        LOWN = 0b0000'1000
     };
 
     enum RegisterBitShift : uint8_t {
