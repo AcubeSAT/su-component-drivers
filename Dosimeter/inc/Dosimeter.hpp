@@ -2,6 +2,8 @@
 
 #include "definitions.h"
 #include "Peripheral_Definitions.hpp"
+#include "Task.hpp"
+#include "Logger.hpp"
 
 class Dosimeter {
 public:
@@ -13,7 +15,7 @@ public:
 
     void setThresholdRegister(uint8_t value);
 
-    void waitForTransfer();
+    static void waitForTransfer();
 
     void quickSetup();
 
@@ -30,6 +32,12 @@ private:
 
     constexpr static inline uint8_t RegisterSizeInBytes = 1;
     constexpr static inline uint8_t RegisterAddressSizeInBytes = 1;
+
+    /**
+     * Wait period before for abandoning an SPI transfer because the send/receive buffer does not get unloaded/gets loaded.
+     */
+    constexpr static inline uint16_t TimeoutTicks = 5000;
+
 
     enum class RegisterAddress : uint8_t {
         TEMP = 0x00, ///> Read-only
@@ -119,7 +127,11 @@ private:
         PIO_PinWrite(ChipSelect, true);
     }
 
+    template<typename F, typename... Arguments>
+    void executeSPITransaction(F spiFunction, Arguments... arguments);
+
     uint8_t readRegister(RegisterAddress readRegister);
 
     void writeRegister(RegisterAddress writeRegister, RegisterSpecifiedValue registerSpecifiedValue, uint8_t data);
+
 };
