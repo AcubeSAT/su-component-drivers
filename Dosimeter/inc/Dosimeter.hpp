@@ -11,7 +11,7 @@ public:
 private:
     PIO_PIN ChipSelect = PIO_PIN_NONE;
 
-    enum Register: uint8_t {
+    enum class Register: uint8_t {
         TEMP = 0x00, ///> Read-only
         RECHARGE_STATUS = 0x01, ///> Read-only
         // REGISTER = 0x02, Not supported
@@ -36,18 +36,50 @@ private:
     };
 
     enum RegisterBitMask : uint8_t {
-        RECHEV_EAWR_FCH_ENMC = 0b10000000,
-        EVBCHP_NEBUF_ECH = 0b01000000,
-        NCHP_ENTEMP_EPWR = 0b00100000,
-        ENDCH_NELF_NEASNR = 0b00010000,
+        RECHEV = 0b10000000,
+        EAWR = 0b10000000,
+        FCH = 0b10000000,
+        ENMC = 0b10000000,
+
+        EVBCHP = 0b01000000,
+        NEBUF = 0b01000000,
+        ECH = 0b01000000,
+
+        NCHP = 0b00100000,
+        ENTEMP = 0b00100000,
+        EPWR = 0b00100000,
+
+        ENDCH = 0b00010000,
+        NELF = 0b00010000,
+        NEASNR = 0b00010000,
+
         WINDOW = 0b00001100,
+
         SET = 0b00000011,
         RCHCNT = 0b01111111,
-        F1R_F1S_MSB_TDIV_E9S_ENGATE = 0b00000001,
-        F1ROVF_F1SOVF_SNRF_NIRQOC = 0b00000010,
-        DNEWR_DNEWS_NEIDCM_EDIRT = 0b00000100,
-        TARGET_THRESHOLD = 0b00011111,
-        ENOSC_E2V_LOWN = 0b00001000,
+
+        F1R_MSB = 0b00000001,
+        F1S_MSB = 0b00000001,
+        TDIV = 0b00000001,
+        E9S = 0b00000001,
+        ENGATE = 0b00000001,
+
+        F1ROVF = 0b00000010,
+        F1SOVF = 0b00000010,
+        SNRF = 0b00000010,
+        NIRQOC = 0b00000010,
+
+        DNEWR = 0b00000100,
+        DNEWS = 0b00000100,
+        NEIDCM = 0b00000100,
+        EDIRT = 0b00000100,
+
+        TARGET = 0b00011111,
+        THRESHOLD = 0b00011111,
+
+        ENOSC = 0b00001000,
+        E2V = 0b00001000,
+        LOWN = 0b00001000
     };
 
     enum RegisterBitShift : uint8_t {
