@@ -1,10 +1,18 @@
 #include "Dosimeter.hpp"
 
 uint8_t Dosimeter::readRegister(Dosimeter::RegisterAddress readRegister) {
-    uint8_t commandAddressByte = static_cast<uint8_t >(readRegister) | SPI_READ_COMMAND;
+    uint8_t commandAddressByte = static_cast<uint8_t >(readRegister) or SPI_READ_COMMAND;
     uint8_t registerValue = 0;
 
     DOSIMETER_SPI_WriteRead(&commandAddressByte, RegisterAddressSizeInBytes, &registerValue, RegisterSizeInBytes);
+    waitForTransfer();
+
+    // or try this
+//    DOSIMETER_SPI_Write(&commandAddressByte, RegisterAddressSizeInBytes);
+//    waitForTransfer();
+//
+//    DOSIMETER_SPI_Read(&registerValue, RegisterSizeInBytes);
+//    waitForTransfer();
 
     return registerValue;
 }
