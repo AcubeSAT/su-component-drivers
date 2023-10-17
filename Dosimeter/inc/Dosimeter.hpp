@@ -7,7 +7,7 @@
 
 class Dosimeter {
 public:
-    explicit Dosimeter(PIO_PIN ChipSelect) : ChipSelect(ChipSelect) {
+    explicit Dosimeter(PIO_PIN ChipSelect, uint8_t ChipID) : ChipSelect(ChipSelect), ChipID(ChipID) {
         pullUpChipSelect();
     };
 
@@ -15,7 +15,7 @@ public:
 
     void setThresholdRegister(uint8_t value);
 
-    static void waitForTransfer();
+    void configureSensitivityMode();
 
     void quickSetup();
 
@@ -28,16 +28,24 @@ private:
         SPI_READ_COMMAND = 0x80,
     };
 
-    PIO_PIN ChipSelect = PIO_PIN_NONE;
+    const PIO_PIN ChipSelect = PIO_PIN_NONE;
 
     constexpr static inline uint8_t RegisterSizeInBytes = 1;
     constexpr static inline uint8_t RegisterAddressSizeInBytes = 1;
+    const uint8_t ChipID = 0;
 
     /**
      * Wait period before for abandoning an SPI transfer because the send/receive buffer does not get unloaded/gets loaded.
      */
     constexpr static inline uint16_t TimeoutTicks = 5000;
 
+    enum class SensitivityMode : uint8_t {
+
+    };
+
+    enum class MeasurementWindowInterval : uint8_t {
+
+    };
 
     enum RegisterAddress : uint8_t {
         TEMP = 0x00, ///> Read-only
@@ -133,5 +141,7 @@ private:
     uint8_t readRegister(RegisterAddress readRegister);
 
     void writeRegister(RegisterAddress writeRegister, uint8_t data);
+
+    static void waitForTransfer();
 
 };
