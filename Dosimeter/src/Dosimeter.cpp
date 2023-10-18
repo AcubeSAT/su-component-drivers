@@ -49,3 +49,20 @@ void Dosimeter::waitForTransfer() {
         }
     }
 }
+
+uint8_t Dosimeter::prepareRegisterValue(Dosimeter::RegisterAddress registerAddress, uint8_t data) {
+    switch (registerAddress) {
+        case TARGET:
+            return data & TARGET_DEFAULT;
+        case THRESHOLD:
+            return data & THRESHOLD_DEFAULT;
+        case MISC1:
+            return data & MISC1_DEFAULT;
+        case MISC2:
+            return data | MISC2_DEFAULT;
+        case MISC4:
+            return data & MISC4_DEFAULT;
+        default:
+            return data;
+    }
+}

@@ -17,6 +17,9 @@ public:
 
     void configureSensitivityMode();
 
+    /**
+     * According to the section QUICK SET-UP AND OPERATION EXAMPLE of the datasheet
+     */
     void quickSetup();
 
 private:
@@ -74,6 +77,7 @@ private:
     enum RegisterSpecifiedValue : uint8_t {
         TARGET_DEFAULT = 0b0001'1111, // value AND TARGET_DEFAULT
         THRESHOLD_DEFAULT = 0b0001'1111, // value AND THRESHOLD_DEFAULT
+        MISC1_DEFAULT = 0b1111'1101, // value AND MISC1_DEFAULT
         MISC2_DEFAULT = 0b0111'1000, // value OR MISC2_DEFAULT
         MISC4_DEFAULT = 0b0000'0111 // value AND MISC4_DEFAULT
     };
@@ -143,5 +147,7 @@ private:
     void writeRegister(RegisterAddress writeRegister, uint8_t data);
 
     static void waitForTransfer();
+
+    static uint8_t prepareRegisterValue(RegisterAddress registerAddress, uint8_t data);
 
 };
