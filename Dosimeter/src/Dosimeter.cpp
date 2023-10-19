@@ -68,11 +68,15 @@ uint8_t Dosimeter::prepareRegisterValue(Dosimeter::RegisterAddress registerAddre
     }
 }
 
+void Dosimeter::readSerialNumber() {
+
+}
+
 uint8_t Dosimeter::readChipID() {
     return readRegister(CHIPID);
 }
 
-bool Dosimeter::isSensorAlive() {
+bool Dosimeter::sensorIsAlive() {
     const uint8_t readChipIdResult = readChipID();
     return (readChipIdResult == ChipID::VERSION_1) or (readChipIdResult == ChipID::VERSION_Z_Z1);
 }

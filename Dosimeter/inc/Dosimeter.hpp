@@ -27,8 +27,8 @@ private:
      * SPI Command Type (Write/Read)
      */
     enum SPICommandType : uint8_t {
-        SPI_WRITE_COMMAND = 0x0,
-        SPI_READ_COMMAND = 0x80,
+        SPI_WRITE_COMMAND = 0b0100'0000,
+        SPI_READ_COMMAND = 0b1000'0000,
     };
 
     const PIO_PIN ChipSelect = PIO_PIN_NONE;
@@ -111,6 +111,17 @@ private:
         YES = 1
     };
 
+    enum class ChargePumpOutputVoltage : uint8_t { // set(2:0) bits
+        V14_5 = 0b000,
+        V15_0 = 0b001,
+        V15_5 = 0b010,
+        V16_0 = 0b011,
+        V16_5 = 0b100,
+        V17_0 = 0b101,
+        V17_5 = 0b110,
+        V18_0 = 0b111
+    };
+
     enum class RechargeSource : uint8_t {
         INTERNAL_PUMP = 0,
         EXTERNAL_VOLTAGE_AT_VB = 1
@@ -126,7 +137,7 @@ private:
         CHARGING_STARTED = 1
     };
 
-    enum class SensitivityConfiguration : uint8_t {
+    enum class SensitivityConfiguration : uint8_t { // sens(2:0) bits
         HIGH_SENSITIVITY = 0b001,
         LOW_SENSITIVITY = 0b100
     };
@@ -245,5 +256,5 @@ private:
 
     uint8_t readChipID();
 
-    bool isSensorAlive();
+    bool sensorIsAlive();
 };
