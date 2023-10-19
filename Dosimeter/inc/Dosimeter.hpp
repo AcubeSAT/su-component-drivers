@@ -7,7 +7,7 @@
 
 class Dosimeter {
 public:
-    explicit Dosimeter(PIO_PIN ChipSelect, uint8_t ChipID) : ChipSelect(ChipSelect), ChipID(ChipID) {
+    explicit Dosimeter(PIO_PIN ChipSelect) : ChipSelect(ChipSelect) {
         pullUpChipSelect();
     };
 
@@ -35,19 +35,110 @@ private:
 
     constexpr static inline uint8_t RegisterSizeInBytes = 1;
     constexpr static inline uint8_t RegisterAddressSizeInBytes = 1;
-    const uint8_t ChipID = 0;
+//    constexpr static inline uint8_t ChipID = 0x81;
+
+    const uint32_t ChipSerialNumber = 0;
 
     /**
      * Wait period before for abandoning an SPI transfer because the send/receive buffer does not get unloaded/gets loaded.
      */
     constexpr static inline uint16_t TimeoutTicks = 5000;
 
-    enum class SensitivityMode : uint8_t {
+    enum class SensorCounterStatus : uint8_t {
+        NO_COUNTER_OVERFLOW = 0,
+        COUNTER_OVERFLOW = 1
+    };
 
+    enum class ReferenceDataStatus : uint8_t {
+        NO_NEW_DATA_AVAILABLE = 0,
+        NEW_DATA_AVAILABLE = 1
+    };
+
+    enum class SensorDataStatus : uint8_t {
+        NO_NEW_DATA_AVAILABLE = 0,
+        NEW_DATA_AVAILABLE = 1
+    };
+
+    enum class ReferenceFrequencyConfiguration : uint8_t {
+        SET_HIGH = 0,
+        SET_LOW = 1
+    };
+
+    enum class ReferenceCounterStatus : uint8_t {
+        NO_COUNTER_OVERFLOW = 0,
+        COUNTER_OVERFLOW = 1
     };
 
     enum class MeasurementWindowInterval : uint8_t {
+        THIRTY_TWO_K = 0b00,
+        SIXTEEN_K = 0b01,
+        EIGHT_K = 0b10,
+        FOUR_K = 0b11
+    };
 
+    enum class MeasurementsDuringSPIStatus : uint8_t {
+        ALLOWED = 0,
+        NOT_ALLOWED = 1
+    };
+
+    enum class WindowMeasurementStatus : uint8_t {
+        BY_COUNTS_AT_CK = 0,
+        BY_GATING_AT_CK = 1
+    };
+
+    enum class ChargingMode : uint8_t {
+        AUTO_CHARGING_DISABLED = 0,
+        AUTO_CHARGING_ENABLED
+    };
+
+    enum class RechargingStatus : uint8_t {
+        RECHARGING_ALLOWED = 0,
+        RECHARGING_NOT_ALLOWED = 1
+    };
+
+    enum class RechargingEventStatus : uint8_t {
+        NOT_IN_PROGRESS = 0,
+        IN_PROGRESS = 1
+    };
+
+    enum class RechargingCounter : uint8_t {
+        NO_RECHARGES = 0,
+        AT_LEAST_127_RECHARGES = 1
+    };
+
+    enum class ChargePumpConnectedToVB : uint8_t {
+        NO = 0,
+        YES = 1
+    };
+
+    enum class RechargeSource : uint8_t {
+        INTERNAL_PUMP = 0,
+        EXTERNAL_VOLTAGE_AT_VB = 1
+    };
+
+    enum class DividerForTargetAndThreshold : uint8_t {
+        THIRTEEN_LSB_BITS = 0,
+        TEN_LSB_BITS = 1
+    };
+
+    enum class ForceChargeInManualMode : uint8_t {
+        CHARGING_STOPPED = 0,
+        CHARGING_STARTED = 1
+    };
+
+    enum class SensitivityConfiguration : uint8_t {
+        HIGH_SENSITIVITY = 0b001,
+        LOW_SENSITIVITY = 0b100
+    };
+
+    enum class InterruptOutputConfiguration : uint8_t {
+        PUSH_PULL = 0,
+        OPEN_COLLECTOR = 1
+    };
+
+    enum ChipID : uint8_t {
+        VERSION_1 = 0x01,
+        VERSION_Z_Z1 = 0x81
     };
 
     enum RegisterAddress : uint8_t {
@@ -67,9 +158,9 @@ private:
         MISC3 = 0x0D, ///> Read-Write
         MISC4 = 0x0E, ///> Read-Write
         // REGISTER = 0x0F, Not supported
-        SN_LSB = 0x10, ///> Read-Write
-        SN_MIDB = 0x11, ///> Read-Write
-        SN_MSB = 0x12, ///> Read-Write
+        SN_LSB = 0x10, ///> Read-only
+        SN_MIDB = 0x11, ///> Read-only
+        SN_MSB = 0x12, ///> Read-only
         CHIPID = 0x13, ///> Read-only
         RESERVED = 0x14 // check if bits need to have a specific value
     };
@@ -150,4 +241,9 @@ private:
 
     static uint8_t prepareRegisterValue(RegisterAddress registerAddress, uint8_t data);
 
+    void readSerialNumber();
+
+    uint8_t readChipID();
+
+    bool isSensorAlive();
 };
