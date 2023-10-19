@@ -49,19 +49,17 @@ private:
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    const int numOfBits;
+    inline static constexpr uint16_t numOfBits = 4096;
 
     /**
      * Value of the voltage that we connect the sensor to.
      */
-    const int voltageValue;
+    inline static constexpr uint16_t voltageValue = 3300;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    const float resistorValue ;
-
-public:
+    const float resistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
@@ -71,17 +69,25 @@ public:
     /**
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
      */
-     uint16_t adcResult;
+    uint16_t adcResult;
+
+public:
 
     /**
-     * Sets the Analog to Digital conversion result.
-     * @param adcResult
+     * Getter function for the number of the channel used in the ADC conversion.
+     * @return AFEC peripheral channel number
      */
+    inline AFEC_CHANNEL_NUM getADCChannelNum(){
+        return adcChannelNumber;
+    }
+
+    /**
+    * Sets the Analog to Digital conversion result.
+    * @param adcResult
+    */
     void setADCResult(const uint16_t adcResult);
 
-
-    AD590(int numOfBits,int voltageValue, float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): numOfBits(numOfBits),voltageValue(voltageValue),resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
-
+    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
 
     /**
      * Converts the voltage to current and finally to temperature in Celsius.
@@ -93,6 +99,8 @@ public:
     /**
      * Gets the analog temperature from the AD590 temperature sensor, converts it to digital and prints it.
      */
-    float getTemperature();
+    inline float getTemperature(){
+        return convertADCValueToTemperature(adcResult);
+    }
 };
 
