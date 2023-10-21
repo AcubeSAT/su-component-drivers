@@ -12,6 +12,7 @@
 #define AD590_AFEC_ChannelResultGet AFEC0_ChannelResultGet
 #define AD590_AFEC_ConversionStart AFEC0_ConversionStart
 #define AD590_AFEC_ChannelResultIsReady AFEC0_ChannelResultIsReady
+#define AD590_AFEC_CallbackRegister AFEC0_CallbackRegister
 
 #elif AD590_AFEC_Peripheral == 1
 
@@ -19,6 +20,7 @@
 #define AD590_AFEC_ChannelResultGet AFEC1_ChannelResultGet
 #define AD590_AFEC_ConversionStart AFEC1_ConversionStart
 #define AD590_AFEC_ChannelResultIsReady AFEC1_ChannelResultIsReady
+#define AD590_AFEC_CallbackRegister AFEC1_CallbackRegister
 
 #endif
 
@@ -90,17 +92,9 @@ public:
     AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
 
     /**
-     * Converts the voltage to current and finally to temperature in Celsius.
-     * @param ADCconversion The ADC conversion result
+     * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius..
      * @return The temperature in Celsius
      */
-    float convertADCValueToTemperature(uint16_t ADCconversion);
-
-    /**
-     * Gets the analog temperature from the AD590 temperature sensor, converts it to digital and prints it.
-     */
-    inline float getTemperature(){
-        return convertADCValueToTemperature(adcResult);
-    }
+    float getTemperature();
 };
 
