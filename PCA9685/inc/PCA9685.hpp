@@ -117,20 +117,6 @@ private:
     };
 
     /**
-     *
-     */
-    enum class pca9685_addr_resp_t : uint8_t {
-        NORESPOND = 0x00,
-        RESPOND   = 0x01,
-    };
-
-    enum class pca9685_subaddr_no_t : uint8_t {
-        SUB_ADDR_1 = 0x1,
-        SUB_ADDR_2 = 0x2,
-        SUB_ADDR_3 = 0x3,
-    };
-
-    /**
      * @enum LEDnState
      *
      * Determine whether a LED is On or Off
@@ -187,27 +173,6 @@ private:
     };
 
     /**
-     * @struct RegisterMODE2
-     */
-    struct RegisterMODE2 {
-        OutputInvert INVRT = OutputInvert::NOT_INVERTED;
-        OutputChangesOn OCH = OutputChangesOn::STOP;
-        OutputConfiguration OUTDRV = OutputConfiguration::OPEN_DRAIN_STRUCTURE;
-        OEPinHighStates OUTNE = OEPinHighStates::LOW;
-    };
-
-    struct RegisterMODE1 {
-        uint8_t RESTART = 0x0;
-        uint8_t EXTCLK = static_cast<uint8_t>(Oscillator::INTERNAL);
-        uint8_t AI = static_cast<uint8_t>(RegisterAutoIncrement::DISABLED);
-        uint8_t SLEEP = static_cast<uint8_t>(SleepMode::NORMAL);
-        uint8_t SUB1 = 0x0;
-        uint8_t SUB2 = 0x0;
-        uint8_t SUB3 = 0x0;
-        uint8_t ALLCALL = 0x0;
-    };
-
-    /**
      * The address for the I2C protocol of the PCA9685 device.
      */
     I2CAddress i2cAddress;
@@ -221,6 +186,11 @@ private:
      * Slave address to select WRITE operation
      */
     uint8_t slaveAddressWrite;
+
+    /**
+     * Softare Reset (SWRST) register address
+     */
+    static constexpr uint8_t softwareResetRegister = 0x6;
 
     void setMode1Register();
 
