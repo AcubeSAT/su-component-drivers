@@ -65,67 +65,11 @@ public:
      * addresses are considered to be reserved.
      */
     enum class I2CAddress : uint8_t {
-        I2CAddress_000001 = 0b000001,
-        I2CAddress_000110 = 0b000110,
-        I2CAddress_000111 = 0b000111,
-        I2CAddress_001000 = 0b001000,
-        I2CAddress_001001 = 0b001001,
-        I2CAddress_001010 = 0b001010,
-        I2CAddress_001011 = 0b001011,
-        I2CAddress_001100 = 0b001100,
-        I2CAddress_001101 = 0b001101,
-        I2CAddress_001110 = 0b001110,
-        I2CAddress_001111 = 0b001111,
-        I2CAddress_010000 = 0b010000,
-        I2CAddress_010001 = 0b010001,
-        I2CAddress_010010 = 0b010010,
-        I2CAddress_010011 = 0b010011,
-        I2CAddress_010100 = 0b010100,
-        I2CAddress_010101 = 0b010101,
-        I2CAddress_010110 = 0b010110,
-        I2CAddress_010111 = 0b010111,
-        I2CAddress_011000 = 0b011000,
-        I2CAddress_011001 = 0b011001,
-        I2CAddress_011010 = 0b011010,
-        I2CAddress_011011 = 0b011011,
-        I2CAddress_011100 = 0b011100,
-        I2CAddress_011101 = 0b011101,
-        I2CAddress_011110 = 0b011110,
-        I2CAddress_011111 = 0b011111,
-        I2CAddress_100000 = 0b100000,
-        I2CAddress_100001 = 0b100001,
-        I2CAddress_100010 = 0b100010,
-        I2CAddress_100011 = 0b100011,
-        I2CAddress_100100 = 0b100100,
-        I2CAddress_100101 = 0b100101,
-        I2CAddress_100110 = 0b100110,
-        I2CAddress_100111 = 0b100111,
-        I2CAddress_101000 = 0b101000,
         I2CAddress_101001 = 0b101001,
         I2CAddress_101010 = 0b101010,
         I2CAddress_101011 = 0b101011,
         I2CAddress_101100 = 0b101100,
-        I2CAddress_101101 = 0b101101,
-        I2CAddress_101110 = 0b101110,
-        I2CAddress_101111 = 0b101111,
-        I2CAddress_110000 = 0b110000,
-        I2CAddress_110001 = 0b110001,
-        I2CAddress_110010 = 0b110010,
-        I2CAddress_110011 = 0b110011,
-        I2CAddress_110100 = 0b110100,
-        I2CAddress_110101 = 0b110101,
-        I2CAddress_110110 = 0b110110,
-        I2CAddress_110111 = 0b110111,
-        I2CAddress_111000 = 0b111000,
-        I2CAddress_111001 = 0b111001,
-        I2CAddress_111010 = 0b111010,
-        I2CAddress_111011 = 0b111011,
-        I2CAddress_111100 = 0b111100,
-        I2CAddress_111101 = 0b111101,
-        I2CAddress_111110 = 0b111110,
-        I2CAddress_111111 = 0b111111
     };
-
 
     /**
      * @brief Constructor for the PCA9685 class.
@@ -133,7 +77,135 @@ public:
      */
     explicit PCA9685(I2CAddress i2cAddress);
 
+    void setDeviceToSleep(bool sleep);
+    void setExternalClock(bool externalClock);
+    void performHardwareRestart(bool hardwareRestart);
+    bool readHardwareRestartStatus();
+    void allowRegisterAutoIncrement(bool allow);
+    void applySoftwareReset();
+
 private:
+
+    /**
+     * @enum Oscillator
+     *
+     * Determine whether PCA9685 uses either the internal or an external clock
+     */
+    enum class Oscillator : uint8_t {
+        INTERNAL = 0x0,
+        EXTERNAL = 0x1,
+    };
+
+    /**
+     * @enum RegisterAutoIncrement
+     *
+     * Determine whether register auto increment (AI) is either enabled or disabled
+     */
+    enum class RegisterAutoIncrement : uint8_t {
+        DISABLED = 0x0,
+        ENABLED  = 0x1,
+    };
+
+    /**
+     * @enum SleepMode
+     *
+     * Determine whether PCA9685 operates either in normal mode or in low-power mode
+     */
+    enum class SleepMode : uint8_t {
+        NORMAL = 0x00,
+        SLEEP  = 0x01,
+    };
+
+    /**
+     *
+     */
+    enum class pca9685_addr_resp_t : uint8_t {
+        NORESPOND = 0x00,
+        RESPOND   = 0x01,
+    };
+
+    enum class pca9685_subaddr_no_t : uint8_t {
+        SUB_ADDR_1 = 0x1,
+        SUB_ADDR_2 = 0x2,
+        SUB_ADDR_3 = 0x3,
+    };
+
+    /**
+     * @enum LEDnState
+     *
+     * Determine whether a LED is On or Off
+     */
+    enum class LEDnState : uint8_t {
+        OFF = 0x0,
+        ON  = 0x1,
+    };
+
+    /**
+     * @enum OutputInvert
+     *
+     * Output logic state can be inverted (1h) or not (oh)
+     *
+     * @brief Setting the INVRT bit of MODE1 register allows you to control whether the output is active high
+     * or active low when the PWM reaches its specified value.
+     */
+    enum class OutputInvert : uint8_t {
+        NOT_INVERTED = 0x0,
+        INVERTED = 0x1,
+    };
+
+    /**
+     * @enum OutputConfiguration
+     *
+     * Output can be configured either as open-drain (0h) or totem-pole (1h) structure
+     *
+     * @brief This can be configured through the OUTDRV bit of the MODE1 register
+     */
+    enum class OutputConfiguration : uint8_t {
+        OPEN_DRAIN_STRUCTURE = 0x0,
+        TOTEM_POLE_STRUCTURE = 0x1,
+    };
+
+    /**
+     * @enum OutputChange
+     *
+     * Determine whether outputs change on STOP or ACK command
+     */
+    enum class OutputChangesOn : uint8_t {
+        STOP = 0x0,
+        ACK = 0x1,
+    };
+
+    /**
+     * @enum OEPinHighStates
+     *
+     * Possible states of the PCA9685 IC when OE pin is set HIGH (datasheet p. 7.4)
+     */
+    enum class OEPinHighStates: uint8_t {
+        LOW = 0x0,              // OUTNE1: 0, OUTNE0: 0
+        HIGH = 0x1,             // OUTNE1: 0, OUTNE0: 1
+        HIGH_IMPEDANCE = 0x2,   // OUTNE1: 1, OUTNE0: 0 or OUTNE1: 1, OUTNE0: 1
+    };
+
+    /**
+     * @struct RegisterMODE2
+     */
+    struct RegisterMODE2 {
+        OutputInvert INVRT = OutputInvert::NOT_INVERTED;
+        OutputChangesOn OCH = OutputChangesOn::STOP;
+        OutputConfiguration OUTDRV = OutputConfiguration::OPEN_DRAIN_STRUCTURE;
+        OEPinHighStates OUTNE = OEPinHighStates::LOW;
+    };
+
+    struct RegisterMODE1 {
+        uint8_t RESTART = 0x0;
+        uint8_t EXTCLK = static_cast<uint8_t>(Oscillator::INTERNAL);
+        uint8_t AI = static_cast<uint8_t>(RegisterAutoIncrement::DISABLED);
+        uint8_t SLEEP = static_cast<uint8_t>(SleepMode::NORMAL);
+        uint8_t SUB1 = 0x0;
+        uint8_t SUB2 = 0x0;
+        uint8_t SUB3 = 0x0;
+        uint8_t ALLCALL = 0x0;
+    };
 
     /**
      * The address for the I2C protocol of the PCA9685 device.
@@ -149,6 +221,10 @@ private:
      * Slave address to select WRITE operation
      */
     uint8_t slaveAddressWrite;
+
+    void setMode1Register();
+
+    void setMode2Register();
 
     /**
      * Function that reads from a specified register of the PCA9685 device.

@@ -38,3 +38,35 @@ void PCA9685::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
         vTaskDelay(0);
     }
 }
+
+void PCA9685::setMode1Register() {
+    uint8_t restart = 0x0;
+    auto extclk = static_cast<uint8_t>(Oscillator::INTERNAL);
+    auto autoIncrement = static_cast<uint8_t>(RegisterAutoIncrement::DISABLED);
+    auto sleep = static_cast<uint8_t>(SleepMode::NORMAL);
+    uint8_t sub1 = 0x0;
+    uint8_t sub2 = 0x0;
+    uint8_t sub3 = 0x0;
+    uint8_t allCall = 0x0;
+
+    uint8_t tData[1] = {static_cast<uint8_t>(static_cast<uint8_t >(restart<<7) | static_cast<uint8_t >(extclk<<6)
+                                             | static_cast<uint8_t >(autoIncrement<<5) | static_cast<uint8_t>(sleep)
+                                             | static_cast<uint8_t >(sub1<<3) | static_cast<uint8_t >(sub2<<2)
+                                             | static_cast<uint8_t >(sub3<<1) | static_cast<uint8_t >(allCall))};
+
+    writeRegister(tData, sizeof(tData));
+}
+
+void PCA9685::setMode2Register() {
+    auto invrt = static_cast<uint8_t>(OutputInvert::NOT_INVERTED);
+    auto och = static_cast<uint8_t>(OutputChangesOn::STOP);
+    auto outdrv = static_cast<uint8_t>(OutputConfiguration::OPEN_DRAIN_STRUCTURE);
+    auto outne = static_cast<uint8_t>(OEPinHighStates::LOW);
+
+    uint8_t tData[1] = {static_cast<uint8_t>(static_cast<uint8_t>(invrt<<4) | static_cast<uint8_t >(och<<3)
+                        | static_cast<uint8_t>(outdrv<<2) | outne)};
+
+    writeRegister(tData, sizeof(tData));
+}
+
+
