@@ -40,19 +40,16 @@ void PCA9685::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
 }
 
 void PCA9685::setMode1Register() {
-    uint8_t restart = 0x0;
+    auto restart = static_cast<uint8_t>(HardwareRestart::DISABLED);
     auto extclk = static_cast<uint8_t>(Oscillator::INTERNAL);
     auto autoIncrement = static_cast<uint8_t>(RegisterAutoIncrement::DISABLED);
     auto sleep = static_cast<uint8_t>(SleepMode::NORMAL);
-    uint8_t sub1 = 0x0;
-    uint8_t sub2 = 0x0;
-    uint8_t sub3 = 0x0;
-    uint8_t allCall = 0x0;
+    auto sub1 = static_cast<uint8_t>(RespondToI2CBusAddresses::SUB1_NO_RESPOND);
+    auto sub2 = static_cast<uint8_t>(RespondToI2CBusAddresses::SUB2_NO_RESPOND);
+    auto sub3 = static_cast<uint8_t>(RespondToI2CBusAddresses::SUB3_NO_RESPOND);
+    auto allCall = static_cast<uint8_t>(RespondToI2CBusAddresses::ALLCALL_RESPOND);
 
-    uint8_t tData[1] = {static_cast<uint8_t>(static_cast<uint8_t >(restart<<7) | static_cast<uint8_t >(extclk<<6)
-                                             | static_cast<uint8_t >(autoIncrement<<5) | static_cast<uint8_t>(sleep)
-                                             | static_cast<uint8_t >(sub1<<3) | static_cast<uint8_t >(sub2<<2)
-                                             | static_cast<uint8_t >(sub3<<1) | static_cast<uint8_t >(allCall))};
+    uint8_t tData[1] = {static_cast<uint8_t>(restart | extclk | autoIncrement | sleep | sub1 | sub2 | sub3 | allCall)};
 
     writeRegister(tData, sizeof(tData));
 }

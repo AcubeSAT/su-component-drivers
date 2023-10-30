@@ -87,13 +87,23 @@ public:
 private:
 
     /**
+     * @enum HardwareRestart
+     *
+     * Bit 7 of MODE1 register
+     */
+    enum class HardwareRestart : uint8_t {
+        DISABLED = 0x00,
+        ENABLED = 0x80,
+    };
+
+    /**
      * @enum Oscillator
      *
      * Determine whether PCA9685 uses either the internal or an external clock
      */
     enum class Oscillator : uint8_t {
-        INTERNAL = 0x0,
-        EXTERNAL = 0x1,
+        INTERNAL = 0x00,
+        EXTERNAL = 0x40,
     };
 
     /**
@@ -102,8 +112,8 @@ private:
      * Determine whether register auto increment (AI) is either enabled or disabled
      */
     enum class RegisterAutoIncrement : uint8_t {
-        DISABLED = 0x0,
-        ENABLED  = 0x1,
+        DISABLED = 0x00,
+        ENABLED  = 0x20,
     };
 
     /**
@@ -113,17 +123,23 @@ private:
      */
     enum class SleepMode : uint8_t {
         NORMAL = 0x00,
-        SLEEP  = 0x01,
+        SLEEP  = 0x10,
     };
 
     /**
-     * @enum LEDnState
+     * @enum RespondToI2CBusAddresses
      *
-     * Determine whether a LED is On or Off
+     * Determine whether PCA9685 operates either in normal mode or in low-power mode
      */
-    enum class LEDnState : uint8_t {
-        OFF = 0x0,
-        ON  = 0x1,
+    enum class RespondToI2CBusAddresses : uint8_t {
+        SUB1_NO_RESPOND = 0x0,
+        SUB1_RESPOND = 0x8,
+        SUB2_NO_RESPOND = 0x0,
+        SUB2_RESPOND = 0x4,
+        SUB3_NO_RESPOND = 0x0,
+        SUB3_RESPOND = 0x2,
+        ALLCALL_NO_RESPOND = 0x0,
+        ALLCALL_RESPOND = 0x1,
     };
 
     /**
@@ -140,6 +156,16 @@ private:
     };
 
     /**
+     * @enum OutputChange
+     *
+     * Determine whether outputs change on STOP or ACK command
+     */
+    enum class OutputChangesOn : uint8_t {
+        STOP = 0x0,
+        ACK = 0x1,
+    };
+
+    /**
      * @enum OutputConfiguration
      *
      * Output can be configured either as open-drain (0h) or totem-pole (1h) structure
@@ -149,16 +175,6 @@ private:
     enum class OutputConfiguration : uint8_t {
         OPEN_DRAIN_STRUCTURE = 0x0,
         TOTEM_POLE_STRUCTURE = 0x1,
-    };
-
-    /**
-     * @enum OutputChange
-     *
-     * Determine whether outputs change on STOP or ACK command
-     */
-    enum class OutputChangesOn : uint8_t {
-        STOP = 0x0,
-        ACK = 0x1,
     };
 
     /**
@@ -188,7 +204,7 @@ private:
     uint8_t slaveAddressWrite;
 
     /**
-     * Softare Reset (SWRST) register address
+     * Software Reset (SWRST) register address
      */
     static constexpr uint8_t softwareResetRegister = 0x6;
 
