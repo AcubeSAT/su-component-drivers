@@ -60,8 +60,7 @@ void PCA9685::setMode2Register() {
     auto outdrv = static_cast<uint8_t>(OutputConfiguration::OPEN_DRAIN_STRUCTURE);
     auto outne = static_cast<uint8_t>(OEPinHighStates::LOW);
 
-    uint8_t tData[1] = {static_cast<uint8_t>(static_cast<uint8_t>(invrt<<4) | static_cast<uint8_t >(och<<3)
-                        | static_cast<uint8_t>(outdrv<<2) | outne)};
+    uint8_t tData[1] = {static_cast<uint8_t>(invrt | och | outdrv | outne)};
 
     writeRegister(tData, sizeof(tData));
 }

@@ -151,8 +151,8 @@ private:
      * or active low when the PWM reaches its specified value.
      */
     enum class OutputInvert : uint8_t {
-        NOT_INVERTED = 0x0,
-        INVERTED = 0x1,
+        NOT_INVERTED = 0x00,
+        INVERTED = 0x10,
     };
 
     /**
@@ -162,7 +162,7 @@ private:
      */
     enum class OutputChangesOn : uint8_t {
         STOP = 0x0,
-        ACK = 0x1,
+        ACK = 0x8,
     };
 
     /**
@@ -174,7 +174,7 @@ private:
      */
     enum class OutputConfiguration : uint8_t {
         OPEN_DRAIN_STRUCTURE = 0x0,
-        TOTEM_POLE_STRUCTURE = 0x1,
+        TOTEM_POLE_STRUCTURE = 0x4,
     };
 
     /**
