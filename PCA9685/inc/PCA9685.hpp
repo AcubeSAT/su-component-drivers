@@ -240,8 +240,14 @@ private:
      */
     uint8_t slaveAddressWrite;
 
+    /**
+     * Set the bits of the byte that are written to the MODE1 register
+     */
     void setMode1Register();
 
+    /**
+     * Set the bits of the byte that are written to the MODE2 register
+     */
     void setMode2Register();
 
     /**
