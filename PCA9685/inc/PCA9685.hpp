@@ -87,13 +87,13 @@ public:
     void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent);
 
     /**
-     * Function that sets the PWM duty cycle of the specified channel given a starting delay
+     * Function that sets the PWM duty cycle of the specified channel given a starting delayPercent
      *
      * @param channel The PWM channel that is to be modified (0-15)
      * @param dutyCycle The duty cycle of the PWM given as a percentage
-     * @param delay The delay time given as a percentage
+     * @param delayPercent The delayPercent time given as a percentage
      */
-    void setPWMChannel(uint8_t channel, uint8_t dutyCycle, uint8_t delay);
+    void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent);
 
     /**
      * Set device to low-power operation (no PWMs are generated)
