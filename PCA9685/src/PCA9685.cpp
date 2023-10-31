@@ -115,12 +115,25 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent) {
     auto byte2 = static_cast<uint8_t>(dutyCycleLSB);
     auto byte3 = static_cast<uint8_t>(dutyCycleMSB);
 
-    uint8_t rData[1];
+    auto *tData = reinterpret_cast<uint8_t *>(LEDn_ON_L);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte0);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
 
-    readRegister(LEDn_ON_L, rData, static_cast<uint8_t>(sizeof rData));
-    readRegister(LEDn_ON_H, rData, static_cast<uint8_t>(sizeof rData));
-    readRegister(LEDn_OFF_L, rData, static_cast<uint8_t>(sizeof rData));
-    readRegister(LEDn_OFF_H, rData, static_cast<uint8_t>(sizeof rData));
+    tData = reinterpret_cast<uint8_t *>(LEDn_ON_H);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte1);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+
+    tData = reinterpret_cast<uint8_t *>(LEDn_OFF_L);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte2);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+
+    tData = reinterpret_cast<uint8_t *>(LEDn_OFF_H);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte3);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
 
 }
 
@@ -164,14 +177,22 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
 
     auto *tData = reinterpret_cast<uint8_t *>(LEDn_ON_L);
     writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte0);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
 
     tData = reinterpret_cast<uint8_t *>(LEDn_ON_H);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte1);
     writeRegister(tData, static_cast<uint8_t>(sizeof tData));
 
     tData = reinterpret_cast<uint8_t *>(LEDn_OFF_L);
     writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte2);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
 
     tData = reinterpret_cast<uint8_t *>(LEDn_OFF_H);
+    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    tData = reinterpret_cast<uint8_t *>(byte3);
     writeRegister(tData, static_cast<uint8_t>(sizeof tData));
     
 }
