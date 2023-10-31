@@ -72,13 +72,44 @@ public:
     };
 
     /**
-     * @brief Constructor for the PCA9685 class.
+     * Constructor for the PCA9685 class.
+     *
      * @param something The I2C master port number used for communication.
      */
     explicit PCA9685(I2CAddress i2cAddress);
 
+    /**
+     * Function that sets the PWM duty cycle of the specified channel
+     *
+     * @param channel The PWM channel that is to be modified (0-15)
+     * @param dutyCyclePercent The duty cycle of the PWM given as a percentage
+     */
+    void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent);
+
+    /**
+     * Function that sets the PWM duty cycle of the specified channel given a starting delay
+     *
+     * @param channel The PWM channel that is to be modified (0-15)
+     * @param dutyCycle The duty cycle of the PWM given as a percentage
+     * @param delay The delay time given as a percentage
+     */
+    void setPWMChannel(uint8_t channel, uint8_t dutyCycle, uint8_t delay);
+
+    /**
+     * Set device to low-power operation (no PWMs are generated)
+     *
+     * @param sleep
+     */
     void setDeviceToSleep(bool sleep);
+
+    /**
+     * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency.
+     * @param frequency
+     */
+    void setDeviceFrequency(uint16_t frequency);
+
     void setExternalClock(bool externalClock);
+
     void performHardwareRestart(bool hardwareRestart);
     bool readHardwareRestartStatus();
     void allowRegisterAutoIncrement(bool allow);
@@ -87,9 +118,14 @@ public:
 private:
 
     /**
+     * The maximum step count (4096)
+     */
+    static constexpr uint16_t GrayscaleMaximumSteps = 0x1000;
+
+    /**
      * The number of bytes/registers that define the form of the PWM
      */
-    static constexpr uint8_t NumberOfBytesPerPWMChannel = 0x04;
+    static constexpr uint8_t NumberOfBytesPerPWMChannelRegisters = 0x04;
 
     /**
      * The address of LED0_ON_L register
@@ -251,6 +287,20 @@ private:
     void setMode2Register();
 
     /**
+     * Set the specified channel to always off
+     *
+     * @param channel
+     */
+    void setPWMChannelAlwaysOff(uint8_t channel);
+
+    /**
+     * Set the specified channel to always on
+     *
+     * @param channel
+     */
+    void setPWMChannelAlwaysOn(uint8_t channel);
+
+    /**
      * Function that reads from a specified register of the PCA9685 device.
      *
      * @param registerAddress The address of the register.
@@ -258,6 +308,15 @@ private:
      * @param numberOfBytesToRead The number of bytes that are read from the register.
      */
     void readRegister(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+
+    /**
+     * Function that reads from a specified register of the PCA9685 device.
+     *
+     * @param registerAddress The address of the register.
+     * @param rData  The response of the device as an array of bytes.
+     * @param numberOfBytesToRead The number of bytes that are read from the register.
+     */
+    void readRegister(uint8_t registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
