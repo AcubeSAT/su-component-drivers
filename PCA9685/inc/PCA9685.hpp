@@ -87,6 +87,43 @@ public:
 private:
 
     /**
+     * The number of bytes/registers that define the form of the PWM
+     */
+    static constexpr uint8_t NumberOfBytesPerPWMChannel = 0x04;
+
+    /**
+     * The address of LED0_ON_L register
+     */
+    static constexpr uint8_t RegisterAddressOfFirstPWMChannel = 0x06;
+
+    /**
+     * Software Reset (SWRST) data byte
+     *
+     * @brief Once the General Call address has been sent and acknowledged, the master sends this specific value
+     * (SWRST data byte 1) in order for the PCA9685 to reset to power-up values.
+     */
+    static constexpr uint8_t softwareResetDataByte = 0x6;
+
+    /**
+     * @enum RegisterAddresses
+     *
+     * An enum that contains the various register addresses that PCA9685 acknowledges
+     */
+    enum class RegisterAddresses : uint8_t {
+        MODE1 = 0x00,
+        MODE2 = 0x01,
+        SUBADR1 = 0x02,
+        SUBADR2 = 0x03,
+        SUBADR3 = 0x04,
+        ALLCALLADR = 0x05,
+        ALL_LED_ON_L = 0xFA,
+        ALL_LED_ON_H = 0xFB,
+        ALL_LED_OFF_L = 0xFC,
+        ALL_LED_OFF_H = 0xFD,
+        PRE_SCALE = 0xFE,       // Writes to PRE_SCALE register are blocked when SLEEP bit is logic 0 (MODE 1)
+    };
+
+    /**
      * @enum HardwareRestart
      *
      * Bit 7 of MODE1 register
@@ -203,11 +240,6 @@ private:
      */
     uint8_t slaveAddressWrite;
 
-    /**
-     * Software Reset (SWRST) register address
-     */
-    static constexpr uint8_t softwareResetRegister = 0x6;
-
     void setMode1Register();
 
     void setMode2Register();
@@ -219,7 +251,7 @@ private:
      * @param rData  The response of the device as an array of bytes.
      * @param numberOfBytesToRead The number of bytes that are read from the register.
      */
-    void readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+    void readRegister(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.

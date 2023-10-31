@@ -6,7 +6,7 @@ PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
     slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
 }
 
-void PCA9685::readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
+void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
     bool success = PCA9685_TWIHS_WriteRead(slaveAddressRead, reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead);
 
     if (!success) {
