@@ -5,24 +5,7 @@
 #include "Logger.hpp"
 #include "task.h"
 #include "Peripheral_Definitions.hpp"
-
-#if AD590_AFEC_Peripheral == 0
-
-#include "peripheral/afec/plib_afec0.h"
-#define AD590_AFEC_ChannelResultGet AFEC0_ChannelResultGet
-#define AD590_AFEC_ConversionStart AFEC0_ConversionStart
-#define AD590_AFEC_ChannelResultIsReady AFEC0_ChannelResultIsReady
-#define AD590_AFEC_CallbackRegister AFEC0_CallbackRegister
-
-#elif AD590_AFEC_Peripheral == 1
-
-#include "peripheral/afec/plib_afec1.h"
-#define AD590_AFEC_ChannelResultGet AFEC1_ChannelResultGet
-#define AD590_AFEC_ConversionStart AFEC1_ConversionStart
-#define AD590_AFEC_ChannelResultIsReady AFEC1_ChannelResultIsReady
-#define AD590_AFEC_CallbackRegister AFEC1_CallbackRegister
-
-#endif
+#include "peripheral/afec/plib_afec_common.h"
 
 /**
  * AD590 temperature sensor driver
