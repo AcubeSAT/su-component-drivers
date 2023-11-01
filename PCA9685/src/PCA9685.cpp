@@ -55,11 +55,12 @@ void PCA9685::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
     }
 }
 
-void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t *tData) {
+void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte) {
     auto registerAddressArray = reinterpret_cast<uint8_t *>(registerAddress);
-    
+    auto transmittedByteArray = reinterpret_cast<uint8_t *>(transmittedByte);
+
     writeRegister(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
-    writeRegister(tData, static_cast<uint8_t >(sizeof tData));
+    writeRegister(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
 }
 
 void PCA9685::setMode1Register() {
@@ -122,25 +123,10 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent) {
     auto byte2 = static_cast<uint8_t>(dutyCycleLSB);
     auto byte3 = static_cast<uint8_t>(dutyCycleMSB);
 
-    auto *tData = reinterpret_cast<uint8_t *>(LEDn_ON_L);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-    tData = reinterpret_cast<uint8_t *>(byte0);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-
-    tData = reinterpret_cast<uint8_t *>(LEDn_ON_H);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-    tData = reinterpret_cast<uint8_t *>(byte1);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-
-    tData = reinterpret_cast<uint8_t *>(LEDn_OFF_L);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-    tData = reinterpret_cast<uint8_t *>(byte2);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-
-    tData = reinterpret_cast<uint8_t *>(LEDn_OFF_H);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-    tData = reinterpret_cast<uint8_t *>(byte3);
-    writeRegister(tData, static_cast<uint8_t>(sizeof tData));
+    writeToSpecificRegister(LEDn_ON_L, byte0);
+    writeToSpecificRegister(LEDn_ON_H, byte1);
+    writeToSpecificRegister(LEDn_OFF_L, byte2);
+    writeToSpecificRegister(LEDn_OFF_H, byte3);
 
 }
 

@@ -337,8 +337,8 @@ private:
      * Function that writes a byte to a specific register
      *
      * @param registerAddress The address of the register
-     * @param tData The transmitted byte
+     * @param transmittedByte The transmitted byte
      */
-    void writeToSpecificRegister(uint8_t registerAddress, uint8_t* tData);
+    void writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
 
 };
