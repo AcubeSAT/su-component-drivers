@@ -96,6 +96,13 @@ public:
     void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent);
 
     /**
+     * Function to configure the auto-increment (AI) feature
+     *
+     * @param autoIncrement Is true if AI is desired
+     */
+    void allowAutoIncrement(bool autoIncrement);
+
+    /**
      * Set device to low-power operation (no PWMs are generated)
      *
      * @param sleep
@@ -325,5 +332,13 @@ private:
      * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
      */
     void writeRegister(uint8_t* tData, uint8_t numberOfBytesToWrite);
+
+    /**
+     * Function that writes a byte to a specific register
+     *
+     * @param registerAddress The address of the register
+     * @param tData The transmitted byte
+     */
+    void writeToSpecificRegister(uint8_t registerAddress, uint8_t* tData);
 
 };

@@ -55,6 +55,13 @@ void PCA9685::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
     }
 }
 
+void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t *tData) {
+    auto registerAddressArray = reinterpret_cast<uint8_t *>(registerAddress);
+    
+    writeRegister(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
+    writeRegister(tData, static_cast<uint8_t >(sizeof tData));
+}
+
 void PCA9685::setMode1Register() {
     auto restart = static_cast<uint8_t>(HardwareRestart::DISABLED);
     auto extclk = static_cast<uint8_t>(Oscillator::INTERNAL);
@@ -194,7 +201,7 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
     writeRegister(tData, static_cast<uint8_t>(sizeof tData));
     tData = reinterpret_cast<uint8_t *>(byte3);
     writeRegister(tData, static_cast<uint8_t>(sizeof tData));
-    
+
 }
 
 void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {
