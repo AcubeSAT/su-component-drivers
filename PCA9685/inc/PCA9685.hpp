@@ -96,6 +96,14 @@ public:
     void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent);
 
     /**
+     * Function that sets all the PWM channels to the same values
+     *
+     * @param dutyCyclePercent
+     * @param delayPercent
+     */
+    void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
+
+    /**
      * Function to configure the auto-increment (AI) feature
      *
      * @param autoIncrement Is true if AI is desired
@@ -118,8 +126,11 @@ public:
     void setExternalClock(bool externalClock);
 
     void performHardwareRestart(bool hardwareRestart);
+
     bool readHardwareRestartStatus();
+
     void allowRegisterAutoIncrement(bool allow);
+
     void applySoftwareReset();
 
 private:
@@ -177,11 +188,11 @@ private:
     };
 
     /**
-     * @enum Oscillator
+     * @enum ExternalClock
      *
      * Determine whether PCA9685 uses either the internal or an external clock
      */
-    enum class Oscillator : uint8_t {
+    enum class ExternalClock : uint8_t {
         INTERNAL = 0x00,
         EXTERNAL = 0x40,
     };
@@ -193,7 +204,7 @@ private:
      */
     enum class RegisterAutoIncrement : uint8_t {
         DISABLED = 0x00,
-        ENABLED  = 0x20,
+        ENABLED = 0x20,
     };
 
     /**
@@ -203,7 +214,7 @@ private:
      */
     enum class SleepMode : uint8_t {
         NORMAL = 0x00,
-        SLEEP  = 0x10,
+        SLEEP = 0x10,
     };
 
     /**
@@ -262,11 +273,32 @@ private:
      *
      * Possible states of the PCA9685 IC when OE pin is set HIGH (datasheet p. 7.4)
      */
-    enum class OEPinHighStates: uint8_t {
+    enum class OEPinHighStates : uint8_t {
         LOW = 0x0,              // OUTNE1: 0, OUTNE0: 0
         HIGH = 0x1,             // OUTNE1: 0, OUTNE0: 1
         HIGH_IMPEDANCE = 0x2,   // OUTNE1: 1, OUTNE0: 0 or OUTNE1: 1, OUTNE0: 1
     };
+
+    /**
+     * @struct MODE1RegisterConfiguration
+     *
+     * Represents the configuration byte of the MODE1 register
+     */
+    struct MODE1RegisterConfiguration {
+        HardwareRestart hardwareRestart;
+        ExternalClock externalClock;
+        RegisterAutoIncrement autoIncrement;
+        SleepMode sleepMode;
+        RespondToI2CBusAddresses sub1;
+        RespondToI2CBusAddresses sub2;
+        RespondToI2CBusAddresses sub3;
+        RespondToI2CBusAddresses allCall;
+    };
+
+    /**
+     * The instance of the struct that will be used to write its contents to the MODE1 register
+     */
+    MODE1RegisterConfiguration mode1RegisterConfiguration{};
 
     /**
      * The address for the I2C protocol of the PCA9685 device.
@@ -308,13 +340,14 @@ private:
     void setPWMChannelAlwaysOn(uint8_t channel);
 
     /**
-     * Function that reads from a specified register of the PCA9685 device.
-     *
-     * @param registerAddress The address of the register.
-     * @param rData  The response of the device as an array of bytes.
-     * @param numberOfBytesToRead The number of bytes that are read from the register.
+     * Function that turns all the PWM channels off
      */
-    void readRegister(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+    void setAllPWMChannelsOff();
+
+    /**
+     * Function that turns all the PWM channels on
+     */
+    void setAllPWMChannelsOn();
 
     /**
      * Function that reads from a specified register of the PCA9685 device.
@@ -323,7 +356,16 @@ private:
      * @param rData  The response of the device as an array of bytes.
      * @param numberOfBytesToRead The number of bytes that are read from the register.
      */
-    void readRegister(uint8_t registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+    void readRegister(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
+
+    /**
+     * Function that reads from a specified register of the PCA9685 device.
+     *
+     * @param registerAddress The address of the register.
+     * @param rData  The response of the device as an array of bytes.
+     * @param numberOfBytesToRead The number of bytes that are read from the register.
+     */
+    void readRegister(uint8_t registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
@@ -331,7 +373,7 @@ private:
      * @param tData The data sent to the specified register as an array of bytes.
      * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
      */
-    void writeRegister(uint8_t* tData, uint8_t numberOfBytesToWrite);
+    void writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite);
 
     /**
      * Function that writes a byte to a specific register
@@ -340,5 +382,10 @@ private:
      * @param transmittedByte The transmitted byte
      */
     void writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
+
+    /**
+     * Function that writes a byte to every register of the PCA9685 device using the Auto-Increment (AI) utility
+     */
+    void writeToAllRegisters();
 
 };
