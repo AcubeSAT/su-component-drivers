@@ -75,10 +75,14 @@ void PCA9685::writeToAllRegisters() {
 }
 
 void PCA9685::setMode1Register() {
-    uint8_t registerDataByte = static_cast<uint8_t >(mode1RegisterConfiguration.hardwareRestart) | static_cast<uint8_t>(mode1RegisterConfiguration.externalClock) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.autoIncrement) | static_cast<uint8_t >(mode1RegisterConfiguration.sleepMode) |
-                               static_cast<uint8_t >(mode1RegisterConfiguration.sub1) | static_cast<uint8_t >(mode1RegisterConfiguration.sub2) |
-                               static_cast<uint8_t >(mode1RegisterConfiguration.sub3) | static_cast<uint8_t>(mode1RegisterConfiguration.allCall);
+    uint8_t registerDataByte = static_cast<uint8_t >(mode1RegisterConfiguration.hardwareRestart) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.externalClock) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.autoIncrement) |
+                               static_cast<uint8_t >(mode1RegisterConfiguration.sleepMode) |
+                               static_cast<uint8_t >(mode1RegisterConfiguration.sub1) |
+                               static_cast<uint8_t >(mode1RegisterConfiguration.sub2) |
+                               static_cast<uint8_t >(mode1RegisterConfiguration.sub3) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.allCall);
 
     writeToSpecificRegister(static_cast<uint8_t >(RegisterAddresses::MODE1), registerDataByte);
 }
