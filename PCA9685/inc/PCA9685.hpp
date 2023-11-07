@@ -296,9 +296,26 @@ private:
     };
 
     /**
+     * @struct MODE2RegisterConfiguration
+     *
+     * Represents the configuration byte of the MODE2 register
+     */
+    struct MODE2RegisterConfiguration {
+        OutputInvert outputInvert;
+        OutputChangesOn outputChangesOn;
+        OutputConfiguration outputConfiguration;
+        OEPinHighStates oePinHighStates;
+    };
+
+    /**
      * The instance of the struct that will be used to write its contents to the MODE1 register
      */
     MODE1RegisterConfiguration mode1RegisterConfiguration{};
+
+    /**
+     * The instance of the struct that will be used to write its contents to the MODE1 register
+     */
+    MODE2RegisterConfiguration mode2RegisterConfiguration{};
 
     /**
      * The address for the I2C protocol of the PCA9685 device.

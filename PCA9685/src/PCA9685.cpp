@@ -9,6 +9,9 @@ PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
                                   SleepMode::NORMAL, RespondToI2CBusAddresses::SUB1_NO_RESPOND,
                                   RespondToI2CBusAddresses::SUB2_NO_RESPOND, RespondToI2CBusAddresses::SUB3_NO_RESPOND,
                                   RespondToI2CBusAddresses::ALLCALL_NO_RESPOND};
+
+    mode2RegisterConfiguration = {OutputInvert::NOT_INVERTED, OutputChangesOn::STOP,
+                                  OutputConfiguration::OPEN_DRAIN_STRUCTURE, OEPinHighStates::LOW};
 }
 
 void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
@@ -75,27 +78,25 @@ void PCA9685::writeToAllRegisters() {
 }
 
 void PCA9685::setMode1Register() {
-    uint8_t registerDataByte = static_cast<uint8_t >(mode1RegisterConfiguration.hardwareRestart) |
+    uint8_t registerDataByte = static_cast<uint8_t>(mode1RegisterConfiguration.hardwareRestart) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.externalClock) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.autoIncrement) |
-                               static_cast<uint8_t >(mode1RegisterConfiguration.sleepMode) |
-                               static_cast<uint8_t >(mode1RegisterConfiguration.sub1) |
-                               static_cast<uint8_t >(mode1RegisterConfiguration.sub2) |
-                               static_cast<uint8_t >(mode1RegisterConfiguration.sub3) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.sleepMode) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.sub1) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.sub2) |
+                               static_cast<uint8_t>(mode1RegisterConfiguration.sub3) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.allCall);
 
-    writeToSpecificRegister(static_cast<uint8_t >(RegisterAddresses::MODE1), registerDataByte);
+    writeToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), registerDataByte);
 }
 
 void PCA9685::setMode2Register() {
-    auto invrt = static_cast<uint8_t>(OutputInvert::NOT_INVERTED);
-    auto och = static_cast<uint8_t>(OutputChangesOn::STOP);
-    auto outdrv = static_cast<uint8_t>(OutputConfiguration::OPEN_DRAIN_STRUCTURE);
-    auto outne = static_cast<uint8_t>(OEPinHighStates::LOW);
+    uint8_t registerDataByte = static_cast<uint8_t>(mode2RegisterConfiguration.outputInvert) |
+                               static_cast<uint8_t>(mode2RegisterConfiguration.outputChangesOn) |
+                               static_cast<uint8_t>(mode2RegisterConfiguration.outputConfiguration) |
+                               static_cast<uint8_t>(mode2RegisterConfiguration.oePinHighStates);
 
-    uint8_t tData[1] = {static_cast<uint8_t>(invrt | och | outdrv | outne)};
-
-    writeRegister(tData, sizeof(tData));
+    writeToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), registerDataByte);
 }
 
 void PCA9685::setDeviceToSleep(bool sleep) {
