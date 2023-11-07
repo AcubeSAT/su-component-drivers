@@ -32,7 +32,7 @@ void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t *rData, ui
 
 }
 
-void PCA9685::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
+void PCA9685::writeDataToRegisters(uint8_t *tData, uint8_t numberOfBytesToWrite) {
     bool success = PCA9685_TWIHS_Write(slaveAddressWrite, tData, numberOfBytesToWrite);
 
     if (!success) {
@@ -52,8 +52,8 @@ void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t transmitt
     auto registerAddressArray = reinterpret_cast<uint8_t *>(registerAddress);
     auto transmittedByteArray = reinterpret_cast<uint8_t *>(transmittedByte);
 
-    writeRegister(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
-    writeRegister(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
+    writeDataToRegisters(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
+    writeDataToRegisters(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
 }
 
 void PCA9685::writeToAllRegisters() {
@@ -169,7 +169,16 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
 }
 
 void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {
+    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
+    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
+    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
+    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
 
+    uint8_t pwmAlwaysOffMSB = 0x10;
+
+    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, static_cast<uint8_t>(0), LEDn_OFF_L, static_cast<uint8_t>(0), LEDn_OFF_H, pwmAlwaysOffMSB};
+
+    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setPWMChannelAlwaysOn(uint8_t channel) {

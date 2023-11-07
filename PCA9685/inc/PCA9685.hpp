@@ -381,7 +381,7 @@ private:
      * @param tData The data sent to the specified register as an array of bytes.
      * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
      */
-    void writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite);
+    void writeDataToRegisters(uint8_t *tData, uint8_t numberOfBytesToWrite);
 
     /**
      * Function that writes a byte to a specific register
