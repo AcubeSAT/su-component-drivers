@@ -182,7 +182,16 @@ void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {
 }
 
 void PCA9685::setPWMChannelAlwaysOn(uint8_t channel) {
+    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
+    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
+    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
+    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
 
+    uint8_t pwmAlwaysOnMSB = 0x10;
+
+    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, pwmAlwaysOnMSB, LEDn_OFF_L, static_cast<uint8_t>(0), LEDn_OFF_H, static_cast<uint8_t>(0)};
+
+    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setAllPWMChannelsOff() {
