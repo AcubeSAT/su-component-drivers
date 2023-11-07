@@ -5,7 +5,7 @@ PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
     slaveAddressWrite = ((static_cast<uint8_t>(i2cAddress) << 1) | static_cast<uint8_t>(0b10000000));
     slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
 
-    mode1RegisterConfiguration = {HardwareRestart::DISABLED, ExternalClock::INTERNAL, RegisterAutoIncrement::DISABLED,
+    mode1RegisterConfiguration = {RestartDevice::DISABLED, ExternalClock::INTERNAL, RegisterAutoIncrement::DISABLED,
                                   SleepMode::NORMAL, RespondToI2CBusAddresses::SUB1_NO_RESPOND,
                                   RespondToI2CBusAddresses::SUB2_NO_RESPOND, RespondToI2CBusAddresses::SUB3_NO_RESPOND,
                                   RespondToI2CBusAddresses::ALLCALL_NO_RESPOND};
@@ -61,7 +61,7 @@ void PCA9685::writeToAllRegisters() {
 }
 
 void PCA9685::setMode1Register() {
-    uint8_t registerDataByte = static_cast<uint8_t>(mode1RegisterConfiguration.hardwareRestart) |
+    uint8_t registerDataByte = static_cast<uint8_t>(mode1RegisterConfiguration.restart) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.externalClock) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.autoIncrement) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.sleepMode) |
@@ -80,14 +80,6 @@ void PCA9685::setMode2Register() {
                                static_cast<uint8_t>(mode2RegisterConfiguration.oePinHighStates);
 
     writeToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), registerDataByte);
-}
-
-void PCA9685::setDeviceToSleep(bool sleep) {
-
-}
-
-void PCA9685::setDeviceFrequency(uint16_t frequency) {
-
 }
 
 void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -195,6 +187,34 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
 }
 
 void PCA9685::allowAutoIncrement(bool autoIncrement) {
+    if (autoIncrement)
+        mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::ENABLED;
+    else
+        mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::DISABLED;
+}
+
+void PCA9685::setExternalClock(bool externalClock) {
+    if (externalClock)
+        mode1RegisterConfiguration.externalClock = ExternalClock::EXTERNAL;
+    else
+        mode1RegisterConfiguration.externalClock = ExternalClock::INTERNAL;
+}
+
+void PCA9685::setDeviceToSleep(bool sleep) {
+    if (sleep)
+        mode1RegisterConfiguration.sleepMode = SleepMode::SLEEP;
+    else
+        mode1RegisterConfiguration.sleepMode = SleepMode::NORMAL;
+}
+
+void PCA9685::restartDevice(bool restart) {
+    if (restart)
+        mode1RegisterConfiguration.restart = RestartDevice::ENABLED;
+    else
+        mode1RegisterConfiguration.restart = RestartDevice::DISABLED;
+}
+
+void PCA9685::setDeviceFrequency(uint16_t frequency) {
 
 }
 

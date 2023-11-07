@@ -103,27 +103,34 @@ public:
     void allowAutoIncrement(bool autoIncrement);
 
     /**
-     * Set device to low-power operation (no PWMs are generated)
+     * Set device to low-power operation (no PWMs are generated).
      *
-     * @param sleep
+     * @param sleep True if PCA9685 is instructed to operate in low-power mode.
      */
     void setDeviceToSleep(bool sleep);
 
     /**
      * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency.
+     *
      * @param frequency
      */
     void setDeviceFrequency(uint16_t frequency);
 
+    /**
+     * Function that configures the PCA9695 to either use the internal or the external (EXTCLK) clock.
+     *
+     * @param externalClock True if an external oscillator connected to EXTCLK pin is used.
+     */
     void setExternalClock(bool externalClock);
 
-    void performHardwareRestart(bool hardwareRestart);
+    /**
+     * Function that clocks in changes in MODE1 register and restarts the PWM cycle.
+     *
+     * @param restart True if MODE1 has to be overwritten.
+     */
+    void restartDevice(bool restart);
 
-    bool readHardwareRestartStatus();
-
-    void allowRegisterAutoIncrement(bool allow);
-
-    void applySoftwareReset();
+    void performSoftwareReset();
 
 private:
 
@@ -175,11 +182,11 @@ private:
     };
 
     /**
-     * @enum HardwareRestart
+     * @enum RestartDevice
      *
      * Bit 7 of MODE1 register
      */
-    enum class HardwareRestart : uint8_t {
+    enum class RestartDevice : uint8_t {
         DISABLED = 0x00,
         ENABLED = 0x80,
     };
@@ -282,7 +289,7 @@ private:
      * Represents the configuration byte of the MODE1 register
      */
     struct MODE1RegisterConfiguration {
-        HardwareRestart hardwareRestart;
+        RestartDevice restart;
         ExternalClock externalClock;
         RegisterAutoIncrement autoIncrement;
         SleepMode sleepMode;
