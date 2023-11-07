@@ -176,7 +176,8 @@ void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {
 
     uint8_t pwmAlwaysOffMSB = 0x10;
 
-    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, static_cast<uint8_t>(0), LEDn_OFF_L, static_cast<uint8_t>(0), LEDn_OFF_H, pwmAlwaysOffMSB};
+    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, static_cast<uint8_t>(0), LEDn_OFF_L,
+                       static_cast<uint8_t>(0), LEDn_OFF_H, pwmAlwaysOffMSB};
 
     writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
@@ -189,17 +190,32 @@ void PCA9685::setPWMChannelAlwaysOn(uint8_t channel) {
 
     uint8_t pwmAlwaysOnMSB = 0x10;
 
-    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, pwmAlwaysOnMSB, LEDn_OFF_L, static_cast<uint8_t>(0), LEDn_OFF_H, static_cast<uint8_t>(0)};
+    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, pwmAlwaysOnMSB, LEDn_OFF_L,
+                       static_cast<uint8_t>(0), LEDn_OFF_H, static_cast<uint8_t>(0)};
 
     writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setAllPWMChannelsOff() {
+    uint8_t pwmAlwaysOffMSB = 0x10;
 
+    uint8_t tData[] = {static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_L), static_cast<uint8_t>(0),
+                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_H, static_cast<uint8_t>(0)),
+                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_L), static_cast<uint8_t>(0),
+                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H, pwmAlwaysOffMSB)};
+
+    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setAllPWMChannelsOn() {
+    uint8_t pwmAlwaysOnMSB = 0x10;
 
+    uint8_t tData[] = {static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_L), static_cast<uint8_t>(0),
+                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_H, pwmAlwaysOnMSB),
+                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_L), static_cast<uint8_t>(0),
+                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H, static_cast<uint8_t>(0))};
+
+    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::allowAutoIncrement(bool autoIncrement) {
