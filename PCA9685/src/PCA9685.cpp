@@ -218,11 +218,21 @@ void PCA9685::setAllPWMChannelsOn() {
     writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
-void PCA9685::allowAutoIncrement(bool autoIncrement) {
+void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
+    if (dutyCyclePercent == 0) {
+        setAllPWMChannelsOff();
+        return;
+    } else if (dutyCyclePercent > 99) {
+        setAllPWMChannelsOn();
+        return;
+    }
+
+    for (uint8_t i = 0; i < PWMChannels; i++)
+        setPWMChannel(i, dutyCyclePercent, delayPercent);
 
 }
 
-void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
+void PCA9685::allowAutoIncrement(bool autoIncrement) {
 
 }
 

@@ -136,6 +136,11 @@ public:
 private:
 
     /**
+     * Number of PWM channel of the PCA9685
+     */
+    static constexpr uint8_t PWMChannels = 16;
+
+    /**
      * The maximum step count (4096)
      */
     static constexpr uint16_t GrayscaleMaximumSteps = 0x1000;
