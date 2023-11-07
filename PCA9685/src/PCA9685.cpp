@@ -90,39 +90,6 @@ void PCA9685::setDeviceFrequency(uint16_t frequency) {
 
 }
 
-void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent) {
-
-    if (dutyCyclePercent == 0)
-        setPWMChannelAlwaysOff(channel);
-    else if (dutyCyclePercent > 99)
-        setPWMChannelAlwaysOn(channel);
-
-    uint8_t frac = static_cast<uint8_t>(100) / dutyCyclePercent;
-    uint16_t dutyCycle = GrayscaleMaximumSteps / static_cast<uint16_t>(frac) - 1;
-
-    uint16_t maskLSB = 0xFF;
-    uint16_t maskMSB = 0xF00;
-
-    uint16_t dutyCycleLSB = dutyCycle & maskLSB;
-    uint16_t dutyCycleMSB = dutyCycle & maskMSB;
-
-    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
-    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
-    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
-    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
-
-    uint8_t byte0 = 0x0;
-    uint8_t byte1 = 0x0;
-    auto byte2 = static_cast<uint8_t>(dutyCycleLSB);
-    auto byte3 = static_cast<uint8_t>(dutyCycleMSB);
-
-    writeToSpecificRegister(LEDn_ON_L, byte0);
-    writeToSpecificRegister(LEDn_ON_H, byte1);
-    writeToSpecificRegister(LEDn_OFF_L, byte2);
-    writeToSpecificRegister(LEDn_OFF_H, byte3);
-
-}
-
 void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
     // reminder: delay even if set to 0 or 100
     if (dutyCyclePercent == 0)
@@ -156,16 +123,11 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
     uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
     uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
 
-    auto byte0 = static_cast<uint8_t>(pwmStartAtStepLSB);
-    auto byte1 = static_cast<uint8_t>(pwmStartAtStepMSB);
-    auto byte2 = static_cast<uint8_t>(pwmTurnLowAtStepLSB);
-    auto byte3 = static_cast<uint8_t>(pwmTurnLowAtStepMSB);
+    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(pwmStartAtStepLSB), LEDn_ON_H,
+                       static_cast<uint8_t>(pwmStartAtStepMSB), LEDn_OFF_L, static_cast<uint8_t>(pwmTurnLowAtStepLSB),
+                       LEDn_OFF_H, static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
 
-    writeToSpecificRegister(LEDn_ON_L, byte0);
-    writeToSpecificRegister(LEDn_ON_H, byte1);
-    writeToSpecificRegister(LEDn_OFF_L, byte2);
-    writeToSpecificRegister(LEDn_OFF_H, byte3);
-
+    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {

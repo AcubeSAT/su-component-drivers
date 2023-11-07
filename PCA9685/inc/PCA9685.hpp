@@ -79,21 +79,13 @@ public:
     explicit PCA9685(I2CAddress i2cAddress);
 
     /**
-     * Function that sets the PWM duty cycle of the specified channel
-     *
-     * @param channel The PWM channel that is to be modified (0-15)
-     * @param dutyCyclePercent The duty cycle of the PWM given as a percentage
-     */
-    void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent);
-
-    /**
      * Function that sets the PWM duty cycle of the specified channel given a starting delayPercent
      *
      * @param channel The PWM channel that is to be modified (0-15)
      * @param dutyCycle The duty cycle of the PWM given as a percentage
      * @param delayPercent The delayPercent time given as a percentage
      */
-    void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent);
+    void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
      * Function that sets all the PWM channels to the same values
