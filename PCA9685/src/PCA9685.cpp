@@ -32,23 +32,6 @@ void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t *rData, ui
 
 }
 
-void PCA9685::readRegister(uint8_t registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
-    bool success = PCA9685_TWIHS_WriteRead(slaveAddressRead, reinterpret_cast<uint8_t *>(&registerAddress), 1, rData,
-                                           numberOfBytesToRead);
-
-    if (!success) {
-        LOG_INFO << "PCA9685 with address " << i2cAddress << ": I2C bus is busy";
-        return;
-    }
-
-    while (TWIHS2_IsBusy());
-
-    if (PCA9685_TWIHS_ErrorGet != TWIHS_ERROR_NONE) {
-        LOG_ERROR << "PCA9685 with address " << i2cAddress << " , is disconnected, suspending task";
-        vTaskDelay(0);
-    }
-}
-
 void PCA9685::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) {
     bool success = PCA9685_TWIHS_Write(slaveAddressWrite, tData, numberOfBytesToWrite);
 

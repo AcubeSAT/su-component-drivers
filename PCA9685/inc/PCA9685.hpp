@@ -376,15 +376,6 @@ private:
     void readRegister(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
 
     /**
-     * Function that reads from a specified register of the PCA9685 device.
-     *
-     * @param registerAddress The address of the register.
-     * @param rData  The response of the device as an array of bytes.
-     * @param numberOfBytesToRead The number of bytes that are read from the register.
-     */
-    void readRegister(uint8_t registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
-
-    /**
      * Function that writes to a specified register of the PCA9685 device.
      *
      * @param tData The data sent to the specified register as an array of bytes.
