@@ -56,10 +56,6 @@ void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t transmitt
     writeDataToRegisters(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
 }
 
-void PCA9685::writeToAllRegisters() {
-
-}
-
 void PCA9685::setMode1Register() {
     uint8_t registerDataByte = static_cast<uint8_t>(mode1RegisterConfiguration.restart) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.externalClock) |

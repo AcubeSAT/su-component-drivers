@@ -50,8 +50,7 @@
 /**
  * C++ class for interfacing with the PCA9685 LED driver device.
  *
- * @brief This class provides functions to read various electrical parameters from the INA228 device,
- * such as voltage, temperature, current, power, energy, and charge.
+ * @brief This class provides functions to operate the PCA9685 LED driver.
  */
 class PCA9685 {
 public:
@@ -95,6 +94,12 @@ public:
      */
     void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
+
+    /**
+     * Function that updates all of the device registers.
+     */
+    void updateAllRegisters();
+
     /**
      * Function to configure the auto-increment (AI) feature
      *
@@ -129,6 +134,12 @@ public:
      * @param restart True if MODE1 has to be overwritten.
      */
     void restartDevice(bool restart);
+
+    void invertOutputs(bool invert);
+
+    void configureOutputhange(bool ack);
+
+    void determineOutputConfiguration();
 
     void performSoftwareReset();
 
@@ -394,10 +405,5 @@ private:
      * @param transmittedByte The transmitted byte
      */
     void writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
-
-    /**
-     * Function that writes a byte to every register of the PCA9685 device using the Auto-Increment (AI) utility
-     */
-    void writeToAllRegisters();
 
 };
