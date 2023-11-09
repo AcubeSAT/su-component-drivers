@@ -300,14 +300,14 @@ private:
      * Represents the configuration byte of the MODE1 register
      */
     struct MODE1RegisterConfiguration {
-        RestartDevice restart;
-        ExternalClock externalClock;
-        RegisterAutoIncrement autoIncrement;
-        SleepMode sleepMode;
-        RespondToI2CBusAddresses sub1;
-        RespondToI2CBusAddresses sub2;
-        RespondToI2CBusAddresses sub3;
-        RespondToI2CBusAddresses allCall;
+        RestartDevice restart = RestartDevice::DISABLED;
+        ExternalClock externalClock = ExternalClock::INTERNAL;
+        RegisterAutoIncrement autoIncrement = RegisterAutoIncrement::DISABLED;
+        SleepMode sleepMode = SleepMode::NORMAL;
+        RespondToI2CBusAddresses sub1 = RespondToI2CBusAddresses::SUB1_NO_RESPOND;
+        RespondToI2CBusAddresses sub2 = RespondToI2CBusAddresses::SUB2_NO_RESPOND;
+        RespondToI2CBusAddresses sub3 = RespondToI2CBusAddresses::SUB3_NO_RESPOND;
+        RespondToI2CBusAddresses allCall = RespondToI2CBusAddresses::ALLCALL_NO_RESPOND;
     };
 
     /**
@@ -316,21 +316,21 @@ private:
      * Represents the configuration byte of the MODE2 register
      */
     struct MODE2RegisterConfiguration {
-        OutputInvert outputInvert;
-        OutputChangesOn outputChangesOn;
-        OutputConfiguration outputConfiguration;
-        OEPinHighStates oePinHighStates;
+        OutputInvert outputInvert = OutputInvert::NOT_INVERTED;
+        OutputChangesOn outputChangesOn = OutputChangesOn::STOP;
+        OutputConfiguration outputConfiguration = OutputConfiguration::OPEN_DRAIN_STRUCTURE;
+        OEPinHighStates oePinHighStates = OEPinHighStates::LOW;
     };
 
     /**
      * The instance of the struct that will be used to write its contents to the MODE1 register
      */
-    MODE1RegisterConfiguration mode1RegisterConfiguration{};
+    MODE1RegisterConfiguration mode1RegisterConfiguration;
 
     /**
      * The instance of the struct that will be used to write its contents to the MODE1 register
      */
-    MODE2RegisterConfiguration mode2RegisterConfiguration{};
+    MODE2RegisterConfiguration mode2RegisterConfiguration;
 
     /**
      * The address for the I2C protocol of the PCA9685 device.

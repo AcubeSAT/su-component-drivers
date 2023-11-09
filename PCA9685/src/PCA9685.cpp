@@ -5,13 +5,6 @@ PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
     slaveAddressWrite = ((static_cast<uint8_t>(i2cAddress) << 1) | static_cast<uint8_t>(0b10000000));
     slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
 
-    mode1RegisterConfiguration = {RestartDevice::DISABLED, ExternalClock::INTERNAL, RegisterAutoIncrement::DISABLED,
-                                  SleepMode::NORMAL, RespondToI2CBusAddresses::SUB1_NO_RESPOND,
-                                  RespondToI2CBusAddresses::SUB2_NO_RESPOND, RespondToI2CBusAddresses::SUB3_NO_RESPOND,
-                                  RespondToI2CBusAddresses::ALLCALL_NO_RESPOND};
-
-    mode2RegisterConfiguration = {OutputInvert::NOT_INVERTED, OutputChangesOn::STOP,
-                                  OutputConfiguration::OPEN_DRAIN_STRUCTURE, OEPinHighStates::LOW};
 }
 
 void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
