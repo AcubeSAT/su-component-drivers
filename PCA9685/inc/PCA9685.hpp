@@ -174,6 +174,16 @@ private:
     static constexpr uint8_t softwareResetDataByte = 0x6;
 
     /**
+     * Mask for the 8 LSB of the 12-bit PWM
+     */
+    static constexpr uint16_t MaskLSB = 0xFF;
+
+    /**
+     * Mask for the 4 MSB of the 12-bit PWM
+     */
+    static constexpr uint16_t MaskMSB = 0xF00;
+
+    /**
      * @enum RegisterAddresses
      *
      * An enum that contains the various register addresses that PCA9685 acknowledges
@@ -368,8 +378,9 @@ private:
      * Set the specified channel to always on
      *
      * @param channel
+     * @param delayPercent
      */
-    void setPWMChannelAlwaysOn(uint8_t channel);
+    void setPWMChannelAlwaysOn(uint8_t channel, uint8_t delayPercent = 0);
 
     /**
      * Function that turns all the PWM channels off
