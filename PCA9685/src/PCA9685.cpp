@@ -86,9 +86,12 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
     uint16_t dutyCycle = GrayscaleMaximumSteps / static_cast<uint16_t>(frac);
 
     frac = static_cast<uint8_t>(100) / delayPercent;
-    uint16_t delay = GrayscaleMaximumSteps / static_cast<uint16_t>(frac) - 1;
+    uint16_t delay = GrayscaleMaximumSteps / static_cast<uint16_t>(frac);
 
-    uint16_t turnLowAtStep = delay + dutyCycle;
+    uint16_t turnLowAtStep = delay + dutyCycle - 1;
+
+    if (delayPercent + dutyCyclePercent > 99)
+        turnLowAtStep -= 4096;
 
     uint16_t maskLSB = 0xFF;
     uint16_t maskMSB = 0xF00;
