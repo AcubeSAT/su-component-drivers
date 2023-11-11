@@ -94,7 +94,6 @@ public:
      */
     void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
-
     /**
      * Function that updates all of the device registers.
      */
@@ -407,7 +406,7 @@ private:
      * @param tData The data sent to the specified register as an array of bytes.
      * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
      */
-    void writeDataToRegisters(uint8_t *tData, uint8_t numberOfBytesToWrite);
+    void i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite);
 
     /**
      * Function that writes a byte to a specific register

@@ -25,10 +25,10 @@ void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t *rData, ui
 
 }
 
-void PCA9685::writeDataToRegisters(uint8_t *tData, uint8_t numberOfBytesToWrite) {
+void PCA9685::i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite) {
     bool success = PCA9685_TWIHS_Write(slaveAddressWrite, tData, numberOfBytesToWrite);
 
-    if (!success) {
+    if (not success) {
         LOG_INFO << "PCA9685 with address " << i2cAddress << ": I2C bus is busy";
         return;
     }
@@ -45,8 +45,8 @@ void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t transmitt
     auto registerAddressArray = reinterpret_cast<uint8_t *>(registerAddress);
     auto transmittedByteArray = reinterpret_cast<uint8_t *>(transmittedByte);
 
-    writeDataToRegisters(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
-    writeDataToRegisters(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
+    i2cWriteData(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
+    i2cWriteData(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
 }
 
 void PCA9685::setMode1Register() {
@@ -72,74 +72,58 @@ void PCA9685::setMode2Register() {
 }
 
 void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
-    // reminder: delay even if set to 0 or 100
-    if (dutyCyclePercent == 0)
-        setPWMChannelAlwaysOff(channel);
-    else if (dutyCyclePercent > 99)
-        setPWMChannelAlwaysOn(channel);
 
-    if (delayPercent + dutyCyclePercent > 100) {
-        // DO SOMETHING
-    }
+    auto dutyCycleStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
+                                                      (static_cast<float>(dutyCyclePercent) / 100.0f));
+    auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
+                                                  (static_cast<float>(delayPercent) / 100.0f));
 
-    uint8_t frac = static_cast<uint8_t>(100) / dutyCyclePercent;
-    uint16_t dutyCycle = GrayscaleMaximumSteps / static_cast<uint16_t>(frac);
+    uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
+    uint16_t pwmTurnHighAtStepMSB = delayStepsNumber & MaskMSB;
 
-    frac = static_cast<uint8_t>(100) / delayPercent;
-    uint16_t delay = GrayscaleMaximumSteps / static_cast<uint16_t>(frac);
-
-    uint16_t turnLowAtStep = delay + dutyCycle - 1;
+    uint16_t turnLowAtStep = delayStepsNumber + dutyCycleStepsNumber - 1;
 
     if (delayPercent + dutyCyclePercent > 99)
-        turnLowAtStep -= 4096;
+        turnLowAtStep -= GrayscaleMaximumSteps;
 
-    uint16_t maskLSB = 0xFF;
-    uint16_t maskMSB = 0xF00;
+    uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
+    uint16_t pwmTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
 
-    uint16_t pwmStartAtStepLSB = delay & maskLSB;
-    uint16_t pwmStartAtStepMSB = delay & maskMSB;
+    constexpr uint8_t MSBRegisterBit4 = 0x10;
 
-    uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & maskLSB;
-    uint16_t pwmTurnLowAtStepMSB = turnLowAtStep & maskMSB;
+    if (dutyCyclePercent == 0) {
+        /// Note: If LEDn_ON_H[4] and LEDn_OFF_H[4] are set at the same time, the LEDn_OFF_H[4] function takes precedence.
+        pwmTurnLowAtStepMSB |= MSBRegisterBit4;
+    } else if (dutyCyclePercent > 99) {
+        pwmTurnHighAtStepMSB |= MSBRegisterBit4;
+        pwmTurnLowAtStepMSB = 0;
+    }
 
     uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
     uint8_t LEDn_ON_H = LEDn_ON_L + 1;
     uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
     uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
 
-    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(pwmStartAtStepLSB), LEDn_ON_H,
-                       static_cast<uint8_t>(pwmStartAtStepMSB), LEDn_OFF_L, static_cast<uint8_t>(pwmTurnLowAtStepLSB),
-                       LEDn_OFF_H, static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
+    constexpr size_t i2cTransmittedDataSize = 2 * NumberOfBytesPerPWMChannelRegisters;
 
-    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
+    etl::array<uint8_t, i2cTransmittedDataSize> i2cTransmittedData = {LEDn_ON_L,
+                                                                      static_cast<uint8_t>(pwmTurnHighAtStepLSB),
+                                                                      LEDn_ON_H,
+                                                                      static_cast<uint8_t>(pwmTurnHighAtStepMSB),
+                                                                      LEDn_OFF_L,
+                                                                      static_cast<uint8_t>(pwmTurnLowAtStepLSB),
+                                                                      LEDn_OFF_H,
+                                                                      static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
+
+    i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
 }
 
 void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {
-    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
-    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
-    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
-    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
-
-    uint8_t pwmAlwaysOffMSB = 0x10;
-
-    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, static_cast<uint8_t>(0), LEDn_OFF_L,
-                       static_cast<uint8_t>(0), LEDn_OFF_H, pwmAlwaysOffMSB};
-
-    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
+    setPWMChannel(channel, 0);
 }
 
-void PCA9685::setPWMChannelAlwaysOn(uint8_t channel) {
-    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
-    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
-    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
-    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
-
-    uint8_t pwmAlwaysOnMSB = 0x10;
-
-    uint8_t tData[] = {LEDn_ON_L, static_cast<uint8_t>(0), LEDn_ON_H, pwmAlwaysOnMSB, LEDn_OFF_L,
-                       static_cast<uint8_t>(0), LEDn_OFF_H, static_cast<uint8_t>(0)};
-
-    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
+void PCA9685::setPWMChannelAlwaysOn(uint8_t channel, uint8_t delayPercent) {
+    setPWMChannel(channel, 100, delayPercent);
 }
 
 void PCA9685::setAllPWMChannelsOff() {
@@ -150,7 +134,7 @@ void PCA9685::setAllPWMChannelsOff() {
                        static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_L), static_cast<uint8_t>(0),
                        static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H, pwmAlwaysOffMSB)};
 
-    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
+    i2cWriteData(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setAllPWMChannelsOn() {
@@ -161,7 +145,7 @@ void PCA9685::setAllPWMChannelsOn() {
                        static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_L), static_cast<uint8_t>(0),
                        static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H, static_cast<uint8_t>(0))};
 
-    writeDataToRegisters(tData, static_cast<uint8_t>(sizeof tData));
+    i2cWriteData(tData, static_cast<uint8_t>(sizeof tData));
 }
 
 void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -206,7 +190,8 @@ void PCA9685::restartDevice(bool restart) {
         mode1RegisterConfiguration.restart = RestartDevice::DISABLED;
 }
 
-void PCA9685::setDeviceFrequency(uint16_t frequency) {
+void PCA9685::setDeviceFrequency(uint16_t
+                                 frequency) {
 
 }
 
