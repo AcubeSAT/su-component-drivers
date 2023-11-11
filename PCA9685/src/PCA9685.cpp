@@ -7,38 +7,39 @@ PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
 
 }
 
-void PCA9685::readRegister(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
-    bool success = PCA9685_TWIHS_WriteRead(slaveAddressRead, reinterpret_cast<uint8_t *>(&registerAddress), 1, rData,
-                                           numberOfBytesToRead);
+bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
 
-    if (!success) {
-        LOG_INFO << "PCA9685 with address " << i2cAddress << ": I2C bus is busy";
-        return;
-    }
-
-    while (TWIHS2_IsBusy());
-
-    if (PCA9685_TWIHS_ErrorGet != TWIHS_ERROR_NONE) {
-        LOG_ERROR << "PCA9685 with address " << i2cAddress << " , is disconnected, suspending task";
-        vTaskDelay(0);
+    while (true) {
+        if (TWIHS2_IsBusy()) {
+            continue;
+        } else {
+            if (PCA9685_TWIHS_WriteRead(slaveAddressRead, reinterpret_cast<uint8_t *>(&registerAddress), 1, rData,
+                                        numberOfBytesToRead)) {
+                return true;
+            } else {
+                LOG_INFO << "PCA9685 (" << i2cAddress << ") was not able to perform any transaction: I2C bus is busy";
+                return false;
+            }
+        }
     }
 
 }
 
-void PCA9685::i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite) {
-    bool success = PCA9685_TWIHS_Write(slaveAddressWrite, tData, numberOfBytesToWrite);
+bool PCA9685::i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite) {
 
-    if (not success) {
-        LOG_INFO << "PCA9685 with address " << i2cAddress << ": I2C bus is busy";
-        return;
+    while (true) {
+        if (TWIHS2_IsBusy()) {
+            continue;
+        } else {
+            if (PCA9685_TWIHS_Write(slaveAddressWrite, tData, numberOfBytesToWrite)) {
+                return true;
+            } else {
+                LOG_INFO << "PCA9685 (" << i2cAddress << ") was not able to perform any transaction: I2C bus is busy";
+                return false;
+            }
+        }
     }
 
-    while (TWIHS2_IsBusy());
-
-    if (PCA9685_TWIHS_ErrorGet != TWIHS_ERROR_NONE) {
-        LOG_ERROR << "PCA9685 with address " << i2cAddress << " , is disconnected, suspending task";
-        vTaskDelay(0);
-    }
 }
 
 void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte) {

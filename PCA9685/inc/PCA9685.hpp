@@ -392,28 +392,32 @@ private:
     void setAllPWMChannelsOn();
 
     /**
-     * Function that reads from a specified register of the PCA9685 device.
-     *
-     * @param registerAddress The address of the register.
-     * @param rData  The response of the device as an array of bytes.
-     * @param numberOfBytesToRead The number of bytes that are read from the register.
-     */
-    void readRegister(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
-
-    /**
-     * Function that writes to a specified register of the PCA9685 device.
-     *
-     * @param tData The data sent to the specified register as an array of bytes.
-     * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
-     */
-    void i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite);
-
-    /**
      * Function that writes a byte to a specific register
      *
      * @param registerAddress The address of the register
      * @param transmittedByte The transmitted byte
      */
     void writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
+
+    /**
+     * Function that reads from a specified register of the PCA9685 device.
+     *
+     * @param registerAddress The address of the register.
+     * @param rData  The response of the device as an array of bytes.
+     * @param numberOfBytesToRead The number of bytes that are read from the register.
+     *
+     * @returns True if I2C transaction was successful.
+     */
+    bool i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
+
+    /**
+     * Function that writes to a specified register of the PCA9685 device.
+     *
+     * @param tData The data sent to the specified register as an array of bytes.
+     * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
+     *
+     * @returns True if I2C transaction was successful.
+     */
+    bool i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite);
 
 };
