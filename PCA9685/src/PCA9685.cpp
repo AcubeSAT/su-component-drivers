@@ -1,6 +1,6 @@
 #include "PCA9685.hpp"
 
-PCA9685::PCA9685(PCA9685::I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
+PCA9685::PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
 
     slaveAddressWrite = ((static_cast<uint8_t>(i2cAddress) << 1) | static_cast<uint8_t>(0b10000000));
     slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
@@ -74,7 +74,7 @@ void PCA9685::setMode2Register() {
     writeToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), registerDataByte);
 }
 
-void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
+void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
 
     auto dutyCycleStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
                                                       (static_cast<float>(dutyCyclePercent) / 100.0f));
@@ -102,7 +102,7 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
         pwmTurnLowAtStepMSB = 0;
     }
 
-    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * channel;
+    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
     uint8_t LEDn_ON_H = LEDn_ON_L + 1;
     uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
     uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
@@ -121,11 +121,11 @@ void PCA9685::setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t d
     i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
 }
 
-void PCA9685::setPWMChannelAlwaysOff(uint8_t channel) {
+void PCA9685::setPWMChannelAlwaysOff(PWMChannels channel) {
     setPWMChannel(channel, 0);
 }
 
-void PCA9685::setPWMChannelAlwaysOn(uint8_t channel, uint8_t delayPercent) {
+void PCA9685::setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent) {
     setPWMChannel(channel, 100, delayPercent);
 }
 
@@ -160,8 +160,8 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
         return;
     }
 
-    for (uint8_t i = 0; i < PWMChannels; i++)
-        setPWMChannel(i, dutyCyclePercent, delayPercent);
+    for (uint8_t i = 0; i < PWMChannelsNumber; i++)
+        setPWMChannel(static_cast<PWMChannels>(i), dutyCyclePercent, delayPercent);
 
 }
 

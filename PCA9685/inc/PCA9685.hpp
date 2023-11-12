@@ -71,6 +71,30 @@ public:
     };
 
     /**
+     * @enum PWMChannelsNumber
+     *
+     * Lists all of the available PCA9685 PWM outputs
+     */
+    enum class PWMChannels : uint8_t {
+        CHANNEL0 = 0,
+        CHANNEL1 = 1,
+        CHANNEL2 = 2,
+        CHANNEL3 = 3,
+        CHANNEL4 = 4,
+        CHANNEL5 = 5,
+        CHANNEL6 = 6,
+        CHANNEL7 = 7,
+        CHANNEL8 = 8,
+        CHANNEL9 = 9,
+        CHANNEL10 = 10,
+        CHANNEL11 = 11,
+        CHANNEL12 = 12,
+        CHANNEL13 = 13,
+        CHANNEL14 = 14,
+        CHANNEL15 = 15,
+    };
+
+    /**
      * Constructor for the PCA9685 class.
      *
      * @param something The I2C master port number used for communication.
@@ -84,7 +108,7 @@ public:
      * @param dutyCycle The duty cycle of the PWM given as a percentage
      * @param delayPercent The delayPercent time given as a percentage
      */
-    void setPWMChannel(uint8_t channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
+    void setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
      * Function that sets all the PWM channels to the same values
@@ -147,7 +171,7 @@ private:
     /**
      * Number of PWM channel of the PCA9685
      */
-    static constexpr uint8_t PWMChannels = 16;
+    static constexpr uint8_t PWMChannelsNumber = 16;
 
     /**
      * The maximum step count (4096)
@@ -371,7 +395,7 @@ private:
      *
      * @param channel
      */
-    void setPWMChannelAlwaysOff(uint8_t channel);
+    void setPWMChannelAlwaysOff(PWMChannels channel);
 
     /**
      * Set the specified channel to always on
@@ -379,7 +403,7 @@ private:
      * @param channel
      * @param delayPercent
      */
-    void setPWMChannelAlwaysOn(uint8_t channel, uint8_t delayPercent = 0);
+    void setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent = 0);
 
     /**
      * Function that turns all the PWM channels off
