@@ -124,11 +124,14 @@ public:
     void updateAllRegisters();
 
     /**
-     * Function to configure the auto-increment (AI) feature
-     *
-     * @param autoIncrement Is true if AI is desired
+     * Function that enables the auto-increment (AI) feature
      */
-    void allowAutoIncrement(bool autoIncrement);
+    inline void enableAutoIncrement();
+
+    /**
+     * Function that disables the auto-increment (AI) feature.
+     */
+    inline void disableAutoIncrement();
 
     /**
      * Set device to low-power operation (no PWMs are generated).

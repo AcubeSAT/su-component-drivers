@@ -103,22 +103,22 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
     }
 
     uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
-    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
-    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
-    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
+//    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
+//    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
+//    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
 
     constexpr size_t i2cTransmittedDataSize = 2 * NumberOfBytesPerPWMChannelRegisters;
 
     etl::array<uint8_t, i2cTransmittedDataSize> i2cTransmittedData = {LEDn_ON_L,
                                                                       static_cast<uint8_t>(pwmTurnHighAtStepLSB),
-                                                                      LEDn_ON_H,
                                                                       static_cast<uint8_t>(pwmTurnHighAtStepMSB),
-                                                                      LEDn_OFF_L,
                                                                       static_cast<uint8_t>(pwmTurnLowAtStepLSB),
-                                                                      LEDn_OFF_H,
                                                                       static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
 
+    enableAutoIncrement();
     i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
+    disableAutoIncrement();
+
 }
 
 void PCA9685::setPWMChannelAlwaysOff(PWMChannels channel) {
@@ -129,47 +129,27 @@ void PCA9685::setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent) {
     setPWMChannel(channel, 100, delayPercent);
 }
 
-void PCA9685::setAllPWMChannelsOff() {
-    uint8_t pwmAlwaysOffMSB = 0x10;
-
-    uint8_t tData[] = {static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_L), static_cast<uint8_t>(0),
-                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_H, static_cast<uint8_t>(0)),
-                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_L), static_cast<uint8_t>(0),
-                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H, pwmAlwaysOffMSB)};
-
-    i2cWriteData(tData, static_cast<uint8_t>(sizeof tData));
-}
-
-void PCA9685::setAllPWMChannelsOn() {
-    uint8_t pwmAlwaysOnMSB = 0x10;
-
-    uint8_t tData[] = {static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_L), static_cast<uint8_t>(0),
-                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_H, pwmAlwaysOnMSB),
-                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_L), static_cast<uint8_t>(0),
-                       static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H, static_cast<uint8_t>(0))};
-
-    i2cWriteData(tData, static_cast<uint8_t>(sizeof tData));
-}
-
 void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
-    if (dutyCyclePercent == 0) {
-        setAllPWMChannelsOff();
-        return;
-    } else if (dutyCyclePercent > 99) {
-        setAllPWMChannelsOn();
-        return;
-    }
 
     for (uint8_t i = 0; i < PWMChannelsNumber; i++)
         setPWMChannel(static_cast<PWMChannels>(i), dutyCyclePercent, delayPercent);
 
 }
 
-void PCA9685::allowAutoIncrement(bool autoIncrement) {
-    if (autoIncrement)
-        mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::ENABLED;
-    else
-        mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::DISABLED;
+void PCA9685::setAllPWMChannelsOff() {
+    setAllPWMChannels(0);
+}
+
+void PCA9685::setAllPWMChannelsOn() {
+    setAllPWMChannels(100);
+}
+
+void PCA9685::enableAutoIncrement() {
+    mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::ENABLED;
+}
+
+void PCA9685::disableAutoIncrement() {
+    mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::DISABLED;
 }
 
 void PCA9685::setExternalClock(bool externalClock) {
@@ -193,8 +173,7 @@ void PCA9685::restartDevice(bool restart) {
         mode1RegisterConfiguration.restart = RestartDevice::DISABLED;
 }
 
-void PCA9685::setDeviceFrequency(uint16_t
-                                 frequency) {
+void PCA9685::setDeviceFrequency(uint16_t frequency) {
 
 }
 
