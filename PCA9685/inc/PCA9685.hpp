@@ -354,6 +354,11 @@ private:
         HIGH_IMPEDANCE = 0x2,   // OUTNE1: 1, OUTNE0: 0 or OUTNE1: 1, OUTNE0: 1
     };
 
+    /**
+     * @enum Mode2RegisterMasks
+     *
+     * A collection of OR and AND masks that are used to PCA9685 configurations through MODE2 register.
+     */
     enum class Mode2RegisterMasks : uint8_t {
         OUTPUT_INVERT_ENABLE = 0X10,
         OUTPUT_INVERT_DISABLE = 0xEF,
