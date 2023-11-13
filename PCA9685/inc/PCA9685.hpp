@@ -416,7 +416,7 @@ private:
     /**
      * Function that turns all the PWM channels on
      */
-    void setAllPWMChannelsOn();
+    void setAllPWMChannelsOn(uint8_t delayPercent = 0);
 
     /**
      * Function that writes a byte to a specific register

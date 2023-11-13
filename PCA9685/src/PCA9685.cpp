@@ -184,8 +184,8 @@ void PCA9685::setAllPWMChannelsOff() {
 
 }
 
-void PCA9685::setAllPWMChannelsOn() {
-    setAllPWMChannels(100);
+void PCA9685::setAllPWMChannelsOn(uint8_t delayPercent) {
+    setAllPWMChannels(100, delayPercent);
 }
 
 void PCA9685::enableAutoIncrement() {
