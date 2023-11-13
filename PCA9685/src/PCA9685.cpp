@@ -102,12 +102,10 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
         pwmTurnLowAtStepMSB = 0;
     }
 
-    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
-//    uint8_t LEDn_ON_H = LEDn_ON_L + 1;
-//    uint8_t LEDn_OFF_L = LEDn_ON_L + 2;
-//    uint8_t LEDn_OFF_H = LEDn_ON_L + 3;
+    uint8_t LEDn_ON_L =
+            RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
 
-    constexpr size_t i2cTransmittedDataSize = 2 * NumberOfBytesPerPWMChannelRegisters;
+    constexpr size_t i2cTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
 
     etl::array<uint8_t, i2cTransmittedDataSize> i2cTransmittedData = {LEDn_ON_L,
                                                                       static_cast<uint8_t>(pwmTurnHighAtStepLSB),
@@ -131,13 +129,59 @@ void PCA9685::setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent) {
 
 void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
 
-    for (uint8_t i = 0; i < PWMChannelsNumber; i++)
-        setPWMChannel(static_cast<PWMChannels>(i), dutyCyclePercent, delayPercent);
+    auto dutyCycleStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
+                                                      (static_cast<float>(dutyCyclePercent) / 100.0f));
+    auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
+                                                  (static_cast<float>(delayPercent) / 100.0f));
+
+    uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
+    uint16_t pwmTurnHighAtStepMSB = delayStepsNumber & MaskMSB;
+
+    uint16_t turnLowAtStep = delayStepsNumber + dutyCycleStepsNumber - 1;
+
+    if (delayPercent + dutyCyclePercent > 99)
+        turnLowAtStep -= GrayscaleMaximumSteps;
+
+    uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
+    uint16_t pwmTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
+
+    constexpr uint8_t MSBRegisterBit4 = 0x10;
+
+    if (dutyCyclePercent == 0) {
+        /// Note: If ALL_LED_ON_H[4] and ALL_LED_OFF_H[4] are set at the same time, the ALL_LED_OFF_H[4] function takes precedence.
+        pwmTurnLowAtStepMSB |= MSBRegisterBit4;
+    } else if (dutyCyclePercent > 99) {
+        pwmTurnHighAtStepMSB |= MSBRegisterBit4;
+        pwmTurnLowAtStepMSB = 0;
+    }
+
+    constexpr size_t i2cTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
+
+    etl::array<uint8_t, i2cTransmittedDataSize> i2cTransmittedData = {
+            static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_L),
+            static_cast<uint8_t>(pwmTurnHighAtStepLSB),
+            static_cast<uint8_t>(pwmTurnHighAtStepMSB),
+            static_cast<uint8_t>(pwmTurnLowAtStepLSB),
+            static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
+
+    enableAutoIncrement();
+    i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
+    disableAutoIncrement();
 
 }
 
 void PCA9685::setAllPWMChannelsOff() {
-    setAllPWMChannels(0);
+
+    constexpr size_t I2CTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
+    constexpr uint8_t I2CTransmittedByte = 0x10;
+
+    etl::array<uint8_t, I2CTransmittedDataSize> i2cTransmittedData = {
+            static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H),
+            static_cast<uint8_t>(I2CTransmittedByte)};
+
+    disableAutoIncrement();
+    i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
+
 }
 
 void PCA9685::setAllPWMChannelsOn() {
