@@ -44,12 +44,13 @@ bool PCA9685::i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite) {
 
 }
 
-void PCA9685::writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte) {
+void PCA9685::i2cWriteToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte) {
     auto registerAddressArray = reinterpret_cast<uint8_t *>(registerAddress);
     auto transmittedByteArray = reinterpret_cast<uint8_t *>(transmittedByte);
 
+    disableAutoIncrement();
     i2cWriteData(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
-    i2cWriteData(transmittedByteArray, static_cast<uint8_t >(sizeof transmittedByteArray));
+    i2cWriteData(transmittedByteArray, static_cast<uint8_t>(sizeof transmittedByteArray));
 }
 
 void PCA9685::setMode1Register() {
@@ -62,7 +63,7 @@ void PCA9685::setMode1Register() {
                                static_cast<uint8_t>(mode1RegisterConfiguration.sub3) |
                                static_cast<uint8_t>(mode1RegisterConfiguration.allCall);
 
-    writeToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), registerDataByte);
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), registerDataByte);
 }
 
 void PCA9685::setMode2Register() {
@@ -71,7 +72,7 @@ void PCA9685::setMode2Register() {
                                static_cast<uint8_t>(mode2RegisterConfiguration.outputConfiguration) |
                                static_cast<uint8_t>(mode2RegisterConfiguration.oePinHighStates);
 
-    writeToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), registerDataByte);
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), registerDataByte);
 }
 
 void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -102,12 +103,11 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
         pwmTurnLowAtStepMSB = 0;
     }
 
-    uint8_t LEDn_ON_L =
-            RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
+    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
 
-    constexpr size_t i2cTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
+    constexpr size_t I2CTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
 
-    etl::array<uint8_t, i2cTransmittedDataSize> i2cTransmittedData = {LEDn_ON_L,
+    etl::array<uint8_t, I2CTransmittedDataSize> i2cTransmittedData = {LEDn_ON_L,
                                                                       static_cast<uint8_t>(pwmTurnHighAtStepLSB),
                                                                       static_cast<uint8_t>(pwmTurnHighAtStepMSB),
                                                                       static_cast<uint8_t>(pwmTurnLowAtStepLSB),
@@ -155,9 +155,9 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
         pwmTurnLowAtStepMSB = 0;
     }
 
-    constexpr size_t i2cTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
+    constexpr size_t I2CTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
 
-    etl::array<uint8_t, i2cTransmittedDataSize> i2cTransmittedData = {
+    etl::array<uint8_t, I2CTransmittedDataSize> i2cTransmittedData = {
             static_cast<uint8_t>(RegisterAddresses::ALL_LED_ON_L),
             static_cast<uint8_t>(pwmTurnHighAtStepLSB),
             static_cast<uint8_t>(pwmTurnHighAtStepMSB),
@@ -172,15 +172,9 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
 
 void PCA9685::setAllPWMChannelsOff() {
 
-    constexpr size_t I2CTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
     constexpr uint8_t I2CTransmittedByte = 0x10;
 
-    etl::array<uint8_t, I2CTransmittedDataSize> i2cTransmittedData = {
-            static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H),
-            static_cast<uint8_t>(I2CTransmittedByte)};
-
-    disableAutoIncrement();
-    i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::ALL_LED_OFF_H), I2CTransmittedByte);
 
 }
 

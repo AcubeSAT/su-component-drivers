@@ -285,6 +285,30 @@ private:
     };
 
     /**
+     * @enum Mode1RegisterMasks
+     *
+     * A collection of OR and AND masks that are used to PCA9685 configurations through MODE1 register.
+     */
+    enum class Mode1RegisterMasks : uint8_t {
+        RESTART_DEVICE_ENABLE = 0x80,
+        RESTART_DEVICE_DISABLE = 0x7F,
+        EXTERNAL_CLOCK_ENABLE = 0x40,
+        EXTERNAL_CLOCK_DISABLE = 0xBF,
+        AUTO_INCREMENT_ENABLE = 0x20,
+        AUTO_INCREMENT_DISABLE = 0xDF,
+        SLEEP_ENABLE = 0x10,
+        SLEEP_DISABLE = 0xEF,
+        SUB1_RESPOND_ENABLE = 0x08,
+        SUB1_RESPOND_DISABLE = 0xF7,
+        SUB2_RESPOND_ENABLE = 0x04,
+        SUB2_RESPOND_DISABLE = 0xFB,
+        SUB3_RESPOND_ENABLE = 0x02,
+        SUB3_RESPOND_DISABLE = 0xFD,
+        ALLCALL_RESPOND_ENABLE = 0x01,
+        ALLCALL_RESPOND_DISABLE = 0xFE,
+    };
+
+    /**
      * @enum OutputInvert
      *
      * Output logic state can be inverted (1h) or not (oh)
@@ -328,6 +352,17 @@ private:
         LOW = 0x0,              // OUTNE1: 0, OUTNE0: 0
         HIGH = 0x1,             // OUTNE1: 0, OUTNE0: 1
         HIGH_IMPEDANCE = 0x2,   // OUTNE1: 1, OUTNE0: 0 or OUTNE1: 1, OUTNE0: 1
+    };
+
+    enum class Mode2RegisterMasks : uint8_t {
+        OUTPUT_INVERT_ENABLE = 0X10,
+        OUTPUT_INVERT_DISABLE = 0xEF,
+        OUTPUT_CHANGES_ON_ACK = 0X08,
+        OUTPUT_CHANGES_ON_STOP = 0xF7,
+        OUTPUT_CONFIGURATION_TOTEM_POLE = 0X04,
+        OUTPUT_CONFIGURATION_OPEN_DRAIN = 0xFB,
+        OUTPUT_ENABLE_STATE_HIGH = 0X01,
+        OUTPUT_ENABLE_STATE_HIGH_IMPEDANCE = 0X02,
     };
 
     /**
@@ -424,7 +459,7 @@ private:
      * @param registerAddress The address of the register
      * @param transmittedByte The transmitted byte
      */
-    void writeToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
+    void i2cWriteToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
 
     /**
      * Function that reads from a specified register of the PCA9685 device.
