@@ -119,14 +119,21 @@ public:
     void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
+     * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency.
+     *
+     * @param frequency
+     */
+    void setDeviceFrequency(uint16_t frequency);
+
+    /**
      * Function that enables the auto-increment (AI) feature
      */
-    inline void enableAutoIncrement();
+    void enableAutoIncrement();
 
     /**
      * Function that disables the auto-increment (AI) feature.
      */
-    inline void disableAutoIncrement();
+    void disableAutoIncrement();
 
     /**
      * Function that enables the PCA9695's internal (EXTCLK) clock.
@@ -140,17 +147,57 @@ public:
 
     /**
      * Set device to low-power operation (no PWMs are generated).
-     *
-     * @param sleep True if PCA9685 is instructed to operate in low-power mode.
      */
-    void setDeviceToSleep(bool sleep);
+    void setDeviceToSleepMode();
 
     /**
-     * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency.
-     *
-     * @param frequency
+     * Set device to normal operation.
      */
-    void setDeviceFrequency(uint16_t frequency);
+    void stopDeviceFromSleepMode();
+
+    /**
+     * Enable the I2C sub-addresses and/or All-Call address.
+     *
+     * @param sub1 Sub-address 1: Bit 3 of MODE1 register, true if enabled.
+     * @param sub2 Sub-address 2: Bit 2 of MODE1 register, true if enabled.
+     * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if enabled.
+     * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
+     */
+    void enableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+
+    /**
+     * Disable the I2C sub-addresses and/or All-Call address
+     *
+     * @param sub1 Sub-address 1: Bit 3 of MODE1 register, true if disabled.
+     * @param sub2 Sub-address 2: Bit 2 of MODE1 register, true if disabled.
+     * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if disabled.
+     * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
+     */
+    void disableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+
+    /**
+     * Configure the output logic state (MODE2 register, INVRT bit).
+     *
+     * @param invert true if output logic state inverted.
+     */
+    void invertOutputs(bool invert);
+
+    /**
+     * Configure the outputs to change on STOP or ACK command (MODE2 register, OCH bit).
+     *
+     * @param stop true if outputs change on STOP command.
+     */
+    void setOutputChangeOn(bool stop);
+
+    /**
+     * Configure the outputs to totem-pole structure.
+     */
+    void setTotemPoleOutputs();
+
+    /**
+     * Configure the outputs to open-drain structure.
+     */
+    void setOpenDrainOutputs();
 
     /**
      * Function that clocks in changes in MODE1 register and restarts the PWM cycle.
@@ -158,12 +205,6 @@ public:
      * @param restart True if MODE1 has to be overwritten.
      */
     void restartDevice(bool restart);
-
-    void invertOutputs(bool invert);
-
-    void configureOutputhange(bool ack);
-
-    void determineOutputConfiguration();
 
     void performSoftwareReset();
 
