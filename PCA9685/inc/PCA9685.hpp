@@ -129,6 +129,16 @@ public:
     inline void disableAutoIncrement();
 
     /**
+     * Function that enables the PCA9695's internal (EXTCLK) clock.
+     */
+    void enableExternalClock();
+
+    /**
+     * Function that enables the PCA9695's external (EXTCLK) clock.
+     */
+    void disableExternalClock();
+
+    /**
      * Set device to low-power operation (no PWMs are generated).
      *
      * @param sleep True if PCA9685 is instructed to operate in low-power mode.
@@ -141,13 +151,6 @@ public:
      * @param frequency
      */
     void setDeviceFrequency(uint16_t frequency);
-
-    /**
-     * Function that configures the PCA9695 to either use the internal or the external (EXTCLK) clock.
-     *
-     * @param externalClock True if an external oscillator connected to EXTCLK pin is used.
-     */
-    void setExternalClock(bool externalClock);
 
     /**
      * Function that clocks in changes in MODE1 register and restarts the PWM cycle.

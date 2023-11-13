@@ -51,7 +51,6 @@ void PCA9685::i2cWriteToSpecificRegister(uint8_t registerAddress, uint8_t transm
     auto registerAddressArray = reinterpret_cast<uint8_t *>(registerAddress);
     auto transmittedByteArray = reinterpret_cast<uint8_t *>(transmittedByte);
 
-    disableAutoIncrement();
     i2cWriteData(registerAddressArray, static_cast<uint8_t>(sizeof registerAddressArray));
     i2cWriteData(transmittedByteArray, static_cast<uint8_t>(sizeof transmittedByteArray));
 }
@@ -222,13 +221,20 @@ void PCA9685::enableAutoIncrement() {
 
 void PCA9685::disableAutoIncrement() {
     mode1RegisterByte = mode1RegisterByte & static_cast<uint8_t>(Mode1RegisterMasks::AUTO_INCREMENT_DISABLE);
+
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), mode1RegisterByte);
 }
 
-void PCA9685::setExternalClock(bool externalClock) {
-    if (externalClock)
-        mode1RegisterConfiguration.externalClock = ExternalClock::EXTERNAL;
-    else
-        mode1RegisterConfiguration.externalClock = ExternalClock::INTERNAL;
+void PCA9685::enableExternalClock() {
+    mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::EXTERNAL_CLOCK_ENABLE);
+
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), mode1RegisterByte);
+}
+
+void PCA9685::disableExternalClock() {
+    mode1RegisterByte = mode1RegisterByte & static_cast<uint8_t>(Mode1RegisterMasks::EXTERNAL_CLOCK_DISABLE);
+
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), mode1RegisterByte);
 }
 
 void PCA9685::setDeviceToSleep(bool sleep) {
