@@ -135,8 +135,7 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
         pwmTurnLowAtStepMSB = 0;
     }
 
-    uint8_t LEDn_ON_L =
-            RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
+    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
 
     constexpr size_t I2CTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
 
@@ -216,11 +215,13 @@ void PCA9685::setAllPWMChannelsOn(uint8_t delayPercent) {
 }
 
 void PCA9685::enableAutoIncrement() {
-    mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::ENABLED;
+    mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::AUTO_INCREMENT_ENABLE);
+
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), mode1RegisterByte);
 }
 
 void PCA9685::disableAutoIncrement() {
-    mode1RegisterConfiguration.autoIncrement = RegisterAutoIncrement::DISABLED;
+    mode1RegisterByte = mode1RegisterByte & static_cast<uint8_t>(Mode1RegisterMasks::AUTO_INCREMENT_DISABLE);
 }
 
 void PCA9685::setExternalClock(bool externalClock) {
