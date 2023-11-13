@@ -163,7 +163,8 @@ public:
      * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if enabled.
      * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
      */
-    void enableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+    void
+    enableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
 
     /**
      * Disable the I2C sub-addresses and/or All-Call address
@@ -173,7 +174,8 @@ public:
      * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if disabled.
      * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
      */
-    void disableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+    void
+    disableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
 
     /**
      * Configure the output logic state (MODE2 register, INVRT bit).
@@ -200,13 +202,19 @@ public:
     void setOpenDrainOutputs();
 
     /**
-     * Function that clocks in changes in MODE1 register and restarts the PWM cycle.
+     * Configure OE pin function when OE=1.
      *
-     * @param restart True if MODE1 has to be overwritten.
+     * @param outne00 true if bits of OUTNE[1:0] are '00'.
+     * @param outne01 true if bits of OUTNE[1:0] are '01'.
+     * @param outne1x true if bits of OUTNE[1:0] are '1x'.
      */
-    void restartDevice(bool restart);
+    void setOutputEnableState(bool outne00 = true, bool outne01 = false, bool outne1x = false);
 
-    void performSoftwareReset();
+    /**
+     * Function that allows all the devices in the I2C-bus to be reset to the power-up state value
+     * through a specific formatted I2C-bus command (SWRST register).
+     */
+    void softwareResetOfAllDevices();
 
 private:
 

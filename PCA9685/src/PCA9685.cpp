@@ -329,3 +329,11 @@ void PCA9685::setOpenDrainOutputs() {
     i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), mode2RegisterByte);
 }
 
+void PCA9685::setOutputEnableState(bool outne00, bool outne01, bool outne1x) {
+
+}
+
+void PCA9685::softwareResetOfAllDevices() {
+
+}
+
