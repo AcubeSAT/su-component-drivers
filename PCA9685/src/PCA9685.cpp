@@ -5,6 +5,9 @@ PCA9685::PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
     slaveAddressWrite = ((static_cast<uint8_t>(i2cAddress) << 1) | static_cast<uint8_t>(0b10000000));
     slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
 
+    initMode1Register();
+    initMode2Register();
+
 }
 
 bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
@@ -53,26 +56,55 @@ void PCA9685::i2cWriteToSpecificRegister(uint8_t registerAddress, uint8_t transm
     i2cWriteData(transmittedByteArray, static_cast<uint8_t>(sizeof transmittedByteArray));
 }
 
-void PCA9685::setMode1Register() {
-    uint8_t registerDataByte = static_cast<uint8_t>(mode1RegisterConfiguration.restart) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.externalClock) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.autoIncrement) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.sleepMode) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.sub1) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.sub2) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.sub3) |
-                               static_cast<uint8_t>(mode1RegisterConfiguration.allCall);
+void PCA9685::initMode1Register() {
 
-    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), registerDataByte);
+    if (mode1RegisterConfiguration.restart)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::RESTART_DEVICE_ENABLE);
+
+    if (mode1RegisterConfiguration.externalClock)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::EXTERNAL_CLOCK_ENABLE);
+
+    if (mode1RegisterConfiguration.autoIncrement)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::AUTO_INCREMENT_ENABLE);
+
+    if (mode1RegisterConfiguration.sleepMode)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::SLEEP_ENABLE);
+
+    if (mode1RegisterConfiguration.sub1)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::SUB1_RESPOND_ENABLE);
+
+    if (mode1RegisterConfiguration.sub2)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::SUB2_RESPOND_ENABLE);
+
+    if (mode1RegisterConfiguration.sub3)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::SUB3_RESPOND_ENABLE);
+
+    if (mode1RegisterConfiguration.allCall)
+        mode1RegisterByte = mode1RegisterByte | static_cast<uint8_t>(Mode1RegisterMasks::ALLCALL_RESPOND_ENABLE);
+
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE1), mode1RegisterByte);
+
 }
 
-void PCA9685::setMode2Register() {
-    uint8_t registerDataByte = static_cast<uint8_t>(mode2RegisterConfiguration.outputInvert) |
-                               static_cast<uint8_t>(mode2RegisterConfiguration.outputChangesOn) |
-                               static_cast<uint8_t>(mode2RegisterConfiguration.outputConfiguration) |
-                               static_cast<uint8_t>(mode2RegisterConfiguration.oePinHighStates);
+void PCA9685::initMode2Register() {
 
-    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), registerDataByte);
+    if(mode2RegisterConfiguration.outputInvert)
+        mode2RegisterByte = mode2RegisterByte | static_cast<uint8_t>(Mode2RegisterMasks::OUTPUT_INVERT_ENABLE);
+
+    if(not mode2RegisterConfiguration.outputChangesOnStop)
+        mode2RegisterByte = mode2RegisterByte | static_cast<uint8_t>(Mode2RegisterMasks::OUTPUT_CHANGES_ON_ACK);
+
+    if(not mode2RegisterConfiguration.outputConfigurationOpenDrain)
+        mode2RegisterByte = mode2RegisterByte | static_cast<uint8_t>(Mode2RegisterMasks::OUTPUT_CONFIGURATION_TOTEM_POLE);
+
+    if(not mode2RegisterConfiguration.oePinHighState00 && mode2RegisterConfiguration.oePinHighState01 && not mode2RegisterConfiguration.oePinHighState1x)
+        mode2RegisterByte = mode2RegisterByte | static_cast<uint8_t>(Mode2RegisterMasks::OUTPUT_ENABLE_STATE_HIGH);
+
+    if(not mode2RegisterConfiguration.oePinHighState00 && not mode2RegisterConfiguration.oePinHighState01 && mode2RegisterConfiguration.oePinHighState1x)
+        mode2RegisterByte = mode2RegisterByte | static_cast<uint8_t>(Mode2RegisterMasks::OUTPUT_ENABLE_STATE_HIGH_IMPEDANCE);
+
+    i2cWriteToSpecificRegister(static_cast<uint8_t>(RegisterAddresses::MODE2), mode2RegisterByte);
+
 }
 
 void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -103,7 +135,8 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
         pwmTurnLowAtStepMSB = 0;
     }
 
-    uint8_t LEDn_ON_L = RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
+    uint8_t LEDn_ON_L =
+            RegisterAddressOfFirstPWMChannel + NumberOfBytesPerPWMChannelRegisters * static_cast<uint8_t>(channel);
 
     constexpr size_t I2CTransmittedDataSize = NumberOfBytesPerPWMChannelRegisters + 1;
 

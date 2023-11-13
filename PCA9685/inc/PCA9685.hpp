@@ -119,11 +119,6 @@ public:
     void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
-     * Function that updates all of the device registers.
-     */
-    void updateAllRegisters();
-
-    /**
      * Function that enables the auto-increment (AI) feature
      */
     inline void enableAutoIncrement();
@@ -229,62 +224,6 @@ private:
     };
 
     /**
-     * @enum RestartDevice
-     *
-     * Bit 7 of MODE1 register
-     */
-    enum class RestartDevice : uint8_t {
-        DISABLED = 0x00,
-        ENABLED = 0x80,
-    };
-
-    /**
-     * @enum ExternalClock
-     *
-     * Determine whether PCA9685 uses either the internal or an external clock
-     */
-    enum class ExternalClock : uint8_t {
-        INTERNAL = 0x00,
-        EXTERNAL = 0x40,
-    };
-
-    /**
-     * @enum RegisterAutoIncrement
-     *
-     * Determine whether register auto increment (AI) is either enabled or disabled
-     */
-    enum class RegisterAutoIncrement : uint8_t {
-        DISABLED = 0x00,
-        ENABLED = 0x20,
-    };
-
-    /**
-     * @enum SleepMode
-     *
-     * Determine whether PCA9685 operates either in normal mode or in low-power mode
-     */
-    enum class SleepMode : uint8_t {
-        NORMAL = 0x00,
-        SLEEP = 0x10,
-    };
-
-    /**
-     * @enum RespondToI2CBusAddresses
-     *
-     * Determine whether PCA9685 operates either in normal mode or in low-power mode
-     */
-    enum class RespondToI2CBusAddresses : uint8_t {
-        SUB1_NO_RESPOND = 0x0,
-        SUB1_RESPOND = 0x8,
-        SUB2_NO_RESPOND = 0x0,
-        SUB2_RESPOND = 0x4,
-        SUB3_NO_RESPOND = 0x0,
-        SUB3_RESPOND = 0x2,
-        ALLCALL_NO_RESPOND = 0x0,
-        ALLCALL_RESPOND = 0x1,
-    };
-
-    /**
      * @enum Mode1RegisterMasks
      *
      * A collection of OR and AND masks that are used to PCA9685 configurations through MODE1 register.
@@ -309,52 +248,6 @@ private:
     };
 
     /**
-     * @enum OutputInvert
-     *
-     * Output logic state can be inverted (1h) or not (oh)
-     *
-     * @brief Setting the INVRT bit of MODE1 register allows you to control whether the output is active high
-     * or active low when the PWM reaches its specified value.
-     */
-    enum class OutputInvert : uint8_t {
-        NOT_INVERTED = 0x00,
-        INVERTED = 0x10,
-    };
-
-    /**
-     * @enum OutputChange
-     *
-     * Determine whether outputs change on STOP or ACK command
-     */
-    enum class OutputChangesOn : uint8_t {
-        STOP = 0x0,
-        ACK = 0x8,
-    };
-
-    /**
-     * @enum OutputConfiguration
-     *
-     * Output can be configured either as open-drain (0h) or totem-pole (1h) structure
-     *
-     * @brief This can be configured through the OUTDRV bit of the MODE1 register
-     */
-    enum class OutputConfiguration : uint8_t {
-        OPEN_DRAIN_STRUCTURE = 0x0,
-        TOTEM_POLE_STRUCTURE = 0x4,
-    };
-
-    /**
-     * @enum OEPinHighStates
-     *
-     * Possible states of the PCA9685 IC when OE pin is set HIGH (datasheet p. 7.4)
-     */
-    enum class OEPinHighStates : uint8_t {
-        LOW = 0x0,              // OUTNE1: 0, OUTNE0: 0
-        HIGH = 0x1,             // OUTNE1: 0, OUTNE0: 1
-        HIGH_IMPEDANCE = 0x2,   // OUTNE1: 1, OUTNE0: 0 or OUTNE1: 1, OUTNE0: 1
-    };
-
-    /**
      * @enum Mode2RegisterMasks
      *
      * A collection of OR and AND masks that are used to PCA9685 configurations through MODE2 register.
@@ -371,19 +264,19 @@ private:
     };
 
     /**
-     * @struct MODE1RegisterConfiguration
+     * @struct Mode1RegisterConfiguration
      *
      * Represents the configuration byte of the MODE1 register
      */
-    struct MODE1RegisterConfiguration {
-        RestartDevice restart = RestartDevice::DISABLED;
-        ExternalClock externalClock = ExternalClock::INTERNAL;
-        RegisterAutoIncrement autoIncrement = RegisterAutoIncrement::DISABLED;
-        SleepMode sleepMode = SleepMode::NORMAL;
-        RespondToI2CBusAddresses sub1 = RespondToI2CBusAddresses::SUB1_NO_RESPOND;
-        RespondToI2CBusAddresses sub2 = RespondToI2CBusAddresses::SUB2_NO_RESPOND;
-        RespondToI2CBusAddresses sub3 = RespondToI2CBusAddresses::SUB3_NO_RESPOND;
-        RespondToI2CBusAddresses allCall = RespondToI2CBusAddresses::ALLCALL_NO_RESPOND;
+    struct Mode1RegisterConfiguration {
+        bool restart = false;
+        bool externalClock = false;
+        bool autoIncrement = false;
+        bool sleepMode = false;
+        bool sub1 = false;
+        bool sub2 = false;
+        bool sub3 = false;
+        bool allCall = false;
     };
 
     /**
@@ -392,21 +285,33 @@ private:
      * Represents the configuration byte of the MODE2 register
      */
     struct MODE2RegisterConfiguration {
-        OutputInvert outputInvert = OutputInvert::NOT_INVERTED;
-        OutputChangesOn outputChangesOn = OutputChangesOn::STOP;
-        OutputConfiguration outputConfiguration = OutputConfiguration::OPEN_DRAIN_STRUCTURE;
-        OEPinHighStates oePinHighStates = OEPinHighStates::LOW;
+        bool outputInvert = false;
+        bool outputChangesOnStop = true;
+        bool outputConfigurationOpenDrain = true;
+        bool oePinHighState00 = true;
+        bool oePinHighState01 = false;
+        bool oePinHighState1x = false;
     };
 
     /**
      * The instance of the struct that will be used to write its contents to the MODE1 register
      */
-    MODE1RegisterConfiguration mode1RegisterConfiguration;
+    Mode1RegisterConfiguration mode1RegisterConfiguration;
 
     /**
      * The instance of the struct that will be used to write its contents to the MODE1 register
      */
     MODE2RegisterConfiguration mode2RegisterConfiguration;
+
+    /**
+     * MODE1 register byte
+     */
+    uint8_t mode1RegisterByte = 0;
+
+    /**
+     * MODE2 register byte
+     */
+    uint8_t mode2RegisterByte = 0;
 
     /**
      * The address for the I2C protocol of the PCA9685 device.
@@ -426,12 +331,12 @@ private:
     /**
      * Set the bits of the byte that are written to the MODE1 register
      */
-    void setMode1Register();
+    void initMode1Register();
 
     /**
      * Set the bits of the byte that are written to the MODE2 register
      */
-    void setMode2Register();
+    void initMode2Register();
 
     /**
      * Set the specified channel to always off
