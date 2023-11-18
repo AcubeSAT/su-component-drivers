@@ -20,7 +20,6 @@
 
 class AD590 {
 private:
-
     /**
      * Nominal Current Output at 25°C (298.2 K)
      */
@@ -57,7 +56,6 @@ private:
     uint16_t adcResult;
 
 public:
-
     /**
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
@@ -75,9 +73,8 @@ public:
     AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
 
     /**
-     * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius..
+     * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
      * @return The temperature in Celsius
      */
     float getTemperature();
 };
-
