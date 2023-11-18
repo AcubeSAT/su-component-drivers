@@ -15,7 +15,6 @@
  * For more details about the operation of the sensor, see the datasheets found at:
  * https://www.mouser.com/catalog/specsheets/intersil_fn3171.pdf
  * and https://www.analog.com/media/en/technical-documentation/data-sheets/ad590.pdf
- *
  */
 
 class AD590 {
