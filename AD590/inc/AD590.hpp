@@ -82,6 +82,4 @@ private:
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
      */
     uint16_t adcResult;
-
-
 };
