@@ -19,6 +19,34 @@
  */
 
 class AD590 {
+public:
+    /**
+     * Getter function for the number of the channel used in the ADC conversion.
+     * @return AFEC peripheral channel number
+     */
+    inline AFEC_CHANNEL_NUM getADCChannelNum(){
+        return adcChannelNumber;
+    }
+
+    /**
+    * Sets the Analog to Digital conversion result.
+    * @param adcResult The result of the ADC conversion.
+    */
+    void setADCResult(const uint16_t adcResult);
+
+    /**
+     * Contructor for the AD590 class.
+     * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
+     * @param adcChannelNumber Number of the AFEC channel that is being used.
+     */
+    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
+
+    /**
+     * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
+     * @return The temperature in Celsius.
+     */
+    float getTemperature();
+
 private:
     /**
      * Nominal Current Output at 25°C (298.2 K)
@@ -55,31 +83,5 @@ private:
      */
     uint16_t adcResult;
 
-public:
-    /**
-     * Getter function for the number of the channel used in the ADC conversion.
-     * @return AFEC peripheral channel number
-     */
-    inline AFEC_CHANNEL_NUM getADCChannelNum(){
-        return adcChannelNumber;
-    }
 
-    /**
-    * Sets the Analog to Digital conversion result.
-    * @param adcResult The result of the ADC conversion.
-    */
-    void setADCResult(const uint16_t adcResult);
-
-    /**
-     * Contructor for the AD590 class.
-     * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
-     * @param adcChannelNumber Number of the AFEC channel that is being used.
-     */
-    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
-
-    /**
-     * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
-     * @return The temperature in Celsius.
-     */
-    float getTemperature();
 };
