@@ -28,7 +28,7 @@ private:
     /**
      * Reference temperature constant in Celsius
      */
-    inline static constexpr float referenceTemperature = 25;
+    inline static constexpr float referenceTemperature = 25.0f;
 
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
@@ -66,15 +66,20 @@ public:
 
     /**
     * Sets the Analog to Digital conversion result.
-    * @param adcResult
+    * @param adcResult The result of the ADC conversion.
     */
     void setADCResult(const uint16_t adcResult);
 
+    /**
+     * Contructor for the AD590 class.
+     * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
+     * @param adcChannelNumber Number of the AFEC channel that is being used.
+     */
     AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
 
     /**
      * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
-     * @return The temperature in Celsius
+     * @return The temperature in Celsius.
      */
     float getTemperature();
 };
