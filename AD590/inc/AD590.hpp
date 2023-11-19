@@ -13,8 +13,8 @@
  * This is a simple driver to use the AD590 sensor on ATSAMV71Q21B microcontrollers.
  *
  * For more details about the operation of the sensor, see the datasheets found at:
- * https://www.mouser.com/catalog/specsheets/intersil_fn3171.pdf
- * and https://www.analog.com/media/en/technical-documentation/data-sheets/ad590.pdf
+ * https://web.archive.org/web/20231118132621/https://www.mouser.com/catalog/specsheets/intersil_fn3171.pdf
+ * and https://web.archive.org/web/20231118132728/https://www.analog.com/media/en/technical-documentation/data-sheets/ad590.pdf
  *
  */
 
@@ -24,7 +24,7 @@ public:
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
      */
-    inline AFEC_CHANNEL_NUM getADCChannelNum(){
+    AFEC_CHANNEL_NUM getADCChannelNum(){
         return adcChannelNumber;
     }
 
@@ -51,22 +51,22 @@ private:
     /**
      * Nominal Current Output at 25°C (298.2 K)
      */
-    inline static constexpr float offsetCurrent = 298.2;
+    static constexpr float offsetCurrent = 298.2;
 
     /**
      * Reference temperature constant in Celsius
      */
-    inline static constexpr float referenceTemperature = 25.0f;
+    static constexpr float referenceTemperature = 25.0f;
 
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    inline static constexpr uint16_t numOfBits = 4096;
+    static constexpr uint16_t numOfBits = 4096;
 
     /**
      * Value of the voltage that we connect the sensor to.
      */
-    inline static constexpr uint16_t voltageValue = 3300;
+    static constexpr uint16_t voltageValue = 3300;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
