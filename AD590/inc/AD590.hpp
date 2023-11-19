@@ -15,7 +15,6 @@
  * For more details about the operation of the sensor, see the datasheets found at:
  * https://web.archive.org/web/20231118132621/https://www.mouser.com/catalog/specsheets/intersil_fn3171.pdf
  * and https://web.archive.org/web/20231118132728/https://www.analog.com/media/en/technical-documentation/data-sheets/ad590.pdf
- *
  */
 
 class AD590 {
@@ -82,6 +81,4 @@ private:
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
      */
     uint16_t adcResult;
-
-
 };
