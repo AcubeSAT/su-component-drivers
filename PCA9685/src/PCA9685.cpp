@@ -2,9 +2,6 @@
 
 PCA9685::PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {
 
-    slaveAddressWrite = ((static_cast<uint8_t>(i2cAddress) << 1) | static_cast<uint8_t>(0b10000000));
-    slaveAddressRead = slaveAddressWrite | static_cast<uint8_t>(1);
-
     initMode1Register();
     initMode2Register();
 
@@ -17,7 +14,7 @@ bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uin
             LOG_INFO << "PCA9685 (" << i2cAddress << ") was not able to perform any transaction: I2C bus is busy";
             continue;
         } else {
-            if (PCA9685_TWIHS_WriteRead(slaveAddressRead, reinterpret_cast<uint8_t *>(&registerAddress), 1, rData,
+            if (PCA9685_TWIHS_WriteRead(i2cAddress, reinterpret_cast<uint8_t *>(&registerAddress), 1, rData,
                                         numberOfBytesToRead)) {
                 return true;
             } else {
@@ -36,7 +33,7 @@ bool PCA9685::i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite) {
             LOG_INFO << "PCA9685 (" << i2cAddress << ") was not able to perform any transaction: I2C bus is busy";
             continue;
         } else {
-            if (PCA9685_TWIHS_Write(slaveAddressWrite, tData, numberOfBytesToWrite)) {
+            if (PCA9685_TWIHS_Write(i2cAddress, tData, numberOfBytesToWrite)) {
                 return true;
             } else {
                 LOG_INFO << "PCA9685 (" << i2cAddress << ") was not able to perform any transaction: I2C bus NAK";

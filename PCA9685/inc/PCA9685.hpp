@@ -371,16 +371,6 @@ private:
     I2CAddress i2cAddress;
 
     /**
-     * Slave address to select READ operation
-     */
-    uint8_t slaveAddressRead;
-
-    /**
-     * Slave address to select WRITE operation
-     */
-    uint8_t slaveAddressWrite;
-
-    /**
      * Set the bits of the byte that are written to the MODE1 register
      */
     void initMode1Register();
