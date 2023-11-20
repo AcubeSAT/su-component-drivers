@@ -368,7 +368,7 @@ private:
     /**
      * The address for the I2C protocol of the PCA9685 device.
      */
-    I2CAddress i2cAddress;
+    I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
 
     /**
      * Set the bits of the byte that are written to the MODE1 register
