@@ -161,79 +161,62 @@ void PCA9685::stopDeviceFromSleepMode() {
 }
 
 void PCA9685::enableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
-    if (sub1) {
+    if (sub1)
         mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SUB1_RESPOND_ENABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
-    if (sub2) {
+    if (sub2)
         mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SUB2_RESPOND_ENABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
-    if (sub3) {
+    if (sub3)
         mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SUB3_RESPOND_ENABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
-    if (allCall) {
+    if (allCall)
         mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::ALLCALL_RESPOND_ENABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
+    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::disableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
-    if (sub1) {
+    if (sub1)
         mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SUB1_RESPOND_DISABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
-    if (sub2) {
+    if (sub2)
         mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SUB2_RESPOND_DISABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
-    if (sub3) {
+    if (sub3)
         mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SUB3_RESPOND_DISABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
 
-    if (allCall) {
+    if (allCall)
         mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::ALLCALL_RESPOND_DISABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
-    }
+
+    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::invertOutputs(bool invert) {
-    if (invert) {
+    if (invert)
         mode2RegisterByte |= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_INVERT_ENABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
-    } else {
+    else
         mode2RegisterByte &= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_INVERT_DISABLE);
-        i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
-    }
+
+    i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setOutputChangeOn(bool stop) {
-    if (not stop) {
+    if (not stop)
         mode2RegisterByte |= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CHANGES_ON_ACK);
-        i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
-    } else {
+    else
         mode2RegisterByte &= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CHANGES_ON_STOP);
-        i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
-    }
+
+    i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setTotemPoleOutputs() {
     mode2RegisterByte |= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CONFIGURATION_TOTEM_POLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setOpenDrainOutputs() {
     mode2RegisterByte &= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CONFIGURATION_OPEN_DRAIN);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
 }
 
