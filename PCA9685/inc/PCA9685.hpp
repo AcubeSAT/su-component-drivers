@@ -118,12 +118,37 @@ public:
     void setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
+     * Set the specified channel to always off
+     *
+     * @param channel
+     */
+    void setPWMChannelAlwaysOff(PWMChannels channel);
+
+    /**
+     * Set the specified channel to always on
+     *
+     * @param channel
+     * @param delayPercent
+     */
+    void setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent = 0);
+
+    /**
      * Function that sets all the PWM channels to the same values
      *
      * @param dutyCyclePercent
      * @param delayPercent
      */
     void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
+
+    /**
+     * Function that turns all the PWM channels off
+     */
+    void setAllPWMChannelsOff();
+
+    /**
+     * Function that turns all the PWM channels on
+     */
+    void setAllPWMChannelsOn(uint8_t delayPercent = 0);
 
     /**
      * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency.
@@ -226,6 +251,11 @@ public:
 private:
 
     /**
+     * The address for the I2C protocol of the PCA9685 device.
+     */
+    I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
+
+    /**
      * Number of PWM channel of the PCA9685
      */
     static constexpr uint8_t PWMChannelsNumber = 16;
@@ -238,12 +268,7 @@ private:
     /**
      * The number of bytes/registers that define the form of the PWM
      */
-    static constexpr uint8_t NumberOfBytesPerPWMChannelRegisters = 0x04;
-
-    /**
-     * The address of LED0_ON_L register
-     */
-    static constexpr uint8_t RegisterAddressOfFirstPWMChannel = 0x06;
+    static constexpr uint8_t BytesPerPWM = 0x04;
 
     /**
      * Software Reset (SWRST) data byte
@@ -275,6 +300,7 @@ private:
         SUBADR2 = 0x03,
         SUBADR3 = 0x04,
         ALLCALLADR = 0x05,
+        LED0_ON_L = 0x06,
         ALL_LED_ON_L = 0xFA,
         ALL_LED_ON_H = 0xFB,
         ALL_LED_OFF_L = 0xFC,
@@ -355,34 +381,16 @@ private:
     uint8_t mode2RegisterByte = 0;
 
     /**
-     * The address for the I2C protocol of the PCA9685 device.
-     */
-    I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
-
-    /**
-     * Set the specified channel to always off
+     * Functions that calculates the data that need to be stored at each one of the 4 PWM channel registers.
      *
-     * @param channel
-     */
-    void setPWMChannelAlwaysOff(PWMChannels channel);
-
-    /**
-     * Set the specified channel to always on
+     * @param channel The PCA9685 PWM channel.
+     * @param dutyCyclePercent The PWM signal duty cycle, as a percentage.
+     * @param delayPercent The PWM signal delay, as a percentage.
      *
-     * @param channel
-     * @param delayPercent
+     * @returns An array filled with the registers values, in an ascending (per channel) order.
      */
-    void setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent = 0);
-
-    /**
-     * Function that turns all the PWM channels off
-     */
-    void setAllPWMChannelsOff();
-
-    /**
-     * Function that turns all the PWM channels on
-     */
-    void setAllPWMChannelsOn(uint8_t delayPercent = 0);
+    template<uint8_t numOfBytes>
+    etl::array<uint8_t, numOfBytes> calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent, PWMChannels channel = PWMChannels::CHANNEL0);
 
     /**
      * Function that writes a byte to a specific register
@@ -411,6 +419,6 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cWriteData(uint8_t *tData, uint8_t numberOfBytesToWrite);
+    bool i2cWriteData(const uint8_t *tData, uint8_t numberOfBytesToWrite);
 
 };
