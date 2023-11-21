@@ -103,7 +103,6 @@ public:
      */
     explicit PCA9685(I2CAddress i2cAddress) {};
 
-
     /**
      * Default constructor for PCA9685 class.
      */
@@ -391,7 +390,7 @@ private:
      * @param registerAddress The address of the register
      * @param transmittedByte The transmitted byte
      */
-    void i2cWriteToSpecificRegister(RegisterAddresses registerAddress, uint8_t transmittedByte);
+    void i2cWriteValueToRegister(RegisterAddresses registerAddress, uint8_t transmittedByte);
 
     /**
      * Function that reads from a specified register of the PCA9685 device.
