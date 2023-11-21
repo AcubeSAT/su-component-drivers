@@ -390,7 +390,7 @@ private:
      * @returns An array filled with the registers values, in an ascending (per channel) order.
      */
     template<uint8_t numOfBytes>
-    etl::array<uint8_t, numOfBytes> calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent, PWMChannels channel = PWMChannels::CHANNEL0);
+    etl::array<uint8_t, numOfBytes> calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent);
 
     /**
      * Function that writes a byte to a specific register
@@ -409,7 +409,7 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead);
+    bool i2cReadData(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
@@ -419,6 +419,6 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cWriteData(const uint8_t *tData, uint8_t numberOfBytesToWrite);
+    bool i2cWriteData(const uint8_t* tData, uint8_t numberOfBytesToWrite);
 
 };

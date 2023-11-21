@@ -1,6 +1,6 @@
 #include "PCA9685.hpp"
 
-bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) {
+bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -8,18 +8,18 @@ bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t *rData, uin
             continue;
         }
 
-        if (PCA9685_TWIHS_WriteRead(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress),
+        if (not PCA9685_TWIHS_WriteRead(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress),
                                     reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead)) {
-            return true;
+            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
+            return false;
         }
 
-        LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-        return false;
+        return true;
     }
 
 }
 
-bool PCA9685::i2cWriteData(const uint8_t *tData, uint8_t numberOfBytesToWrite) {
+bool PCA9685::i2cWriteData(const uint8_t* tData, uint8_t numberOfBytesToWrite) {
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -27,13 +27,12 @@ bool PCA9685::i2cWriteData(const uint8_t *tData, uint8_t numberOfBytesToWrite) {
             continue;
         }
 
-        if (PCA9685_TWIHS_Write(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress), tData,
-                                numberOfBytesToWrite)) {
-            return true;
+        if (not PCA9685_TWIHS_Write(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress), tData, numberOfBytesToWrite)) {
+            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
+            return false;
         }
 
-        LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-        return false;
+        return true;
     }
 
 }
@@ -51,7 +50,7 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
 
     constexpr size_t I2CTransmittedDataSize = BytesPerPWM + 1;
 
-    auto i2cTransmittedData = calculatePWMRegisterValues<I2CTransmittedDataSize>(dutyCyclePercent, delayPercent, channel);
+    auto i2cTransmittedData = calculatePWMRegisterValues<I2CTransmittedDataSize>(dutyCyclePercent, delayPercent);
     i2cTransmittedData[0] = LEDn_ON_L;
 
     enableAutoIncrement();
@@ -89,7 +88,7 @@ void PCA9685::setAllPWMChannelsOn(uint8_t delayPercent) {
 
 template<uint8_t numOfBytes>
 etl::array<uint8_t, numOfBytes>
-PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent, PCA9685::PWMChannels channel) {
+PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent) {
     const auto dutyCycleStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
                                                             (static_cast<float>(dutyCyclePercent) / 100.0f));
     const auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
