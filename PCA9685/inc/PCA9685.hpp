@@ -99,9 +99,15 @@ public:
     /**
      * Constructor for the PCA9685 class.
      *
-     * @param something The I2C master port number used for communication.
+     * @param i2cAddress The I2C address of the device.
      */
-    explicit PCA9685(I2CAddress i2cAddress);
+    explicit PCA9685(I2CAddress i2cAddress) {};
+
+
+    /**
+     * Default constructor for PCA9685 class.
+     */
+    PCA9685() = default;
 
     /**
      * Function that sets the PWM duty cycle of the specified channel given a starting delayPercent
@@ -385,7 +391,7 @@ private:
      * @param registerAddress The address of the register
      * @param transmittedByte The transmitted byte
      */
-    void i2cWriteToSpecificRegister(uint8_t registerAddress, uint8_t transmittedByte);
+    void i2cWriteToSpecificRegister(RegisterAddresses registerAddress, uint8_t transmittedByte);
 
     /**
      * Function that reads from a specified register of the PCA9685 device.
