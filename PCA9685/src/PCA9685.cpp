@@ -38,7 +38,7 @@ bool PCA9685::i2cWriteData(const uint8_t* tData, uint8_t numberOfBytesToWrite) {
 }
 
 void PCA9685::i2cWriteValueToRegister(RegisterAddresses registerAddress, uint8_t transmittedByte) {
-    uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddresses>>(registerAddress), transmittedByte};
+    const uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddresses>>(registerAddress), transmittedByte};
 
     i2cWriteData(&tData[0], sizeof(tData));
 }
@@ -46,7 +46,7 @@ void PCA9685::i2cWriteValueToRegister(RegisterAddresses registerAddress, uint8_t
 void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
     const auto addressOfFirstChannel = static_cast<std::underlying_type_t<RegisterAddresses>>(RegisterAddresses::LED0_ON_L);
 
-    uint8_t LEDn_ON_L = addressOfFirstChannel + BytesPerPWM * static_cast<std::underlying_type_t<PWMChannels>>(channel);
+    const uint8_t LEDn_ON_L = addressOfFirstChannel + BytesPerPWM * static_cast<std::underlying_type_t<PWMChannels>>(channel);
 
     constexpr size_t I2CTransmittedDataSize = BytesPerPWM + 1;
 
@@ -94,7 +94,7 @@ PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPerce
     const auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
                                                         (static_cast<float>(delayPercent) / 100.0f));
 
-    uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
+    const uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
     uint16_t pwmTurnHighAtStepMSB = delayStepsNumber & MaskMSB;
 
     uint16_t turnLowAtStep = delayStepsNumber + dutyCycleStepsNumber - 1;
@@ -103,7 +103,7 @@ PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPerce
         turnLowAtStep -= GrayscaleMaximumSteps;
     }
 
-    uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
+    const uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
     uint16_t pwmTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
 
     constexpr uint8_t MSBRegisterBit4 = 0x10;
