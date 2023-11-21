@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <etl/utility.h>
 #include <etl/array.h>
-#include "FreeRTOS.h"
 #include "Logger.hpp"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
@@ -64,11 +63,13 @@ public:
      * The LED All Call (address 05h), Software Reset (00h) and LED Sub Call (02h, 03h, 04h), if enabled, I2C-bus
      * addresses are considered to be reserved.
      */
-    enum class I2CAddress : uint8_t {
+    enum class I2CAddress : uint16_t {
+        I2CAddress_000000 = 0b000000,
         I2CAddress_101001 = 0b101001,
         I2CAddress_101010 = 0b101010,
         I2CAddress_101011 = 0b101011,
         I2CAddress_101100 = 0b101100,
+        I2CAddress_100011 = 0b100011,
     };
 
     /**
@@ -317,52 +318,34 @@ private:
     };
 
     /**
-     * @struct Mode1RegisterConfiguration
+     * MODE1 register byte, initial value 0h.
      *
-     * Represents the configuration byte of the MODE1 register
-     */
-    struct Mode1RegisterConfiguration {
-        bool restart = false;
-        bool externalClock = false;
-        bool autoIncrement = false;
-        bool sleepMode = false;
-        bool sub1 = false;
-        bool sub2 = false;
-        bool sub3 = false;
-        bool allCall = false;
-    };
-
-    /**
-     * @struct MODE2RegisterConfiguration
-     *
-     * Represents the configuration byte of the MODE2 register
-     */
-    struct MODE2RegisterConfiguration {
-        bool outputInvert = false;
-        bool outputChangesOnStop = true;
-        bool outputConfigurationOpenDrain = true;
-        bool oePinHighState00 = true;
-        bool oePinHighState01 = false;
-        bool oePinHighState1x = false;
-    };
-
-    /**
-     * The instance of the struct that will be used to write its contents to the MODE1 register
-     */
-    Mode1RegisterConfiguration mode1RegisterConfiguration;
-
-    /**
-     * The instance of the struct that will be used to write its contents to the MODE1 register
-     */
-    MODE2RegisterConfiguration mode2RegisterConfiguration;
-
-    /**
-     * MODE1 register byte
+     * Initial Configuration:
+     * ----------------------
+     * Bit 7: RESTART   -> 0
+     * Bit 6: EXTCLK    -> 0
+     * Bit 5: AI        -> 0
+     * Bit 4: SLEEP     -> 0
+     * Bit 3: SUB1      -> 0
+     * Bit 2: SUB2      -> 0
+     * Bit 1: SUB3      -> 0
+     * Bit 0: ALLCALL   -> 0
      */
     uint8_t mode1RegisterByte = 0;
 
     /**
-     * MODE2 register byte
+     * MODE2 register byte, initial value 0h.
+     *
+     * Initial Configuration:
+     * ----------------------
+     * Bit 7: (RESERVED)
+     * Bit 6: (RESERVED)
+     * Bit 5: (RESERVED)
+     * Bit 4: INVRT     -> 0
+     * Bit 3: OCH       -> 0
+     * Bit 2: OUTDRV    -> 0
+     * Bit 1: OUTNE[1]  -> 0
+     * Bit 0: OUTNE[0]  -> 0
      */
     uint8_t mode2RegisterByte = 0;
 
@@ -370,16 +353,6 @@ private:
      * The address for the I2C protocol of the PCA9685 device.
      */
     I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
-
-    /**
-     * Set the bits of the byte that are written to the MODE1 register
-     */
-    void initMode1Register();
-
-    /**
-     * Set the bits of the byte that are written to the MODE2 register
-     */
-    void initMode2Register();
 
     /**
      * Set the specified channel to always off
