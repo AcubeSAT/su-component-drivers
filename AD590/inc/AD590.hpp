@@ -23,7 +23,7 @@ public:
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
      */
-    AFEC_CHANNEL_NUM getADCChannelNum(){
+    AFEC_CHANNEL_NUM getADCChannelNum() const{
         return adcChannelNumber;
     }
 
@@ -44,7 +44,7 @@ public:
      * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
      * @return The temperature in Celsius.
      */
-    float getTemperature();
+    float getTemperature() const;
 
 private:
     /**
