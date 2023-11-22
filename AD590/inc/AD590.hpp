@@ -38,7 +38,7 @@ public:
      * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
      * @param adcChannelNumber Number of the AFEC channel that is being used.
      */
-    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
+    constexpr AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
 
     /**
      * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
@@ -70,15 +70,15 @@ private:
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    const float resistorValue = 0.0f;
+    float resistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
      */
-    const AFEC_CHANNEL_NUM adcChannelNumber;
+    AFEC_CHANNEL_NUM adcChannelNumber;
 
     /**
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
      */
-    uint16_t adcResult;
+    uint16_t adcResult = 0;
 };
