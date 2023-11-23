@@ -59,11 +59,11 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
 }
 
 void PCA9685::setPWMChannelAlwaysOff(PWMChannels channel) {
-    setPWMChannel(channel, 0);
+    setPWMChannel(channel, FullOffPWMDutyCycle);
 }
 
 void PCA9685::setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent) {
-    setPWMChannel(channel, 100, delayPercent);
+    setPWMChannel(channel, FullOnPWMDutyCycle, delayPercent);
 }
 
 void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -83,7 +83,7 @@ void PCA9685::setAllPWMChannelsOff() {
 }
 
 void PCA9685::setAllPWMChannelsOn(uint8_t delayPercent) {
-    setAllPWMChannels(100, delayPercent);
+    setAllPWMChannels(FullOnPWMDutyCycle, delayPercent);
 }
 
 template<uint8_t numOfBytes>
@@ -126,37 +126,31 @@ PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPerce
 
 void PCA9685::enableAutoIncrement() {
     mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::AUTO_INCREMENT_ENABLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::disableAutoIncrement() {
     mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::AUTO_INCREMENT_DISABLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::enableExternalClock() {
     mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::EXTERNAL_CLOCK_ENABLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::disableExternalClock() {
     mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::EXTERNAL_CLOCK_DISABLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::setDeviceToSleepMode() {
     mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SLEEP_ENABLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::stopDeviceFromSleepMode() {
     mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SLEEP_DISABLE);
-
     i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
 }
 

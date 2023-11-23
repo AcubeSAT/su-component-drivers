@@ -101,7 +101,7 @@ public:
      *
      * @param i2cAddress The I2C address of the device.
      */
-    explicit PCA9685(I2CAddress i2cAddress) {};
+    explicit PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {};
 
     /**
      * Default constructor for PCA9685 class.
@@ -156,16 +156,6 @@ public:
      * @param frequency
      */
     void setDeviceFrequency(uint16_t frequency);
-
-    /**
-     * Function that enables the auto-increment (AI) feature
-     */
-    void enableAutoIncrement();
-
-    /**
-     * Function that disables the auto-increment (AI) feature.
-     */
-    void disableAutoIncrement();
 
     /**
      * Function that enables the PCA9695's internal (EXTCLK) clock.
@@ -289,6 +279,16 @@ private:
     static constexpr uint16_t MaskMSB = 0xF00;
 
     /**
+     * Duty cycle of an always off PWM.
+     */
+    static constexpr uint8_t FullOffPWMDutyCycle = 0;
+
+    /**
+     * Duty cycle of an always on PWM.
+     */
+    static constexpr uint8_t FullOnPWMDutyCycle = 100;
+
+    /**
      * @enum RegisterAddresses
      *
      * An enum that contains the various register addresses that PCA9685 acknowledges
@@ -391,6 +391,16 @@ private:
      */
     template<uint8_t numOfBytes>
     etl::array<uint8_t, numOfBytes> calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent);
+
+    /**
+     * Function that enables the auto-increment (AI) feature.
+     */
+    void enableAutoIncrement();
+
+    /**
+     * Function that disables the auto-increment (AI) feature.
+     */
+    void disableAutoIncrement();
 
     /**
      * Function that writes a byte to a specific register
