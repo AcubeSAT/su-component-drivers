@@ -5,6 +5,7 @@
 #include <etl/utility.h>
 #include <etl/array.h>
 #include "Logger.hpp"
+#include "FreeRTOS.h"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
 #include "Peripheral_Definitions.hpp"
@@ -64,12 +65,12 @@ public:
      * addresses are considered to be reserved.
      */
     enum class I2CAddress : uint16_t {
-        I2CAddress_000000 = 0b000000,
-        I2CAddress_101001 = 0b101001,
-        I2CAddress_101010 = 0b101010,
-        I2CAddress_101011 = 0b101011,
-        I2CAddress_101100 = 0b101100,
-        I2CAddress_100011 = 0b100011,
+        I2CAddress_000000 = 0b100'0000,
+        I2CAddress_101001 = 0b110'1001,
+        I2CAddress_101010 = 0b110'1010,
+        I2CAddress_101011 = 0b110'1011,
+        I2CAddress_101100 = 0b110'1100,
+        I2CAddress_100011 = 0b110'0011,
     };
 
     /**
@@ -102,11 +103,6 @@ public:
      * @param i2cAddress The I2C address of the device.
      */
     explicit PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {};
-
-    /**
-     * Default constructor for PCA9685 class.
-     */
-    PCA9685() = default;
 
     /**
      * Function that sets the PWM duty cycle of the specified channel given a starting delayPercent
@@ -244,11 +240,6 @@ private:
      * The address for the I2C protocol of the PCA9685 device.
      */
     I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
-
-    /**
-     * Number of PWM channel of the PCA9685
-     */
-    static constexpr uint8_t PWMChannelsNumber = 16;
 
     /**
      * The maximum step count (4096)
@@ -429,6 +420,6 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cWriteData(const uint8_t* tData, uint8_t numberOfBytesToWrite);
+    bool i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite);
 
 };
