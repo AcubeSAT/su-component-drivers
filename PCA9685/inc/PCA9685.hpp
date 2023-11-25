@@ -405,11 +405,11 @@ private:
      *
      * @param registerAddress The address of the register.
      * @param rData  The response of the device as an array of bytes.
-     * @param numberOfBytesToRead The number of bytes that are read from the register.
+     * @param returnedBytesNumber The number of bytes that are read from the register.
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+    bool i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8_t returnedBytesNumber);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
