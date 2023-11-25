@@ -93,28 +93,39 @@ PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPerce
     const auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
                                                         (static_cast<float>(delayPercent) / 100.0f));
 
-    const uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
-    uint16_t pwmTurnHighAtStepMSB = delayStepsNumber & MaskMSB;
-
-    uint16_t turnLowAtStep = delayStepsNumber + dutyCycleStepsNumber - 1;
-
-    if (delayPercent + dutyCyclePercent > 99) {
-        turnLowAtStep -= GrayscaleMaximumSteps;
-    }
-
-    const uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
-    uint16_t pwmTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
-
     constexpr uint8_t MSBRegisterBit4 = 0x10;
 
-    if (dutyCyclePercent == 0) {
-        /// Note: If LEDn_ON_H[4] and LEDn_OFF_H[4] are set at the same time, the LEDn_OFF_H[4] function takes precedence.
-        /// Note: If ALL_LED_ON_H[4] and ALL_LED_OFF_H[4] are set at the same time, the ALL_LED_OFF_H[4] function takes precedence.
-        pwmTurnLowAtStepMSB |= MSBRegisterBit4;
-    } else if (dutyCyclePercent > 99) {
-        pwmTurnHighAtStepMSB |= MSBRegisterBit4;
-        pwmTurnLowAtStepMSB = 0;
-    }
+    const uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
+
+    const uint16_t pwmTurnHighAtStepMSB = [=]()->uint16_t {
+        uint16_t calculatedTurnHighAtStepMSB = delayStepsNumber & MaskLSB;
+        if (dutyCyclePercent > 99){
+            return calculatedTurnHighAtStepMSB | MSBRegisterBit4;
+        }
+        return calculatedTurnHighAtStepMSB;
+    }();
+
+    const uint16_t turnLowAtStep = [=]()->uint16_t {
+        uint16_t calculatedTurnLowAtStep = delayStepsNumber + dutyCycleStepsNumber - 1;
+        if (delayPercent + dutyCyclePercent > 99) {
+            return calculatedTurnLowAtStep - GrayscaleMaximumSteps;
+        }
+        return calculatedTurnLowAtStep;
+    }();
+
+    const uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
+
+    const uint16_t pwmTurnLowAtStepMSB = [=]()->uint16_t {
+        uint16_t calculatedTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
+        if (dutyCyclePercent == 0) {
+            /// Note: If LEDn_ON_H[4] and LEDn_OFF_H[4] are set at the same time, the LEDn_OFF_H[4] function takes precedence.
+            /// Note: If ALL_LED_ON_H[4] and ALL_LED_OFF_H[4] are set at the same time, the ALL_LED_OFF_H[4] function takes precedence.
+            return calculatedTurnLowAtStepMSB | MSBRegisterBit4;
+        } else if (dutyCyclePercent > 99) {
+            return 0;
+        }
+        return calculatedTurnLowAtStepMSB;
+    }();
 
     return etl::array<uint8_t, numOfBytes>{0,
                                            static_cast<uint8_t>(pwmTurnHighAtStepLSB),
