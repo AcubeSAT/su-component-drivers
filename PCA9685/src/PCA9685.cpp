@@ -9,7 +9,7 @@ bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t* rData, uin
         }
 
         if (not PCA9685_TWIHS_WriteRead(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress),
-                                    reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead)) {
+                                        reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead)) {
             LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
             return false;
         }
@@ -19,7 +19,7 @@ bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t* rData, uin
 
 }
 
-bool PCA9685::i2cWriteData(const uint8_t* tData, uint8_t numberOfBytesToWrite) {
+bool PCA9685::i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite) {
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -38,8 +38,7 @@ bool PCA9685::i2cWriteData(const uint8_t* tData, uint8_t numberOfBytesToWrite) {
 }
 
 void PCA9685::i2cWriteValueToRegister(RegisterAddresses registerAddress, uint8_t transmittedByte) {
-    const uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddresses>>(registerAddress), transmittedByte};
-
+    uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddresses>>(registerAddress), transmittedByte};
     i2cWriteData(&tData[0], sizeof(tData));
 }
 
