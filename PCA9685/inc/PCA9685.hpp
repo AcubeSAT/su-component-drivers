@@ -154,6 +154,16 @@ public:
     void setDeviceFrequency(uint16_t frequency);
 
     /**
+     * Function that enables the auto-increment (AI) feature
+     */
+    void enableAutoIncrement();
+
+    /**
+     * Function that disables the auto-increment (AI) feature.
+     */
+    void disableAutoIncrement();
+
+    /**
      * Function that enables the PCA9695's internal (EXTCLK) clock.
      */
     void enableExternalClock();
@@ -237,9 +247,9 @@ public:
 private:
 
     /**
-     * The address for the I2C protocol of the PCA9685 device.
+     * The slave address for the I2C protocol of the PCA9685 device.
      */
-    I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
+    const I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
 
     /**
      * The maximum step count (4096)
@@ -380,18 +390,7 @@ private:
      *
      * @returns An array filled with the registers values, in an ascending (per channel) order.
      */
-    template<uint8_t numOfBytes>
-    etl::array<uint8_t, numOfBytes> calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent);
-
-    /**
-     * Function that enables the auto-increment (AI) feature.
-     */
-    void enableAutoIncrement();
-
-    /**
-     * Function that disables the auto-increment (AI) feature.
-     */
-    void disableAutoIncrement();
+    static auto calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent);
 
     /**
      * Function that writes a byte to a specific register
