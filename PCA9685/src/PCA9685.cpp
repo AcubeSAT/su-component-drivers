@@ -1,6 +1,6 @@
 #include "PCA9685.hpp"
 
-bool PCA9685::i2cReadData(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
+bool PCA9685::i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) {
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -37,13 +37,13 @@ bool PCA9685::i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite) {
 
 }
 
-void PCA9685::i2cWriteValueToRegister(RegisterAddresses registerAddress, uint8_t transmittedByte) {
-    uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddresses>>(registerAddress), transmittedByte};
+void PCA9685::i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte) {
+    uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddress>>(registerAddress), transmittedByte};
     i2cWriteData(&tData[0], sizeof(tData));
 }
 
 void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
-    const auto addressOfFirstChannel = static_cast<std::underlying_type_t<RegisterAddresses>>(RegisterAddresses::LED0_ON_L);
+    const auto addressOfFirstChannel = static_cast<std::underlying_type_t<RegisterAddress>>(RegisterAddress::LED0_ON_L);
 
     const uint8_t LEDn_ON_L = addressOfFirstChannel + BytesPerPWM * static_cast<std::underlying_type_t<PWMChannels>>(channel);
 
@@ -69,7 +69,7 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
     constexpr size_t I2CTransmittedDataSize = BytesPerPWM + 1;
 
     auto i2cTransmittedData = calculatePWMRegisterValues<I2CTransmittedDataSize>(dutyCyclePercent, delayPercent);
-    i2cTransmittedData[0] = static_cast<std::underlying_type_t<RegisterAddresses>>(RegisterAddresses::ALL_LED_ON_L);
+    i2cTransmittedData[0] = static_cast<std::underlying_type_t<RegisterAddress>>(RegisterAddress::ALL_LED_ON_L);
 
     enableAutoIncrement();
     i2cWriteData(i2cTransmittedData.data(), static_cast<uint8_t>(sizeof i2cTransmittedData));
@@ -78,7 +78,7 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
 
 void PCA9685::setAllPWMChannelsOff() {
     constexpr uint8_t I2CTransmittedByte = 0x10;
-    i2cWriteValueToRegister(RegisterAddresses::ALL_LED_OFF_H, I2CTransmittedByte);
+    i2cWriteValueToRegister(RegisterAddress::ALL_LED_OFF_H, I2CTransmittedByte);
 }
 
 void PCA9685::setAllPWMChannelsOn(uint8_t delayPercent) {
@@ -125,32 +125,32 @@ PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPerce
 
 void PCA9685::enableAutoIncrement() {
     mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::AUTO_INCREMENT_ENABLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::disableAutoIncrement() {
     mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::AUTO_INCREMENT_DISABLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::enableExternalClock() {
     mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::EXTERNAL_CLOCK_ENABLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::disableExternalClock() {
     mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::EXTERNAL_CLOCK_DISABLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::setDeviceToSleepMode() {
     mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SLEEP_ENABLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::stopDeviceFromSleepMode() {
     mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::SLEEP_DISABLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::enableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
@@ -166,7 +166,7 @@ void PCA9685::enableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3
     if (allCall)
         mode1RegisterByte |= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::ALLCALL_RESPOND_ENABLE);
 
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::disableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
@@ -182,7 +182,7 @@ void PCA9685::disableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub
     if (allCall)
         mode1RegisterByte &= static_cast<std::underlying_type_t<Mode1RegisterMasks>>(Mode1RegisterMasks::ALLCALL_RESPOND_DISABLE);
 
-    i2cWriteValueToRegister(RegisterAddresses::MODE1, mode1RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
 void PCA9685::invertOutputs(bool invert) {
@@ -191,7 +191,7 @@ void PCA9685::invertOutputs(bool invert) {
     else
         mode2RegisterByte &= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_INVERT_DISABLE);
 
-    i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setOutputChangeOn(bool stop) {
@@ -200,17 +200,17 @@ void PCA9685::setOutputChangeOn(bool stop) {
     else
         mode2RegisterByte &= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CHANGES_ON_STOP);
 
-    i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setTotemPoleOutputs() {
     mode2RegisterByte |= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CONFIGURATION_TOTEM_POLE);
-    i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setOpenDrainOutputs() {
     mode2RegisterByte &= static_cast<std::underlying_type_t<Mode2RegisterMasks>>(Mode2RegisterMasks::OUTPUT_CONFIGURATION_OPEN_DRAIN);
-    i2cWriteValueToRegister(RegisterAddresses::MODE2, mode2RegisterByte);
+    i2cWriteValueToRegister(RegisterAddress::MODE2, mode2RegisterByte);
 }
 
 void PCA9685::setOutputEnableState(bool outne00, bool outne01, bool outne1x) {

@@ -280,11 +280,11 @@ private:
     static constexpr uint8_t FullOnPWMDutyCycle = 100;
 
     /**
-     * @enum RegisterAddresses
+     * @enum RegisterAddress
      *
      * An enum that contains the various register addresses that PCA9685 acknowledges
      */
-    enum class RegisterAddresses : uint8_t {
+    enum class RegisterAddress : uint8_t {
         MODE1 = 0x00,
         MODE2 = 0x01,
         SUBADR1 = 0x02,
@@ -399,7 +399,7 @@ private:
      * @param registerAddress The address of the register
      * @param transmittedByte The transmitted byte
      */
-    void i2cWriteValueToRegister(RegisterAddresses registerAddress, uint8_t transmittedByte);
+    void i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte);
 
     /**
      * Function that reads from a specified register of the PCA9685 device.
@@ -410,7 +410,7 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cReadData(RegisterAddresses registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+    bool i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
