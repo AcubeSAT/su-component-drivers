@@ -5,7 +5,7 @@ void AD590::setADCResult(uint16_t ADCResult) {
 }
 
 etl::expected<float,bool> AD590::getTemperature() const{
-    static_assert(numOfBits > 0 ,"Value must be above zero");
+    static_assert(numOfBits > 0 && voltageValue > 0, "Value must be above zero");
     if(resistorValue <= 0.0f){
         return etl::unexpected(true);
     }
