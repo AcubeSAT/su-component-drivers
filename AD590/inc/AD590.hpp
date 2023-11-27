@@ -6,6 +6,7 @@
 #include "task.h"
 #include "Peripheral_Definitions.hpp"
 #include "peripheral/afec/plib_afec_common.h"
+#include "etl/expected.h"
 
 /**
  * AD590 temperature sensor driver
@@ -38,13 +39,13 @@ public:
      * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
      * @param adcChannelNumber Number of the AFEC channel that is being used.
      */
-    constexpr AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
+    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
 
     /**
      * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
      * @return The temperature in Celsius.
      */
-    float getTemperature() const;
+    etl::expected<float,bool> getTemperature() const;
 
 private:
     /**
@@ -70,12 +71,12 @@ private:
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    float resistorValue = 0.0f;
+    const float resistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
      */
-    AFEC_CHANNEL_NUM adcChannelNumber;
+    const AFEC_CHANNEL_NUM adcChannelNumber;
 
     /**
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
