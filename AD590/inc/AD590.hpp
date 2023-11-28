@@ -25,7 +25,7 @@ public:
      * @return AFEC peripheral channel number
      */
     AFEC_CHANNEL_NUM getADCChannelNum() const{
-        return adcChannelNumber;
+        return AdcChannelNumber;
     }
 
     /**
@@ -39,7 +39,7 @@ public:
      * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
      * @param adcChannelNumber Number of the AFEC channel that is being used.
      */
-    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): resistorValue(resistorValue), adcChannelNumber(adcChannelNumber) {}
+    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): ResistorValue(ResistorValue), AdcChannelNumber(AdcChannelNumber) {}
 
     /**
      * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
@@ -56,27 +56,27 @@ private:
     /**
      * Reference temperature constant in Celsius
      */
-    static constexpr float referenceTemperature = 25.0f;
+    static constexpr float ReferenceTemperature = 25.0f;
 
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t numOfBits = 4096;
+    static constexpr uint16_t NumOfBits = 4096;
 
     /**
      * Value of the voltage that we connect the sensor to.
      */
-    static constexpr uint16_t voltageValue = 3300;
+    static constexpr uint16_t VoltageValue = 3300;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    const float resistorValue = 0.0f;
+    const float ResistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
      */
-    const AFEC_CHANNEL_NUM adcChannelNumber;
+    const AFEC_CHANNEL_NUM AdcChannelNumber;
 
     /**
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
