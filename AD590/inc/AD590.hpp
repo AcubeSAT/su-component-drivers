@@ -17,7 +17,6 @@
  * https://web.archive.org/web/20231118132621/https://www.mouser.com/catalog/specsheets/intersil_fn3171.pdf
  * and https://web.archive.org/web/20231118132728/https://www.analog.com/media/en/technical-documentation/data-sheets/ad590.pdf
  */
-
 class AD590 {
 public:
     /**
@@ -32,18 +31,22 @@ public:
     * Sets the Analog to Digital conversion result.
     * @param adcResult The result of the ADC conversion.
     */
-    void setADCResult(const uint16_t adcResult);
+    void setADCResult(const uint16_t ADCResult) {
+        adcResult = ADCResult;
+    }
 
     /**
      * Contructor for the AD590 class.
-     * @param resistorValue The value of the resistor that is used to map the current output of the sensor.
+     * @param resistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
      * @param adcChannelNumber Number of the AFEC channel that is being used.
+     * @note This function does not enable or configure the corresponding AFEC channel
      */
     AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): ResistorValue(ResistorValue), AdcChannelNumber(AdcChannelNumber) {}
 
     /**
-     * Gets the analog temperature from the AD590 temperature sensor, converts the voltage to current and finally to temperature in celsius.
-     * @return The temperature in Celsius.
+    * Gets the last measured analog temperature from the AD590 temperature sensor, by converting the voltage to current
+    * and finally to temperature in Celsius.
+    * @return The temperature in Celsius.
      */
     etl::expected<float,bool> getTemperature() const;
 
@@ -51,7 +54,7 @@ private:
     /**
      * Nominal Current Output at 25°C (298.2 K)
      */
-    static constexpr float offsetCurrent = 298.2;
+    static constexpr float OffsetCurrent = 298.2f;
 
     /**
      * Reference temperature constant in Celsius
@@ -61,7 +64,7 @@ private:
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t NumOfBits = 4096;
+    static constexpr uint16_t MaxADCValue = 4095;
 
     /**
      * Value of the voltage that we connect the sensor to.
