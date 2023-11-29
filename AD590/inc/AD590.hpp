@@ -23,7 +23,7 @@ public:
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
      */
-    AFEC_CHANNEL_NUM getADCChannelNum() const{
+    AFEC_CHANNEL_NUM getADCChannelNum() const {
         return AdcChannelNumber;
     }
 
@@ -41,14 +41,15 @@ public:
      * @param adcChannelNumber Number of the AFEC channel that is being used.
      * @note This function does not enable or configure the corresponding AFEC channel
      */
-    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber): ResistorValue(ResistorValue), AdcChannelNumber(AdcChannelNumber) {}
+    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber) : ResistorValue(ResistorValue),
+                                                                    AdcChannelNumber(AdcChannelNumber) {}
 
     /**
     * Gets the last measured analog temperature from the AD590 temperature sensor, by converting the voltage to current
     * and finally to temperature in Celsius.
     * @return The temperature in Celsius.
      */
-    etl::expected<float,bool> getTemperature() const;
+    etl::expected<float, bool> getTemperature() const;
 
 private:
     /**
