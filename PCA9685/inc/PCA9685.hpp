@@ -74,6 +74,11 @@ public:
     };
 
     /**
+     * Underlying type of I2CAddress enum class.
+     */
+    using I2CAddress_t = std::underlying_type_t<I2CAddress>;
+
+    /**
      * @enum PWMChannelsNumber
      *
      * Lists all of the available PCA9685 PWM outputs
@@ -96,6 +101,11 @@ public:
         CHANNEL14 = 14,
         CHANNEL15 = 15,
     };
+
+    /**
+     * Underlying type of PWMChannels enum class.
+     */
+    using PWMChannels_t = std::underlying_type_t<PWMChannels>;
 
     /**
      * Constructor for the PCA9685 class.
@@ -126,7 +136,7 @@ public:
      * @param channel
      * @param delayPercent
      */
-    void setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent = 0);
+    void setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent);
 
     /**
      * Function that sets all the PWM channels to the same values
@@ -310,6 +320,11 @@ private:
     };
 
     /**
+     * Underlying type of the RegisterAddress enum class.
+     */
+    using RegisterAddress_t = std::underlying_type_t<RegisterAddress>;
+
+    /**
      * @enum Mode1RegisterMasks
      *
      * A collection of OR and AND masks that are used to PCA9685 configurations through MODE1 register.
@@ -334,6 +349,11 @@ private:
     };
 
     /**
+     * Underlying type of the Mode1RegisterMasks enum class.
+     */
+    using Mode1RegisterMasks_t = std::underlying_type_t<Mode1RegisterMasks>;
+
+    /**
      * @enum Mode2RegisterMasks
      *
      * A collection of OR and AND masks that are used to PCA9685 configurations through MODE2 register.
@@ -348,6 +368,11 @@ private:
         OUTPUT_ENABLE_STATE_HIGH = 0X01,
         OUTPUT_ENABLE_STATE_HIGH_IMPEDANCE = 0X02,
     };
+
+    /**
+     * Underlying type of Mode2RegisterMasks enum class.
+     */
+    using Mode2RegisterMasks_t = std::underlying_type_t<Mode2RegisterMasks>;
 
     /**
      * MODE1 register byte, initial value 0h.
@@ -422,3 +447,4 @@ private:
     bool i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite);
 
 };
+
