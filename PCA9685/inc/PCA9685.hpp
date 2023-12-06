@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <etl/utility.h>
 #include <etl/array.h>
+#include <etl/span.h>
 #include "Logger.hpp"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -191,8 +192,7 @@ public:
      * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if enabled.
      * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
      */
-    void
-    enableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+    void enableI2CBusSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
 
     /**
      * Disable the I2C sub-addresses and/or All-Call address
@@ -202,8 +202,7 @@ public:
      * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if disabled.
      * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
      */
-    void
-    disableDeviceResponseToSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+    void disableI2CBusSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
 
     /**
      * Configure the output logic state (MODE2 register, INVRT bit).
@@ -250,6 +249,11 @@ private:
      * The slave address for the I2C protocol of the PCA9685 device.
      */
     const I2CAddress i2cAddress = I2CAddress::I2CAddress_101100;
+
+    /**
+     * The total number of readable registers.
+     */
+    static constexpr uint8_t NumberOfRegisters = 68;
 
     /**
      * The maximum step count (4096)
@@ -312,8 +316,8 @@ private:
     /**
      * Underlying type of the RegisterAddress enum class.
      */
-
     using RegisterAddress_t = std::underlying_type_t<RegisterAddress>;
+
     /**
      * @enum Mode1RegisterMasks
      *
@@ -341,8 +345,8 @@ private:
     /**
      * Underlying type of the Mode1RegisterMasks enum class.
      */
-
     using Mode1RegisterMasks_t = std::underlying_type_t<Mode1RegisterMasks>;
+
     /**
      * @enum Mode2RegisterMasks
      *
@@ -362,8 +366,8 @@ private:
     /**
      * Underlying type of Mode2RegisterMasks enum class.
      */
-
     using Mode2RegisterMasks_t = std::underlying_type_t<Mode2RegisterMasks>;
+
     /**
      * MODE1 register byte, initial value 0h.
      *
@@ -434,7 +438,7 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8_t returnedBytesNumber);
+    bool i2cReadData(RegisterAddress registerAddress, uint8_t *rData, uint8_t returnedBytesNumber);
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
@@ -444,7 +448,7 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite);
+    bool i2cWriteData(etl::span<uint8_t> buffer);
 
 };
 

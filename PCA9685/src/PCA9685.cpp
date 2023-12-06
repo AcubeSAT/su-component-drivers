@@ -1,6 +1,6 @@
 #include "PCA9685.hpp"
 
-bool PCA9685::i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8_t returnedBytesNumber) {
+bool PCA9685::i2cReadData(RegisterAddress registerAddress, uint8_t *rData, uint8_t returnedBytesNumber) {
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -8,7 +8,7 @@ bool PCA9685::i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8
             continue;
         }
 
-        if (not PCA9685_TWIHS_Read(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress), rData, returnedBytesNumber)) {
+        if (not PCA9685_TWIHS_Read(static_cast<I2CAddress_t>(i2cAddress), rData, returnedBytesNumber)) {
             LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
             return false;
         }
@@ -23,7 +23,7 @@ bool PCA9685::i2cReadData(RegisterAddress registerAddress, uint8_t* rData, uint8
 
 }
 
-bool PCA9685::i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite) {
+bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -31,7 +31,7 @@ bool PCA9685::i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite) {
             continue;
         }
 
-        if (not PCA9685_TWIHS_Write(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress), tData, numberOfBytesToWrite)) {
+        if (not PCA9685_TWIHS_Write(static_cast<I2CAddress_t>(i2cAddress), buffer.data(), buffer.size())) {
             LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
             return false;
         }
@@ -44,25 +44,27 @@ bool PCA9685::i2cWriteData(uint8_t* tData, uint8_t numberOfBytesToWrite) {
 void PCA9685::i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte) {
 //    uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddress>>(registerAddress), transmittedByte};
     etl::array<uint8_t, 2> buffer = {static_cast<RegisterAddress_t>(registerAddress), transmittedByte};
-    i2cWriteData(buffer.data(), buffer.size());
+    i2cWriteData(etl::span<uint8_t>(buffer));
 }
 
 auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent) {
-    const auto dutyCycleStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) * (static_cast<float>(dutyCyclePercent) / 100.0f));
-    const auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) * (static_cast<float>(delayPercent) / 100.0f));
+    const auto dutyCycleStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
+                                                            (static_cast<float>(dutyCyclePercent) / 100.0f));
+    const auto delayStepsNumber = static_cast<uint16_t>(static_cast<float>(GrayscaleMaximumSteps) *
+                                                        (static_cast<float>(delayPercent) / 100.0f));
 
     constexpr uint8_t MSBRegisterBit4 = 0x10;
 
     const uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
 
-    const auto pwmTurnHighAtStepMSB = [=]()->uint16_t {
+    const auto pwmTurnHighAtStepMSB = [=]() -> uint16_t {
         uint16_t calculatedTurnHighAtStepMSB = delayStepsNumber & MaskLSB;
         if (dutyCyclePercent > 99)
             return calculatedTurnHighAtStepMSB | MSBRegisterBit4;
         return calculatedTurnHighAtStepMSB;
     }();
 
-    const auto turnLowAtStep = [=]()->uint16_t {
+    const auto turnLowAtStep = [=]() -> uint16_t {
         uint16_t calculatedTurnLowAtStep = delayStepsNumber + dutyCycleStepsNumber - 1;
         if (delayPercent + dutyCyclePercent > 99)
             return calculatedTurnLowAtStep - GrayscaleMaximumSteps;
@@ -71,7 +73,7 @@ auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delay
 
     const uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
 
-    const auto pwmTurnLowAtStepMSB = [=]()->uint16_t {
+    const auto pwmTurnLowAtStepMSB = [=]() -> uint16_t {
         uint16_t calculatedTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
         /// Note: If LEDn_ON_H[4] and LEDn_OFF_H[4] are set at the same time, the LEDn_OFF_H[4] function takes precedence.
         /// Note: If ALL_LED_ON_H[4] and ALL_LED_OFF_H[4] are set at the same time, the ALL_LED_OFF_H[4] function takes precedence.
@@ -82,11 +84,11 @@ auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delay
         return calculatedTurnLowAtStepMSB;
     }();
 
-    return etl::array<uint8_t, BytesPerPWM+1>{0,
-                                              static_cast<uint8_t>(pwmTurnHighAtStepLSB),
-                                              static_cast<uint8_t>(pwmTurnHighAtStepMSB),
-                                              static_cast<uint8_t>(pwmTurnLowAtStepLSB),
-                                              static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
+    return etl::array<uint8_t, BytesPerPWM + 1>{0,
+                                                static_cast<uint8_t>(pwmTurnHighAtStepLSB),
+                                                static_cast<uint8_t>(pwmTurnHighAtStepMSB),
+                                                static_cast<uint8_t>(pwmTurnLowAtStepLSB),
+                                                static_cast<uint8_t>(pwmTurnLowAtStepMSB)};
 }
 
 void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -100,7 +102,7 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
     i2cTransmittedData[0] = LEDn_ON_L;
 
     enableAutoIncrement();
-    i2cWriteData(i2cTransmittedData.data(), I2CTransmittedDataSize);
+    i2cWriteData(etl::span<uint8_t>(i2cTransmittedData));
     disableAutoIncrement();
 }
 
@@ -119,7 +121,7 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
     i2cTransmittedData[0] = static_cast<RegisterAddress_t>(RegisterAddress::ALL_LED_ON_L);
 
     enableAutoIncrement();
-    i2cWriteData(i2cTransmittedData.data(), I2CTransmittedDataSize);
+    i2cWriteData(etl::span<uint8_t>(i2cTransmittedData));
     disableAutoIncrement();
 }
 
@@ -162,7 +164,7 @@ void PCA9685::stopDeviceFromSleepMode() {
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::enableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
+void PCA9685::enableI2CBusSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
     if (sub1)
         mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SUB1_RESPOND_ENABLE);
 
@@ -178,7 +180,7 @@ void PCA9685::enableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::disableDeviceResponseToSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
+void PCA9685::disableI2CBusSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
     if (sub1)
         mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SUB1_RESPOND_DISABLE);
 
