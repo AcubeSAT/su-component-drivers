@@ -164,16 +164,6 @@ public:
     void setDeviceFrequency(uint16_t frequency);
 
     /**
-     * Function that enables the auto-increment (AI) feature
-     */
-    void enableAutoIncrement();
-
-    /**
-     * Function that disables the auto-increment (AI) feature.
-     */
-    void disableAutoIncrement();
-
-    /**
      * Function that enables the PCA9695's internal (EXTCLK) clock.
      */
     void enableExternalClock();
@@ -252,7 +242,7 @@ public:
      * Function that allows all the devices in the I2C-bus to be reset to the power-up state value
      * through a specific formatted I2C-bus command (SWRST register).
      */
-    void softwareResetOfAllDevices();
+    void reset();
 
 private:
 
@@ -322,8 +312,8 @@ private:
     /**
      * Underlying type of the RegisterAddress enum class.
      */
-    using RegisterAddress_t = std::underlying_type_t<RegisterAddress>;
 
+    using RegisterAddress_t = std::underlying_type_t<RegisterAddress>;
     /**
      * @enum Mode1RegisterMasks
      *
@@ -351,8 +341,8 @@ private:
     /**
      * Underlying type of the Mode1RegisterMasks enum class.
      */
-    using Mode1RegisterMasks_t = std::underlying_type_t<Mode1RegisterMasks>;
 
+    using Mode1RegisterMasks_t = std::underlying_type_t<Mode1RegisterMasks>;
     /**
      * @enum Mode2RegisterMasks
      *
@@ -372,8 +362,8 @@ private:
     /**
      * Underlying type of Mode2RegisterMasks enum class.
      */
-    using Mode2RegisterMasks_t = std::underlying_type_t<Mode2RegisterMasks>;
 
+    using Mode2RegisterMasks_t = std::underlying_type_t<Mode2RegisterMasks>;
     /**
      * MODE1 register byte, initial value 0h.
      *
@@ -405,6 +395,16 @@ private:
      * Bit 0: OUTNE[0]  -> 0
      */
     uint8_t mode2RegisterByte = 0;
+
+    /**
+     * Function that enables the auto-increment (AI) feature
+     */
+    void enableAutoIncrement();
+
+    /**
+     * Function that disables the auto-increment (AI) feature.
+     */
+    void disableAutoIncrement();
 
     /**
      * Functions that calculates the data that need to be stored at each one of the 4 PWM channel registers.
