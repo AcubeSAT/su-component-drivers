@@ -438,7 +438,7 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cReadData(RegisterAddress registerAddress, uint8_t *rData, uint8_t returnedBytesNumber);
+    bool i2cReadData();
 
     /**
      * Function that writes to a specified register of the PCA9685 device.
