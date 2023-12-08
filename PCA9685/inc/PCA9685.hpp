@@ -5,6 +5,7 @@
 #include <etl/utility.h>
 #include <etl/array.h>
 #include <etl/span.h>
+#include <etl/expected.h>
 #include "Logger.hpp"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -177,12 +178,12 @@ public:
     /**
      * Set device to low-power operation (no PWMs are generated).
      */
-    void setDeviceToSleepMode();
+    void sendToSleep();
 
     /**
      * Set device to normal operation.
      */
-    void stopDeviceFromSleepMode();
+    void recoverFromSleep();
 
     /**
      * Enable the I2C sub-addresses and/or All-Call address.
@@ -192,17 +193,7 @@ public:
      * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if enabled.
      * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
      */
-    void enableI2CBusSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
-
-    /**
-     * Disable the I2C sub-addresses and/or All-Call address
-     *
-     * @param sub1 Sub-address 1: Bit 3 of MODE1 register, true if disabled.
-     * @param sub2 Sub-address 2: Bit 2 of MODE1 register, true if disabled.
-     * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if disabled.
-     * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
-     */
-    void disableI2CBusSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+    void setI2CBusSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
 
     /**
      * Configure the output logic state (MODE2 register, INVRT bit).
@@ -438,7 +429,8 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
-    bool i2cReadData();
+    template<size_t SIZE, typename T = uint8_t>
+    etl::expected<etl::array<T, SIZE>, bool> i2cReadData();
 
     /**
      * Function that writes to a specified register of the PCA9685 device.

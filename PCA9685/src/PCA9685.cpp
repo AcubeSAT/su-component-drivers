@@ -1,7 +1,8 @@
 #include "PCA9685.hpp"
 
-bool PCA9685::i2cReadData() {
-    etl::array<uint8_t, NumberOfRegisters> rData {0};
+template<size_t SIZE, typename T>
+etl::expected<etl::array<T, SIZE>, bool> PCA9685::i2cReadData() {
+    etl::array<T, SIZE> buffer{0};
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -9,17 +10,12 @@ bool PCA9685::i2cReadData() {
             continue;
         }
 
-        if (not PCA9685_TWIHS_Read(static_cast<I2CAddress_t>(i2cAddress), rData.data(), rData.size())) {
+        if (not PCA9685_TWIHS_Read(static_cast<I2CAddress_t>(i2cAddress), buffer.data(), buffer.size())) {
             LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-            return false;
+            return etl::array<char, 1>{-1};
         }
 
-//        if (not PCA9685_TWIHS_WriteRead(static_cast<std::underlying_type_t<I2CAddress>>(i2cAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, returnedBytesNumber)) {
-//            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-//            return false;
-//        }
-
-        return true;
+        return buffer;
     }
 
 }
@@ -43,7 +39,6 @@ bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
 }
 
 void PCA9685::i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte) {
-//    uint8_t tData[2] = {static_cast<std::underlying_type_t<RegisterAddress>>(registerAddress), transmittedByte};
     etl::array<uint8_t, 2> buffer = {static_cast<RegisterAddress_t>(registerAddress), transmittedByte};
     i2cWriteData(etl::span<uint8_t>(buffer));
 }
@@ -97,8 +92,6 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
 
     const uint8_t LEDn_ON_L = addressOfFirstChannel + BytesPerPWM * static_cast<PWMChannels_t>(channel);
 
-    constexpr size_t I2CTransmittedDataSize = BytesPerPWM + 1;
-
     auto i2cTransmittedData = calculatePWMRegisterValues(dutyCyclePercent, delayPercent);
     i2cTransmittedData[0] = LEDn_ON_L;
 
@@ -116,8 +109,6 @@ void PCA9685::setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent) {
 }
 
 void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) {
-    constexpr size_t I2CTransmittedDataSize = BytesPerPWM + 1;
-
     auto i2cTransmittedData = calculatePWMRegisterValues(dutyCyclePercent, delayPercent);
     i2cTransmittedData[0] = static_cast<RegisterAddress_t>(RegisterAddress::ALL_LED_ON_L);
 
@@ -155,17 +146,17 @@ void PCA9685::disableExternalClock() {
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::setDeviceToSleepMode() {
+void PCA9685::sendToSleep() {
     mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SLEEP_ENABLE);
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::stopDeviceFromSleepMode() {
+void PCA9685::recoverFromSleep() {
     mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SLEEP_DISABLE);
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::enableI2CBusSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
+void PCA9685::setI2CBusSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
     if (sub1)
         mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SUB1_RESPOND_ENABLE);
 
@@ -177,22 +168,6 @@ void PCA9685::enableI2CBusSubAddresses(bool sub1, bool sub2, bool sub3, bool all
 
     if (allCall)
         mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::ALLCALL_RESPOND_ENABLE);
-
-    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
-}
-
-void PCA9685::disableI2CBusSubAddresses(bool sub1, bool sub2, bool sub3, bool allCall) {
-    if (sub1)
-        mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SUB1_RESPOND_DISABLE);
-
-    if (sub2)
-        mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SUB2_RESPOND_DISABLE);
-
-    if (sub3)
-        mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SUB3_RESPOND_DISABLE);
-
-    if (allCall)
-        mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::ALLCALL_RESPOND_DISABLE);
 
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
