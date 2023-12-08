@@ -12,7 +12,7 @@ etl::expected<etl::array<T, SIZE>, bool> PCA9685::i2cReadData() {
 
         if (not PCA9685_TWIHS_Read(static_cast<I2CAddress_t>(i2cAddress), buffer.data(), buffer.size())) {
             LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-            return etl::array<char, 1>{-1};
+            return etl::unexpected<bool>(true);
         }
 
         return buffer;
