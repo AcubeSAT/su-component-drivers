@@ -26,7 +26,7 @@ template<typename T>
 bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
     auto slaveAddress = static_cast<I2CAddress_t>(i2cAddress);
 
-    if (std::is_same_v<T, SoftwareReset>) {
+    if constexpr (std::is_same_v<T, SoftwareReset>) {
         slaveAddress = static_cast<SoftwareReset_t>(SoftwareReset::SLAVE_ADDRESS);
     }
 
