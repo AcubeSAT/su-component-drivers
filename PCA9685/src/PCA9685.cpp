@@ -15,12 +15,20 @@ etl::expected<etl::array<T, SIZE>, bool> PCA9685::i2cReadData() {
             return etl::unexpected<bool>(true);
         }
 
+        vTaskDelay(pdMS_TO_TICKS(50));
+
         return buffer;
     }
 
 }
 
+template<typename T>
 bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
+    auto slaveAddress = static_cast<I2CAddress_t>(i2cAddress);
+
+    if (std::is_same_v<T, SoftwareReset>) {
+        slaveAddress = static_cast<SoftwareReset_t>(SoftwareReset::SLAVE_ADDRESS);
+    }
 
     while (true) {
         if (TWIHS2_IsBusy()) {
@@ -28,10 +36,12 @@ bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
             continue;
         }
 
-        if (not PCA9685_TWIHS_Write(static_cast<I2CAddress_t>(i2cAddress), buffer.data(), buffer.size())) {
+        if (not PCA9685_TWIHS_Write(slaveAddress, buffer.data(), buffer.size())) {
             LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
             return false;
         }
+
+        vTaskDelay(pdMS_TO_TICKS(50));
 
         return true;
     }
@@ -40,7 +50,7 @@ bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
 
 void PCA9685::i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte) {
     etl::array<uint8_t, 2> buffer = {static_cast<RegisterAddress_t>(registerAddress), transmittedByte};
-    i2cWriteData(etl::span<uint8_t>(buffer));
+    i2cWriteData(etl::span<std::remove_reference_t<decltype(buffer[0])>>(buffer));
 }
 
 auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent) {
@@ -136,11 +146,6 @@ void PCA9685::disableAutoIncrement() {
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::enableExternalClock() {
-    mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::EXTERNAL_CLOCK_ENABLE);
-    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
-}
-
 void PCA9685::disableExternalClock() {
     mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::EXTERNAL_CLOCK_DISABLE);
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
@@ -198,4 +203,8 @@ void PCA9685::setTotemPoleOutputs() {
 void PCA9685::setOpenDrainOutputs() {
     mode2RegisterByte &= static_cast<Mode2RegisterMasks_t>(Mode2RegisterMasks::OUTPUT_CONFIGURATION_OPEN_DRAIN);
     i2cWriteValueToRegister(RegisterAddress::MODE2, mode2RegisterByte);
+}
+
+void PCA9685::reset() {
+    i2cWriteData<SoftwareReset>(etl::span<uint8_t>(etl::array<uint8_t, 1> {static_cast<SoftwareReset_t>(SoftwareReset::DATA_BYTE_1)}));
 }
