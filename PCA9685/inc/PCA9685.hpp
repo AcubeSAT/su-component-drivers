@@ -257,12 +257,20 @@ private:
     static constexpr uint8_t BytesPerPWM = 0x04;
 
     /**
-     * Software Reset (SWRST) data byte
+     * @enum SoftwareReset
      *
-     * @brief Once the General Call address has been sent and acknowledged, the master sends this specific value
-     * (SWRST data byte 1) in order for the PCA9685 to reset to power-up values.
+     * An enum that contains the reserved slave address (General Call) and the data byte that are used to reset
+     * all the PCA9685 devices of the I2C bus to the power-up state.
      */
-    static constexpr uint8_t softwareResetDataByte = 0x6;
+    enum class SoftwareReset : uint8_t {
+        SLAVE_ADDRESS = 0x00,
+        DATA_BYTE_1 = 0x06,
+    };
+
+    /**
+     * Underlying type of the SoftwareReset enum class.
+     */
+    using SoftwareReset_t = std::underlying_type_t<SoftwareReset>;
 
     /**
      * Mask for the 8 LSB of the 12-bit PWM
@@ -440,6 +448,7 @@ private:
      *
      * @returns True if I2C transaction was successful.
      */
+    template<typename T=I2CAddress>
     bool i2cWriteData(etl::span<uint8_t> buffer);
 
 };
