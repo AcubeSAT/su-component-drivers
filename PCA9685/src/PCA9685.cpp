@@ -54,7 +54,7 @@ auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delay
     const uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
 
     const auto pwmTurnHighAtStepMSB = [=]() -> uint16_t {
-        uint16_t calculatedTurnHighAtStepMSB = delayStepsNumber & MaskLSB;
+        uint16_t calculatedTurnHighAtStepMSB = (delayStepsNumber & MaskLSB) >> 8;
         if (dutyCyclePercent > 99)
             return calculatedTurnHighAtStepMSB | MSBRegisterBit4;
         return calculatedTurnHighAtStepMSB;
@@ -70,7 +70,7 @@ auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delay
     const uint16_t pwmTurnLowAtStepLSB = turnLowAtStep & MaskLSB;
 
     const auto pwmTurnLowAtStepMSB = [=]() -> uint16_t {
-        uint16_t calculatedTurnLowAtStepMSB = turnLowAtStep & MaskMSB;
+        uint16_t calculatedTurnLowAtStepMSB = (turnLowAtStep & MaskMSB) >> 8;
         /// Note: If LEDn_ON_H[4] and LEDn_OFF_H[4] are set at the same time, the LEDn_OFF_H[4] function takes precedence.
         /// Note: If ALL_LED_ON_H[4] and ALL_LED_OFF_H[4] are set at the same time, the ALL_LED_OFF_H[4] function takes precedence.
         if (dutyCyclePercent == 0)
