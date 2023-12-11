@@ -64,7 +64,7 @@ auto PCA9685::calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delay
     const uint16_t pwmTurnHighAtStepLSB = delayStepsNumber & MaskLSB;
 
     const auto pwmTurnHighAtStepMSB = [=]() -> uint16_t {
-        uint16_t calculatedTurnHighAtStepMSB = (delayStepsNumber & MaskLSB) >> 8;
+        uint16_t calculatedTurnHighAtStepMSB = (delayStepsNumber & MaskMSB) >> 8;
         if (dutyCyclePercent > 99)
             return calculatedTurnHighAtStepMSB | MSBRegisterBit4;
         return calculatedTurnHighAtStepMSB;
