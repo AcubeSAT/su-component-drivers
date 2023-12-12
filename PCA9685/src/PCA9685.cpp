@@ -106,7 +106,7 @@ void PCA9685::setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8
     i2cTransmittedData[0] = LEDn_ON_L;
 
     enableAutoIncrement();
-    i2cWriteData(etl::span<uint8_t>(i2cTransmittedData));
+    i2cWriteData(etl::span<std::remove_reference_t<decltype(i2cTransmittedData)[0])>>(i2cTransmittedData));
     disableAutoIncrement();
 }
 
@@ -123,7 +123,7 @@ void PCA9685::setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent) 
     i2cTransmittedData[0] = static_cast<RegisterAddress_t>(RegisterAddress::ALL_LED_ON_L);
 
     enableAutoIncrement();
-    i2cWriteData(etl::span<uint8_t>(i2cTransmittedData));
+    i2cWriteData(etl::span<std::remove_reference_t<decltype(i2cTransmittedData)[0])>>(i2cTransmittedData));
     disableAutoIncrement();
 }
 
