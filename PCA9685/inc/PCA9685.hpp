@@ -6,6 +6,7 @@
 #include <etl/array.h>
 #include <etl/span.h>
 #include <etl/expected.h>
+#include "PCA9685Configuration.hpp"
 #include "Logger.hpp"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -81,11 +82,11 @@ public:
     using I2CAddress_t = std::underlying_type_t<I2CAddress>;
 
     /**
-     * @enum PWMChannelsNumber
+     * @enum PWMChannel
      *
      * Lists all of the available PCA9685 PWM outputs
      */
-    enum class PWMChannels : uint8_t {
+    enum class PWMChannel : uint8_t {
         CHANNEL0 = 0,
         CHANNEL1 = 1,
         CHANNEL2 = 2,
@@ -105,9 +106,9 @@ public:
     };
 
     /**
-     * Underlying type of PWMChannels enum class.
+     * Underlying type of PWMChannel enum class.
      */
-    using PWMChannels_t = std::underlying_type_t<PWMChannels>;
+    using PWMChannel_t = std::underlying_type_t<PWMChannel>;
 
     /**
      * Constructor for the PCA9685 class.
@@ -117,20 +118,33 @@ public:
     explicit PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {};
 
     /**
+     * Function that configures the device and starts the PWM cycle bu exiting low-power mode.
+     *
+     * @param config The configurations of the device.
+     */
+    void start(const PCA9685Configuration::Configuration& config);
+
+    /**
+     * Function that allows all the devices in the I2C-bus to be reset to the power-up state value
+     * through a specific formatted I2C-bus command (SWRST register).
+     */
+    void reset();
+
+    /**
      * Function that sets the PWM duty cycle of the specified channel given a starting delayPercent
      *
      * @param channel The PWM channel that is to be modified (0-15)
      * @param dutyCycle The duty cycle of the PWM given as a percentage
      * @param delayPercent The delayPercent time given as a percentage
      */
-    void setPWMChannel(PWMChannels channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
+    void setPWMChannel(PWMChannel channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
      * Set the specified channel to always off
      *
      * @param channel
      */
-    void setPWMChannelAlwaysOff(PWMChannels channel);
+    void setPWMChannelAlwaysOff(PWMChannel channel);
 
     /**
      * Set the specified channel to always on
@@ -138,7 +152,7 @@ public:
      * @param channel
      * @param delayPercent
      */
-    void setPWMChannelAlwaysOn(PWMChannels channel, uint8_t delayPercent);
+    void setPWMChannelAlwaysOn(PWMChannel channel, uint8_t delayPercent);
 
     /**
      * Function that sets all the PWM channels to the same values
@@ -159,21 +173,11 @@ public:
     void setAllPWMChannelsOn(uint8_t delayPercent = 0);
 
     /**
-     * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency.
+     * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency in Hertz.
      *
      * @param frequency
      */
-    void setDeviceFrequency(uint16_t frequency);
-
-    /**
-     * Function that enables the PCA9695's internal (EXTCLK) clock.
-     */
-    void enableExternalClock();
-
-    /**
-     * Function that enables the PCA9695's external (EXTCLK) clock.
-     */
-    void disableExternalClock();
+    void setFrequency(uint16_t frequency);
 
     /**
      * Set device to low-power operation (no PWMs are generated).
@@ -186,53 +190,31 @@ public:
     void recoverFromSleep();
 
     /**
-     * Enable the I2C sub-addresses and/or All-Call address.
-     *
-     * @param sub1 Sub-address 1: Bit 3 of MODE1 register, true if enabled.
-     * @param sub2 Sub-address 2: Bit 2 of MODE1 register, true if enabled.
-     * @param sub3 Sub-address 3: Bit 1 of MODE1 register, true if enabled.
-     * @param allCall All-Call address: Bit 0 of MODE1 register, true if enabled.
+     * Function that configures the device clock.
+     * @param deviceClock
      */
-    void setI2CBusSubAddresses(bool sub1 = false, bool sub2 = false, bool sub3 = false, bool allCall = false);
+    void setDeviceClock(PCA9685Configuration::DeviceClock deviceClock);
+
+    /**
+     * Function that configures the general-call (ALLCALL) address.
+     */
+    void configureGeneralCallAddress(PCA9685Configuration::GeneralCall generalCall);
 
     /**
      * Configure the output logic state (MODE2 register, INVRT bit).
+     */
+    void setOutputLogicState(PCA9685Configuration::OutputLogicState outputLogicState);
+
+    /**
      *
-     * @param invert true if output logic state inverted.
+     * @param outputChangeCondition
      */
-    void invertOutputs(bool invert);
+    void setOutputChangeCondition(PCA9685Configuration::OutputChangeCondition outputChangeCondition);
 
     /**
-     * Configure the outputs to change on STOP or ACK command (MODE2 register, OCH bit).
-     *
-     * @param stop true if outputs change on STOP command.
+     * Function that sets PCA9685 outputs to operate as either totem-pole or open-drain structure.
      */
-    void setOutputChangeOn(bool stop);
-
-    /**
-     * Configure the outputs to totem-pole structure.
-     */
-    void setTotemPoleOutputs();
-
-    /**
-     * Configure the outputs to open-drain structure.
-     */
-    void setOpenDrainOutputs();
-
-    /**
-     * Configure OE pin function when OE=1.
-     *
-     * @param outne00 true if bits of OUTNE[1:0] are '00'.
-     * @param outne01 true if bits of OUTNE[1:0] are '01'.
-     * @param outne1x true if bits of OUTNE[1:0] are '1x'.
-     */
-    void setOutputEnableState(bool outne00 = true, bool outne01 = false, bool outne1x = false);
-
-    /**
-     * Function that allows all the devices in the I2C-bus to be reset to the power-up state value
-     * through a specific formatted I2C-bus command (SWRST register).
-     */
-    void reset();
+    void setOutputDriveType(PCA9685Configuration::OutputDriveType outputDriveType);
 
 private:
 
@@ -300,9 +282,6 @@ private:
     enum class RegisterAddress : uint8_t {
         MODE1 = 0x00,
         MODE2 = 0x01,
-        SUBADR1 = 0x02,
-        SUBADR2 = 0x03,
-        SUBADR3 = 0x04,
         ALLCALLADR = 0x05,
         LED0_ON_L = 0x06,
         ALL_LED_ON_L = 0xFA,
