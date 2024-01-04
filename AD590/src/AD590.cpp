@@ -5,7 +5,7 @@ etl::expected<float, bool> AD590::getTemperature() const {
     if (ResistorValue <= 0.0f) {
         return etl::unexpected(true);
     }
-    const float voltageConversion = adcResult / MaxADCValue * VoltageValue;
+    const float voltageConversion = static_cast<float>(adcResult) / MaxADCValue * VoltageValue;
     const float currentConversion = voltageConversion / ResistorValue;
     return currentConversion - OffsetCurrent + ReferenceTemperature;
 }
