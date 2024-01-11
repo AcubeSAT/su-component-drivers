@@ -41,7 +41,7 @@ public:
      * @param adcChannelNumber Number of the AFEC channel that is being used.
      * @note This function does not enable or configure the corresponding AFEC channel
      */
-    AD590(float resistorValue, AFEC_CHANNEL_NUM adcChannelNumber) : ResistorValue(ResistorValue),
+    AD590(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber) : ResistorValue(ResistorValue),
                                                                     AdcChannelNumber(AdcChannelNumber) {}
 
     /**
