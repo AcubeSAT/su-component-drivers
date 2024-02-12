@@ -163,12 +163,40 @@ void PCA9685::reset() {
     i2cWriteData<SoftwareReset>(etl::span<uint8_t>(etl::array<uint8_t, 1> {static_cast<SoftwareReset_t>(SoftwareReset::DATA_BYTE_1)}));
 }
 
-void PCA9685::setFrequency(uint16_t frequency) {
-//    auto prescaleValue = static_cast<float>(25) * static_cast<float>(1e6) / static_cast<float>(GrayscaleMaximumSteps) / ;
-    i2cWriteValueToRegister(RegisterAddress::PRE_SCALE, 0xFF);
+void PCA9685::setPWMFrequency(float frequency) {
+    const auto MinimumRefreshRate = [=]() -> float {
+        if(deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
+            return ExternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MaximumPreScaleValue+1};
+
+        return InternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MaximumPreScaleValue+1};
+    }();
+
+    const auto MaximumRefreshRate = [=]() -> float {
+        if(deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
+            return InternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MinimumPreScaleValue+1};
+
+        return InternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MinimumPreScaleValue+1};
+    }();
+
+    if(frequency > MaximumRefreshRate || frequency < MinimumRefreshRate){
+        LOG_INFO << "PCA9685 do not support the specified PWM frequency... Frequency was not updated";
+        return;
+    }
+
+    const auto PreScaleValue = [=]() -> float {
+        if(deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK){
+            return round(ExternalOscillatorFrequency*float {1e6}/GrayscaleMaximumSteps/frequency) - 1;
+        }
+        return round(InternalOscillatorFrequency*float {1e6}/GrayscaleMaximumSteps/frequency) - 1;
+    }();
+
+    enterSleepMode();
+    i2cWriteValueToRegister(RegisterAddress::PRE_SCALE, static_cast<uint8_t>(PreScaleValue));
+    exitSleepMode();
 }
 
 void PCA9685::start(const PCA9685Configuration::Configuration &config) {
+    deviceClock = config.deviceClock;
     setOutputDriveType(config.outputDriveType);
     setOutputLogicState(config.outputLogicState);
 }

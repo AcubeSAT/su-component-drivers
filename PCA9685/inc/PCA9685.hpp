@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cmath>
 #include <type_traits>
 #include <etl/utility.h>
 #include <etl/array.h>
@@ -174,11 +175,11 @@ public:
     void setAllPWMChannelsOn(uint8_t delayPercent = 0);
 
     /**
-     * Set device to operate at a new frequency. The PRE_SCALE register defines that frequency in Hertz.
+     * Set device to operate at a new frequency (in Hz).
      *
      * @param frequency
      */
-    void setFrequency(uint16_t frequency);
+    void setPWMFrequency(float frequency);
 
     /**
      * Set device to low-power operation (no PWMs are generated).
@@ -279,6 +280,31 @@ private:
      * Duty cycle of an always on PWM.
      */
     static constexpr uint8_t FullOnPWMDutyCycle = 100;
+
+    /**
+     * The frequency (MHz) of the internal oscillator.
+     */
+    static constexpr float InternalOscillatorFrequency = 25;
+
+    /**
+     * The frequency (MHz) of the external oscillator (hardware configured).
+     */
+    const float ExternalOscillatorFrequency = 48;
+
+    /**
+     * Determine whether the clock being used is the internal or the external.
+     */
+    PCA9685Configuration::DeviceClock deviceClock = PCA9685Configuration::DeviceClock::INTERNAL_CLOCK;
+
+    /**
+     * The minimum pre-scale value for setting frequency.
+     */
+    static constexpr uint8_t MinimumPreScaleValue = 3;
+
+    /**
+     * The maximum pre-scale value for setting frequency.
+     */
+    static constexpr uint8_t MaximumPreScaleValue = 255;
 
     /**
      * @enum RegisterAddress
