@@ -12,7 +12,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
-#include "peripheral/systick/plib_systick.h"
 #include "Peripheral_Definitions.hpp"
 
 #define PCA9685_TWI_PORT 2
