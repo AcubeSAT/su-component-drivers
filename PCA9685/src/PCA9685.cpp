@@ -15,7 +15,7 @@ etl::expected<etl::array<T, SIZE>, bool> PCA9685::i2cReadData() {
             return etl::unexpected<bool>(true);
         }
 
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(500));
 
         return buffer;
     }
@@ -146,16 +146,16 @@ void PCA9685::disableAutoIncrement() {
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::sendToSleep() {
+void PCA9685::enterSleepMode() {
     mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SLEEP_ENABLE);
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
-void PCA9685::recoverFromSleep() {
-    mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::RESTART_DEVICE_DISABLE);
-    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
-    vTaskDelay(pdMS_TO_TICKS(1));
+void PCA9685::exitSleepMode() {
     mode1RegisterByte &= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::SLEEP_DISABLE);
+    i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
+    vTaskDelay(pdMS_TO_TICKS(SleepModeDelayMS));
+    mode1RegisterByte |= static_cast<Mode1RegisterMasks_t>(Mode1RegisterMasks::RESTART_DEVICE_ENABLE);
     i2cWriteValueToRegister(RegisterAddress::MODE1, mode1RegisterByte);
 }
 
@@ -171,8 +171,4 @@ void PCA9685::setFrequency(uint16_t frequency) {
 void PCA9685::start(const PCA9685Configuration::Configuration &config) {
     setOutputDriveType(config.outputDriveType);
     setOutputLogicState(config.outputLogicState);
-    configureBusSubAddress(BusAddressRegister::SUBADR1, config.subAddress1);
-    configureBusSubAddress(BusAddressRegister::SUBADR2, config.subAddress2);
-    configureBusSubAddress(BusAddressRegister::SUBADR3, config.subAddress3);
-    configureBusSubAddress(BusAddressRegister::ALLCALLADR, config.allCallAddress);
 }

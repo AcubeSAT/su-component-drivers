@@ -11,6 +11,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
+#include "peripheral/systick/plib_systick.h"
 #include "Peripheral_Definitions.hpp"
 
 #define PCA9685_TWI_PORT 2
@@ -182,12 +183,12 @@ public:
     /**
      * Set device to low-power operation (no PWMs are generated).
      */
-    void sendToSleep();
+    void enterSleepMode();
 
     /**
      * Set device to normal operation.
      */
-    void recoverFromSleep();
+    void exitSleepMode();
 
     /**
      * Function that configures the device clock.
@@ -237,6 +238,11 @@ private:
      * The number of bytes/registers that define the form of the PWM
      */
     static constexpr uint8_t BytesPerPWM = 0x04;
+
+    /**
+     * The delay for exiting sleep mode (in ms).
+     */
+    static constexpr float SleepModeDelayMS = 0.6;
 
     /**
      * @enum SoftwareReset
