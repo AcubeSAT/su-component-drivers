@@ -4,22 +4,18 @@ template<size_t SIZE, typename T>
 etl::expected<etl::array<T, SIZE>, bool> PCA9685::i2cReadData() {
     etl::array<T, SIZE> buffer{0};
 
-    while (true) {
-        if (TWIHS2_IsBusy()) {
-            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus is busy";
-            continue;
-        }
-
-        if (not PCA9685_TWIHS_Read(static_cast<I2CAddress_t>(i2cAddress), buffer.data(), buffer.size())) {
-            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-            return etl::unexpected<bool>(true);
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        return buffer;
+    if (not PCA9685_TWIHS_Read(static_cast<I2CAddress_t>(i2cAddress), buffer.data(), buffer.size())) {
+        LOG_INFO << "PCA9685 was not able to perform any transaction";
+        return etl::unexpected<bool>(true);
     }
 
+    while (TWIHS2_IsBusy());
+
+    if(PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK){
+        LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
+    }
+
+    return buffer;
 }
 
 template<typename T>
@@ -30,22 +26,19 @@ bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
         slaveAddress = static_cast<SoftwareReset_t>(SoftwareReset::SLAVE_ADDRESS);
     }
 
-    while (true) {
-        if (TWIHS2_IsBusy()) {
-            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus is busy";
-            continue;
-        }
-
-        if (not PCA9685_TWIHS_Write(slaveAddress, buffer.data(), buffer.size())) {
-            LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
-            return false;
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(50));
-
-        return true;
+    if (not PCA9685_TWIHS_Write(slaveAddress, buffer.data(), buffer.size())) {
+        LOG_INFO << "PCA9685 was not able to perform any transaction";
+        return false;
     }
 
+    while (PCA9685_TWIHS_IsBusy());
+
+    if(PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK){
+        LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
+        return false;
+    }
+
+    return true;
 }
 
 void PCA9685::i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte) {
