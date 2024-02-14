@@ -53,7 +53,7 @@
 #endif
 
 /**
- * C++ class for interfacing with the PCA9685 LED driver device.
+ * Class for interfacing with the PCA9685 LED driver device.
  *
  * @brief This class provides functions to operate the PCA9685 LED driver.
  */
@@ -123,7 +123,7 @@ public:
      *
      * @param config The configurations of the device.
      */
-    void start(const PCA9685Configuration::Configuration& config);
+    void start(const PCA9685Configuration::Configuration &config);
 
     /**
      * Function that allows all the devices in the I2C-bus to be reset to the power-up state value

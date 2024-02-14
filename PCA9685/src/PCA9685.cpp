@@ -11,7 +11,7 @@ etl::expected<etl::array<T, SIZE>, bool> PCA9685::i2cReadData() {
 
     while (TWIHS2_IsBusy());
 
-    if(PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK){
+    if (PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
         LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
     }
 
@@ -33,7 +33,7 @@ bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
 
     while (PCA9685_TWIHS_IsBusy());
 
-    if(PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK){
+    if (PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
         LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
         return false;
     }
@@ -42,7 +42,8 @@ bool PCA9685::i2cWriteData(etl::span<uint8_t> buffer) {
 }
 
 void PCA9685::i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte) {
-    etl::array<uint8_t, 2> buffer = {static_cast<RegisterAddress_t>(registerAddress), transmittedByte};
+    constexpr uint8_t BufferSize = 2;
+    etl::array<uint8_t, BufferSize> buffer = {static_cast<RegisterAddress_t>(registerAddress), transmittedByte};
     i2cWriteData(etl::span<std::remove_reference_t<decltype(buffer[0])>>(buffer));
 }
 
@@ -153,34 +154,35 @@ void PCA9685::exitSleepMode() {
 }
 
 void PCA9685::reset() {
-    i2cWriteData<SoftwareReset>(etl::span<uint8_t>(etl::array<uint8_t, 1> {static_cast<SoftwareReset_t>(SoftwareReset::DATA_BYTE_1)}));
+    i2cWriteData<SoftwareReset>(
+            etl::span<uint8_t>(etl::array<uint8_t, 1>{static_cast<SoftwareReset_t>(SoftwareReset::DATA_BYTE_1)}));
 }
 
 void PCA9685::setPWMFrequency(float frequency) {
     const auto MinimumRefreshRate = [=]() -> float {
-        if(deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
-            return ExternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MaximumPreScaleValue+1};
+        if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
+            return ExternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MaximumPreScaleValue + 1};
 
-        return InternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MaximumPreScaleValue+1};
+        return InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MaximumPreScaleValue + 1};
     }();
 
     const auto MaximumRefreshRate = [=]() -> float {
-        if(deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
-            return InternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MinimumPreScaleValue+1};
+        if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
+            return InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MinimumPreScaleValue + 1};
 
-        return InternalOscillatorFrequency * float {1e6} / GrayscaleMaximumSteps / float {MinimumPreScaleValue+1};
+        return InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MinimumPreScaleValue + 1};
     }();
 
-    if(frequency > MaximumRefreshRate || frequency < MinimumRefreshRate){
+    if (frequency > MaximumRefreshRate || frequency < MinimumRefreshRate) {
         LOG_INFO << "PCA9685 do not support the specified PWM frequency... Frequency was not updated";
         return;
     }
 
     const auto PreScaleValue = [=]() -> float {
-        if(deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK){
-            return round(ExternalOscillatorFrequency*float {1e6}/GrayscaleMaximumSteps/frequency) - 1;
+        if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK) {
+            return round(ExternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / frequency) - 1;
         }
-        return round(InternalOscillatorFrequency*float {1e6}/GrayscaleMaximumSteps/frequency) - 1;
+        return round(InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / frequency) - 1;
     }();
 
     enterSleepMode();
