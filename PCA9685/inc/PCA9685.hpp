@@ -457,5 +457,4 @@ private:
      */
     template<typename T = I2CAddress>
     bool i2cWriteData(etl::span<uint8_t> buffer);
-
 };
