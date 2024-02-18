@@ -87,5 +87,4 @@ namespace PCA9685Configuration {
         OutputDriveType outputDriveType = OutputDriveType::OPEN_DRAIN;
         OutputNotEnabled outputNotEnabled = OutputNotEnabled::LEDn_0;
     };
-
 }
