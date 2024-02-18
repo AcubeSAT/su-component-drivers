@@ -282,12 +282,12 @@ private:
     /**
      * The frequency (MHz) of the internal oscillator.
      */
-    static constexpr float InternalOscillatorFrequency = 25;
+    static constexpr float InternalOscillatorFrequency = 25.0f;
 
     /**
      * The frequency (MHz) of the external oscillator (hardware configured).
      */
-    const float ExternalOscillatorFrequency = 48;
+    const float ExternalOscillatorFrequency = 48.0f;
 
     /**
      * Determine whether the clock being used is the internal or the external.

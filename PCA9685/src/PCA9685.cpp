@@ -159,7 +159,7 @@ void PCA9685::reset() {
 }
 
 void PCA9685::setPWMFrequency(float frequency) {
-    constexpr float ConvertToMHz = 1e6;
+    constexpr float ConvertToMHz = 1e6f;
 
     const auto MinimumRefreshRate = [=]() -> float {
         if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
