@@ -439,13 +439,13 @@ private:
     /**
      * Function that reads data from a specified register of the PCA9685 device.
      *
-     * @param SIZE The size of the data buffer to be read.
+     * @param BUFFER_SIZE The size of the data buffer to be read.
      * @param T The data type of the elements in the buffer (default: uint8_t).
      *
      * @return An expected type containing an array of read data or a boolean indicating success or failure.
      */
-    template<size_t SIZE, typename T = uint8_t>
-    etl::expected<etl::array<T, SIZE>, bool> i2cReadData();
+    template<uint8_t BUFFER_SIZE = 69, typename T = uint8_t>
+    etl::expected<etl::array<T, BUFFER_SIZE>, bool> i2cReadData();
 
     /**
      * Function that writes data to a specified register of the PCA9685 device.
@@ -455,6 +455,7 @@ private:
      *
      * @return True if the write operation was successful, false otherwise.
      */
-    template<typename T=I2CAddress>
+    template<typename T = I2CAddress>
     bool i2cWriteData(etl::span<uint8_t> buffer);
+
 };
