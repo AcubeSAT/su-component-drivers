@@ -57,7 +57,6 @@
  */
 class PCA9685 {
 public:
-
     /**
      * @enum I2CAddress
      *
@@ -117,15 +116,16 @@ public:
     explicit PCA9685(I2CAddress i2cAddress) : i2cAddress(i2cAddress) {};
 
     /**
-     * Function that configures the device and starts the PWM cycle bu exiting low-power mode.
+     * Function that configures the device and starts the PWM cycle by exiting low-power mode.
      *
      * @param config The configurations of the device.
      */
     void start(const PCA9685Configuration::Configuration &config);
 
     /**
-     * Function that allows all the devices in the I2C-bus to be reset to the power-up state value
-     * through a specific formatted I2C-bus command (SWRST register).
+     * Function that allows all the PCA9685 devices of the I2C-bus to be reset to the power-up state values.
+     *
+     * @brief Perform software reset through a specific formatted I2C-bus command (SWRST register).
      */
     void reset();
 
@@ -139,42 +139,44 @@ public:
     void setPWMChannel(PWMChannel channel, uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
-     * Set the specified channel to always off
+     * Set the specified channel to always off.
      *
-     * @param channel
+     * @param channel The PWM channel to be turned off.
      */
     void setPWMChannelAlwaysOff(PWMChannel channel);
 
     /**
-     * Set the specified channel to always on
+     * Set the specified channel to always on.
      *
-     * @param channel
-     * @param delayPercent
+     * @param channel The PWM channel to be turned on.
+     * @param delayPercent The delayPercent time given as a percentage.
      */
     void setPWMChannelAlwaysOn(PWMChannel channel, uint8_t delayPercent);
 
     /**
-     * Function that sets all the PWM channels to the same values
+     * Function that sets all the PWM channels to the same values.
      *
-     * @param dutyCyclePercent
-     * @param delayPercent
+     * @param dutyCyclePercent The duty cycle for all PWM channels given as a percentage.
+     * @param delayPercent The delayPercent time given as a percentage.
      */
     void setAllPWMChannels(uint8_t dutyCyclePercent, uint8_t delayPercent = 0);
 
     /**
-     * Function that turns all the PWM channels off
+     * Function that turns all the PWM channels off.
      */
     void setAllPWMChannelsOff();
 
     /**
-     * Function that turns all the PWM channels on
+     * Function that turns all the PWM channels on.
+     *
+     * @param delayPercent The delayPercent time given as a percentage.
      */
     void setAllPWMChannelsOn(uint8_t delayPercent = 0);
 
     /**
      * Set device to operate at a new frequency (in Hz).
      *
-     * @param frequency
+     * @param frequency The new frequency.
      */
     void setPWMFrequency(float frequency);
 
@@ -216,7 +218,6 @@ public:
     void setOutputDriveType(PCA9685Configuration::OutputDriveType outputDriveType);
 
 private:
-
     /**
      * The slave address for the I2C protocol of the PCA9685 device.
      */
@@ -306,7 +307,7 @@ private:
     /**
      * @enum RegisterAddress
      *
-     * An enum that contains the various register addresses that PCA9685 acknowledges
+     * An enum that contains the various register addresses that PCA9685 acknowledges.
      */
     enum class RegisterAddress : uint8_t {
         MODE1 = 0x00,
@@ -408,7 +409,7 @@ private:
     uint8_t mode2RegisterByte = 0;
 
     /**
-     * Function that enables the auto-increment (AI) feature
+     * Function that enables the auto-increment (AI) feature.
      */
     void enableAutoIncrement();
 
@@ -420,7 +421,6 @@ private:
     /**
      * Functions that calculates the data that need to be stored at each one of the 4 PWM channel registers.
      *
-     * @param channel The PCA9685 PWM channel.
      * @param dutyCyclePercent The PWM signal duty cycle, as a percentage.
      * @param delayPercent The PWM signal delay, as a percentage.
      *
@@ -429,35 +429,32 @@ private:
     static auto calculatePWMRegisterValues(uint8_t dutyCyclePercent, uint8_t delayPercent);
 
     /**
-     * Function that writes a byte to a specific register
+     * Function that writes a byte to a specific register of the PCA9685 device.
      *
-     * @param registerAddress The address of the register
-     * @param transmittedByte The transmitted byte
+     * @param registerAddress The address of the register to write to.
+     * @param transmittedByte The byte to be written to the register.
      */
     void i2cWriteValueToRegister(RegisterAddress registerAddress, uint8_t transmittedByte);
 
     /**
-     * Function that reads from a specified register of the PCA9685 device.
+     * Function that reads data from a specified register of the PCA9685 device.
      *
-     * @param registerAddress The address of the register.
-     * @param rData  The response of the device as an array of bytes.
-     * @param returnedBytesNumber The number of bytes that are read from the register.
+     * @param SIZE The size of the data buffer to be read.
+     * @param T The data type of the elements in the buffer (default: uint8_t).
      *
-     * @returns True if I2C transaction was successful.
+     * @return An expected type containing an array of read data or a boolean indicating success or failure.
      */
     template<size_t SIZE, typename T = uint8_t>
     etl::expected<etl::array<T, SIZE>, bool> i2cReadData();
 
     /**
-     * Function that writes to a specified register of the PCA9685 device.
+     * Function that writes data to a specified register of the PCA9685 device.
      *
-     * @param tData The data sent to the specified register as an array of bytes.
-     * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
+     * @param T The data type of the I2C address (default: I2CAddress).
+     * @param buffer The data buffer containing the bytes to be written.
      *
-     * @returns True if I2C transaction was successful.
+     * @return True if the write operation was successful, false otherwise.
      */
     template<typename T=I2CAddress>
     bool i2cWriteData(etl::span<uint8_t> buffer);
-
 };
-
