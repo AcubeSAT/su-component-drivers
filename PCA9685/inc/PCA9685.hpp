@@ -14,8 +14,6 @@
 #include "peripheral/pio/plib_pio.h"
 #include "Peripheral_Definitions.hpp"
 
-#define PCA9685_TWI_PORT 2
-
 /**
  * The PCA9685_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
  * By giving the corresponding value to PCA9685_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.

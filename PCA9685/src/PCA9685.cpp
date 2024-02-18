@@ -159,18 +159,20 @@ void PCA9685::reset() {
 }
 
 void PCA9685::setPWMFrequency(float frequency) {
+    constexpr float ConvertToMHz = 1e6;
+
     const auto MinimumRefreshRate = [=]() -> float {
         if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
-            return ExternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MaximumPreScaleValue + 1};
+            return ExternalOscillatorFrequency * ConvertToMHz / GrayscaleMaximumSteps / float{MaximumPreScaleValue + 1};
 
-        return InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MaximumPreScaleValue + 1};
+        return InternalOscillatorFrequency * ConvertToMHz / GrayscaleMaximumSteps / float{MaximumPreScaleValue + 1};
     }();
 
     const auto MaximumRefreshRate = [=]() -> float {
         if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK)
-            return InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MinimumPreScaleValue + 1};
+            return InternalOscillatorFrequency * ConvertToMHz / GrayscaleMaximumSteps / float{MinimumPreScaleValue + 1};
 
-        return InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / float{MinimumPreScaleValue + 1};
+        return InternalOscillatorFrequency * ConvertToMHz / GrayscaleMaximumSteps / float{MinimumPreScaleValue + 1};
     }();
 
     if (frequency > MaximumRefreshRate || frequency < MinimumRefreshRate) {
@@ -180,9 +182,9 @@ void PCA9685::setPWMFrequency(float frequency) {
 
     const auto PreScaleValue = [=]() -> float {
         if (deviceClock == PCA9685Configuration::DeviceClock::EXTERNAL_CLOCK) {
-            return round(ExternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / frequency) - 1;
+            return round(ExternalOscillatorFrequency * ConvertToMHz / GrayscaleMaximumSteps / frequency) - 1;
         }
-        return round(InternalOscillatorFrequency * float{1e6} / GrayscaleMaximumSteps / frequency) - 1;
+        return round(InternalOscillatorFrequency * ConvertToMHz / GrayscaleMaximumSteps / frequency) - 1;
     }();
 
     enterSleepMode();
