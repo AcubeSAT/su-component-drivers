@@ -13,7 +13,7 @@ void INA228::setConfig(INA228::Configuration configuration) {
             ,static_cast<uint8_t>((static_cast<uint16_t>(configuration) >> 8) & 0xFF)
             ,static_cast<uint8_t>(static_cast<uint16_t>(configuration) & 0xFF)};
 
-    writeRegister(tData, sizeof(tData));
+    writeRegister(tData, sizeof(tData)/sizeof(uint8_t));
 
 }
 
@@ -22,7 +22,7 @@ void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
             ,static_cast<uint8_t>((static_cast<uint16_t>(adcConfiguration) >> 8) & 0xFF)
             ,static_cast<uint8_t>(static_cast<uint16_t>(adcConfiguration) & 0xFF)};
 
-    writeRegister(tData, sizeof(tData));
+    writeRegister(tData, sizeof(tData)/sizeof(uint8_t));
 
 }
 
@@ -38,7 +38,7 @@ void INA228::setShuntCalRegister(INA228::Configuration configuration) {
             ,static_cast<uint8_t>((shuntCalValue >> 8) & 0xFF)
             ,static_cast<uint8_t>((shuntCalValue) & 0xFF)};
 
-    writeRegister(tData, sizeof(tData));
+    writeRegister(tData, sizeof(tData)/sizeof(uint8_t));
 
 }
 
