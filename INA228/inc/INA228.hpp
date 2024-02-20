@@ -3,13 +3,12 @@
 #include <cstdint>
 #include <etl/utility.h>
 #include <etl/array.h>
+#include <etl/expected.h>
 #include "FreeRTOS.h"
 #include "Logger.hpp"
 #include "task.h"
 #include "peripheral/pio/plib_pio.h"
 #include "Peripheral_Definitions.hpp"
-
-#define INA228_TWI_PORT 2
 
 /**
  * The INA228_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
@@ -58,32 +57,29 @@ public:
 
     /**
      * @enum I2CAddress
-     * @brief Contains the I2C addresses, depending on the two address pins, A0 and A1.
+     *
+     * Contains all the possible I2C addresses, that can be configured by the two address pins, A0 and A1.
      */
-    enum class I2CAddress : uint8_t {
-        /// A1 -> GND
-        Address1 = 0b1000000, /// A0 -> GND
-        Address2 = 0b1000001, /// A0 -> Vs
-        Address3 = 0b1000010, /// A0 -> SDA
-        Address4 = 0b1000011, /// A0 -> SCL
+    enum class I2CAddress : uint16_t {
+        Address_1000000 = 0b100'0000, /// A0 -> GND,  A1 -> GND
+        Address_1000001 = 0b100'0001, /// A0 -> Vs,   A1 -> GND
+        Address_1000010 = 0b100'0010, /// A0 -> SDA,  A1 -> GND
+        Address_1000011 = 0b100'0011, /// A0 -> SCL,  A1 -> GND
 
-        /// A1 -> Vs
-        Address5 = 0b1000100, /// A0 -> GND
-        Address6 = 0b1000101, /// A0 -> Vs
-        Address7 = 0b1000110, /// A0 -> SDA
-        Address8 = 0b1000111, /// A0 -> SCL
+        Address_1000100 = 0b100'0100, /// A0 -> GND,  A1 -> Vs
+        Address_1000101 = 0b100'0101, /// A0 -> Vs,   A1 -> Vs
+        Address_1000110 = 0b100'0110, /// A0 -> SDA,  A1 -> Vs
+        Address_1000111 = 0b100'0111, /// A0 -> SCL,  A1 -> Vs
 
-        /// A1 -> SDA
-        Address9 = 0b1001000,  /// A0 -> GND
-        Address10 = 0b1001001, /// A0 -> Vs
-        Address11 = 0b1001010, /// A0 -> SDA
-        Address12 = 0b1001011, /// A0 -> SCL
+        Address_1001000 = 0b100'1000, /// A0 -> GND,  A1 -> SDA
+        Address_1001001 = 0b100'1001, /// A0 -> Vs,   A1 -> SDA
+        Address_1001010 = 0b100'1010, /// A0 -> SDA,  A1 -> SDA
+        Address_1001011 = 0b100'1011, /// A0 -> SCL,  A1 -> SDA
 
-        /// A1 -> SCL
-        Address13 = 0b1001100, /// A0 -> GND
-        Address14 = 0b1001101, /// A0 -> Vs
-        Address15 = 0b1001110, /// A0 -> SDA
-        Address16 = 0b1001111  /// A0 -> SCL
+        Address_1001100 = 0b100'1100, /// A0 -> GND,  A1 -> SCL
+        Address_1001101 = 0b100'1101, /// A0 -> Vs,   A1 -> SCL
+        Address_1001110 = 0b100'1110, /// A0 -> SDA,  A1 -> SCL
+        Address_1001111 = 0b100'1111  /// A0 -> SCL,  A1 -> SCL
     };
 
     /**
@@ -105,92 +101,104 @@ public:
     };
 
     /**
-     * @brief Constructor for the INA228 class.
-     * @param something The I2C master port number used for communication.
+     * Constructor for the INA228 class.
+     *
+     * @param i2cAddress The hardware configured I2C chip address.
+     * @param configuration The configuration.
+     * @param adcConfiguration The ADC configuration.
      */
     explicit INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration);
 
     /**
-     * @brief Reads the current value from the INA228 device.
-     * @return The current value in amperes.
-    */
-    float getCurrent();
-
-    /**
-     * @brief Reads the power value from the INA228 device.
-     * @return The power value in watts.
-     */
-    float getPower();
-
-    /**
-     * @brief Reads the bus voltage from the INA228 device. Resolution size 195.3125 μV/LSB
-     * @return The bus voltage in volts.
-     */
-    float getVoltage();
-
-    /**
-     * Reads the internal die temperature from the INA228 device.
+     * Function that reads the current measurements from the INA228 device.
      *
-     * @brief The temperature is calculated using a conversion factor 7.8125 m°C/LSB
-     * @return The die temperature in degrees Celsius.
-     */
-    float getDieTemperature();
+     * @return The current measurement (in Amperes).
+    */
+    [[nodiscard]] float getCurrent() const;
 
     /**
-     * @brief Reads the energy value from the INA228 device.
-     * @return The energy value in joules.
+     * Function that reads the power measurements from the INA228 device.
+     *
+     * @return The power measurement (in Watts).
      */
-    float getEnergy();
+    [[nodiscard]] float getPower() const;
 
     /**
-     * @brief Reads the shunt voltage from the INA228 device.
-     * @return The shunt voltage in millivolts.
+     * Function that reads the bus voltage measurements from the INA228 device.
+     *
+     * @brief Resolution size 195.3125 μV/LSB.
+     *
+     * @return The bus voltage measurement (in Volts).
      */
-    float getShuntVoltage();
+    [[nodiscard]] float getVoltage() const;
+
+    /**
+     * Function that reads the internal die temperature from the INA228 device.
+     *
+     * @brief The temperature is calculated using a conversion factor 7.8125 m°C/LSB.
+     *
+     * @return The die temperature (in Celsius).
+     */
+    [[nodiscard]] float getDieTemperature() const;
+
+    /**
+     * Function that reads the energy measurements from the INA228 device.
+     *
+     * @return The energy measurement (in Joules).
+     */
+    [[nodiscard]] float getEnergy() const;
+
+    /**
+     * Function that reads the shunt voltage measurements from the INA228 device.
+     *
+     * @return The shunt voltage measurement (in milliVolts).
+     */
+    [[nodiscard]] float getShuntVoltage() const;
 
 private:
 
     /**
-     * The address for the I2C protocol of the INA228 device.
+     * The hardware configured I2C chip address of the INA228 device.
      */
-    I2CAddress i2cAddress;
+    const I2CAddress i2cAddress = I2CAddress::Address_1000000;
 
     /**
-     * @brief The maximum expected current, used to calculate CurrentLSB
+     * The maximum expected current, used to calculate CurrentLSB.
      */
-    static constexpr float MaximumExpectedCurrent = 1;
+    const float MaximumExpectedCurrent = 1;
 
     /**
-     * The LSB step size for the CURRENT register where the current in Amperes is stored
+     * The LSB step size for the CURRENT register where the current in Amperes is stored.
      *
      * @brief While the smallest CurrentLSB value yields highest resolution,
      * it is common to select a higher round-number (no higher than 8x) value for the CurrentLSB
-     * in order to simplify the conversion of the CURRENT
+     * in order to simplify the conversion of the CURRENT.
      */
-    static constexpr float CurrentLSB = MaximumExpectedCurrent / (static_cast<float>(1 << 19));
+    const float CurrentLSB = MaximumExpectedCurrent / (static_cast<float>(uint32_t{1} << 19));
 
     /**
-     * Value of current-sensing resistor
+     * Value of current-sensing resistor (in Ohms).
      */
-    static constexpr float RShuntResistor = 0.05;
+    const float RShuntResistor = 0.05f;
 
     /**
-     * Value that is going to be written in SHUNT_CAL register
+     * Value that is going to be written in SHUNT_CAL register.
      *
      * @brief The current is calculated following a shunt voltage measurement based on the value set
      * in the SHUNT_CAL register. If the value loaded into the SHUNT_CAL register is zero, the current
-     * value reported through the CURRENT register is also zero
+     * value reported through the CURRENT register is also zero.
      */
-    static inline uint16_t ShuntCalValue = 13107.2f * 1000000 * CurrentLSB * RShuntResistor;
+    uint16_t shuntCalValue = 13107.2f * 1000000.0f * CurrentLSB * RShuntResistor;
 
     /**
      * The 4th bit of the CONFIG register.
      */
-    static uint16_t ADCRANGEValue;
+    uint16_t adcRangeValue;
 
     /**
      * @enum RegisterAddress
-     * @brief Contains the addresses of the INA228 registers
+     *
+     * Contains the addresses of all the INA228 registers.
      */
     enum class RegisterAddress : uint8_t {
         CONFIG = 0x00,
@@ -220,9 +228,9 @@ private:
      */
     void setConfig(Configuration configuration);
 
-     /**
-      * Set the INA228 device ADC configuration on power up.
-      */
+    /**
+     * Set the INA228 device ADC configuration on power up.
+     */
     void setADCConfig(ADCConfiguration adcConfiguration);
 
     /**
@@ -240,7 +248,7 @@ private:
      * @param rData  The response of the device as an array of bytes.
      * @param numberOfBytesToRead The number of bytes that are read from the register.
      */
-    void readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead);
+    bool readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) const;
 
     /**
      * Function that writes to a specified register of the INA228 device.
@@ -248,6 +256,6 @@ private:
      * @param tData The data sent to the specified register as an array of bytes.
      * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
      */
-    void writeRegister(uint8_t* tData, uint8_t numberOfBytesToWrite);
+    bool writeRegister(uint8_t* tData, uint8_t numberOfBytesToWrite) const;
 
 };
