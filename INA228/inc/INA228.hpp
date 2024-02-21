@@ -48,7 +48,7 @@
 #endif
 
 /**
- * C++ class for interfacing with the INA228 Current Monitor.
+ * Class for interfacing with the INA228 Current Monitor.
  *
  * @brief This class provides functions to read various electrical parameters from the INA228 device,
  * such as voltage, temperature, current, power, energy, and charge.
@@ -262,5 +262,4 @@ private:
      * @return True if the I2C transaction was completed successfully.
      */
     [[nodiscard]] bool writeRegister(etl::span<uint8_t> data) const;
-
 };
