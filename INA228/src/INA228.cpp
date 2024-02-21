@@ -81,7 +81,7 @@ float INA228::getCurrent() const {
 
     current = (current >> 4) & 0xFFFFF;
 
-    uint32_t sign = current & 0x80000;
+    const uint32_t sign = current & 0x80000;
 
     if (sign != 0) {
         current = (~current & 0xFFFFF) + 1;
@@ -125,7 +125,7 @@ float INA228::getDieTemperature() const {
     auto internalTemperature = static_cast<uint16_t>(static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00)
                                                      | static_cast<uint16_t>(returnedData[1] & 0xFF));
 
-    uint32_t sign = internalTemperature & 0x8000;
+    const uint32_t sign = internalTemperature & 0x8000;
 
     if(sign != 0) {
         internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
@@ -159,7 +159,7 @@ float INA228::getShuntVoltage() const {
 
     shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
 
-    uint32_t sign = shuntVoltage & 0x80000;
+    const uint32_t sign = shuntVoltage & 0x80000;
 
     if (sign != 0) {
         shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
