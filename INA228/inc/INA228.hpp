@@ -79,12 +79,13 @@ public:
         Address_1001100 = 0b100'1100, /// A0 -> GND,  A1 -> SCL
         Address_1001101 = 0b100'1101, /// A0 -> Vs,   A1 -> SCL
         Address_1001110 = 0b100'1110, /// A0 -> SDA,  A1 -> SCL
-        Address_1001111 = 0b100'1111  /// A0 -> SCL,  A1 -> SCL
+        Address_1001111 = 0b100'1111, /// A0 -> SCL,  A1 -> SCL
     };
 
     /**
      * @enum Configuration
-     * @brief Contains the various configurations of the INA228 device after power up.
+     *
+     * Contains the various configurations of the INA228 device after power up.
      */
     enum class Configuration : uint16_t {
         Configuration1 = 0x0, /// Default configuration (ADCRANGE = 0)
@@ -93,7 +94,8 @@ public:
 
     /**
      * @enum ADCConfiguration
-     * @brief Contains the various ADC configurations of the INA228 device after power up.
+     *
+     * Contains the various ADC configurations of the INA228 device after power up.
      */
     enum class ADCConfiguration : uint16_t {
         Configuration1 = 0xFB68, /// Default configuration, Continuous measurements
@@ -165,7 +167,7 @@ private:
     /**
      * The maximum expected current, used to calculate CurrentLSB.
      */
-    const float MaximumExpectedCurrent = 1;
+    const float MaximumExpectedCurrent = 1.0f;
 
     /**
      * The LSB step size for the CURRENT register where the current in Amperes is stored.
@@ -247,6 +249,8 @@ private:
      * @param registerAddress The address of the register.
      * @param rData  The response of the device as an array of bytes.
      * @param numberOfBytesToRead The number of bytes that are read from the register.
+     *
+     * @return True if the I2C transaction was completed successfully.
      */
     bool readRegister(RegisterAddress registerAddress, uint8_t* rData, uint8_t numberOfBytesToRead) const;
 
@@ -255,6 +259,8 @@ private:
      *
      * @param tData The data sent to the specified register as an array of bytes.
      * @param numberOfBytesToWrite The number of bytes of the data sent to the register.
+     *
+     * @return True if the I2C transaction was completed successfully.
      */
     bool writeRegister(uint8_t* tData, uint8_t numberOfBytesToWrite) const;
 
