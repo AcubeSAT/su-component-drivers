@@ -87,19 +87,21 @@ float INA228::getCurrent() const {
 
     if (returnedData.data() == nullptr){
         LOG_ERROR << "Current monitor failed to perform I2C transaction: returned data is nullptr";
+        // Error handling
     }
 
-    auto current = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                         | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
-                                         | static_cast<uint32_t>(returnedData[2] & 0xFF));
+    const auto current = [=]() -> uint32_t {
+        uint32_t current = static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000) | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00) | static_cast<uint32_t>(returnedData[2] & 0xFF);
+        current = (current >> 4) & 0xFFFFF;
 
-    current = (current >> 4) & 0xFFFFF;
+        const uint32_t sign = current & 0x80000;
 
-    const uint32_t sign = current & 0x80000;
+        if (sign != 0) {
+            current = (~current & 0xFFFFF) + 1;
+        }
 
-    if (sign != 0) {
-        current = (~current & 0xFFFFF) + 1;
-    }
+        return current;
+    }();
 
     return static_cast<float>(current) * CurrentLSB;
 }
@@ -134,15 +136,17 @@ float INA228::getDieTemperature() const {
     const uint8_t DieTempRegisterBytes = 2;
     auto returnedData = readRegister<DieTempRegisterBytes>(RegisterAddress::DIETEMP);
 
-    auto internalTemperature = static_cast<uint16_t>(
-            static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00)
-            | static_cast<uint16_t>(returnedData[1] & 0xFF));
+    const auto internalTemperature = [=]() -> uint16_t {
+        auto internalTemperature = static_cast<uint16_t>(static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00) | static_cast<uint16_t>(returnedData[1] & 0xFF));
 
-    const uint32_t sign = internalTemperature & 0x8000;
+        const uint32_t sign = internalTemperature & 0x8000;
 
-    if (sign != 0) {
-        internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
-    }
+        if (sign != 0) {
+            internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
+        }
+
+        return internalTemperature;
+    }();
 
     constexpr float ResolutionSize = 0.0078125f;
 
@@ -166,19 +170,23 @@ float INA228::getShuntVoltage() const {
     const uint8_t VShuntRegisterBytes = 3;
     auto returnedData = readRegister<VShuntRegisterBytes>(RegisterAddress::VSHUNT);
 
-    auto shuntVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                              | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
-                                              | static_cast<uint32_t>(returnedData[2] & 0xFF));
+    const auto shuntVoltage = [=]() -> uint32_t {
+        auto shuntVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
+                                                  | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
+                                                  | static_cast<uint32_t>(returnedData[2] & 0xFF));
 
-    shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
+        shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
 
-    const uint32_t sign = shuntVoltage & 0x80000;
+        const uint32_t sign = shuntVoltage & 0x80000;
 
-    if (sign != 0) {
-        shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
-    }
+        if (sign != 0) {
+            shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
+        }
 
-    float resolutionSize = (adcRangeValue == 0) ? 0.0003125f : 0.000078125f;
+        return shuntVoltage;
+    }();
 
-    return static_cast<float>(shuntVoltage) * resolutionSize;
+    const float ResolutionSize = (adcRangeValue == 0) ? 0.0003125f : 0.000078125f;
+
+    return static_cast<float>(shuntVoltage) * ResolutionSize;
 }
