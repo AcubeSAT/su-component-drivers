@@ -1,7 +1,7 @@
 #include "INA228.hpp"
 
 INA228::INA228(INA228::I2CAddress i2cAddress, INA228::Configuration configuration,
-               INA228::ADCConfiguration adcConfiguration) : i2cAddress(i2cAddress) {
+               INA228::ADCConfiguration adcConfiguration) : I2CChipAddress(i2cAddress) {
 
     setConfig(configuration);
     setADCConfig(adcConfiguration);
@@ -43,7 +43,7 @@ void INA228::setShuntCalRegister(INA228::Configuration configuration) {
 }
 
 bool INA228::readRegister(INA228::RegisterAddress registerAddress, uint8_t *rData, uint8_t numberOfBytesToRead) const {
-    if (not INA228_TWIHS_WriteRead(static_cast<uint8_t>(i2cAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead)) {
+    if (not INA228_TWIHS_WriteRead(static_cast<uint8_t>(I2CChipAddress), reinterpret_cast<uint8_t *>(&registerAddress), 1, rData, numberOfBytesToRead)) {
         LOG_INFO << "Current monitor failed to perform I2C transaction: bus is busy";
         return false;
     }
@@ -59,7 +59,7 @@ bool INA228::readRegister(INA228::RegisterAddress registerAddress, uint8_t *rDat
 }
 
 bool INA228::writeRegister(uint8_t *tData, uint8_t numberOfBytesToWrite) const {
-    if (not INA228_TWIHS_Write(static_cast<uint8_t>(i2cAddress), tData, numberOfBytesToWrite)) {
+    if (not INA228_TWIHS_Write(static_cast<uint8_t>(I2CChipAddress), tData, numberOfBytesToWrite)) {
         LOG_INFO << "Current monitor failed to perform I2C transaction: bus is busy";
         return false;
     }

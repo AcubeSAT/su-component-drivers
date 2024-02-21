@@ -162,7 +162,7 @@ private:
     /**
      * The hardware configured I2C chip address of the INA228 device.
      */
-    const I2CAddress i2cAddress = I2CAddress::Address_1000000;
+    const I2CAddress I2CChipAddress = I2CAddress::Address_1000000;
 
     /**
      * The maximum expected current, used to calculate CurrentLSB.
