@@ -257,7 +257,7 @@ private:
     /**
      * Function that writes to a specified register of the INA228 device.
      *
-     * @param tData The data sent to the specified register as an array of bytes.
+     * @param data The data sent to the specified register as an array of bytes.
      *
      * @return True if the I2C transaction was completed successfully.
      */
