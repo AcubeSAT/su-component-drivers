@@ -136,21 +136,23 @@ float INA228::getDieTemperature() const {
     const uint8_t DieTempRegisterBytes = 2;
     auto returnedData = readRegister<DieTempRegisterBytes>(RegisterAddress::DIETEMP);
 
-    const auto internalTemperature = [=]() -> uint16_t {
+    const auto InternalTemperature = [=]() -> float {
         auto internalTemperature = static_cast<uint16_t>(static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00) | static_cast<uint16_t>(returnedData[1] & 0xFF));
 
         const uint32_t Sign = internalTemperature & 0x8000;
 
         if (Sign != 0) {
             internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
+            const auto InternalTemperatureFloat = - static_cast<float>(internalTemperature);
+            return InternalTemperatureFloat;
         }
 
-        return internalTemperature;
+        return static_cast<float>(internalTemperature);
     }();
 
     constexpr float ResolutionSize = 0.0078125f;
 
-    return static_cast<float>(internalTemperature) * ResolutionSize;
+    return InternalTemperature * ResolutionSize;
 }
 
 float INA228::getEnergy() const {
