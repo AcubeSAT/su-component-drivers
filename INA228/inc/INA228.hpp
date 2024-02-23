@@ -189,7 +189,6 @@ public:
     [[nodiscard]] float getShuntVoltage() const;
 
 private:
-
     /**
      * The hardware configured I2C chip address of the INA228 device.
      */
