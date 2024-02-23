@@ -193,6 +193,7 @@ private:
      * The hardware configured I2C chip address of the INA228 device.
      */
     const I2CAddress I2CChipAddress = I2CAddress::Address_1000000;
+
     /**
      * The user selected configuration option for CONFIG register.
      */
@@ -230,13 +231,13 @@ private:
      * value reported through the CURRENT register is also zero.
      */
     const uint16_t ShuntCalValue = [=]() -> uint16_t {
-        const uint16_t ShuntCal = 13107.2f * 1000000.0f * CurrentLSB * ShuntResistor;
+        const float ShuntCalFloat = 13107.2f * 1000000.0f * CurrentLSB * ShuntResistor;
 
         if (ConfigurationSelected == Configuration::Configuration2) {
-            return ShuntCal * 4;
+            return static_cast<uint16_t>(ShuntCalFloat) * 4;
         }
 
-        return ShuntCal;
+        return static_cast<uint16_t>(ShuntCalFloat);
     }();
 
     /**
