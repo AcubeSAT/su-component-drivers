@@ -1,6 +1,6 @@
 #include "INA228.hpp"
 
-void INA228::setup() const {
+void INA228::setupConfigurationRegisters() const {
     constexpr uint8_t ConfigRegisterBytesSize = 3;
     etl::array<uint8_t, ConfigRegisterBytesSize> configRegisterBuffer{static_cast<uint8_t>(RegisterAddress::CONFIG),
                                                         static_cast<uint8_t>((static_cast<uint16_t>(ConfigurationSelected) >> 8) & 0xFF),

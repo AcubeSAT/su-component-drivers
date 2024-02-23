@@ -113,7 +113,7 @@ public:
     INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration, float shuntResistor)
             : I2CChipAddress(i2cAddress), ConfigurationSelected(configuration), ADCConfigurationSelected(adcConfiguration),
               ShuntResistor(shuntResistor) {
-        setup();
+        setupConfigurationRegisters();
     }
 
     /**
@@ -122,7 +122,7 @@ public:
      * @param i2cAddress The hardware configured I2C chip address.
      */
     [[maybe_unused]] explicit INA228(I2CAddress i2cAddress) : I2CChipAddress(i2cAddress) {
-        setup();
+        setupConfigurationRegisters();
     }
 
     /**
@@ -132,14 +132,14 @@ public:
      * @param shuntResistor The hardware configured Rshunt.
      */
     [[maybe_unused]] INA228(I2CAddress i2cAddress, float shuntResistor) : I2CChipAddress(i2cAddress), ShuntResistor(shuntResistor) {
-        setup();
+        setupConfigurationRegisters();
     }
 
     /**
      * Constructor for the INA228 class.
      */
     INA228() {
-        setup();
+        setupConfigurationRegisters();
     }
 
     /**
@@ -274,7 +274,7 @@ private:
      * @brief The SHUNT_CAL register provides the device with a conversion constant value that represents shunt
      * resistance used to calculate current value (in Amperes).
      */
-    void setup() const;
+    void setupConfigurationRegisters() const;
 
     /**
      * Function that reads from a specified register of the INA228 device.
