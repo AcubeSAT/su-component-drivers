@@ -136,6 +136,13 @@ public:
     }
 
     /**
+     * Constructor for the INA228 class.
+     */
+    INA228() {
+        setup();
+    }
+
+    /**
      * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL.
      */
     void setup() const;
