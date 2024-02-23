@@ -217,11 +217,6 @@ private:
     }();
 
     /**
-     * The 4th bit of the CONFIG register.
-     */
-    uint16_t adcRangeValue;
-
-    /**
      * @enum RegisterAddress
      *
      * Contains the addresses of all the INA228 registers.
