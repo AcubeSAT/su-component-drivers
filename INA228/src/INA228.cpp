@@ -30,12 +30,14 @@ etl::array<uint8_t, RETURNED_BYTES> INA228::readRegister(INA228::RegisterAddress
 
     if (not INA228_TWIHS_WriteRead(static_cast<uint8_t>(I2CChipAddress), bufferWrite.data(), bufferWrite.size(), bufferRead.data(), RETURNED_BYTES)) {
         LOG_INFO << "Current monitor failed to perform I2C transaction: bus is busy";
+        // Error handling
     }
 
     while (INA228_TWIHS_IsBusy());
 
     if (INA228_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
         LOG_ERROR << "Current monitor failed to perform I2C transaction: device NACK";
+        // Error handling
     }
 
     return bufferRead;
@@ -103,7 +105,7 @@ float INA228::getVoltage() const {
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
 
-    constexpr float ResolutionSize = 0.0001953125f; // in volts
+    constexpr float ResolutionSize = 0.0001953125f; /* in volts 8 */
 
     return static_cast<float>(busVoltage) * ResolutionSize;
 }
