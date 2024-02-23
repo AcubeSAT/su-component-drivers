@@ -143,14 +143,6 @@ public:
     }
 
     /**
-     * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL on power-up.
-     *
-     * @brief The SHUNT_CAL register provides the device with a conversion constant value that represents shunt
-     * resistance used to calculate current value (in Amperes).
-     */
-    void setup() const;
-
-    /**
      * Function that reads the current measurements from the INA228 device.
      *
      * @return The current measurement (in Amperes).
@@ -197,11 +189,11 @@ public:
     [[nodiscard]] float getShuntVoltage() const;
 
 private:
+
     /**
      * The hardware configured I2C chip address of the INA228 device.
      */
     const I2CAddress I2CChipAddress = I2CAddress::Address_1000000;
-
     /**
      * The user selected configuration option for CONFIG register.
      */
@@ -275,6 +267,14 @@ private:
         MANUFACTURER_ID = 0x3E,
         DEVICE_ID = 0x3F
     };
+
+    /**
+     * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL on power-up.
+     *
+     * @brief The SHUNT_CAL register provides the device with a conversion constant value that represents shunt
+     * resistance used to calculate current value (in Amperes).
+     */
+    void setup() const;
 
     /**
      * Function that reads from a specified register of the INA228 device.
