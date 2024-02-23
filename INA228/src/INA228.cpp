@@ -175,13 +175,13 @@ float INA228::getShuntVoltage() const {
     }();
 
     const auto ResolutionSize = [=]() -> float {
-        const float ResolutionADCRange0 = 0.0003125f;
 
         if (ConfigurationSelected == Configuration::Configuration2) {
             const float ResolutionADCRange1 = 0.000078125f;
             return ResolutionADCRange1;
         }
 
+        const float ResolutionADCRange0 = 0.0003125f;
         return ResolutionADCRange0;
     }();
 
