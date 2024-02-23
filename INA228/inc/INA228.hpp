@@ -88,8 +88,8 @@ public:
      * Contains the various configurations of the INA228 device after power up.
      */
     enum class Configuration : uint16_t {
-        Configuration1 = 0x0, /// Default configuration (ADCRANGE = 0)
-        Configuration2 = 0x10 /// ADCRANGE = 1
+        Configuration1 = 0x00,    /// Default configuration (ADCRANGE = 0)
+        Configuration2 = 0x10,    /// ADCRANGE = 1
     };
 
     /**
@@ -98,8 +98,8 @@ public:
      * Contains the various ADC configurations of the INA228 device after power up.
      */
     enum class ADCConfiguration : uint16_t {
-        Configuration1 = 0xFB68, /// Default configuration, Continuous measurements
-        Configuration2 = 0x7B68  /// Single-shot measurements of voltages and temperature
+        Configuration1 = 0b1111'1011'0110'1000,    /// Default configuration, Continuous measurements
+        Configuration2 = 0b0111'1011'0110'1000,    /// Single-shot measurements of voltages and temperature
     };
 
     /**
