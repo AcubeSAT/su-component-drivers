@@ -55,7 +55,6 @@
  */
 class INA228 {
 public:
-
     /**
      * @enum I2CAddress
      *
@@ -110,7 +109,15 @@ public:
      * @param configuration The configuration.
      * @param adcConfiguration The ADC configuration.
      */
-    explicit INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration);
+    INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration) : I2CChipAddress(
+            i2cAddress), ConfigurationSelected(configuration), ADCConfigurationSelected(adcConfiguration) {
+        setup();
+    }
+
+    /**
+     * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL.
+     */
+    void setup();
 
     /**
      * Function that reads the current measurements from the INA228 device.
@@ -159,11 +166,20 @@ public:
     [[nodiscard]] float getShuntVoltage() const;
 
 private:
-
     /**
      * The hardware configured I2C chip address of the INA228 device.
      */
     const I2CAddress I2CChipAddress = I2CAddress::Address_1000000;
+
+    /**
+     * The user selected configuration option for CONFIG register.
+     */
+    const Configuration ConfigurationSelected = Configuration::Configuration1;
+
+    /**
+     * The user selected configuration option for ADC_CONFIG register.
+     */
+    const ADCConfiguration ADCConfigurationSelected = ADCConfiguration::Configuration1;
 
     /**
      * The maximum expected current, used to calculate CurrentLSB.
@@ -191,7 +207,14 @@ private:
      * in the SHUNT_CAL register. If the value loaded into the SHUNT_CAL register is zero, the current
      * value reported through the CURRENT register is also zero.
      */
-    uint16_t shuntCalValue = 13107.2f * 1000000.0f * CurrentLSB * RShuntResistor;
+    const uint16_t ShuntCalValue = [=]() -> uint16_t {
+        const uint16_t ShuntCal = 13107.2f * 1000000.0f * CurrentLSB * RShuntResistor;
+        if (ConfigurationSelected == Configuration::Configuration2) {
+            return ShuntCal * 4;
+        }
+
+        return ShuntCal;
+    }();
 
     /**
      * The 4th bit of the CONFIG register.
@@ -229,12 +252,10 @@ private:
     /**
      * Set the INA228 device configuration on power up.
      */
-    void setConfig(Configuration configuration);
 
     /**
      * Set the INA228 device ADC configuration on power up.
      */
-    void setADCConfig(ADCConfiguration adcConfiguration);
 
     /**
      * Set the INA228 device SHUNT_CAL register on power up.
@@ -242,7 +263,6 @@ private:
      * @brief The register provides the device with a conversion constant value that represents shunt resistance
      * used to calculate current value in Amperes.
      */
-    void setShuntCalRegister(Configuration configuration);
 
     /**
      * Function that reads from a specified register of the INA228 device.

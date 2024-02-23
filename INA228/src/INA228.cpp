@@ -1,48 +1,24 @@
 #include "INA228.hpp"
 
-INA228::INA228(INA228::I2CAddress i2cAddress, INA228::Configuration configuration,
-               INA228::ADCConfiguration adcConfiguration) : I2CChipAddress(i2cAddress) {
-
-    setConfig(configuration);
-    setADCConfig(adcConfiguration);
-    setShuntCalRegister(configuration);
-}
-
-void INA228::setConfig(INA228::Configuration configuration) {
+void INA228::setup() {
     constexpr uint8_t ConfigRegisterBytesSize = 3;
-    etl::array<uint8_t, ConfigRegisterBytesSize> buffer{static_cast<uint8_t>(RegisterAddress::CONFIG),
-                                                        static_cast<uint8_t>(
-                                                                (static_cast<uint16_t>(configuration) >> 8) & 0xFF),
-                                                        static_cast<uint8_t>(static_cast<uint16_t>(configuration) &
-                                                                             0xFF)};
+    etl::array<uint8_t, ConfigRegisterBytesSize> configRegisterBuffer{static_cast<uint8_t>(RegisterAddress::CONFIG),
+                                                        static_cast<uint8_t>((static_cast<uint16_t>(ConfigurationSelected) >> 8) & 0xFF),
+                                                        static_cast<uint8_t>(static_cast<uint16_t>(ConfigurationSelected) & 0xFF)};
 
-    writeRegister(buffer);
-}
-
-void INA228::setADCConfig(INA228::ADCConfiguration adcConfiguration) {
     constexpr uint8_t ADCConfigRegisterBytesSize = 3;
-    etl::array<uint8_t, ADCConfigRegisterBytesSize> buffer{static_cast<uint8_t>(RegisterAddress::ADC_CONFIG),
-                                                           static_cast<uint8_t>(
-                                                                   (static_cast<uint16_t>(adcConfiguration) >> 8) &
-                                                                   0xFF), static_cast<uint8_t>(
-                                                                   static_cast<uint16_t>(adcConfiguration) & 0xFF)};
-    writeRegister(buffer);
-}
-
-void INA228::setShuntCalRegister(INA228::Configuration configuration) {
-    // Determine whether ADCRANGE is 0 or 1
-    adcRangeValue = static_cast<uint16_t>(configuration) & 0b10000;
-
-    if (adcRangeValue != 0) {
-        shuntCalValue = shuntCalValue * 4;
-    }
+    etl::array<uint8_t, ADCConfigRegisterBytesSize> adcConfigRegisterBuffer{static_cast<uint8_t>(RegisterAddress::ADC_CONFIG),
+                                                           static_cast<uint8_t>((static_cast<uint16_t>(ADCConfigurationSelected) >> 8) & 0xFF),
+                                                           static_cast<uint8_t>(static_cast<uint16_t>(ADCConfigurationSelected) & 0xFF)};
 
     constexpr uint8_t ShuntCalRegisterBytesSize = 3;
-    etl::array<uint8_t, ShuntCalRegisterBytesSize> buffer{static_cast<uint8_t>(RegisterAddress::SHUNT_CAL),
-                                                          static_cast<uint8_t>((shuntCalValue >> 8) & 0xFF),
-                                                          static_cast<uint8_t>((shuntCalValue) & 0xFF)};
+    etl::array<uint8_t, ShuntCalRegisterBytesSize> shuntCalRegisterBuffer{static_cast<uint8_t>(RegisterAddress::SHUNT_CAL),
+                                                          static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF),
+                                                          static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
 
-    writeRegister(buffer);
+    writeRegister(configRegisterBuffer);
+    writeRegister(adcConfigRegisterBuffer);
+    writeRegister(shuntCalRegisterBuffer);
 }
 
 template<uint8_t RETURNED_BYTES>
@@ -172,7 +148,7 @@ float INA228::getShuntVoltage() const {
     const uint8_t VShuntRegisterBytes = 3;
     auto returnedData = readRegister<VShuntRegisterBytes>(RegisterAddress::VSHUNT);
 
-    const auto shuntVoltage = [=]() -> uint32_t {
+    const auto ShuntVoltage = [=]() -> float {
         auto shuntVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
                                                   | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
                                                   | static_cast<uint32_t>(returnedData[2] & 0xFF));
@@ -183,12 +159,23 @@ float INA228::getShuntVoltage() const {
 
         if (Sign != 0) {
             shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
+            auto ShuntVoltageFloat = - static_cast<float>(shuntVoltage);
+            return ShuntVoltageFloat;
         }
 
-        return shuntVoltage;
+        return static_cast<float>(shuntVoltage);
     }();
 
-    const float ResolutionSize = (adcRangeValue == 0) ? 0.0003125f : 0.000078125f;
+    const auto ResolutionSize = [=]() -> float {
+        const float ResolutionADCRange0 = 0.0003125f;
 
-    return static_cast<float>(shuntVoltage) * ResolutionSize;
+        if (ConfigurationSelected == Configuration::Configuration2) {
+            const float ResolutionADCRange1 = 0.000078125f;
+            return ResolutionADCRange1;
+        }
+
+        return ResolutionADCRange0;
+    }();
+
+    return ShuntVoltage * ResolutionSize;
 }
