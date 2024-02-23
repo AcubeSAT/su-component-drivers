@@ -108,9 +108,30 @@ public:
      * @param i2cAddress The hardware configured I2C chip address.
      * @param configuration The configuration.
      * @param adcConfiguration The ADC configuration.
+     * @param shuntResistor The hardware configured Rshunt.
      */
-    INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration) : I2CChipAddress(
-            i2cAddress), ConfigurationSelected(configuration), ADCConfigurationSelected(adcConfiguration) {
+    INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration, float shuntResistor)
+            : I2CChipAddress(i2cAddress), ConfigurationSelected(configuration), ADCConfigurationSelected(adcConfiguration),
+              ShuntResistor(shuntResistor) {
+        setup();
+    }
+
+    /**
+     * Constructor for the INA228 class.
+     *
+     * @param i2CAddress The hardware configured I2C chip address.
+     */
+    [[maybe_unused]] explicit INA228(I2CAddress i2CAddress) : I2CChipAddress(i2CAddress) {
+        setup();
+    }
+
+    /**
+     * Constructor for the INA228 class.
+     *
+     * @param i2CAddress The hardware configured I2C chip address.
+     * @param shuntResistor The hardware configured Rshunt.
+     */
+    [[maybe_unused]] INA228(I2CAddress i2CAddress, float shuntResistor) : I2CChipAddress(i2CAddress), ShuntResistor(shuntResistor) {
         setup();
     }
 
@@ -198,7 +219,7 @@ private:
     /**
      * Value of current-sensing resistor (in Ohms).
      */
-    const float RShuntResistor = 0.05f;
+    const float ShuntResistor = 0.05f;
 
     /**
      * Value that is going to be written in SHUNT_CAL register.
@@ -208,7 +229,8 @@ private:
      * value reported through the CURRENT register is also zero.
      */
     const uint16_t ShuntCalValue = [=]() -> uint16_t {
-        const uint16_t ShuntCal = 13107.2f * 1000000.0f * CurrentLSB * RShuntResistor;
+        const uint16_t ShuntCal = 13107.2f * 1000000.0f * CurrentLSB * ShuntResistor;
+
         if (ConfigurationSelected == Configuration::Configuration2) {
             return ShuntCal * 4;
         }
