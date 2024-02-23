@@ -143,7 +143,10 @@ public:
     }
 
     /**
-     * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL.
+     * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL on power-up.
+     *
+     * @brief The SHUNT_CAL register provides the device with a conversion constant value that represents shunt
+     * resistance used to calculate current value (in Amperes).
      */
     void setup() const;
 
@@ -272,21 +275,6 @@ private:
         MANUFACTURER_ID = 0x3E,
         DEVICE_ID = 0x3F
     };
-
-    /**
-     * Set the INA228 device configuration on power up.
-     */
-
-    /**
-     * Set the INA228 device ADC configuration on power up.
-     */
-
-    /**
-     * Set the INA228 device SHUNT_CAL register on power up.
-     *
-     * @brief The register provides the device with a conversion constant value that represents shunt resistance
-     * used to calculate current value in Amperes.
-     */
 
     /**
      * Function that reads from a specified register of the INA228 device.
