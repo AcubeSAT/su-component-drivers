@@ -138,7 +138,7 @@ public:
     /**
      * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL.
      */
-    void setup();
+    void setup() const;
 
     /**
      * Function that reads the current measurements from the INA228 device.
