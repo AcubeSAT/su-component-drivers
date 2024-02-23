@@ -119,19 +119,19 @@ public:
     /**
      * Constructor for the INA228 class.
      *
-     * @param i2CAddress The hardware configured I2C chip address.
+     * @param i2cAddress The hardware configured I2C chip address.
      */
-    [[maybe_unused]] explicit INA228(I2CAddress i2CAddress) : I2CChipAddress(i2CAddress) {
+    [[maybe_unused]] explicit INA228(I2CAddress i2cAddress) : I2CChipAddress(i2cAddress) {
         setup();
     }
 
     /**
      * Constructor for the INA228 class.
      *
-     * @param i2CAddress The hardware configured I2C chip address.
+     * @param i2cAddress The hardware configured I2C chip address.
      * @param shuntResistor The hardware configured Rshunt.
      */
-    [[maybe_unused]] INA228(I2CAddress i2CAddress, float shuntResistor) : I2CChipAddress(i2CAddress), ShuntResistor(shuntResistor) {
+    [[maybe_unused]] INA228(I2CAddress i2cAddress, float shuntResistor) : I2CChipAddress(i2cAddress), ShuntResistor(shuntResistor) {
         setup();
     }
 
