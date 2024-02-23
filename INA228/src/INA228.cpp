@@ -30,14 +30,14 @@ etl::array<uint8_t, RETURNED_BYTES> INA228::readRegister(INA228::RegisterAddress
 
     if (not INA228_TWIHS_WriteRead(static_cast<uint8_t>(I2CChipAddress), bufferWrite.data(), bufferWrite.size(), bufferRead.data(), RETURNED_BYTES)) {
         LOG_INFO << "Current monitor failed to perform I2C transaction: bus is busy";
-        // Error handling
+        // TODO: Error handling
     }
 
     while (INA228_TWIHS_IsBusy());
 
     if (INA228_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
         LOG_ERROR << "Current monitor failed to perform I2C transaction: device NACK";
-        // Error handling
+        // TODO: Error handling
     }
 
     return bufferRead;
@@ -65,10 +65,10 @@ float INA228::getCurrent() const {
 
     if (returnedData.data() == nullptr){
         LOG_ERROR << "Current monitor failed to perform I2C transaction: returned data is nullptr";
-        // Error handling
+        // TODO: Error handling
     }
 
-    const auto current = [=]() -> uint32_t {
+    const auto Current = [=]() -> float {
         uint32_t current = static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000) | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00) | static_cast<uint32_t>(returnedData[2] & 0xFF);
         current = (current >> 4) & 0xFFFFF;
 
@@ -76,12 +76,14 @@ float INA228::getCurrent() const {
 
         if (Sign != 0) {
             current = (~current & 0xFFFFF) + 1;
+            const auto CurrentFloat = - static_cast<float>(current);
+            return CurrentFloat;
         }
 
-        return current;
+        return static_cast<float>(current);
     }();
 
-    return static_cast<float>(current) * CurrentLSB;
+    return Current * CurrentLSB;
 }
 
 float INA228::getPower() const {
@@ -92,7 +94,9 @@ float INA228::getPower() const {
                                        | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
                                        | static_cast<uint32_t>(returnedData[2] & 0xFF));
 
-    return 3.2f * CurrentLSB * static_cast<float>(power);
+    const float Resolution = 3.2f * CurrentLSB;
+
+    return Resolution * static_cast<float>(power);
 }
 
 float INA228::getVoltage() const {
@@ -105,7 +109,7 @@ float INA228::getVoltage() const {
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
 
-    constexpr float ResolutionSize = 0.0001953125f; /* in volts 8 */
+    constexpr float ResolutionSize = 0.0001953125f;
 
     return static_cast<float>(busVoltage) * ResolutionSize;
 }
@@ -143,7 +147,9 @@ float INA228::getEnergy() const {
                                         ((static_cast<uint64_t>(returnedData[3]) << 8) & 0xFF00) |
                                         ((static_cast<uint64_t>(returnedData[4])) & 0xFF));
 
-    return 16.0f * 3.2f * CurrentLSB * static_cast<float>(energy);
+    const float Resolution = 16.0f * 3.2f * CurrentLSB;
+
+    return Resolution * static_cast<float>(energy);
 }
 
 float INA228::getShuntVoltage() const {

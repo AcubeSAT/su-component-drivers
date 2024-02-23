@@ -61,25 +61,25 @@ public:
      * Contains all the possible I2C addresses, that can be configured by the two address pins, A0 and A1.
      */
     enum class I2CAddress : uint16_t {
-        Address_1000000 = 0b100'0000, /// A0 -> GND,  A1 -> GND
-        Address_1000001 = 0b100'0001, /// A0 -> Vs,   A1 -> GND
-        Address_1000010 = 0b100'0010, /// A0 -> SDA,  A1 -> GND
-        Address_1000011 = 0b100'0011, /// A0 -> SCL,  A1 -> GND
+        Address_1000000 = 0b100'0000, // A0 -> GND,  A1 -> GND
+        Address_1000001 = 0b100'0001, // A0 -> Vs,   A1 -> GND
+        Address_1000010 = 0b100'0010, // A0 -> SDA,  A1 -> GND
+        Address_1000011 = 0b100'0011, // A0 -> SCL,  A1 -> GND
 
-        Address_1000100 = 0b100'0100, /// A0 -> GND,  A1 -> Vs
-        Address_1000101 = 0b100'0101, /// A0 -> Vs,   A1 -> Vs
-        Address_1000110 = 0b100'0110, /// A0 -> SDA,  A1 -> Vs
-        Address_1000111 = 0b100'0111, /// A0 -> SCL,  A1 -> Vs
+        Address_1000100 = 0b100'0100, // A0 -> GND,  A1 -> Vs
+        Address_1000101 = 0b100'0101, // A0 -> Vs,   A1 -> Vs
+        Address_1000110 = 0b100'0110, // A0 -> SDA,  A1 -> Vs
+        Address_1000111 = 0b100'0111, // A0 -> SCL,  A1 -> Vs
 
-        Address_1001000 = 0b100'1000, /// A0 -> GND,  A1 -> SDA
-        Address_1001001 = 0b100'1001, /// A0 -> Vs,   A1 -> SDA
-        Address_1001010 = 0b100'1010, /// A0 -> SDA,  A1 -> SDA
-        Address_1001011 = 0b100'1011, /// A0 -> SCL,  A1 -> SDA
+        Address_1001000 = 0b100'1000, // A0 -> GND,  A1 -> SDA
+        Address_1001001 = 0b100'1001, // A0 -> Vs,   A1 -> SDA
+        Address_1001010 = 0b100'1010, // A0 -> SDA,  A1 -> SDA
+        Address_1001011 = 0b100'1011, // A0 -> SCL,  A1 -> SDA
 
-        Address_1001100 = 0b100'1100, /// A0 -> GND,  A1 -> SCL
-        Address_1001101 = 0b100'1101, /// A0 -> Vs,   A1 -> SCL
-        Address_1001110 = 0b100'1110, /// A0 -> SDA,  A1 -> SCL
-        Address_1001111 = 0b100'1111, /// A0 -> SCL,  A1 -> SCL
+        Address_1001100 = 0b100'1100, // A0 -> GND,  A1 -> SCL
+        Address_1001101 = 0b100'1101, // A0 -> Vs,   A1 -> SCL
+        Address_1001110 = 0b100'1110, // A0 -> SDA,  A1 -> SCL
+        Address_1001111 = 0b100'1111, // A0 -> SCL,  A1 -> SCL
     };
 
     /**
