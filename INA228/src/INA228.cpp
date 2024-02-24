@@ -55,6 +55,20 @@ bool INA228::writeRegister(etl::span<uint8_t> data) const {
     return true;
 }
 
+template<uint8_t NUMBER_OF_BYTES, typename T>
+T INA228::decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES> &returnedData) const {
+    static_assert(std::is_same_v<T, uint64_t> || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint8_t>, "Invalid template argument");
+
+    T convertedBinary = 0;
+    constexpr uint8_t ShiftStep = 8 * (NUMBER_OF_BYTES - 1);
+
+    for (uint8_t i = 0; i < NUMBER_OF_BYTES; i++) {
+        convertedBinary |= static_cast<T>(static_cast<T>(returnedData[i]) << (ShiftStep - 8*i));
+    }
+
+    return convertedBinary;
+}
+
 float INA228::getCurrent() const {
     const uint8_t CurrentRegisterBytes = 3;
     auto returnedData = readRegister<CurrentRegisterBytes>(RegisterAddress::CURRENT);
@@ -65,7 +79,7 @@ float INA228::getCurrent() const {
     }
 
     const auto Current = [=]() -> float {
-        uint32_t current = static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000) | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00) | static_cast<uint32_t>(returnedData[2] & 0xFF);
+        auto current = decodeReturnedData<CurrentRegisterBytes, uint32_t>(returnedData);
         current = (current >> 4) & 0xFFFFF;
 
         const uint32_t Sign = current & 0x80000;
@@ -86,9 +100,7 @@ float INA228::getPower() const {
     const uint8_t PowerRegisterBytes = 3;
     auto returnedData = readRegister<PowerRegisterBytes>(RegisterAddress::POWER);
 
-    auto power = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                       | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
-                                       | static_cast<uint32_t>(returnedData[2] & 0xFF));
+    auto power = decodeReturnedData<PowerRegisterBytes, uint32_t>(returnedData);
 
     const float Resolution = 3.2f * CurrentLSB;
 
@@ -99,9 +111,7 @@ float INA228::getVoltage() const {
     const uint8_t VBusRegisterBytes = 3;
     auto returnedData = readRegister<VBusRegisterBytes>(RegisterAddress::VBUS);
 
-    auto busVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                            | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
-                                            | static_cast<uint32_t>(returnedData[2] & 0xFF));
+    auto busVoltage = decodeReturnedData<VBusRegisterBytes, uint32_t>(returnedData);
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
 
@@ -115,7 +125,7 @@ float INA228::getDieTemperature() const {
     auto returnedData = readRegister<DieTempRegisterBytes>(RegisterAddress::DIETEMP);
 
     const auto InternalTemperature = [=]() -> float {
-        auto internalTemperature = static_cast<uint16_t>(static_cast<uint16_t>((static_cast<uint16_t>(returnedData[0]) << 8) & 0xFF00) | static_cast<uint16_t>(returnedData[1] & 0xFF));
+        auto internalTemperature = decodeReturnedData<DieTempRegisterBytes, uint16_t>(returnedData);
 
         const uint32_t Sign = internalTemperature & 0x8000;
 
@@ -137,11 +147,7 @@ float INA228::getEnergy() const {
     const uint8_t EnergyRegisterBytes = 5;
     auto returnedData = readRegister<EnergyRegisterBytes>(RegisterAddress::ENERGY);
 
-    auto energy = static_cast<uint64_t>(((static_cast<uint64_t>(returnedData[0]) << 32) & 0xFF00000000) |
-                                        ((static_cast<uint64_t>(returnedData[1]) << 24) & 0xFF000000) |
-                                        ((static_cast<uint64_t>(returnedData[2]) << 16) & 0xFF0000) |
-                                        ((static_cast<uint64_t>(returnedData[3]) << 8) & 0xFF00) |
-                                        ((static_cast<uint64_t>(returnedData[4])) & 0xFF));
+    auto energy = decodeReturnedData<EnergyRegisterBytes>(returnedData);
 
     const float Resolution = 16.0f * 3.2f * CurrentLSB;
 
@@ -153,9 +159,7 @@ float INA228::getShuntVoltage() const {
     auto returnedData = readRegister<VShuntRegisterBytes>(RegisterAddress::VSHUNT);
 
     const auto ShuntVoltage = [=]() -> float {
-        auto shuntVoltage = static_cast<uint32_t>(static_cast<uint32_t>((returnedData[0] << 16) & 0xFF0000)
-                                                  | static_cast<uint32_t>((returnedData[1] << 8) & 0xFF00)
-                                                  | static_cast<uint32_t>(returnedData[2] & 0xFF));
+        auto shuntVoltage = decodeReturnedData<VShuntRegisterBytes, uint32_t>(returnedData);
 
         shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
 

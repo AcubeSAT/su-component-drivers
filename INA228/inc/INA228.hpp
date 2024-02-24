@@ -278,10 +278,20 @@ private:
     void setupConfigurationRegisters() const;
 
     /**
+     * Function that decodes the returned data from an array of bytes to a binary number.
+     *
+     * @tparam NUMBER_OF_BYTES The number of bytes in the input array. Must be in the range [2, 5].
+     * @tparam T The type of the returned numeric value. Defaults to uint64_t.
+     * @param returnedData The array of bytes containing the data to be decoded.
+     * @return The decoded binary number.
+     */
+    template<uint8_t NUMBER_OF_BYTES, typename T = uint64_t>
+    T decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES>& returnedData) const;
+
+    /**
      * Function that reads from a specified register of the INA228 device.
      *
      * @param registerAddress The address of the register.
-     *
      * @return True if the I2C transaction was completed successfully.
      */
     template<uint8_t RETURNED_BYTES>
@@ -291,7 +301,6 @@ private:
      * Function that writes to a specified register of the INA228 device.
      *
      * @param data The data sent to the specified register as an array of bytes.
-     *
      * @return True if the I2C transaction was completed successfully.
      */
     [[nodiscard]] bool writeRegister(etl::span<uint8_t> data) const;
