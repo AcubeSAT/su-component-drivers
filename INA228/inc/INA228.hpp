@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 #include <etl/utility.h>
 #include <etl/array.h>
 #include <etl/expected.h>

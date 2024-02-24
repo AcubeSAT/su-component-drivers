@@ -1,20 +1,16 @@
 #include "INA228.hpp"
 
 void INA228::setupConfigurationRegisters() const {
-    constexpr uint8_t ConfigRegisterBytesSize = 3;
-    etl::array<uint8_t, ConfigRegisterBytesSize> configRegisterBuffer{static_cast<uint8_t>(RegisterAddress::CONFIG),
-                                                        static_cast<uint8_t>((static_cast<uint16_t>(ConfigurationSelected) >> 8) & 0xFF),
-                                                        static_cast<uint8_t>(static_cast<uint16_t>(ConfigurationSelected) & 0xFF)};
+    auto createDataPacket = [](RegisterAddress registerAddress, uint16_t data) {
+        const uint8_t NumberOfBytesToTransmit = sizeof(data)/sizeof(uint8_t) + sizeof(std::underlying_type_t<RegisterAddress>);
 
-    constexpr uint8_t ADCConfigRegisterBytesSize = 3;
-    etl::array<uint8_t, ADCConfigRegisterBytesSize> adcConfigRegisterBuffer{static_cast<uint8_t>(RegisterAddress::ADC_CONFIG),
-                                                           static_cast<uint8_t>((static_cast<uint16_t>(ADCConfigurationSelected) >> 8) & 0xFF),
-                                                           static_cast<uint8_t>(static_cast<uint16_t>(ADCConfigurationSelected) & 0xFF)};
+        const etl::array<uint8_t, NumberOfBytesToTransmit> Buffer {static_cast<uint8_t>(registerAddress), static_cast<uint8_t>((static_cast<uint16_t>(data)&0xFF00)>>8), static_cast<uint8_t>(data&0xFF)};
+        return Buffer;
+    };
 
-    constexpr uint8_t ShuntCalRegisterBytesSize = 3;
-    etl::array<uint8_t, ShuntCalRegisterBytesSize> shuntCalRegisterBuffer{static_cast<uint8_t>(RegisterAddress::SHUNT_CAL),
-                                                          static_cast<uint8_t>((ShuntCalValue >> 8) & 0xFF),
-                                                          static_cast<uint8_t>((ShuntCalValue) & 0xFF)};
+    auto configRegisterBuffer = createDataPacket(RegisterAddress::CONFIG, static_cast<uint16_t>(ConfigurationSelected));
+    auto adcConfigRegisterBuffer = createDataPacket(RegisterAddress::ADC_CONFIG, static_cast<uint16_t>(ADCConfigurationSelected));
+    auto shuntCalRegisterBuffer = createDataPacket(RegisterAddress::SHUNT_CAL, ShuntCalValue);
 
     writeRegister(configRegisterBuffer);
     writeRegister(adcConfigRegisterBuffer);
