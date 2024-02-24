@@ -80,12 +80,12 @@ float INA228::getCurrent() const {
 
     const auto Current = [=]() -> float {
         auto current = decodeReturnedData<CurrentRegisterBytes, uint32_t>(returnedData);
-        current = (current >> 4) & 0xFFFFF;
+        current = (current >> 4) & static_cast<decltype(current)>(0xFFFFF);
 
-        const uint32_t Sign = current & 0x80000;
+        const uint32_t Sign = current & static_cast<decltype(current)>(0x80000);
 
         if (Sign != 0) {
-            current = (~current & 0xFFFFF) + 1;
+            current = (~current & static_cast<decltype(current)>(0xFFFFF)) + 1;
             const auto CurrentFloat = - static_cast<float>(current);
             return CurrentFloat;
         }
@@ -113,7 +113,7 @@ float INA228::getVoltage() const {
 
     auto busVoltage = decodeReturnedData<VBusRegisterBytes, uint32_t>(returnedData);
 
-    busVoltage = (busVoltage >> 4) & 0xFFFFF;
+    busVoltage = (busVoltage >> 4) & static_cast<decltype(busVoltage)>(0xFFFFF);
 
     constexpr float ResolutionSize = 0.0001953125f;
 
@@ -127,10 +127,10 @@ float INA228::getDieTemperature() const {
     const auto InternalTemperature = [=]() -> float {
         auto internalTemperature = decodeReturnedData<DieTempRegisterBytes, uint16_t>(returnedData);
 
-        const uint32_t Sign = internalTemperature & 0x8000;
+        const uint32_t Sign = internalTemperature & static_cast<decltype(internalTemperature)>(0x8000);
 
         if (Sign != 0) {
-            internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
+            internalTemperature = (~internalTemperature & static_cast<decltype(internalTemperature)>(0xFFFFF)) + 1;
             const auto InternalTemperatureFloat = - static_cast<float>(internalTemperature);
             return InternalTemperatureFloat;
         }
@@ -161,9 +161,9 @@ float INA228::getShuntVoltage() const {
     const auto ShuntVoltage = [=]() -> float {
         auto shuntVoltage = decodeReturnedData<VShuntRegisterBytes, uint32_t>(returnedData);
 
-        shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
+        shuntVoltage = (shuntVoltage >> 4) & static_cast<decltype(shuntVoltage)>(0xFFFFF);
 
-        const uint32_t Sign = shuntVoltage & 0x80000;
+        const uint32_t Sign = shuntVoltage & static_cast<decltype(shuntVoltage)>(0x80000);
 
         if (Sign != 0) {
             shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
