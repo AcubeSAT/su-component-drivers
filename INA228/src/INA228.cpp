@@ -59,6 +59,11 @@ template<uint8_t NUMBER_OF_BYTES, typename T>
 T INA228::decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES> &returnedData) const {
     static_assert(std::is_same_v<T, uint64_t> || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint8_t>, "Invalid template argument");
 
+    if (NUMBER_OF_BYTES != returnedData.size()) {
+        LOG_ERROR << "Error in decoding function";
+        // TODO: Error-handling
+    }
+
     T convertedBinary = 0;
     constexpr uint8_t ShiftStep = 8 * (NUMBER_OF_BYTES - 1);
 
