@@ -75,7 +75,7 @@ T INA228::decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES> &returne
 }
 
 float INA228::getCurrent() const {
-    const uint8_t CurrentRegisterBytes = 3;
+    constexpr auto CurrentRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::CURRENT);
     auto returnedData = readRegister<CurrentRegisterBytes>(RegisterAddress::CURRENT);
 
     if (returnedData.data() == nullptr){
@@ -102,7 +102,7 @@ float INA228::getCurrent() const {
 }
 
 float INA228::getPower() const {
-    const uint8_t PowerRegisterBytes = 3;
+    constexpr auto PowerRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::POWER);
     auto returnedData = readRegister<PowerRegisterBytes>(RegisterAddress::POWER);
 
     auto power = decodeReturnedData<PowerRegisterBytes, uint32_t>(returnedData);
@@ -113,7 +113,7 @@ float INA228::getPower() const {
 }
 
 float INA228::getVoltage() const {
-    const uint8_t VBusRegisterBytes = 3;
+    constexpr auto VBusRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::VBUS);
     auto returnedData = readRegister<VBusRegisterBytes>(RegisterAddress::VBUS);
 
     auto busVoltage = decodeReturnedData<VBusRegisterBytes, uint32_t>(returnedData);
@@ -126,7 +126,7 @@ float INA228::getVoltage() const {
 }
 
 float INA228::getDieTemperature() const {
-    const uint8_t DieTempRegisterBytes = 2;
+    constexpr auto DieTempRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::DIETEMP);
     auto returnedData = readRegister<DieTempRegisterBytes>(RegisterAddress::DIETEMP);
 
     const auto InternalTemperature = [=]() -> float {
@@ -149,7 +149,7 @@ float INA228::getDieTemperature() const {
 }
 
 float INA228::getEnergy() const {
-    const uint8_t EnergyRegisterBytes = 5;
+    constexpr auto EnergyRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::ENERGY);
     auto returnedData = readRegister<EnergyRegisterBytes>(RegisterAddress::ENERGY);
 
     auto energy = decodeReturnedData<EnergyRegisterBytes>(returnedData);
@@ -160,7 +160,7 @@ float INA228::getEnergy() const {
 }
 
 float INA228::getShuntVoltage() const {
-    const uint8_t VShuntRegisterBytes = 3;
+    constexpr auto VShuntRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::VSHUNT);
     auto returnedData = readRegister<VShuntRegisterBytes>(RegisterAddress::VSHUNT);
 
     const auto ShuntVoltage = [=]() -> float {

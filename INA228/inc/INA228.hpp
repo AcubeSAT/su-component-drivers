@@ -271,7 +271,40 @@ private:
         TEMP_LIMIT = 0x10,
         PWR_LIMIT = 0x11,
         MANUFACTURER_ID = 0x3E,
-        DEVICE_ID = 0x3F
+        DEVICE_ID = 0x3F,
+    };
+
+    /**
+     * Underlying type of the RegisterAddress enum.
+     */
+    using RegisterBytesNumber_t = uint8_t;
+
+    /**
+    * @enum RegisterBytesNumber
+    *
+    * Contains the number of bytes that each of the INA228 registers has.
+    */
+    enum class RegisterBytesNumber : RegisterBytesNumber_t {
+        CONFIG = 2,
+        ADC_CONFIG = 2,
+        SHUNT_CAL = 2,
+        SHUNT_TEMPCO = 0x03,
+        VSHUNT = 3,
+        VBUS = 3,
+        DIETEMP = 2,
+        CURRENT = 3,
+        POWER = 3,
+        ENERGY = 5,
+        CHARGE = 5,
+        DIAG_ALRT = 0,
+        SOVL = 0,
+        SUVL = 0,
+        BOVL = 0,
+        BUVL = 0,
+        TEMP_LIMIT = 0,
+        PWR_LIMIT = 0,
+        MANUFACTURER_ID = 0,
+        DEVICE_ID = 0,
     };
 
     /**
