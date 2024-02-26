@@ -242,11 +242,16 @@ private:
     }();
 
     /**
-     * @enum RegisterAddress
-     *
-     * Contains the addresses of all the INA228 registers.
+     * Underlying type of the RegisterAddress enum.
      */
-    enum class RegisterAddress : uint8_t {
+    using RegisterAddress_t = uint8_t;
+
+    /**
+    * @enum RegisterAddress
+    *
+    * Contains the addresses of all the INA228 registers.
+    */
+    enum class RegisterAddress : RegisterAddress_t {
         CONFIG = 0x00,
         ADC_CONFIG = 0x01,
         SHUNT_CAL = 0x02,

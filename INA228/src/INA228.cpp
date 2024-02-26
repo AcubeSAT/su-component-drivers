@@ -22,7 +22,7 @@ etl::array<uint8_t, RETURNED_BYTES> INA228::readRegister(INA228::RegisterAddress
     etl::array<uint8_t, RETURNED_BYTES> bufferRead {0};
 
     constexpr uint8_t BytesToWrite = 1;
-    etl::array<uint8_t, BytesToWrite> bufferWrite {static_cast<uint8_t>(registerAddress)};
+    etl::array<RegisterAddress_t, BytesToWrite> bufferWrite {static_cast<RegisterAddress_t>(registerAddress)};
 
     if (not INA228_TWIHS_WriteRead(static_cast<uint8_t>(I2CChipAddress), bufferWrite.data(), bufferWrite.size(), bufferRead.data(), RETURNED_BYTES)) {
         LOG_INFO << "Current monitor failed to perform I2C transaction: bus is busy";
