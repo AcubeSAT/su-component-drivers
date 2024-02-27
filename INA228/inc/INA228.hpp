@@ -308,6 +308,36 @@ private:
     };
 
     /**
+     * Type alias for representing the current register data (3 bytes).
+     */
+    using Current_t = uint32_t;
+
+    /**
+     * Type alias for representing the bus voltage register data (3 bytes).
+     */
+    using BusVoltage_t = uint32_t;
+
+    /**
+     * Type alias for representing the shunt voltage register data (3 bytes).
+     */
+    using ShuntVoltage_t = uint32_t;
+
+    /**
+     * Type alias for representing the power register data (3 bytes).
+     */
+    using Power_t = uint32_t;
+
+    /**
+     * Type alias for representing the shunt energy register data (5 bytes).
+     */
+    using Energy_t = uint64_t;
+
+    /**
+     * Type alias for representing the shunt die temp register data (2 bytes).
+     */
+    using DieTemp_t = uint16_t;
+
+    /**
      * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL on power-up.
      *
      * @brief The SHUNT_CAL register provides the device with a conversion constant value that represents shunt

@@ -4,7 +4,7 @@ void INA228::setupConfigurationRegisters() const {
     auto createDataPacket = [](RegisterAddress registerAddress, uint16_t data) {
         const uint8_t NumberOfBytesToTransmit = sizeof(data)/sizeof(uint8_t) + sizeof(std::underlying_type_t<RegisterAddress>);
 
-        const etl::array<uint8_t, NumberOfBytesToTransmit> Buffer {static_cast<uint8_t>(registerAddress), static_cast<uint8_t>((static_cast<uint16_t>(data)&0xFF00)>>8), static_cast<uint8_t>(data&0xFF)};
+        const etl::array<uint8_t, NumberOfBytesToTransmit> Buffer {static_cast<RegisterAddress_t>(registerAddress), static_cast<uint8_t>((static_cast<uint16_t>(data)&0xFF00)>>8), static_cast<uint8_t>(data&0xFF)};
         return Buffer;
     };
 
@@ -57,7 +57,7 @@ bool INA228::writeRegister(etl::span<uint8_t> data) const {
 
 template<uint8_t NUMBER_OF_BYTES, typename T>
 T INA228::decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES> &returnedData) const {
-    static_assert(std::is_same_v<T, uint64_t> || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint8_t>, "Invalid template argument");
+    static_assert(std::is_integral<T>::value, "Invalid template argument");
 
     if (NUMBER_OF_BYTES != returnedData.size()) {
         LOG_ERROR << "Error in decoding function";
@@ -84,10 +84,10 @@ float INA228::getCurrent() const {
     }
 
     const auto Current = [=]() -> float {
-        auto current = decodeReturnedData<CurrentRegisterBytes, uint32_t>(returnedData);
+        auto current = decodeReturnedData<CurrentRegisterBytes, Current_t>(returnedData);
         current = (current >> 4) & 0xFFFFF;
 
-        const uint32_t Sign = current & 0x80000;
+        const Current_t Sign = current & 0x80000;
 
         if (Sign != 0) {
             current = (~current & 0xFFFFF) + 1;
@@ -105,7 +105,7 @@ float INA228::getPower() const {
     constexpr auto PowerRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::POWER);
     auto returnedData = readRegister<PowerRegisterBytes>(RegisterAddress::POWER);
 
-    auto power = decodeReturnedData<PowerRegisterBytes, uint32_t>(returnedData);
+    auto power = decodeReturnedData<PowerRegisterBytes, Power_t>(returnedData);
 
     const float Resolution = 3.2f * CurrentLSB;
 
@@ -116,7 +116,7 @@ float INA228::getVoltage() const {
     constexpr auto VBusRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::VBUS);
     auto returnedData = readRegister<VBusRegisterBytes>(RegisterAddress::VBUS);
 
-    auto busVoltage = decodeReturnedData<VBusRegisterBytes, uint32_t>(returnedData);
+    auto busVoltage = decodeReturnedData<VBusRegisterBytes, BusVoltage_t>(returnedData);
 
     busVoltage = (busVoltage >> 4) & 0xFFFFF;
 
@@ -130,9 +130,9 @@ float INA228::getDieTemperature() const {
     auto returnedData = readRegister<DieTempRegisterBytes>(RegisterAddress::DIETEMP);
 
     const auto InternalTemperature = [=]() -> float {
-        auto internalTemperature = decodeReturnedData<DieTempRegisterBytes, uint16_t>(returnedData);
+        auto internalTemperature = decodeReturnedData<DieTempRegisterBytes, DieTemp_t>(returnedData);
 
-        const uint32_t Sign = internalTemperature & 0x8000;
+        const DieTemp_t Sign = internalTemperature & 0x8000;
 
         if (Sign != 0) {
             internalTemperature = (~internalTemperature & 0xFFFFF) + 1;
@@ -164,11 +164,11 @@ float INA228::getShuntVoltage() const {
     auto returnedData = readRegister<VShuntRegisterBytes>(RegisterAddress::VSHUNT);
 
     const auto ShuntVoltage = [=]() -> float {
-        auto shuntVoltage = decodeReturnedData<VShuntRegisterBytes, uint32_t>(returnedData);
+        auto shuntVoltage = decodeReturnedData<VShuntRegisterBytes, ShuntVoltage_t>(returnedData);
 
         shuntVoltage = (shuntVoltage >> 4) & 0xFFFFF;
 
-        const uint32_t Sign = shuntVoltage & 0x80000;
+        const ShuntVoltage_t Sign = shuntVoltage & 0x80000;
 
         if (Sign != 0) {
             shuntVoltage = (~shuntVoltage & 0xFFFFF) + 1;
