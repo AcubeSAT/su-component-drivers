@@ -5,11 +5,38 @@
 #include "Task.hpp"
 #include "Logger.hpp"
 
+
+/**
+ * Select which SPI of ATSAMV71Q21B MCU will be used. By giving the value 0 or 1 to RM3100_SPI_PORT the driver will
+ * use SPI0 or SPI1 respectively.
+ */
+#if DOSIMETER_SPI_PORT == 0
+#include "peripheral/spi/spi_master/plib_spi0_master.h"
+#define Dosimeter_WriteRead SPI0_WriteRead
+#define Dosimeter_Write SPI0_Write
+#define Dosimeter_Read SPI0_Read
+#define Dosimeter_IsTransmitterBusy SPI0_IsTransmitterBusy
+#define Dosimeter_Initialize SPI0_Initialize
+#else
+#include "peripheral/spi/spi_master/plib_spi0_master.h"
+#define Dosimeter_WriteRead SPI1_WriteRead
+#define Dosimeter_Write SPI1_Write
+#define Dosimeter_Read SPI1_Read
+#define Dosimeter_IsTransmitterBusy SPI1_IsTransmitterBusy
+#define Dosimeter_Initialize SPI1_Initialize
+#endif
+
+
 class Dosimeter {
 public:
     explicit Dosimeter(PIO_PIN ChipSelect) : ChipSelect(ChipSelect) {
         pullUpChipSelect();
     };
+
+    Dosimeter() {
+        ChipSelect = PIO_PIN_PA6;
+    }
+
 
     void setTargetRegister(uint8_t value);
 
@@ -22,6 +49,8 @@ public:
      */
     void quickSetup();
 
+    uint8_t readChipID();
+
 private:
     /**
      * SPI Command Type (Write/Read)
@@ -31,7 +60,7 @@ private:
         SPI_READ_COMMAND = 0b1000'0000,
     };
 
-    const PIO_PIN ChipSelect = PIO_PIN_NONE;
+    PIO_PIN ChipSelect = PIO_PIN_NONE;
 
     constexpr static inline uint8_t RegisterSizeInBytes = 1;
     constexpr static inline uint8_t RegisterAddressSizeInBytes = 1;
@@ -253,8 +282,6 @@ private:
     static uint8_t prepareRegisterValue(RegisterAddress registerAddress, uint8_t data);
 
     void readSerialNumber();
-
-    uint8_t readChipID();
 
     bool sensorIsAlive();
 };
