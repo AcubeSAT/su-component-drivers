@@ -242,11 +242,16 @@ private:
     }();
 
     /**
-     * @enum RegisterAddress
-     *
-     * Contains the addresses of all the INA228 registers.
+     * Underlying type of the RegisterAddress enum.
      */
-    enum class RegisterAddress : uint8_t {
+    using RegisterAddress_t = uint8_t;
+
+    /**
+    * @enum RegisterAddress
+    *
+    * Contains the addresses of all the INA228 registers.
+    */
+    enum class RegisterAddress : RegisterAddress_t {
         CONFIG = 0x00,
         ADC_CONFIG = 0x01,
         SHUNT_CAL = 0x02,
@@ -266,8 +271,71 @@ private:
         TEMP_LIMIT = 0x10,
         PWR_LIMIT = 0x11,
         MANUFACTURER_ID = 0x3E,
-        DEVICE_ID = 0x3F
+        DEVICE_ID = 0x3F,
     };
+
+    /**
+     * Underlying type of the RegisterAddress enum.
+     */
+    using RegisterBytesNumber_t = uint8_t;
+
+    /**
+    * @enum RegisterBytesNumber
+    *
+    * Contains the number of bytes that each of the INA228 registers has.
+    */
+    enum class RegisterBytesNumber : RegisterBytesNumber_t {
+        CONFIG = 2,
+        ADC_CONFIG = 2,
+        SHUNT_CAL = 2,
+        SHUNT_TEMPCO = 0x03,
+        VSHUNT = 3,
+        VBUS = 3,
+        DIETEMP = 2,
+        CURRENT = 3,
+        POWER = 3,
+        ENERGY = 5,
+        CHARGE = 5,
+        DIAG_ALRT = 0,
+        SOVL = 0,
+        SUVL = 0,
+        BOVL = 0,
+        BUVL = 0,
+        TEMP_LIMIT = 0,
+        PWR_LIMIT = 0,
+        MANUFACTURER_ID = 0,
+        DEVICE_ID = 0,
+    };
+
+    /**
+     * Type alias for representing the current register data (3 bytes).
+     */
+    using Current_t = uint32_t;
+
+    /**
+     * Type alias for representing the bus voltage register data (3 bytes).
+     */
+    using BusVoltage_t = uint32_t;
+
+    /**
+     * Type alias for representing the shunt voltage register data (3 bytes).
+     */
+    using ShuntVoltage_t = uint32_t;
+
+    /**
+     * Type alias for representing the power register data (3 bytes).
+     */
+    using Power_t = uint32_t;
+
+    /**
+     * Type alias for representing the shunt energy register data (5 bytes).
+     */
+    using Energy_t = uint64_t;
+
+    /**
+     * Type alias for representing the shunt die temp register data (2 bytes).
+     */
+    using DieTemp_t = uint16_t;
 
     /**
      * Function that sets up the device's registers CONFIG, ADC_CONFIG, and SHUNT_CAL on power-up.
@@ -278,10 +346,20 @@ private:
     void setupConfigurationRegisters() const;
 
     /**
+     * Function that decodes the returned data from an array of bytes to a binary number.
+     *
+     * @tparam NUMBER_OF_BYTES The number of bytes in the input array. Must be in the range [2, 5].
+     * @tparam T The type of the returned numeric value. Defaults to uint64_t.
+     * @param returnedData The array of bytes containing the data to be decoded.
+     * @return The decoded binary number.
+     */
+    template<uint8_t NUMBER_OF_BYTES, typename T = uint64_t>
+    T decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES>& returnedData) const;
+
+    /**
      * Function that reads from a specified register of the INA228 device.
      *
      * @param registerAddress The address of the register.
-     *
      * @return True if the I2C transaction was completed successfully.
      */
     template<uint8_t RETURNED_BYTES>
@@ -291,7 +369,6 @@ private:
      * Function that writes to a specified register of the INA228 device.
      *
      * @param data The data sent to the specified register as an array of bytes.
-     *
      * @return True if the I2C transaction was completed successfully.
      */
     [[nodiscard]] bool writeRegister(etl::span<uint8_t> data) const;
