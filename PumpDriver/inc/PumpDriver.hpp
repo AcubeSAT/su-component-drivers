@@ -43,7 +43,6 @@ public:
     void setPumpSpeed(uint8_t speed);
 
 private:
-
     /**
      * I2C chip address for the PCA9685 device.
      */
@@ -55,14 +54,19 @@ private:
     static constexpr uint8_t NumberOfPWMSignals = 4;
 
     /**
-     * Array of the PCA9685 PWM outputs that will be used.
+     *
      *
      * @brief Positions {0: Phase A1, 1: Phase A2, 2: Phase B1, 3: Phase B2}
      */
-    const etl::array<PCA9685::PWMChannel, NumberOfPWMSignals> PCA9685PWMChannels = {PCA9685::PWMChannel::CHANNEL0,
-                                                                                    PCA9685::PWMChannel::CHANNEL1,
-                                                                                    PCA9685::PWMChannel::CHANNEL2,
-                                                                                    PCA9685::PWMChannel::CHANNEL3};
+    struct PWMChannelConfig {
+        PCA9685::PWMChannel pwmChannel;
+        uint8_t delayPercent;
+    };
+
+    const etl::array<PWMChannelConfig, NumberOfPWMSignals> pwmChannelsConfig{{{PCA9685::PWMChannel::CHANNEL0, 0},
+                                                                             {PCA9685::PWMChannel::CHANNEL1, 25},
+                                                                             {PCA9685::PWMChannel::CHANNEL2, 50},
+                                                                             {PCA9685::PWMChannel::CHANNEL3, 75}}};
 
     /**
      * Driver for the PWM generator PCA9685.
