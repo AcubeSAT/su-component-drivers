@@ -232,10 +232,10 @@ private:
      * value reported through the CURRENT register is also zero.
      */
     const uint16_t ShuntCalValue = [=]() -> uint16_t {
-        const float ShuntCalFloat = 13107.2f * 1000000.0f * CurrentLSB * ShuntResistor;
+        float ShuntCalFloat = round(13107.2f * 1000000.0f * CurrentLSB * ShuntResistor);
 
         if (ConfigurationSelected == Configuration::Configuration2) {
-            return static_cast<uint16_t>(ShuntCalFloat) * 4;
+            ShuntCalFloat = ShuntCalFloat * 4.0f;
         }
 
         return static_cast<uint16_t>(ShuntCalFloat);
