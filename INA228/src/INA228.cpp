@@ -148,15 +148,17 @@ float INA228::getDieTemperature() const {
     return InternalTemperature * ResolutionSize;
 }
 
-float INA228::getEnergy() const {
+double INA228::getEnergy() const {
     constexpr auto EnergyRegisterBytes = static_cast<RegisterBytesNumber_t>(RegisterBytesNumber::ENERGY);
     auto returnedData = readRegister<EnergyRegisterBytes>(RegisterAddress::ENERGY);
 
     auto energy = decodeReturnedData<EnergyRegisterBytes>(returnedData);
 
-    const float Resolution = 16.0f * 3.2f * CurrentLSB;
+    static_assert(sizeof(double) == 8, "double is less than 64 bits");
 
-    return Resolution * static_cast<float>(energy);
+    const double Resolution = 16.0f * 3.2f * CurrentLSB;
+
+    return Resolution * static_cast<double>(energy);
 }
 
 float INA228::getShuntVoltage() const {

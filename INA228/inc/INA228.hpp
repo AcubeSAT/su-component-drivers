@@ -180,7 +180,7 @@ public:
      *
      * @return The energy measurement (in Joules).
      */
-    [[nodiscard]] float getEnergy() const;
+    [[nodiscard]] double getEnergy() const;
 
     /**
      * Function that reads the shunt voltage measurements from the INA228 device.
