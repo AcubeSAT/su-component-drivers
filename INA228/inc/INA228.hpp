@@ -112,7 +112,8 @@ public:
      * @param shuntResistor The hardware configured Rshunt.
      */
     INA228(I2CAddress i2cAddress, Configuration configuration, ADCConfiguration adcConfiguration, float shuntResistor)
-            : I2CChipAddress(i2cAddress), ConfigurationSelected(configuration), ADCConfigurationSelected(adcConfiguration),
+            : I2CChipAddress(i2cAddress), ConfigurationSelected(configuration),
+              ADCConfigurationSelected(adcConfiguration),
               ShuntResistor(shuntResistor) {
         setupConfigurationRegisters();
     }
@@ -132,7 +133,8 @@ public:
      * @param i2cAddress The hardware configured I2C chip address.
      * @param shuntResistor The hardware configured Rshunt.
      */
-    [[maybe_unused]] INA228(I2CAddress i2cAddress, float shuntResistor) : I2CChipAddress(i2cAddress), ShuntResistor(shuntResistor) {
+    [[maybe_unused]] INA228(I2CAddress i2cAddress, float shuntResistor) : I2CChipAddress(i2cAddress),
+                                                                          ShuntResistor(shuntResistor) {
         setupConfigurationRegisters();
     }
 
@@ -354,7 +356,7 @@ private:
      * @return The decoded binary number.
      */
     template<uint8_t NUMBER_OF_BYTES, typename T = uint64_t>
-    T decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES>& returnedData) const;
+    T decodeReturnedData(const etl::array<uint8_t, NUMBER_OF_BYTES> &returnedData) const;
 
     /**
      * Function that reads from a specified register of the INA228 device.
