@@ -7,9 +7,8 @@
 #ifndef SU_COMPONENT_DRIVERS_PWM_HPP
 #define SU_COMPONENT_DRIVERS_PWM_HPP
 
-#endif //SU_COMPONENT_DRIVERS_PWM_HPP
 
-class PWM {
+class Heater {
 
 public:
 
