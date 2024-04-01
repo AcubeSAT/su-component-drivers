@@ -18,7 +18,7 @@ public:
     static void startHeater();
 
     //This function enables the 2nd channel of the PWM0
-    static void stopHeater() ;
+    static void stopHeater();
 
     //sets the Duty of PWM
     void setDutyPercentage(float dutyValuePercentage);
@@ -31,6 +31,6 @@ public:
 
 private:
 
-    static float period ; // equals to the period of the waveform in ticks
+    static float period; // equals to the period of the waveform in ticks
 
 };
