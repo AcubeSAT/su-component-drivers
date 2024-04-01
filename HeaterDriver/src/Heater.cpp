@@ -1,4 +1,4 @@
-#include "inc/FreeRTOSTasks/Heater.hpp"
+#include "HeaterDriver/inc/Heater.hpp"
 #include "peripheral/pwm/plib_pwm0.h"
 
 void Heater::startHeater() {
@@ -10,10 +10,10 @@ void Heater::stopHeater() {
 }
 
 void Heater::setDutyPercentage(float dutyValuePercentage) {
-    PWM0_ChannelDutySet(PWM_CHANNEL_2, convertDutyCycleToMilliseconds(dutyValuePercentage));
+    PWM0_ChannelDutySet(PWM_CHANNEL_2, convertDutyCycleToTicks(dutyValuePercentage));
 }
 
-float Heater::convertDutyCycleToMilliseconds(float dutyCyclePercentage) {
+uint16_t Heater::convertDutyCycleToTicks(uint8_t dutyCyclePercentage) {
     return period * (dutyCyclePercentage / 100);
 }
 

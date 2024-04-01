@@ -5,26 +5,38 @@
 class Heater {
 
 public:
-    //constructor
+    /**constructor
+     *
+     */
     Heater() {};
 
-    //This function disables the 2nd channel of the PWM0
+    /**This function disables the 2nd channel of the PWM0
+     *
+     */
     static void startHeater();
 
-    //This function enables the 2nd channel of the PWM0
+    /**This function enables the 2nd channel of the PWM0
+     *
+     */
     static void stopHeater();
 
-    //sets the Duty of PWM
+    /**sets the Duty of PWM
+     *
+     * @param dutyValuePercentage
+     */
     void setDutyPercentage(float dutyValuePercentage);
 
-    /* dutyValue() takes the duty cycle percentage of the waveform as an argument
+    /** dutyValue() takes the duty cycle percentage of the waveform as an argument
      * and returns the on-time of the waveform in ticks.
      */
-    float convertDutyCycleToMilliseconds(float dutyCyclePercentage);
+    uint16_t convertDutyCycleToTicks(uint8_t dutyCyclePercentage);
 
 
 private:
 
-    float period; // equals to the period of the waveform in ticks
+    /** the period of the waveform in ticks
+     *
+     */
+    float period;
 
 };
