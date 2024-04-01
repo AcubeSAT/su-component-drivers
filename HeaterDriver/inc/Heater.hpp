@@ -1,16 +1,12 @@
-//
-// Created by evangelia on 3/10/24.
-//
+#pragma once
 
 #include "peripheral/pwm/plib_pwm0.h"
 
-#ifndef SU_COMPONENT_DRIVERS_PWM_HPP
-#define SU_COMPONENT_DRIVERS_PWM_HPP
-
-
-class Heater {
+class heater {
 
 public:
+    //constructor
+    heater() {};
 
     /*This function initializes given instance of PWM peripheral with the values configured in MCC GUI.
      * This initializes all the selected channels of given peripheral in MCC GUI.
@@ -39,20 +35,12 @@ public:
      * and returns the on-time of the waveform in ticks.
      */
     float convertDutyCycleToMilliseconds(float dutyCyclePercentage) {
-        return period * (dutyCyclePercentage / 100.0f);
+        return period * (dutyCyclePercentage / 100);
     }
 
 
 private:
+
     const float period = PWM0_ChannelPeriodGet(PWM_CHANNEL_2);   // equals to the period of the waveform in ticks
 
-    /* max electrical input . At the time being, I am not sure if this is needed.
-     * If it is, we should probably initialize the maxPower to the power supply voltage
-     * that we are going to use for the Heater
-     */
-    const float maxPower;  // max electrical input
-
 };
-
-
-#endif //SU_COMPONENT_DRIVERS_HEATER_H
