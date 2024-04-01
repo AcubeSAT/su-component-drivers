@@ -1,10 +1,6 @@
 #include "inc/FreeRTOSTasks/Heater.hpp"
 #include "peripheral/pwm/plib_pwm0.h"
 
-void Heater::initializeHeater() {
-    PWM0_Initialize();
-}
-
 //This function disables the 2nd channel of the PWM0
 void Heater::startHeater() {
     PWM0_ChannelsStart(PWM_CHANNEL_2_MASK);
