@@ -42,4 +42,8 @@ private:
      */
     uint16_t period;
 
+    /** the duty Cycle Percentage (== heater On Time / period)
+     *
+     */
+    uint8_t dutyCyclePercentage;
 };
