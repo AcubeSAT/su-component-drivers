@@ -24,7 +24,7 @@ void Heater::setDutyPercentage(uint8_t dutyCyclePercentage) {
     if (dutyCyclePercentage <= 100 && dutyCyclePercentage >= 0)
         PWM0_ChannelDutySet(PWM_CHANNEL_2, convertDutyCyclePercentageToTicks());
     else
-        std::cerr <<"Duty cycle percentage must be between 0 and 100." << std::endl;
+        std::cerr << "Duty cycle percentage must be between 0 and 100." << std::endl;
 }
 
 uint16_t Heater::convertDutyCyclePercentageToTicks() {
