@@ -1,6 +1,10 @@
 #include "HeaterDriver/inc/Heater.hpp"
 #include "peripheral/pwm/plib_pwm0.h"
 
+Heater::Heater() {
+    period = PWM0_ChannelPeriodGet(PWM_CHANNEL_2);
+}
+
 void Heater::startHeater() {
     PWM0_ChannelsStart(PWM_CHANNEL_2_MASK);
 }
@@ -16,5 +20,3 @@ void Heater::setDutyPercentage(float dutyValuePercentage) {
 uint16_t Heater::convertDutyCycleToTicks(uint8_t dutyCyclePercentage) {
     return period * (dutyCyclePercentage / 100);
 }
-
-float Heater::period = PWM0_ChannelPeriodGet(PWM_CHANNEL_2);
