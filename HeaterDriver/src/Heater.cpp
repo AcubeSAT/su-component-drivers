@@ -13,10 +13,10 @@ void Heater::stopHeater() {
     PWM0_ChannelsStop(PWM_CHANNEL_2_MASK);
 }
 
-void Heater::setDutyPercentage(float dutyValuePercentage) {
-    PWM0_ChannelDutySet(PWM_CHANNEL_2, convertDutyCycleToTicks(dutyValuePercentage));
+void Heater::setDutyPercentage(uint8_t dutyCyclePercentage) {
+    PWM0_ChannelDutySet(PWM_CHANNEL_2, convertDutyCyclePercentageToTicks(dutyCyclePercentage));
 }
 
-uint16_t Heater::convertDutyCycleToTicks(uint8_t dutyCyclePercentage) {
+uint16_t Heater::convertDutyCyclePercentageToTicks(uint8_t dutyCyclePercentage) {
     return period * (dutyCyclePercentage / 100);
 }

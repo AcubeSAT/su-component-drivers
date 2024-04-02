@@ -8,7 +8,7 @@ public:
     /**constructor
      *
      */
-    Heater() {};
+    Heater();
 
     /**This function disables the 2nd channel of the PWM0
      *
@@ -22,14 +22,14 @@ public:
 
     /**sets the Duty of PWM
      *
-     * @param dutyValuePercentage
+     * @param dutyCyclePercentage
      */
-    void setDutyPercentage(float dutyValuePercentage);
+    void setDutyPercentage(uint8_t dutyCyclePercentage);
 
     /** dutyValue() takes the duty cycle percentage of the waveform as an argument
      * and returns the on-time of the waveform in ticks.
      */
-    uint16_t convertDutyCycleToTicks(uint8_t dutyCyclePercentage);
+    uint16_t convertDutyCyclePercentageToTicks(uint8_t dutyCyclePercentage);
 
 
 private:
