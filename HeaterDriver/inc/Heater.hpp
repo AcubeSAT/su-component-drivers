@@ -5,10 +5,14 @@
 class Heater {
 
 public:
-    /**constructor
-     *
+    /**Different instances of the constructor
+     * we can construct a heater either initializing a period value
+     * or taking the default period value
      */
+    Heater(uint16_t period);
+
     Heater();
+
 
     /**This function disables the 2nd channel of the PWM0
      *
@@ -31,12 +35,11 @@ public:
      */
     uint16_t convertDutyCyclePercentageToTicks(uint8_t dutyCyclePercentage);
 
-
 private:
 
     /** the period of the waveform in ticks
      *
      */
-    float period;
+    uint16_t period;
 
 };

@@ -5,6 +5,11 @@ Heater::Heater() {
     period = PWM0_ChannelPeriodGet(PWM_CHANNEL_2);
 }
 
+Heater::Heater(uint16_t period) {
+    PWM0_ChannelPeriodSet(PWM_CHANNEL_2, period);
+    this->period = period;
+}
+
 void Heater::startHeater() {
     PWM0_ChannelsStart(PWM_CHANNEL_2_MASK);
 }
