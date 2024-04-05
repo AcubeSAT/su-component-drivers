@@ -1,38 +1,47 @@
 #pragma once
 
 #include <cstdint>
+#include "peripheral/pwm/plib_pwm0.h"
+#include "peripheral/pwm/plib_pwm1.h"
+#include "lib/atsam-component-drivers/AcubeSAT_HAL/PWM/inc/HAL_PWM.hpp"
 
-class Heater {
+template<uint8_t PWMPeripheral>
+class Heater : public HAL_PWM {
 
 public:
+
+
     /**
      * Different instances of the constructor
      * we can construct a heater either initializing a period value
-     * or taking the default period value
+     * or taking the default period value,
+     * but we have to specify the PWM channel
      */
-    Heater(uint16_t period);
+    Heater(uint16_t period, PWM_CHANNEL_MASK channelMask);
 
-    Heater();
+    Heater(PWM_CHANNEL_MASK channelMask);
 
 
     /**
-     * This function disables the 2nd channel of the PWM0
-     *
+     * This function enables the PWM channel
+     * of the instance of the class we are each time
+     * working with
      */
-    static void startHeater();
+    void startHeater();
 
     /**
-     * This function enables the 2nd channel of the PWM0
-     *
+     * This function disables the PWM channel
+     * of the instance of the class we are each time
+     * working with
      */
-    static void stopHeater();
+    void stopHeater();
 
     /**
-     * sets the Duty of PWM
-     *
-     * @param dutyCyclePercentage
+     * sets the Duty percentage of PWM channel
+     * of the instance of the class we are each time
+     * working with
      */
-    void setDutyPercentage(uint8_t dutyCyclePercentage);
+    void setDutyPercentage();
 
     /**
      *
@@ -46,13 +55,16 @@ private:
 
     /**
      * the period of the waveform in ticks
-     *
      */
     uint16_t period;
 
     /**
      * the duty Cycle Percentage (== heater On Time / period)
-     *
      */
     uint8_t dutyCyclePercentage;
+
+    /**
+     * The mask indicating which channels to start
+     */
+    PWM_CHANNEL_MASK channelMask;
 };

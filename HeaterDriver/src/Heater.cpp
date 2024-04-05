@@ -1,31 +1,34 @@
 #include "HeaterDriver/inc/Heater.hpp"
-#include "Logger.hpp"
-#include "peripheral/pwm/plib_pwm0.h"
 
-Heater::Heater() {
-    period = PWM0_ChannelPeriodGet(PWM_CHANNEL_2);
+template<uint8_t peripheralNumber>
+Heater<peripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask) {
+    this->channelMask=channelMask;
+    period = PWM_ChannelPeriodGet<peripheralNumber>(channelMask);
 }
 
-Heater::Heater(uint16_t period) {
-    PWM0_ChannelPeriodSet(PWM_CHANNEL_2, period);
+template<uint8_t peripheralNumber>
+Heater<peripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask) {
     this->period = period;
+    this->channelMask=channelMask;
+    PWM_ChannelPeriodSet<peripheralNumber>(channelMask, period);
 }
 
-void Heater::startHeater() {
-    PWM0_ChannelsStart(PWM_CHANNEL_2_MASK);
+template<uint8_t peripheralNumber>
+void Heater<peripheralNumber>::startHeater() {
+    PWM_ChannelsStart<peripheralNumber>(channelMask);
 }
 
-void Heater::stopHeater() {
-    PWM0_ChannelsStop(PWM_CHANNEL_2_MASK);
+template<uint8_t peripheralNumber>
+void Heater<peripheralNumber>::stopHeater() {
+    PWM_ChannelsStop<peripheralNumber>(channelMask);
 }
 
-void Heater::setDutyPercentage(uint8_t dutyCyclePercentage) {
-    if (dutyCyclePercentage <= 100 && dutyCyclePercentage >= 0)
-        PWM0_ChannelDutySet(PWM_CHANNEL_2, convertDutyCyclePercentageToTicks());
-    else
-        LOG_ERROR << "Duty cycle percentage must be between 0 and 100 ";
+template<uint8_t peripheralNumber>
+void Heater<peripheralNumber>::setDutyPercentage() {
+    PWM_ChannelDutySet<peripheralNumber>(channelMask, convertDutyCyclePercentageToTicks(dutyCyclePercentage));
 }
 
-uint16_t Heater::convertDutyCyclePercentageToTicks() {
+template<uint8_t peripheralNumber>
+uint16_t Heater<peripheralNumber>::convertDutyCyclePercentageToTicks() {
     return period * (dutyCyclePercentage / 100);
 }
