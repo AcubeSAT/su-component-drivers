@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "peripheral/pwm/plib_pwm0.h"
 #include "peripheral/pwm/plib_pwm1.h"
-#include "lib/atsam-component-drivers/AcubeSAT_HAL/PWM/inc/HAL_PWM.hpp"
+#include "HAL_PWM.hpp"
 
 template<uint8_t PWMPeripheral>
 class Heater : public HAL_PWM {
