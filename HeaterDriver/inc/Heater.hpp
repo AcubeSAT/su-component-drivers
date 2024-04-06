@@ -41,7 +41,7 @@ public:
      * of the instance of the class we are each time
      * working with
      */
-    void setDutyPercentage();
+    void setDutyPercentage(uint8_t dutyCyclePercentage);
 
     /**
      *
