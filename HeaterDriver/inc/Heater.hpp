@@ -56,7 +56,7 @@ private:
     /**
      * the period of the waveform in ticks
      */
-    uint16_t period;
+    const uint16_t period;
 
     /**
      * the duty Cycle Percentage (== heater On Time / period)
