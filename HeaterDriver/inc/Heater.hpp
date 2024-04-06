@@ -59,11 +59,6 @@ private:
     const uint16_t period;
 
     /**
-     * the duty Cycle Percentage (== heater On Time / period)
-     */
-    uint8_t dutyCyclePercentage;
-
-    /**
      * The mask indicating which channel to start
      */
     const PWM_CHANNEL_MASK channelMask;
@@ -73,4 +68,8 @@ private:
      */
     const PWM_CHANNEL_NUM pwmChannel;
 
+    /**
+     * the duty Cycle Percentage (== heater On Time / period)
+     */
+    uint8_t dutyCyclePercentage;
 };
