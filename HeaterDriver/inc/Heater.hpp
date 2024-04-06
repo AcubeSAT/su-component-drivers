@@ -17,9 +17,9 @@ public:
      * or taking the default period value,
      * but we have to specify the PWM channel
      */
-    Heater(uint16_t period, PWM_CHANNEL_MASK channelMask);
+    Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
-    Heater(PWM_CHANNEL_MASK channelMask);
+    Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
 
     /**
@@ -64,7 +64,13 @@ private:
     uint8_t dutyCyclePercentage;
 
     /**
-     * The mask indicating which channels to start
+     * The mask indicating which channel to start
      */
-    PWM_CHANNEL_MASK channelMask;
+    const PWM_CHANNEL_MASK channelMask;
+
+    /**
+     * The PWM channel
+     */
+    const PWM_CHANNEL_NUM pwmChannel;
+
 };
