@@ -9,8 +9,6 @@ template<uint8_t PWMPeripheral>
 class Heater : public HAL_PWM {
 
 public:
-
-
     /**
      * Different instances of the constructor
      * we can construct a heater either initializing a period value
@@ -20,7 +18,6 @@ public:
     Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
     Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
-
 
     /**
      * This function enables the PWM channel
@@ -37,15 +34,18 @@ public:
     void stopHeater();
 
     /**
-     * sets the Duty percentage of PWM channel
+     * @param dutyCyclePercentage should be between 0 and 100
+     *
+     * Sets the Duty percentage of PWM channel
      * of the instance of the class we are each time
      * working with
      */
     void setDutyPercentage(uint8_t dutyCyclePercentage);
 
     /**
+     * @return dutyValue()
      *
-     * @return dutyValue() takes the duty cycle percentage of the waveform as an argument
+     * Takes the duty cycle percentage of the waveform as an argument
      * and returns the on-time of the waveform in ticks.
      * Only allows for values between 0 and 100
      */
@@ -54,7 +54,7 @@ public:
 private:
 
     /**
-     * the period of the waveform in ticks
+     * The period of the waveform in ticks
      */
     const uint16_t period;
 
@@ -69,7 +69,8 @@ private:
     const PWM_CHANNEL_NUM pwmChannel;
 
     /**
-     * the duty Cycle Percentage (== heater On Time / period)
+     * The duty Cycle Percentage (== heater On (Time / period)*100)
+     * dutyCyclePercentage rvalue is between 0 and 100
      */
     uint8_t dutyCyclePercentage;
 };
