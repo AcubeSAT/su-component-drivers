@@ -26,7 +26,7 @@ void Heater<peripheralNumber>::stopHeater() {
 
 template<uint8_t peripheralNumber>
 void Heater<peripheralNumber>::setDutyPercentage() {
-    PWM_ChannelDutySet<peripheralNumber>(channelMask, convertDutyCyclePercentageToTicks(dutyCyclePercentage));
+    PWM_ChannelDutySet<peripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks(dutyCyclePercentage));
 }
 
 template<uint8_t peripheralNumber>
