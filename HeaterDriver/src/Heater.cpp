@@ -4,12 +4,14 @@ template<uint8_t peripheralNumber>
 Heater<peripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel) :
         channelMask(channelMask), pwmChannel(pwmChannel) {
     period = PWM_ChannelPeriodGet<peripheralNumber>(channelMask);
+    stopHeater();
 }
 
 template<uint8_t peripheralNumber>
 Heater<peripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
         period(period), channelMask(channelMask), pwmChannel(pwmChannel) {
     PWM_ChannelPeriodSet<peripheralNumber>(channelMask, period);
+    stopHeater();
 }
 
 template<uint8_t peripheralNumber>
