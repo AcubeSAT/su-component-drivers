@@ -56,7 +56,7 @@ private:
     /**
      * The period of the waveform in ticks
      */
-    const uint16_t period;
+    uint16_t period;
 
     /**
      * The mask indicating which channel to start
