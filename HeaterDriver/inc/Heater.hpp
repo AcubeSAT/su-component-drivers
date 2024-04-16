@@ -10,13 +10,31 @@ class Heater : public HAL_PWM {
 
 public:
     /**
-     * Different instances of the constructor
-     * we can construct a heater either initializing a period value
-     * or taking the default period value,
-     * but we have to specify the PWM channel
+     * @param period: the period of PWM (measured in ticks)
+     *
+     * @param channelMask: The mask indicating which channel to start
+     *
+     * @param pwmChannel: The Channel of PWM
+     *
+     * @brief An instance of the constructor that initializes the period value .
+     *
+     * @note The period can be changed after the construction of the Heater instance .
+     *
      */
     Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
+    /**
+     * @param channelMask: The mask indicating which channel to start
+     *
+     * @param pwmChannel: The Channel of PWM
+     *
+     * @brief An instance of the constructor that doesn't initialize the period value.
+     *
+     * @note In this case, period takes its initial value from Harmony .
+     *
+     * @note The period can be changed after the construction of the Heater instance .
+     *
+     */
     Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
     /**
@@ -36,18 +54,17 @@ public:
     /**
      * @param dutyCyclePercentage should be between 0 and 100
      *
-     * Sets the Duty percentage of PWM channel
-     * of the instance of the class we are each time
-     * working with
+     * @brief Sets the Duty percentage of PWM channel
+     *  of the instance of the class we are each time
+     *  working with
      */
     void setDutyPercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @return dutyValue()
+     * @return dutyValue() in ticks
      *
      * Takes the duty cycle percentage of the waveform as an argument
      * and returns the on-time of the waveform in ticks.
-     * Only allows for values between 0 and 100
      */
     uint16_t convertDutyCyclePercentageToTicks();
 
