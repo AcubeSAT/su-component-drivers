@@ -9,7 +9,8 @@ Heater<PeripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM p
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
         period(period), channelMask(channelMask), pwmChannel(pwmChannel) {
-    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
+    startHeater();
+    setPeriod(period);
     stopHeater();
 }
 
@@ -25,11 +26,27 @@ void Heater<PeripheralNumber>::stopHeater() {
 
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setDutyPercentage(uint8_t dutyCyclePercentage) {
-    this->dutyCyclePercentage = dutyCyclePercentage;
     PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
+    this->dutyCyclePercentage = dutyCyclePercentage;
 }
 
 template<uint8_t PeripheralNumber>
 uint16_t Heater<PeripheralNumber>::convertDutyCyclePercentageToTicks() {
     return period * (1 - (dutyCyclePercentage / 100));
+}
+
+template<uint8_t PeripheralNumber>
+void Heater<PeripheralNumber>::setPeriod(uint16_t period){
+    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
+    this->period = PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel);
+}
+
+template<uint8_t PeripheralNumber>
+uint16_t Heater<PeripheralNumber>::getPeriod(){
+    return period;
+}
+
+template<uint8_t PeripheralNumber>
+uint8_t Heater<PeripheralNumber>::getDutyCyclePercentage(){
+    return dutyCyclePercentage;
 }
