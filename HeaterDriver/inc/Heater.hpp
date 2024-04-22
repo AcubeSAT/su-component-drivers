@@ -68,12 +68,38 @@ public:
      */
     uint16_t convertDutyCyclePercentageToTicks();
 
+    /**
+     * @param period: the period of the PWM
+     *
+     * @brief Sets the period of PWM channel
+     *  of the instance of the class we are each time
+     *  working with
+     *
+     *  @note the setPeriod function can only be used when
+     *  the PWM channel is already started
+     */
+    void setPeriod(uint16_t period);
+
+    /**
+     * @return period of the PWM channel
+     * of the instance of the class we are each time
+     *  working with
+     */
+    uint16_t getPeriod();
+
+    /**
+     *
+     * @return the duty Cycle percentage of the PWM channel
+     * of the instance of the class we are each time
+     * working with
+     */
+    uint8_t getDutyCyclePercentage();
 private:
 
     /**
      * The period of the waveform in ticks
      */
-    uint16_t period;
+    uint16_t period = 15000;
 
     /**
      * The mask indicating which channel to start
@@ -89,5 +115,5 @@ private:
      * The duty Cycle Percentage (== heater On (Time / period)*100)
      * dutyCyclePercentage rvalue is between 0 and 100
      */
-    uint8_t dutyCyclePercentage;
+    uint8_t dutyCyclePercentage = 50;
 };
