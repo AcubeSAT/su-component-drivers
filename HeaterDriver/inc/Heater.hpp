@@ -80,8 +80,14 @@ public:
      */
     void setPeriod(uint16_t period);
 
+    /**
+     * @return the period of the PWM
+     */
     uint16_t getPeriod();
 
+    /**
+     * @return the Duty Cycle Percentage of the PWM
+     */
     uint8_t getDutyCyclePercentage();
 private:
 
