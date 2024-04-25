@@ -5,7 +5,7 @@
 #include "peripheral/pwm/plib_pwm1.h"
 #include "HAL_PWM.hpp"
 
-template<uint8_t PWMPeripheral>
+template<uint8_t PeripheralNumber>
 class Heater : public HAL_PWM {
 
 public:
@@ -58,7 +58,7 @@ public:
      *  of the instance of the class we are each time
      *  working with
      */
-    void setDutyPercentage(uint8_t dutyCyclePercentage);
+    void setDutyPercentage(uint8_t dutyCyclePercentage) ;
 
     /**
      * @return dutyValue() in ticks
@@ -80,19 +80,8 @@ public:
      */
     void setPeriod(uint16_t period);
 
-    /**
-     * @return period of the PWM channel
-     * of the instance of the class we are each time
-     *  working with
-     */
     uint16_t getPeriod();
 
-    /**
-     *
-     * @return the duty Cycle percentage of the PWM channel
-     * of the instance of the class we are each time
-     * working with
-     */
     uint8_t getDutyCyclePercentage();
 private:
 
