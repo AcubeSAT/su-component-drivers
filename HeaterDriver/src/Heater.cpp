@@ -1,4 +1,4 @@
-#include "HeaterDriver/inc/Heater.hpp"
+#include "lib/su-component-drivers/HeaterDriver/inc/Heater.hpp"
 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
@@ -11,9 +11,10 @@ Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
         period(PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel)), channelMask(channelMask), pwmChannel(pwmChannel) {
+    startHeater();
+    setDutyPercentage(dutyCyclePercentage);
     stopHeater();
 }
-
 
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::startHeater() {
@@ -39,7 +40,8 @@ uint16_t Heater<PeripheralNumber>::convertDutyCyclePercentageToTicks(){
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setPeriod(uint16_t period){
     PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
-    this->period = PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel);
+    this->period = period;
+    setDutyPercentage(dutyCyclePercentage);
 }
 
 template<uint8_t PeripheralNumber>
