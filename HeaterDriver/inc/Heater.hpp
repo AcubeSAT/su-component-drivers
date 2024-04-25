@@ -101,8 +101,9 @@ private:
     const PWM_CHANNEL_NUM pwmChannel;
 
     /**
-     * The duty Cycle Percentage (== heater On (Time / period)*100)
-     * dutyCyclePercentage rvalue is between 0 and 100
+     * The duty Cycle Percentage
+     * (== The percentage of the period that the PWM is on)
+     * @note dutyCyclePercentage rvalue is between 0 and 100
      */
-    uint8_t dutyCyclePercentage = 50;
+    uint8_t dutyCyclePercentage = 0;
 };
