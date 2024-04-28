@@ -56,7 +56,10 @@ public:
      *
      * @brief Sets the Duty percentage of PWM channel
      *  of the instance of the class we are each time
-     *  working with
+     *  working with.
+     *
+     * @note Duty percentage indicates the percentage of
+     *  the OFF-time of the waveform
      */
     void setDutyPercentage(uint8_t dutyCyclePercentage) ;
 
@@ -64,7 +67,7 @@ public:
      * @return dutyValue() in ticks
      *
      * Takes the duty cycle percentage of the waveform as an argument
-     * and returns the on-time of the waveform in ticks.
+     * and returns the OFF-time of the waveform in ticks.
      */
     uint16_t convertDutyCyclePercentageToTicks();
 
@@ -108,8 +111,8 @@ private:
 
     /**
      * The duty Cycle Percentage
-     * (== The percentage of the period that the PWM is on)
+     * (== The percentage of the period that the PWM is OFF)
      * @note dutyCyclePercentage rvalue is between 0 and 100
      */
-    uint8_t dutyCyclePercentage = 0;
+    uint8_t dutyCyclePercentage = 100;
 };

@@ -34,7 +34,7 @@ void Heater<PeripheralNumber>::setDutyPercentage(uint8_t dutyCyclePercentage) {
 
 template<uint8_t PeripheralNumber>
 uint16_t Heater<PeripheralNumber>::convertDutyCyclePercentageToTicks() {
-    return period - period * dutyCyclePercentage / 100;
+    return period * dutyCyclePercentage / 100;
 }
 
 template<uint8_t PeripheralNumber>
