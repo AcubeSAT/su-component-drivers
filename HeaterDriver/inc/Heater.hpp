@@ -10,7 +10,7 @@ class Heater : public HAL_PWM {
 
 public:
     /**
-     * @param period: the period of PWM (measured in ticks)
+     * @param period: The period of PWM (measured in ticks)
      *
      * @param channelMask: The mask indicating which channel to start
      *
@@ -78,18 +78,18 @@ public:
      *  of the instance of the class we are each time
      *  working with
      *
-     *  @note the setPeriod function can only be used when
+     *  @note The setPeriod function can only be used when
      *  the PWM channel is already started
      */
     void setPeriod(uint16_t period);
 
     /**
-     * @return the period of the PWM
+     * @return The period of the PWM
      */
     uint16_t getPeriod();
 
     /**
-     * @return the Duty Cycle Percentage of the PWM
+     * @return The Duty Cycle Percentage of the PWM
      */
     uint8_t getDutyCyclePercentage();
 private:
@@ -110,8 +110,9 @@ private:
     const PWM_CHANNEL_NUM pwmChannel;
 
     /**
-     * The duty Cycle Percentage
+     * The Duty Cycle Percentage
      * (== The percentage of the period that the PWM is OFF)
+     *
      * @note dutyCyclePercentage rvalue is between 0 and 100
      */
     uint8_t dutyCyclePercentage = 100;
