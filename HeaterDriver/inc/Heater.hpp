@@ -77,7 +77,7 @@ public:
     /**
      * @return The period of the PWM
      */
-    const uint16_t getPeriod();
+    uint16_t getPeriod() const;
 
     /**
      * @return The Duty Cycle Percentage of the PWM
@@ -88,17 +88,17 @@ private:
     /**
      * The period of the waveform in ticks
      */
-    uint16_t period = 15000;
+    uint16_t period = PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel);
 
     /**
      * The mask indicating which channel to start
      */
-    const PWM_CHANNEL_MASK channelMask = 2;
+    const PWM_CHANNEL_MASK channelMask;
 
     /**
      * The PWM channel
      */
-    const PWM_CHANNEL_NUM pwmChannel = 2;
+    const PWM_CHANNEL_NUM pwmChannel;
 
     /**
      * The Duty Cycle Percentage
@@ -115,4 +115,4 @@ private:
      * and returns the OFF-time of the waveform in ticks.
      */
     inline const uint16_t convertDutyCyclePercentageToTicks() { return (period * dutyCyclePercentage) / 100; }
-};Heater<PeripheralNumber>::convertDutyCyclePercentageToTicks()
+};
