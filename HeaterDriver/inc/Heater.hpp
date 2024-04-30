@@ -7,7 +7,6 @@
 
 template<uint8_t PeripheralNumber>
 class Heater : public HAL_PWM {
-
 public:
     /**
      * @param period: The period of PWM (measured in ticks)
@@ -61,15 +60,7 @@ public:
      * @note Duty percentage indicates the percentage of
      *  the OFF-time of the waveform
      */
-    void setDutyPercentage(uint8_t dutyCyclePercentage) ;
-
-    /**
-     * @return dutyValue() in ticks
-     *
-     * Takes the duty cycle percentage of the waveform as an argument
-     * and returns the OFF-time of the waveform in ticks.
-     */
-    uint16_t convertDutyCyclePercentageToTicks();
+    void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
      * @param period: the period of the PWM
@@ -86,14 +77,14 @@ public:
     /**
      * @return The period of the PWM
      */
-    uint16_t getPeriod();
+    const uint16_t getPeriod();
 
     /**
      * @return The Duty Cycle Percentage of the PWM
      */
-    uint8_t getDutyCyclePercentage();
-private:
+    const uint8_t getDutyCyclePercentage();
 
+private:
     /**
      * The period of the waveform in ticks
      */
@@ -102,12 +93,12 @@ private:
     /**
      * The mask indicating which channel to start
      */
-    const PWM_CHANNEL_MASK channelMask;
+    const PWM_CHANNEL_MASK channelMask = 2;
 
     /**
      * The PWM channel
      */
-    const PWM_CHANNEL_NUM pwmChannel;
+    const PWM_CHANNEL_NUM pwmChannel = 2;
 
     /**
      * The Duty Cycle Percentage
@@ -116,4 +107,12 @@ private:
      * @note dutyCyclePercentage rvalue is between 0 and 100
      */
     uint8_t dutyCyclePercentage = 100;
-};
+
+    /**
+     * @return dutyValue() in ticks
+     *
+     * Takes the duty cycle percentage of the waveform as an argument
+     * and returns the OFF-time of the waveform in ticks.
+     */
+    inline const uint16_t convertDutyCyclePercentageToTicks() { return (period * dutyCyclePercentage) / 100; }
+};Heater<PeripheralNumber>::convertDutyCyclePercentageToTicks()
