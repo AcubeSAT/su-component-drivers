@@ -8,7 +8,7 @@ Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, 
 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
-        period(PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel)), channelMask(channelMask), pwmChannel(pwmChannel) {
+        channelMask(channelMask), pwmChannel(pwmChannel) {
     setDutyCyclePercentage(dutyCyclePercentage);
 }
 
