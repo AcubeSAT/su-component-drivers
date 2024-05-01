@@ -81,6 +81,9 @@ public:
 
     /**
      * @return The Duty Cycle Percentage of the PWM
+     *
+     * @note Duty percentage indicates the percentage of
+     *  the OFF-time of the waveform
      */
     const uint8_t getDutyCyclePercentage();
 
