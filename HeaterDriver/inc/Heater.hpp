@@ -85,7 +85,7 @@ public:
      * @note Duty percentage indicates the percentage of
      *  the OFF-time of the waveform
      */
-    const uint8_t getDutyCyclePercentage();
+    uint8_t getDutyCyclePercentage() const;
 
 private:
     /**
@@ -96,12 +96,12 @@ private:
     /**
      * The mask indicating which channel to start
      */
-    const PWM_CHANNEL_MASK channelMask;
+    const PWM_CHANNEL_MASK channelMask = static_cast<const PWM_CHANNEL_MASK>(2);
 
     /**
      * The PWM channel
      */
-    const PWM_CHANNEL_NUM pwmChannel;
+    const PWM_CHANNEL_NUM pwmChannel = static_cast<const PWM_CHANNEL_NUM>(2);
 
     /**
      * The Duty Cycle Percentage
@@ -117,7 +117,7 @@ private:
      * Takes the duty cycle percentage of the waveform as an argument
      * and returns the OFF-time of the waveform in ticks.
      */
-    inline const uint16_t convertDutyCyclePercentageToTicks() { return (period * dutyCyclePercentage) / 100; }
+    inline uint16_t convertDutyCyclePercentageToTicks() const { return (period * dutyCyclePercentage) / 100; }
 
     /**
      * @brief Checks if channelMask and pwmChannel have valid rvalues
@@ -129,7 +129,7 @@ private:
      * @return Returns true if channelMask and pwmChannel have valid rvalues,
      * else returns false
      */
-    bool isValid(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel){
-        return !(channelMask<0 || channelMask>3 || pwmChannel<0 || pwmChannel>3);
+    bool isValid(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel) {
+        return !(channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3);
     }
 };

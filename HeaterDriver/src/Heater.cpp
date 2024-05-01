@@ -40,11 +40,11 @@ void Heater<PeripheralNumber>::setPeriod(uint16_t period) {
 }
 
 template<uint8_t PeripheralNumber>
-uint16_t Heater<PeripheralNumber>::getPeriod() {
+uint16_t Heater<PeripheralNumber>::getPeriod() const {
     return period;
 }
 
 template<uint8_t PeripheralNumber>
-uint8_t Heater<PeripheralNumber>::getDutyCyclePercentage() {
+uint8_t Heater<PeripheralNumber>::getDutyCyclePercentage() const {
     return dutyCyclePercentage;
 }
