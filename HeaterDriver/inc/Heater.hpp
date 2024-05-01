@@ -129,7 +129,7 @@ private:
      * @return Returns true if channelMask and pwmChannel have valid rvalues,
      * else returns false
      */
-    bool isValid(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel) {
+    bool isChannelValid(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel) {
         return !(channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3);
     }
 };

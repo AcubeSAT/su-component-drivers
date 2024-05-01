@@ -1,12 +1,12 @@
 #include "Heater.hpp"
+#include "Logger.hpp"
 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
         channelMask(channelMask), pwmChannel(pwmChannel), period(period) {
-    if (!isValid(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM
-    pwmChannel))
-    LOG_DEBUG << "invalid channel";
-    if (!is_uint16(period))
+    if (!isChannelValid(channelMask, pwmChannel))
+        LOG_DEBUG << "invalid channel";
+    if (period > 0xFFFF || period < 0)
         LOG_DEBUG << "invalid period value";
     setPeriod(period);
 }
@@ -14,9 +14,8 @@ Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
         channelMask(channelMask), pwmChannel(pwmChannel) {
-    if (!isValid(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM
-    pwmChannel))
-    LOG_DEBUG << "invalid channel";
+    if (!isChannelValid(channelMask, pwmChannel))
+        LOG_DEBUG << "invalid channel";
     setDutyCyclePercentage(dutyCyclePercentage);
 }
 
