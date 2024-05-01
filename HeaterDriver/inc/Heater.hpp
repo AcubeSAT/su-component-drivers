@@ -96,12 +96,12 @@ private:
     /**
      * The mask indicating which channel to start
      */
-    const PWM_CHANNEL_MASK channelMask = static_cast<const PWM_CHANNEL_MASK>(2);
+    const PWM_CHANNEL_MASK channelMask;
 
     /**
      * The PWM channel
      */
-    const PWM_CHANNEL_NUM pwmChannel = static_cast<const PWM_CHANNEL_NUM>(2);
+    const PWM_CHANNEL_NUM pwmChannel;
 
     /**
      * The Duty Cycle Percentage
