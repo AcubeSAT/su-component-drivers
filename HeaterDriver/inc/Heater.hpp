@@ -68,9 +68,6 @@ public:
      * @brief Sets the period of PWM channel
      *  of the instance of the class we are each time
      *  working with
-     *
-     *  @note The setPeriod function can only be used when
-     *  the PWM channel is already started
      */
     void setPeriod(uint16_t period);
 
