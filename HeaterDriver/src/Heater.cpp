@@ -22,26 +22,31 @@ Heater<PeripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM p
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::startHeater() {
     PWM_ChannelsStart<PeripheralNumber>(channelMask);
+    this->heaterHasStarted = true;
 }
 
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::stopHeater() {
     PWM_ChannelsStop<PeripheralNumber>(channelMask);
+    this->heaterHasStarted = false;
 }
 
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
+    bool _heaterHasStarted = heaterHasStarted;
     startHeater();
     this->dutyCyclePercentage = dutyCyclePercentage;
     PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
-    stopHeater();
+    if (!_heaterHasStarted) stopHeater();
 }
 
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setPeriod(uint16_t period) {
+    bool _heaterHasStarted = heaterHasStarted;
     startHeater();
     PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
     stopHeater();
+    if (!_heaterHasStarted) stopHeater();
     this->period = period;
     setDutyCyclePercentage(dutyCyclePercentage);
 }

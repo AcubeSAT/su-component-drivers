@@ -89,6 +89,12 @@ public:
 
 private:
     /**
+     * Indicates whether or not the heater
+     * has been started
+     */
+    bool heaterHasStarted = false ;
+
+    /**
      * The period of the waveform in ticks
      */
     uint16_t period = PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel);
