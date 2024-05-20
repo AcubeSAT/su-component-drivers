@@ -3,7 +3,8 @@
 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
-        channelMask(channelMask), pwmChannel(pwmChannel), frequency(frequency) , period(convertHzFrequencyToHarmonyPeriod()){
+        channelMask(channelMask), pwmChannel(pwmChannel), frequency(frequency),
+        period(convertHzFrequencyToHarmonyPeriod()) {
     if (channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3)
         LOG_DEBUG << "invalid channel";
     if (frequency > 0xFFFF || period < 0)
