@@ -20,7 +20,7 @@ public:
      * @note The period can be changed after the construction of the Heater instance .
      *
      */
-    Heater(uint16_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
+    Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
     /**
      * @param channelMask: The mask indicating which channel to start
@@ -79,7 +79,7 @@ public:
      *  working with
      *
      */
-    void setFrequency(uint16_t frequency);
+    void setFrequency(uint32_t frequency);
 
     /**
      * @return The period of the PWM in ticks
@@ -114,7 +114,7 @@ private:
     /**
      * The frequency of the waveform in kHz
      */
-    uint16_t frequency = convertHarmonyPeriodToKHzFrequency();
+    uint32_t frequency = convertHarmonyPeriodToHzFrequency();
 
     /**
      * The mask indicating which channel to start
@@ -145,22 +145,11 @@ private:
     /**
      * @return Period in ticks
      *
-     * Converts the frequency of the waveform measured in kHz
+     * Converts the frequency of the waveform measured in Hz
      * to Period measured in Harmony ticks.
      *
      * @warning If in the future we change the MCU frequency,
      * we must change this function accordingly.
      */
-    inline uint16_t convertKHzFrequencyToHarmonyPeriod() const { return 1500 * (10 ^ 3 / frequency); }
-
-    /**
-     * @return frequency in kHz
-     *
-     * Converts the period of the waveform measured in Ticks
-     * to frequency measured in kHz.
-     *
-     * @warning If in the future we change the MCU frequency,
-     * we must change this function accordingly.
-     */
-    inline uint16_t convertHarmonyPeriodToKHzFrequency() const { return 1500 * (10 ^ 3 / period); }
+    inline uint16_t convertHzFrequencyToHarmonyPeriod() const { return uint16_t (150 * (1000000 / frequency)); }
 };

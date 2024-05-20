@@ -2,8 +2,8 @@
 #include "Logger.hpp"
 
 template<uint8_t PeripheralNumber>
-Heater<PeripheralNumber>::Heater(uint16_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
-        channelMask(channelMask), pwmChannel(pwmChannel), frequency(frequency) , period(convertKHzFrequencyToHarmonyPeriod()){
+Heater<PeripheralNumber>::Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
+        channelMask(channelMask), pwmChannel(pwmChannel), frequency(frequency) , period(convertHzFrequencyToHarmonyPeriod()){
     if (channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3)
         LOG_DEBUG << "invalid channel";
     if (frequency > 0xFFFF || period < 0)
@@ -34,7 +34,7 @@ void Heater<PeripheralNumber>::stopHeater() {
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
     bool _heaterHasStarted = heaterHasStarted;
-    startHeater();
+    if (!_heaterHasStarted) startHeater();
     this->dutyCyclePercentage = dutyCyclePercentage;
     PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
     if (!_heaterHasStarted) stopHeater();
@@ -43,24 +43,17 @@ void Heater<PeripheralNumber>::setDutyCyclePercentage(uint8_t dutyCyclePercentag
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setPeriod(uint16_t period) {
     bool _heaterHasStarted = heaterHasStarted;
-    startHeater();
-    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
-    stopHeater();
-    if (!_heaterHasStarted) stopHeater();
+    if (!_heaterHasStarted) startHeater();
     this->period = period;
-    setDutyCyclePercentage(dutyCyclePercentage);
+    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
+    PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
+    if (!_heaterHasStarted) stopHeater();
 }
 
 template<uint8_t PeripheralNumber>
-void Heater<PeripheralNumber>::setFrequency(uint16_t frequency) {
-    bool _heaterHasStarted = heaterHasStarted;
-    startHeater();
+void Heater<PeripheralNumber>::setFrequency(uint32_t frequency) {
     this->frequency = frequency;
-    period = convertKHzFrequencyToHarmonyPeriod();
-    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, convertKHzFrequencyToHarmonyPeriod());
-    stopHeater();
-    if (!_heaterHasStarted) stopHeater();
-    setDutyCyclePercentage(dutyCyclePercentage);
+    setPeriod(convertHzFrequencyToHarmonyPeriod());
 }
 
 template<uint8_t PeripheralNumber>
