@@ -2,12 +2,12 @@
 #include "Logger.hpp"
 
 template<uint8_t PeripheralNumber>
-Heater<PeripheralNumber>::Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
-        channelMask(channelMask), pwmChannel(pwmChannel), period(period) {
+Heater<PeripheralNumber>::Heater(uint16_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
+        channelMask(channelMask), pwmChannel(pwmChannel), frequency(frequency) , period(convertKHzFrequencyToHarmonyPeriod()){
     if (channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3)
         LOG_DEBUG << "invalid channel";
-    if (period > 0xFFFF || period < 0)
-        LOG_DEBUG << "invalid period value";
+    if (frequency > 0xFFFF || period < 0)
+        LOG_DEBUG << "invalid frequency value";
     setPeriod(period);
 }
 
@@ -52,8 +52,25 @@ void Heater<PeripheralNumber>::setPeriod(uint16_t period) {
 }
 
 template<uint8_t PeripheralNumber>
+void Heater<PeripheralNumber>::setFrequency(uint16_t frequency) {
+    bool _heaterHasStarted = heaterHasStarted;
+    startHeater();
+    this->frequency = frequency;
+    period = convertKHzFrequencyToHarmonyPeriod();
+    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, convertKHzFrequencyToHarmonyPeriod());
+    stopHeater();
+    if (!_heaterHasStarted) stopHeater();
+    setDutyCyclePercentage(dutyCyclePercentage);
+}
+
+template<uint8_t PeripheralNumber>
 uint16_t Heater<PeripheralNumber>::getPeriod() const {
     return period;
+}
+
+template<uint8_t PeripheralNumber>
+uint16_t Heater<PeripheralNumber>::getFrequency() const {
+    return frequency;
 }
 
 template<uint8_t PeripheralNumber>

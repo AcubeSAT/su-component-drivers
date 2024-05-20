@@ -9,7 +9,7 @@ template<uint8_t PeripheralNumber>
 class Heater : public HAL_PWM {
 public:
     /**
-     * @param period: The period of PWM (measured in ticks)
+     * @param frequency: The frequency of PWM measured in kHz
      *
      * @param channelMask: The mask indicating which channel to start
      *
@@ -20,7 +20,7 @@ public:
      * @note The period can be changed after the construction of the Heater instance .
      *
      */
-    Heater(uint16_t period, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
+    Heater(uint16_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
 
     /**
      * @param channelMask: The mask indicating which channel to start
@@ -63,7 +63,7 @@ public:
     void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @param period: the period of the PWM
+     * @param period: the period of the PWM measured in ticks
      *
      * @brief Sets the period of PWM channel
      *  of the instance of the class we are each time
@@ -72,9 +72,24 @@ public:
     void setPeriod(uint16_t period);
 
     /**
-     * @return The period of the PWM
+     * @param frequency: the frequency of the PWM measured in kHz
+     *
+     * @brief Sets the frequency of PWM channel
+     *  of the instance of the class we are each time
+     *  working with
+     *
+     */
+    void setFrequency(uint16_t frequency);
+
+    /**
+     * @return The period of the PWM in ticks
      */
     uint16_t getPeriod() const;
+
+    /**
+    * @return The frequency of the PWM in kHz
+    */
+    uint16_t getFrequency() const;
 
     /**
      * @return The Duty Cycle Percentage of the PWM
@@ -89,12 +104,17 @@ private:
      * Indicates whether or not the heater
      * has been started
      */
-    bool heaterHasStarted = false ;
+    bool heaterHasStarted = false;
 
     /**
      * The period of the waveform in ticks
      */
     uint16_t period = PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel);
+
+    /**
+     * The frequency of the waveform in kHz
+     */
+    uint16_t frequency = convertHarmonyPeriodToKHzFrequency();
 
     /**
      * The mask indicating which channel to start
@@ -115,10 +135,32 @@ private:
     uint8_t dutyCyclePercentage = 100;
 
     /**
-     * @return dutyValue() in ticks
+     * @return dutyValue in ticks
      *
-     * Takes the duty cycle percentage of the waveform as an argument
-     * and returns the OFF-time of the waveform in ticks.
+     * Converts the duty cycle percentage of the waveform
+     * to the OFF-time of the waveform in ticks.
      */
     inline uint16_t convertDutyCyclePercentageToTicks() const { return (period * dutyCyclePercentage) / 100; }
+
+    /**
+     * @return Period in ticks
+     *
+     * Converts the frequency of the waveform measured in kHz
+     * to Period measured in Harmony ticks.
+     *
+     * @warning If in the future we change the MCU frequency,
+     * we must change this function accordingly.
+     */
+    inline uint16_t convertKHzFrequencyToHarmonyPeriod() const { return 1500 * (10 ^ 3 / frequency); }
+
+    /**
+     * @return frequency in kHz
+     *
+     * Converts the period of the waveform measured in Ticks
+     * to frequency measured in kHz.
+     *
+     * @warning If in the future we change the MCU frequency,
+     * we must change this function accordingly.
+     */
+    inline uint16_t convertHarmonyPeriodToKHzFrequency() const { return 1500 * (10 ^ 3 / period); }
 };
