@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "Logger.hpp"
 #include "peripheral/pwm/plib_pwm0.h"
 #include "peripheral/pwm/plib_pwm1.h"
 #include "HAL_PWM.hpp"
@@ -101,6 +102,14 @@ public:
 
 private:
     /**
+     * The MCU clock frequency
+     *
+     * @warning: if in the future we change the MCU frequency,
+     * we must change the value of this variable accordingly
+     */
+    const uint32_t clockFrequency = 150* 1000000;
+
+    /**
      * Indicates whether or not the heater
      * has been started
      */
@@ -140,16 +149,19 @@ private:
      * Converts the duty cycle percentage of the waveform
      * to the OFF-time of the waveform in ticks.
      */
-    inline uint16_t convertDutyCyclePercentageToTicks() const { return (period * dutyCyclePercentage) / 100; }
+    inline uint16_t convertDutyCyclePercentageToTicks()
+    const {
+        return (period * dutyCyclePercentage) / 100;
+    }
 
     /**
      * @return Period in ticks
      *
      * Converts the frequency of the waveform measured in Hz
      * to Period measured in Harmony ticks.
-     *
-     * @warning If in the future we change the MCU frequency,
-     * we must change this function accordingly.
      */
-    inline uint16_t convertHzFrequencyToHarmonyPeriod() const { return uint16_t(150 * (1000000 / frequency)); }
+    inline uint16_t convertHzFrequencyToHarmonyPeriod()
+    const {
+        return uint16_t(clockFrequency/ frequency);
+    }
 };

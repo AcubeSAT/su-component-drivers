@@ -1,5 +1,4 @@
 #include "Heater.hpp"
-#include "Logger.hpp"
 
 template<uint8_t PeripheralNumber>
 Heater<PeripheralNumber>::Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
@@ -35,20 +34,28 @@ void Heater<PeripheralNumber>::stopHeater() {
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
     bool _heaterHasStarted = heaterHasStarted;
-    if (!_heaterHasStarted) startHeater();
+    if (not _heaterHasStarted) {
+        startHeater();
+    }
     this->dutyCyclePercentage = dutyCyclePercentage;
     PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
-    if (!_heaterHasStarted) stopHeater();
+    if (not _heaterHasStarted) {
+        stopHeater();
+    }
 }
 
 template<uint8_t PeripheralNumber>
 void Heater<PeripheralNumber>::setPeriod(uint16_t period) {
     bool _heaterHasStarted = heaterHasStarted;
-    if (!_heaterHasStarted) startHeater();
+    if (not _heaterHasStarted) {
+        startHeater();
+    }
     this->period = period;
     PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
     PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
-    if (!_heaterHasStarted) stopHeater();
+    if (not _heaterHasStarted) {
+        stopHeater();
+    }
 }
 
 template<uint8_t PeripheralNumber>
