@@ -15,9 +15,9 @@ public:
      *
      * @param pwmChannel: The Channel of PWM
      *
-     * @brief An instance of the constructor that initializes the period value .
+     * @brief An instance of the constructor that initializes the frequency value .
      *
-     * @note The period can be changed after the construction of the Heater instance .
+     * @note The frequency can be changed after the construction of the Heater instance .
      *
      */
     Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
@@ -27,11 +27,11 @@ public:
      *
      * @param pwmChannel: The Channel of PWM
      *
-     * @brief An instance of the constructor that doesn't initialize the period value.
+     * @brief An instance of the constructor that doesn't initialize the frequency value.
      *
-     * @note In this case, period takes its initial value from Harmony .
+     * @note In this case, frequency takes its default value (=10000Hz).
      *
-     * @note The period can be changed after the construction of the Heater instance .
+     * @note The frequency can be changed after the construction of the Heater instance .
      *
      */
     Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
@@ -109,12 +109,12 @@ private:
     /**
      * The period of the waveform in ticks
      */
-    uint16_t period = PWM_ChannelPeriodGet<PeripheralNumber>(pwmChannel);
+    uint16_t period = 15000;
 
     /**
      * The frequency of the waveform in kHz
      */
-    uint32_t frequency = convertHarmonyPeriodToHzFrequency();
+    uint32_t frequency = 10000;
 
     /**
      * The mask indicating which channel to start
@@ -151,5 +151,5 @@ private:
      * @warning If in the future we change the MCU frequency,
      * we must change this function accordingly.
      */
-    inline uint16_t convertHzFrequencyToHarmonyPeriod() const { return uint16_t (150 * (1000000 / frequency)); }
+    inline uint16_t convertHzFrequencyToHarmonyPeriod() const { return uint16_t(150 * (1000000 / frequency)); }
 };
