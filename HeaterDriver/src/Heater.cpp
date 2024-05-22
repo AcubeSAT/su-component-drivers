@@ -6,7 +6,7 @@ Heater<PeripheralNumber>::Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMas
     this->period = convertHzFrequencyToHarmonyPeriod();
     if (channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3)
         LOG_DEBUG << "invalid channel";
-    if (frequency > 0xFFFF || period < 0)
+    if (frequency > 0xFFFFFFFF || period < 0)
         LOG_DEBUG << "invalid frequency value";
     setPeriod(period);
 }
