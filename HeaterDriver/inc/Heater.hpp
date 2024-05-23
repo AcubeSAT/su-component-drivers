@@ -10,22 +10,13 @@ public:
     /**
      * @param frequency: The frequency of PWM measured in kHz
      *
-     * @param channelMask: The mask indicating which channel to start
-     *
-     * @param pwmChannel: The Channel of PWM
-     *
      * @brief An instance of the constructor that initializes the frequency value .
      *
      * @note The frequency can be changed after the construction of the Heater instance .
-     *
      */
     Heater(uint32_t frequency);
 
     /**
-     * @param channelMask: The mask indicating which channel to start
-     *
-     * @param pwmChannel: The Channel of PWM
-     *
      * @brief An instance of the constructor that doesn't initialize the frequency value.
      *
      * @note In this case, frequency takes its default value (=10000Hz).
