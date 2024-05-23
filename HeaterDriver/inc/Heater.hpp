@@ -2,8 +2,6 @@
 
 #include <cstdint>
 #include "Logger.hpp"
-#include "peripheral/pwm/plib_pwm0.h"
-#include "peripheral/pwm/plib_pwm1.h"
 #include "HAL_PWM.hpp"
 
 template<uint8_t PeripheralNumber>
