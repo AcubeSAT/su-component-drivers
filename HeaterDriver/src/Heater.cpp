@@ -1,80 +1,72 @@
-#include "Heater.hpp"
+#include "lib/su-component-drivers/HeaterDriver/inc/Heater.hpp"
 
-template<uint8_t PeripheralNumber>
-Heater<PeripheralNumber>::Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
-        frequency(frequency), channelMask(channelMask), pwmChannel(pwmChannel) {
+template<uint8_t PeripheralNumber, uint8_t channel>
+Heater<PeripheralNumber, channel>::Heater(uint32_t frequency):frequency(frequency) {
     this->period = convertHzFrequencyToHarmonyPeriod();
-    if (channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3)
-        LOG_DEBUG << "invalid channel";
-    if (frequency > 0xFFFFFFFF || period < 0)
-        LOG_DEBUG << "invalid frequency value";
     setPeriod(period);
 }
 
-template<uint8_t PeripheralNumber>
-Heater<PeripheralNumber>::Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel):
-        channelMask(channelMask), pwmChannel(pwmChannel) {
-    if (channelMask < 0 || channelMask > 3 || pwmChannel < 0 || pwmChannel > 3)
-        LOG_DEBUG << "invalid channel";
+template<uint8_t PeripheralNumber, uint8_t channel>
+Heater<PeripheralNumber, channel>::Heater() {
     setDutyCyclePercentage(dutyCyclePercentage);
 }
 
-template<uint8_t PeripheralNumber>
-void Heater<PeripheralNumber>::startHeater() {
-    PWM_ChannelsStart<PeripheralNumber>(channelMask);
+template<uint8_t PeripheralNumber, uint8_t channel>
+void Heater<PeripheralNumber, channel>::startHeater() {
+    PWM_ChannelsStart<PeripheralNumber,channel>();
     this->heaterHasStarted = true;
 }
 
-template<uint8_t PeripheralNumber>
-void Heater<PeripheralNumber>::stopHeater() {
-    PWM_ChannelsStop<PeripheralNumber>(channelMask);
+template<uint8_t PeripheralNumber, uint8_t channel>
+void Heater<PeripheralNumber, channel>::stopHeater() {
+    PWM_ChannelsStop<PeripheralNumber,channel>();
     this->heaterHasStarted = false;
 }
 
-template<uint8_t PeripheralNumber>
-void Heater<PeripheralNumber>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
+template<uint8_t PeripheralNumber, uint8_t channel>
+void Heater<PeripheralNumber, channel>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
     bool _heaterHasStarted = heaterHasStarted;
     if (not _heaterHasStarted) {
         startHeater();
     }
     this->dutyCyclePercentage = dutyCyclePercentage;
-    PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
+    PWM_ChannelDutySet<PeripheralNumber,channel>(convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
     }
 }
 
-template<uint8_t PeripheralNumber>
-void Heater<PeripheralNumber>::setPeriod(uint16_t period) {
+template<uint8_t PeripheralNumber, uint8_t channel>
+void Heater<PeripheralNumber, channel>::setPeriod(uint16_t period) {
     bool _heaterHasStarted = heaterHasStarted;
     if (not _heaterHasStarted) {
         startHeater();
     }
     this->period = period;
-    PWM_ChannelPeriodSet<PeripheralNumber>(pwmChannel, period);
-    PWM_ChannelDutySet<PeripheralNumber>(pwmChannel, convertDutyCyclePercentageToTicks());
+    PWM_ChannelPeriodSet<PeripheralNumber,channel>(period);
+    PWM_ChannelDutySet<PeripheralNumber,channel>(convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
     }
 }
 
-template<uint8_t PeripheralNumber>
-void Heater<PeripheralNumber>::setFrequency(uint32_t frequency) {
+template<uint8_t PeripheralNumber, uint8_t channel>
+void Heater<PeripheralNumber, channel>::setFrequency(uint32_t frequency) {
     this->frequency = frequency;
     setPeriod(convertHzFrequencyToHarmonyPeriod());
 }
 
-template<uint8_t PeripheralNumber>
-uint16_t Heater<PeripheralNumber>::getPeriod() const {
+template<uint8_t PeripheralNumber, uint8_t channel>
+uint16_t Heater<PeripheralNumber, channel>::getPeriod() const {
     return period;
 }
 
-template<uint8_t PeripheralNumber>
-uint16_t Heater<PeripheralNumber>::getFrequency() const {
+template<uint8_t PeripheralNumber, uint8_t channel>
+uint16_t Heater<PeripheralNumber, channel>::getFrequency() const {
     return frequency;
 }
 
-template<uint8_t PeripheralNumber>
-uint8_t Heater<PeripheralNumber>::getDutyCyclePercentage() const {
+template<uint8_t PeripheralNumber, uint8_t channel>
+uint8_t Heater<PeripheralNumber, channel>::getDutyCyclePercentage() const {
     return dutyCyclePercentage;
 }

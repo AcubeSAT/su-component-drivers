@@ -4,7 +4,7 @@
 #include "Logger.hpp"
 #include "HAL_PWM.hpp"
 
-template<uint8_t PeripheralNumber>
+template<uint8_t PeripheralNumber, uint8_t channel>
 class Heater : public HAL_PWM {
 public:
     /**
@@ -19,7 +19,7 @@ public:
      * @note The frequency can be changed after the construction of the Heater instance .
      *
      */
-    Heater(uint32_t frequency, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
+    Heater(uint32_t frequency);
 
     /**
      * @param channelMask: The mask indicating which channel to start
@@ -33,7 +33,7 @@ public:
      * @note The frequency can be changed after the construction of the Heater instance .
      *
      */
-    Heater(PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM pwmChannel);
+    Heater();
 
     /**
      * This function enables the PWM channel
@@ -122,16 +122,6 @@ private:
      * The frequency of the waveform in kHz
      */
     uint32_t frequency = 10000;
-
-    /**
-     * The mask indicating which channel to start
-     */
-    const PWM_CHANNEL_MASK channelMask;
-
-    /**
-     * The PWM channel
-     */
-    const PWM_CHANNEL_NUM pwmChannel;
 
     /**
      * The Duty Cycle Percentage
