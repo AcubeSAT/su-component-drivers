@@ -47,12 +47,12 @@ public:
      *  working with.
      *
      * @note Duty percentage indicates the percentage of
-     *  the OFF-time of the waveform
+     *  the ON-time of the waveform
      */
     void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @param periodTicks: the period of the PWM measured in ticks
+     * @param period: the period of the PWM measured in ticks
      *
      * @brief Sets the period of PWM channel
      *  of the instance of the class we are each time
@@ -84,7 +84,7 @@ public:
      * @return The Duty Cycle Percentage of the PWM
      *
      * @note Duty percentage indicates the percentage of
-     *  the OFF-time of the waveform
+     *  the ON-time of the waveform
      */
     uint8_t getDutyCyclePercentage() const;
 
@@ -115,20 +115,20 @@ private:
 
     /**
      * The Duty Cycle Percentage
-     * (== The percentage of the period that the PWM is OFF)
+     * (== The percentage of the period that the PWM is ON)
      *
      * @note dutyCyclePercentage rvalue is between 0 and 100
      */
-    uint8_t dutyCyclePercentage = 100;
+    uint8_t dutyCyclePercentage = 0;
 
     /**
      * @return dutyValue in ticks
      *
      * Converts the duty cycle percentage of the waveform
-     * to the OFF-time of the waveform in ticks.
+     * to the ON-time of the waveform in ticks.
      */
     inline uint16_t convertDutyCyclePercentageToTicks() const {
-        return (periodTicks * dutyCyclePercentage) / 100;
+        return (periodTicks * (100 - dutyCyclePercentage)) / 100;
     }
 
     /**
