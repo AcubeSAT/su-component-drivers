@@ -1,9 +1,9 @@
-#include "lib/su-component-drivers/HeaterDriver/inc/Heater.hpp"
+#include "Heater.hpp"
 
 template<uint8_t PeripheralNumber, uint8_t channel>
 Heater<PeripheralNumber, channel>::Heater(uint32_t frequency):frequency(frequency) {
-    this->period = convertHzFrequencyToHarmonyPeriod();
-    setPeriod(period);
+    this->periodTicks = convertHzFrequencyToHarmonyPeriod();
+    setPeriodTicks(periodTicks);
 }
 
 template<uint8_t PeripheralNumber, uint8_t channel>
@@ -37,13 +37,13 @@ void Heater<PeripheralNumber, channel>::setDutyCyclePercentage(uint8_t dutyCycle
 }
 
 template<uint8_t PeripheralNumber, uint8_t channel>
-void Heater<PeripheralNumber, channel>::setPeriod(uint16_t period) {
+void Heater<PeripheralNumber, channel>::setPeriodTicks(uint16_t periodTicks) {
     bool _heaterHasStarted = heaterHasStarted;
     if (not _heaterHasStarted) {
         startHeater();
     }
-    this->period = period;
-    PWM_ChannelPeriodSet<PeripheralNumber,channel>(period);
+    this->periodTicks = periodTicks;
+    PWM_ChannelPeriodSet<PeripheralNumber,channel>(periodTicks);
     PWM_ChannelDutySet<PeripheralNumber,channel>(convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
@@ -53,12 +53,12 @@ void Heater<PeripheralNumber, channel>::setPeriod(uint16_t period) {
 template<uint8_t PeripheralNumber, uint8_t channel>
 void Heater<PeripheralNumber, channel>::setFrequency(uint32_t frequency) {
     this->frequency = frequency;
-    setPeriod(convertHzFrequencyToHarmonyPeriod());
+    setPeriodTicks(convertHzFrequencyToHarmonyPeriod());
 }
 
 template<uint8_t PeripheralNumber, uint8_t channel>
-uint16_t Heater<PeripheralNumber, channel>::getPeriod() const {
-    return period;
+uint16_t Heater<PeripheralNumber, channel>::getPeriodTicks() const {
+    return periodTicks;
 }
 
 template<uint8_t PeripheralNumber, uint8_t channel>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include "Logger.hpp"
 #include "HAL_PWM.hpp"
 
@@ -53,13 +52,13 @@ public:
     void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @param period: the period of the PWM measured in ticks
+     * @param periodTicks: the period of the PWM measured in ticks
      *
      * @brief Sets the period of PWM channel
      *  of the instance of the class we are each time
      *  working with
      */
-    void setPeriod(uint16_t period);
+    void setPeriodTicks(uint16_t periodTicks);
 
     /**
      * @param frequency: the frequency of the PWM measured in kHz
@@ -74,7 +73,7 @@ public:
     /**
      * @return The period of the PWM in ticks
      */
-    uint16_t getPeriod() const;
+    uint16_t getPeriodTicks() const;
 
     /**
     * @return The frequency of the PWM in kHz
@@ -96,7 +95,7 @@ private:
      * @warning: if in the future we change the MCU frequency,
      * we must change the value of this variable accordingly
      */
-    const uint32_t clockFrequency = 150* 1000000;
+    static constexpr uint32_t clockFrequency = 150e6;
 
     /**
      * Indicates whether or not the heater
@@ -107,12 +106,12 @@ private:
     /**
      * The period of the waveform in ticks
      */
-    uint16_t period = 15000;
+    uint16_t periodTicks = 15e3;
 
     /**
      * The frequency of the waveform in kHz
      */
-    uint32_t frequency = 10000;
+    uint32_t frequency = 10e3;
 
     /**
      * The Duty Cycle Percentage
@@ -128,9 +127,8 @@ private:
      * Converts the duty cycle percentage of the waveform
      * to the OFF-time of the waveform in ticks.
      */
-    inline uint16_t convertDutyCyclePercentageToTicks()
-    const {
-        return (period * dutyCyclePercentage) / 100;
+    inline uint16_t convertDutyCyclePercentageToTicks() const {
+        return (periodTicks * dutyCyclePercentage) / 100;
     }
 
     /**
@@ -139,8 +137,7 @@ private:
      * Converts the frequency of the waveform measured in Hz
      * to Period measured in Harmony ticks.
      */
-    inline uint16_t convertHzFrequencyToHarmonyPeriod()
-    const {
-        return uint16_t(clockFrequency/ frequency);
+    inline uint16_t convertHzFrequencyToHarmonyPeriod() const {
+        return uint16_t(clockFrequency / frequency);
     }
 };
