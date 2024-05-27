@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include "HAL_PWM.hpp"
 
-template<uint8_t PeripheralNumber, uint8_t channel>
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
 class Heater : public HAL_PWM {
 public:
     /**
