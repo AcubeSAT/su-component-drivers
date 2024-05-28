@@ -106,7 +106,8 @@ private:
      * @warning: if in the future we change the MCU frequency,
      * we must change the value of this variable accordingly
      */
-    static constexpr uint32_t clockFrequency = 150e6;
+    static constexpr uint32_t
+    clockFrequency = 150e6;
 
     /**
      * Indicates whether or not the heater

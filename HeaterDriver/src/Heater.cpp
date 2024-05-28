@@ -1,7 +1,8 @@
 #include "Heater.hpp"
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-Heater<PeripheralNumber, channelMask, channelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage):frequency(frequency) , dutyCyclePercentage(dutyCyclePercentage){
+Heater<PeripheralNumber, channelMask, channelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage):frequency(
+        frequency), dutyCyclePercentage(dutyCyclePercentage) {
     this->periodTicks = convertHzFrequencyToHarmonyPeriod();
     setPeriodTicks(periodTicks);
 }
