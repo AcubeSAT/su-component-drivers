@@ -4,7 +4,7 @@
 #include "HAL_PWM.hpp"
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-class Heater : public HAL_PWM {
+class Heater {
 public:
     /**
     * @param frequency: The frequency of PWM measured in kHz

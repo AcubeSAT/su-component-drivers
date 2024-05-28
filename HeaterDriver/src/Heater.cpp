@@ -1,4 +1,4 @@
-#include "lib/su-component-drivers/HeaterDriver/inc/Heater.hpp"
+#include "Heater.hpp"
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
 Heater<PeripheralNumber, channelMask, channelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage):frequency(frequency) , dutyCyclePercentage(dutyCyclePercentage){
@@ -19,13 +19,13 @@ Heater<PeripheralNumber, channelMask, channelNum>::Heater() {
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
 void Heater<PeripheralNumber, channelMask, channelNum>::startHeater() {
-    PWM_ChannelsStart<PeripheralNumber>(channelMask);
+    HAL_PWM::PWM_ChannelsStart<PeripheralNumber>(channelMask);
     this->heaterHasStarted = true;
 }
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
 void Heater<PeripheralNumber, channelMask, channelNum>::stopHeater() {
-    PWM_ChannelsStop<PeripheralNumber>(channelMask);
+    HAL_PWM::PWM_ChannelsStop<PeripheralNumber>(channelMask);
     this->heaterHasStarted = false;
 }
 
@@ -36,7 +36,7 @@ void Heater<PeripheralNumber, channelMask, channelNum>::setDutyCyclePercentage(u
         startHeater();
     }
     this->dutyCyclePercentage = dutyCyclePercentage;
-    PWM_ChannelDutySet<PeripheralNumber>(channelNum, convertDutyCyclePercentageToTicks());
+    HAL_PWM::PWM_ChannelDutySet<PeripheralNumber>(channelNum, convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
     }
@@ -49,8 +49,8 @@ void Heater<PeripheralNumber, channelMask, channelNum>::setPeriodTicks(uint16_t 
         startHeater();
     }
     this->periodTicks = periodTicks;
-    PWM_ChannelPeriodSet<PeripheralNumber>(channelNum, periodTicks);
-    PWM_ChannelDutySet<PeripheralNumber>(channelNum, convertDutyCyclePercentageToTicks());
+    HAL_PWM::PWM_ChannelPeriodSet<PeripheralNumber>(channelNum, periodTicks);
+    HAL_PWM::PWM_ChannelDutySet<PeripheralNumber>(channelNum, convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
     }
