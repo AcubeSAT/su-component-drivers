@@ -7,6 +7,17 @@ template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM
 class Heater : public HAL_PWM {
 public:
     /**
+    * @param frequency: The frequency of PWM measured in kHz
+    *
+    * @param dutyCyclePercentage: The percentage of ON time of the PWM
+    *
+    * @brief An instance of the constructor that initializes the frequency value .
+    *
+    * @note The frequency can be changed after the construction of the Heater instance .
+    */
+    Heater(uint32_t frequency, uint8_t dutyCyclePercentage);
+
+    /**
      * @param frequency: The frequency of PWM measured in kHz
      *
      * @brief An instance of the constructor that initializes the frequency value .
