@@ -87,9 +87,9 @@ public:
     uint16_t getPeriodTicks() const;
 
     /**
-    * @return The frequency of the PWM in kHz
+    * @return The frequency of the PWM in Hz
     */
-    uint16_t getFrequency() const;
+    uint32_t getFrequency() const;
 
     /**
      * @return The Duty Cycle Percentage of the PWM
@@ -106,8 +106,7 @@ private:
      * @warning: if in the future we change the MCU frequency,
      * we must change the value of this variable accordingly
      */
-    static constexpr uint32_t
-    clockFrequency = 150e6;
+    static constexpr uint32_t clockFrequency = 150e6;
 
     /**
      * Indicates whether or not the heater
@@ -151,5 +150,15 @@ private:
      */
     inline uint16_t convertHzFrequencyToHarmonyPeriod() const {
         return uint16_t(clockFrequency / frequency);
+    }
+
+    /**
+     * @return Frequency in Hz
+     *
+     * Converts the Period of the waveform measured in Ticks
+     * to Frequency measured in Hz.
+     */
+    inline uint32_t convertHarmonyPeriodToHzFrequency() const {
+        return uint32_t(clockFrequency / periodTicks);
     }
 };
