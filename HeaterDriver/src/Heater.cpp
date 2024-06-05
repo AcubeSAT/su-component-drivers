@@ -9,7 +9,7 @@ Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency, ui
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
 Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency):frequency(frequency) {
-    this->periodTicks = convertHzFrequencyToHarmonyPeriod();
+    periodTicks = convertHzFrequencyToHarmonyPeriod();
     setPeriodTicks(periodTicks);
 }
 
