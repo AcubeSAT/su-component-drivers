@@ -63,15 +63,6 @@ public:
     void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @param period: the period of the PWM measured in ticks
-     *
-     * @brief Sets the period of PWM channel
-     *  of the instance of the class we are each time
-     *  working with
-     */
-    void setPeriodTicks(uint16_t periodTicks);
-
-    /**
      * @param frequency: the frequency of the PWM measured in kHz
      *
      * @brief Sets the frequency of PWM channel
@@ -161,4 +152,13 @@ private:
     inline uint32_t convertHarmonyPeriodToHzFrequency() const {
         return uint32_t(clockFrequency / periodTicks);
     }
+
+    /**
+     * @param period: the period of the PWM measured in ticks
+     *
+     * @brief Sets the period of PWM channel
+     *  of the instance of the class we are each time
+     *  working with
+     */
+    void setPeriodTicks(uint16_t periodTicks);
 };
