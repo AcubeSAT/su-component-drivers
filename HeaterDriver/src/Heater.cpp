@@ -1,37 +1,37 @@
 #include "Heater.hpp"
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-Heater<PeripheralNumber, channelMask, channelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage):frequency(
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage):frequency(
         frequency), dutyCyclePercentage(dutyCyclePercentage) {
     periodTicks = convertHzFrequencyToHarmonyPeriod();
     setPeriodTicks(periodTicks);
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-Heater<PeripheralNumber, channelMask, channelNum>::Heater(uint32_t frequency):frequency(frequency) {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency):frequency(frequency) {
     this->periodTicks = convertHzFrequencyToHarmonyPeriod();
     setPeriodTicks(periodTicks);
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-Heater<PeripheralNumber, channelMask, channelNum>::Heater() {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater() {
     setDutyCyclePercentage(dutyCyclePercentage);
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-void Heater<PeripheralNumber, channelMask, channelNum>::startHeater() {
-    HAL_PWM::PWM_ChannelsStart<PeripheralNumber>(channelMask);
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+void Heater<PeripheralNumber, ChannelMask, ChannelNum>::startHeater() {
+    HAL_PWM::PWM_ChannelsStart<PeripheralNumber>(ChannelMask);
     heaterHasStarted = true;
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-void Heater<PeripheralNumber, channelMask, channelNum>::stopHeater() {
-    HAL_PWM::PWM_ChannelsStop<PeripheralNumber>(channelMask);
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+void Heater<PeripheralNumber, ChannelMask, ChannelNum>::stopHeater() {
+    HAL_PWM::PWM_ChannelsStop<PeripheralNumber>(ChannelMask);
     heaterHasStarted = false;
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-void Heater<PeripheralNumber, channelMask, channelNum>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+void Heater<PeripheralNumber, ChannelMask, ChannelNum>::setDutyCyclePercentage(uint8_t dutyCyclePercentage) {
     bool _heaterHasStarted = heaterHasStarted;
     if (not _heaterHasStarted) {
         startHeater();
@@ -43,38 +43,38 @@ void Heater<PeripheralNumber, channelMask, channelNum>::setDutyCyclePercentage(u
     }
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-void Heater<PeripheralNumber, channelMask, channelNum>::setPeriodTicks(uint16_t periodTicks) {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+void Heater<PeripheralNumber, ChannelMask, ChannelNum>::setPeriodTicks(uint16_t periodTicks) {
     bool _heaterHasStarted = heaterHasStarted;
     if (not _heaterHasStarted) {
         startHeater();
     }
     this->periodTicks = periodTicks;
-    HAL_PWM::PWM_ChannelPeriodSet<PeripheralNumber>(channelNum, periodTicks);
-    HAL_PWM::PWM_ChannelDutySet<PeripheralNumber>(channelNum, convertDutyCyclePercentageToTicks());
+    HAL_PWM::PWM_ChannelPeriodSet<PeripheralNumber>(ChannelNum, periodTicks);
+    HAL_PWM::PWM_ChannelDutySet<PeripheralNumber>(ChannelNum, convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
     }
     frequency = convertHarmonyPeriodToHzFrequency();
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-void Heater<PeripheralNumber, channelMask, channelNum>::setFrequency(uint32_t frequency) {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+void Heater<PeripheralNumber, ChannelMask, ChannelNum>::setFrequency(uint32_t frequency) {
     this->frequency = frequency;
     setPeriodTicks(convertHzFrequencyToHarmonyPeriod());
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-uint16_t Heater<PeripheralNumber, channelMask, channelNum>::getPeriodTicks() const {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+uint16_t Heater<PeripheralNumber, ChannelMask, ChannelNum>::getPeriodTicks() const {
     return periodTicks;
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-uint32_t Heater<PeripheralNumber, channelMask, channelNum>::getFrequency() const {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+uint32_t Heater<PeripheralNumber, ChannelMask, ChannelNum>::getFrequency() const {
     return frequency;
 }
 
-template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK channelMask, PWM_CHANNEL_NUM channelNum>
-uint8_t Heater<PeripheralNumber, channelMask, channelNum>::getDutyCyclePercentage() const {
+template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+uint8_t Heater<PeripheralNumber, ChannelMask, ChannelNum>::getDutyCyclePercentage() const {
     return dutyCyclePercentage;
 }
