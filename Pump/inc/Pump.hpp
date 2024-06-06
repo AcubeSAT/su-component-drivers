@@ -10,13 +10,12 @@
 #include "peripheral/pio/plib_pio.h"
 #include "Peripheral_Definitions.hpp"
 
-class PumpDriver {
+class Pump {
 public:
-
     /**
      * Constructor for the PumpDriver class.
      */
-    PumpDriver();
+    Pump() = default;
 
     /**
      * Function that initializes the pump.
@@ -28,19 +27,19 @@ public:
     /**
      * Function that sets the pump to operating mode.
      */
-    void open();
+    void openPump();
 
     /**
      * Function that stops the operation of the pump.
      */
-    void close();
+    void closePump();
 
     /**
      * Function that sets the speed of the pump's integrated stepper motor.
      *
      * @param speed The rotational speed of the pump's integrated stepper motor.
      */
-    void setPumpSpeed(uint8_t speed);
+    void setSpeed(float speed);
 
 private:
     /**
@@ -49,12 +48,20 @@ private:
     const PCA9685::I2CAddress PCA9685ChipAddress = PCA9685::I2CAddress::I2CAddress_101011;
 
     /**
-     * The number of the PWM signals that are required to operate the pump.
+     * Driver for the PWM generator PCA9685.
      */
-    static constexpr uint8_t NumberOfPWMSignals = 4;
+    PCA9685 pwmGenerator{PCA9685::I2CAddress::I2CAddress_101011};
 
     /**
-     *
+     * The number of the PWM signals that are required to operate the pump.
+     */
+    static constexpr uint8_t StepperMotorPhasesNumber = 4;
+
+    static constexpr uint8_t StepperMotorStepsNumber = 24;
+
+    static constexpr float StepperMotorRotationPerFullStepAngle = 360.0f / StepperMotorStepsNumber;
+
+    /**
      *
      * @brief Positions {0: Phase A1, 1: Phase A2, 2: Phase B1, 3: Phase B2}
      */
@@ -63,15 +70,9 @@ private:
         uint8_t delayPercent;
     };
 
-    const etl::array<PWMChannelConfig, NumberOfPWMSignals> pwmChannelsConfig{{{PCA9685::PWMChannel::CHANNEL0, 0},
-                                                                             {PCA9685::PWMChannel::CHANNEL1, 25},
-                                                                             {PCA9685::PWMChannel::CHANNEL2, 50},
-                                                                             {PCA9685::PWMChannel::CHANNEL3, 75}}};
-
-    /**
-     * Driver for the PWM generator PCA9685.
-     */
-    PCA9685 pwmGenerator{PCA9685::I2CAddress::I2CAddress_101011};
-
+    etl::array<PWMChannelConfig, StepperMotorPhasesNumber> pwmChannelsConfig{{{PCA9685::PWMChannel::CHANNEL0, 0},
+                                                                              {PCA9685::PWMChannel::CHANNEL1, 50},
+                                                                              {PCA9685::PWMChannel::CHANNEL2, 75},
+                                                                              {PCA9685::PWMChannel::CHANNEL3, 25}}};
 
 };
