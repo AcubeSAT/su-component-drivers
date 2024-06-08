@@ -140,7 +140,7 @@ private:
      * to Period measured in Harmony ticks.
      */
     inline uint16_t convertHzFrequencyToHarmonyPeriod() const {
-        return uint16_t(clockFrequency / frequency);
+        return clockFrequency / frequency;
     }
 
     /**
@@ -150,7 +150,7 @@ private:
      * to Frequency measured in Hz.
      */
     inline uint32_t convertHarmonyPeriodToHzFrequency() const {
-        return uint32_t(clockFrequency / periodTicks);
+        return clockFrequency / periodTicks;
     }
 
     /**
