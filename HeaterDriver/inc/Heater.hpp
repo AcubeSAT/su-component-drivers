@@ -7,18 +7,18 @@ template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM
 class Heater {
 public:
     /**
-    * @param frequency: The frequency of PWM measured in kHz
-    *
-    * @param dutyCyclePercentage: The percentage of ON time of the PWM
-    *
-    * @brief An instance of the constructor that initializes the frequency value .
-    *
-    * @note The frequency can be changed after the construction of the Heater instance .
-    */
+     * @param frequency: The frequency of PWM measured in mHz
+     *
+     * @param dutyCyclePercentage: The percentage of ON time of the PWM
+     *
+     * @brief An instance of the constructor that initializes the frequency value .
+     *
+     * @note The frequency can be changed after the construction of the Heater instance .
+     */
     Heater(uint32_t frequency, uint8_t dutyCyclePercentage);
 
     /**
-     * @param frequency: The frequency of PWM measured in kHz
+     * @param frequency: The frequency of PWM measured in mHz
      *
      * @brief An instance of the constructor that initializes the frequency value .
      *
@@ -29,7 +29,7 @@ public:
     /**
      * @brief An instance of the constructor that doesn't initialize the frequency value.
      *
-     * @note In this case, frequency takes its default value (=10000Hz).
+     * @note In this case, frequency takes its default value (=9765mHz).
      *
      * @note The frequency can be changed after the construction of the Heater instance .
      *
@@ -63,12 +63,11 @@ public:
     void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @param frequency: the frequency of the PWM measured in kHz
+     * @param frequency: the frequency of the PWM measured in mHz
      *
      * @brief Sets the frequency of PWM channel
      *  of the instance of the class we are each time
      *  working with
-     *
      */
     void setFrequency(uint32_t frequency);
 
@@ -78,8 +77,8 @@ public:
     uint16_t getPeriodTicks() const;
 
     /**
-    * @return The frequency of the PWM in Hz
-    */
+     * @return The frequency of the PWM in mHz
+     */
     uint32_t getFrequency() const;
 
     /**
@@ -100,6 +99,16 @@ private:
     static constexpr uint32_t clockFrequency = 150e6;
 
     /**
+     * The divider of clockFrequency
+     *
+     * @warning : if we change clockDivider from the harmony settings,
+     * we must change the value of this variable accordingly.
+     *
+     * @note: In harmony: channel clock = peripheral clock/clockDivider
+     */
+    static constexpr uint16_t clockDivider = 1024;
+
+    /**
      * Indicates whether or not the heater
      * has been started
      */
@@ -108,12 +117,18 @@ private:
     /**
      * The period of the waveform in ticks
      */
-    uint16_t periodTicks = 15e3;
+    uint16_t periodTicks = 15000;
 
     /**
-     * The frequency of the waveform in kHz
+     * The frequency of the waveform in mHz
+     *
+     * @warning: The default value of  frequency is dependent on the
+     * default value of periodTicks , clockFrequency and clockDivider.
+     *
+     * @note: frequency is of range [2236 , 146484000]
      */
-    uint32_t frequency = 10e3;
+
+    uint32_t frequency = 9765;
 
     /**
      * The Duty Cycle Percentage
@@ -136,21 +151,21 @@ private:
     /**
      * @return Period in ticks
      *
-     * Converts the frequency of the waveform measured in Hz
+     * Converts the frequency of the waveform measured in mHz
      * to Period measured in Harmony ticks.
      */
-    inline uint16_t convertHzFrequencyToHarmonyPeriod() const {
-        return clockFrequency / frequency;
+    inline uint16_t convertmHzFrequencyToHarmonyPeriod() const {
+        return (clockFrequency * 10e2) / (frequency * clockDivider);
     }
 
     /**
-     * @return Frequency in Hz
+     * @return Frequency in mHz
      *
      * Converts the Period of the waveform measured in Ticks
-     * to Frequency measured in Hz.
+     * to Frequency measured in mHz.
      */
-    inline uint32_t convertHarmonyPeriodToHzFrequency() const {
-        return clockFrequency / periodTicks;
+    inline uint32_t convertHarmonyPeriodTomHzFrequency() const {
+        return (clockFrequency * 10e2) / (periodTicks * clockDivider);
     }
 
     /**

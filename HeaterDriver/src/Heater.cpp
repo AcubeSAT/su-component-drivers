@@ -3,14 +3,22 @@
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
 Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage):frequency(
         frequency), dutyCyclePercentage(dutyCyclePercentage) {
-    periodTicks = convertHzFrequencyToHarmonyPeriod();
+    periodTicks = convertmHzFrequencyToHarmonyPeriod();
     setPeriodTicks(periodTicks);
+    /// try to see if the previous 2 lines can be changed from :
+    /// setFrequency(frequency);
+///or if I can do this:
+///    template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
+///    Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency, uint8_t dutyCyclePercentage): dutyCyclePercentage(dutyCyclePercentage){
+///        setFrequency(frequency);
+///    }
 }
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
-Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency):frequency(frequency) {
-    periodTicks = convertHzFrequencyToHarmonyPeriod();
+Heater<PeripheralNumber, ChannelMask, ChannelNum>::Heater(uint32_t frequency): frequency(frequency) {
+    periodTicks = convertmHzFrequencyToHarmonyPeriod();
     setPeriodTicks(periodTicks);
+    ///see if i can do only this: setFrequency(frequency);
 }
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
@@ -55,13 +63,13 @@ void Heater<PeripheralNumber, ChannelMask, ChannelNum>::setPeriodTicks(uint16_t 
     if (not _heaterHasStarted) {
         stopHeater();
     }
-    frequency = convertHarmonyPeriodToHzFrequency();
+    frequency = convertHarmonyPeriodTomHzFrequency();
 }
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
 void Heater<PeripheralNumber, ChannelMask, ChannelNum>::setFrequency(uint32_t frequency) {
     this->frequency = frequency;
-    setPeriodTicks(convertHzFrequencyToHarmonyPeriod());
+    setPeriodTicks(convertmHzFrequencyToHarmonyPeriod());
 }
 
 template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM ChannelNum>
