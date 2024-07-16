@@ -7,7 +7,7 @@ template<uint8_t PeripheralNumber, PWM_CHANNEL_MASK ChannelMask, PWM_CHANNEL_NUM
 class Heater {
 public:
     /**
-     * @param frequency: The frequency of PWM measured in mHz
+     * @param frequency: The frequency of PWM measured in Hz
      *
      * @param dutyCyclePercentage: The percentage of ON time of the PWM
      *
@@ -18,7 +18,7 @@ public:
     Heater(uint32_t frequency, uint8_t dutyCyclePercentage);
 
     /**
-     * @param frequency: The frequency of PWM measured in mHz
+     * @param frequency: The frequency of PWM measured in Hz
      *
      * @brief An instance of the constructor that initializes the frequency value .
      *
@@ -29,7 +29,7 @@ public:
     /**
      * @brief An instance of the constructor that doesn't initialize the frequency value.
      *
-     * @note In this case, frequency takes its default value (=9765mHz).
+     * @note In this case, frequency takes its default value (1250Hz).
      *
      * @note The frequency can be changed after the construction of the Heater instance .
      *
@@ -63,7 +63,7 @@ public:
     void setDutyCyclePercentage(uint8_t dutyCyclePercentage);
 
     /**
-     * @param frequency: the frequency of the PWM measured in mHz
+     * @param frequency: the frequency of the PWM measured in Hz
      *
      * @brief Sets the frequency of PWM channel
      *  of the instance of the class we are each time
@@ -77,7 +77,7 @@ public:
     uint16_t getPeriodTicks() const;
 
     /**
-     * @return The frequency of the PWM in mHz
+     * @return The frequency of the PWM in Hz
      */
     uint32_t getFrequency() const;
 
@@ -99,14 +99,14 @@ private:
     static constexpr uint32_t clockFrequency = 150e6;
 
     /**
-     * The divider of clockFrequency
+     * The divider of the clock used for PWM
      *
      * @warning : if we change clockDivider from the harmony settings,
      * we must change the value of this variable accordingly.
      *
-     * @note: In harmony: channel clock = peripheral clock/clockDivider
+     * @note: In harmony: channel clock = clock A divider
      */
-    static constexpr uint16_t clockDivider = 1024;
+    static constexpr uint16_t clockDivider = 8;
 
     /**
      * Indicates whether or not the heater
@@ -125,7 +125,7 @@ private:
      * @warning: The default value of  frequency is dependent on the
      * default value of periodTicks , clockFrequency and clockDivider.
      *
-     * @note: frequency is of range [2236 , 146484000]
+     * @note: frequency is of range [287 , 18750000]
      */
 
     uint32_t frequency = 9765;
@@ -151,21 +151,21 @@ private:
     /**
      * @return Period in ticks
      *
-     * Converts the frequency of the waveform measured in mHz
+     * Converts the frequency of the waveform measured in Hz
      * to Period measured in Harmony ticks.
      */
     inline uint16_t convertmHzFrequencyToHarmonyPeriod() const {
-        return (clockFrequency * 10e2) / (frequency * clockDivider);
+        return (clockFrequency) / (frequency * clockDivider);
     }
 
     /**
-     * @return Frequency in mHz
+     * @return Frequency in Hz
      *
      * Converts the Period of the waveform measured in Ticks
-     * to Frequency measured in mHz.
+     * to Frequency measured in Hz.
      */
     inline uint32_t convertHarmonyPeriodTomHzFrequency() const {
-        return (clockFrequency * 10e2) / (periodTicks * clockDivider);
+        return (clockFrequency) / (periodTicks * clockDivider);
     }
 
     /**
