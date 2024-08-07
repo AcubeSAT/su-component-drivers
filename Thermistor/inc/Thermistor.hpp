@@ -41,7 +41,7 @@ public:
      * @note This function does not enable or configure the corresponding AFEC channel
      */
     Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber) : ResistorValue(ResistorValue),
-                                                                    AdcChannelNumber(AdcChannelNumber) {}
+                                                                         AdcChannelNumber(AdcChannelNumber) {}
 
     /**
     * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
@@ -72,12 +72,14 @@ private:
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t MaxADCValue = 4450;
+    static constexpr uint16_t
+    MaxADCValue = 4450;
 
     /**
      * Value of the voltage that we connect the sensor to.
      */
-    static constexpr uint16_t VoltageValue = 3300;
+    static constexpr uint16_t
+    VoltageValue = 3300;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
