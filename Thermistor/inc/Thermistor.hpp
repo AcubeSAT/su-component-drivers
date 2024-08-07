@@ -44,7 +44,7 @@ public:
                                                                     AdcChannelNumber(AdcChannelNumber) {}
 
     /**
-    * Gets the last measured analog temperature from the AD590 temperature sensor, by converting the voltage to current
+    * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
     * and finally to temperature in Celsius.
     * @return The temperature in Celsius.
      */
@@ -52,9 +52,17 @@ public:
 
 private:
     /**
-     * Nominal Current Output at 25°C (298.2 K)
+     * Power Supply of the NRBE10524450B1F thermistor
      */
-    static constexpr float OffsetCurrent = 298.2f;
+    static constexpr float PowerSupply = 5.0f
+
+    /**
+     * Nominal Current Output at 25°C (298.2 K)
+     *
+     * @warning The initial value is depended on the PowerSupply variable
+     * and will need to change if PowerSupply isn't equal to 5.0f
+     */
+    static constexpr float OffsetCurrent = 50.0f;
 
     /**
      * Reference temperature constant in Celsius
@@ -64,7 +72,7 @@ private:
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t MaxADCValue = 4095;
+    static constexpr uint16_t MaxADCValue = 4450;
 
     /**
      * Value of the voltage that we connect the sensor to.
