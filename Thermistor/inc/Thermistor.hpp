@@ -53,16 +53,16 @@ public:
 private:
     /**
      * Power Supply of the NRBE10524450B1F thermistor
+     *
+     * @note If we decide to change the Power Supply ,
+     * we will need to change the value of this member variable as well
      */
     static constexpr float PowerSupply = 5.0f
 
     /**
      * Nominal Current Output at 25°C (298.2 K)
-     *
-     * @warning The initial value is depended on the PowerSupply variable
-     * and will need to change if PowerSupply isn't equal to 5.0f
      */
-    static constexpr float OffsetCurrent = 50.0f;
+    static float OffsetCurrent = PowerSupply * 10e5 / ResistorValue;
 
     /**
      * Reference temperature constant in Celsius
