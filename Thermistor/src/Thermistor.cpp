@@ -1,5 +1,12 @@
 #include "Thermistor.hpp"
 
+AFEC_CHANNEL_NUM Thermistor::getADCChannelNum() const {
+    return this->AdcChannelNumber;
+}
+
+void Thermistor::setADCResult(const uint16_t ADCResult) {
+    AdcResult = ADCResult;
+}
 
 uint16_t Thermistor::getADCResult() {
     bool status;
@@ -12,8 +19,7 @@ uint16_t Thermistor::getADCResult() {
             AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
         }
         return AdcResult;
-    }
-    else if(AdcChannelMask == AFEC_CH1_MASK) {
+    } else if (AdcChannelMask == AFEC_CH1_MASK) {
         AFEC1_Initialize();
         AFEC1_ChannelsEnable(AFEC_CH0);
         AFEC1_ConversionStart();

@@ -36,17 +36,13 @@ public:
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
      */
-    AFEC_CHANNEL_NUM getADCChannelNum() const {
-        return AdcChannelNumber;
-    }
+    AFEC_CHANNEL_NUM getADCChannelNum() const;
 
     /**
     * Sets the Analog to Digital conversion result.
     * @param adcResult The result of the ADC conversion.
     */
-    void setADCResult(const uint16_t ADCResult) {
-        AdcResult = ADCResult;
-    }
+    void setADCResult(const uint16_t ADCResult);
 
     /**
     * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
