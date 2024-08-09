@@ -6,6 +6,8 @@
 #include "task.h"
 #include "Peripheral_Definitions.hpp"
 #include "peripheral/afec/plib_afec_common.h"
+#include "src/config/default/peripheral/afec/plib_afec0.h"
+#include "src/config/default/peripheral/afec/plib_afec1.h"
 #include "etl/expected.h"
 
 /**
@@ -19,6 +21,18 @@
 class Thermistor {
 public:
     /**
+     * Contructor for the Thermistor class.
+     * @param resistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
+     * @param AdcChannelNumber Number of the AFEC channel that is being used.
+     * @param AdcChannelMask Mask of the AFEC channel that is being used.
+     * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
+     *
+     * @note This function does not enable or configure the corresponding AFEC channel
+     */
+    Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : ResistorValue(ResistorValue),
+                                                                         AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
+
+    /**
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
      */
@@ -31,17 +45,8 @@ public:
     * @param adcResult The result of the ADC conversion.
     */
     void setADCResult(const uint16_t ADCResult) {
-        adcResult = ADCResult;
+        AdcResult = ADCResult;
     }
-
-    /**
-     * Contructor for the Thermistor class.
-     * @param resistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
-     * @param adcChannelNumber Number of the AFEC channel that is being used.
-     * @note This function does not enable or configure the corresponding AFEC channel
-     */
-    Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber) : ResistorValue(ResistorValue),
-                                                                         AdcChannelNumber(AdcChannelNumber) {}
 
     /**
     * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
@@ -92,7 +97,34 @@ private:
     const AFEC_CHANNEL_NUM AdcChannelNumber;
 
     /**
+     * Mask of the AFEC peripheral channel being used.
+     */
+    const AFEC_CHANNEL_MASK AdcChannelMask;
+
+    /**
      * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
      */
-    uint16_t adcResult = 0;
+    uint16_t AdcResult = 0;
+
+    /**
+     * Variable in which the Temperature the thermistor measures is stored.
+     */
+    double Temperature;
+
+    /**
+    * Sets the Analog to Digital conversion result.
+    * @param adcResult The result of the ADC conversion.
+    */
+    uint16_t getADCResult();
+
+    /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
+     *	@return double The current resistance of the thermistor.
+     */
+    void Voltage2Resistance();
+
+    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
+     *  created from the values provided in the datasheet.
+     *	@return double The temperature in celsius.
+     */
+    double Resistance2Temperature();
 };
