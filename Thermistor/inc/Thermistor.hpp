@@ -33,6 +33,16 @@ public:
                                                                          AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
+     * Contructor for the Thermistor class that takes a default resistor value.
+     * @param AdcChannelNumber Number of the AFEC channel that is being used.
+     * @param AdcChannelMask Mask of the AFEC channel that is being used.
+     * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
+     *
+     * @note This function does not enable or configure the corresponding AFEC channel
+     */
+    Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
+
+    /**
      * Getter function for the number of the channel used in the ADC conversion.
      * @return AFEC peripheral channel number
      */
@@ -118,9 +128,10 @@ private:
      */
     void Voltage2Resistance();
 
-    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
-     *  created from the values provided in the datasheet.
-     *	@return double The temperature in celsius.
-     */
-    double Resistance2Temperature();
+    ///maybe not needed
+//    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
+//     *  created from the values provided in the datasheet.
+//     *	@return double The temperature in celsius.
+//     */
+//    double Resistance2Temperature();
 };
