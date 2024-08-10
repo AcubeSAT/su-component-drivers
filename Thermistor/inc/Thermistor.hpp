@@ -1,14 +1,9 @@
 #pragma once
 
-#include <cstdint>
-#include "FreeRTOS.h"
 #include "Logger.hpp"
-#include "task.h"
-#include "Peripheral_Definitions.hpp"
 #include "peripheral/afec/plib_afec_common.h"
-#include "src/config/default/peripheral/afec/plib_afec0.h"
-#include "src/config/default/peripheral/afec/plib_afec1.h"
-#include "etl/expected.h"
+#include "peripheral/afec/plib_afec0.h"
+#include "peripheral/afec/plib_afec1.h"
 
 /**
  * Thermistor NRBE10524450B1F driver
@@ -22,7 +17,7 @@ class Thermistor {
 public:
     /**
      * Contructor for the Thermistor class.
-     * @param resistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
+     * @param ResistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
      * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
      * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
@@ -75,6 +70,7 @@ private:
      */
     static float OffsetCurrent = PowerSupply * 10e5 / ResistorValue;
 
+    //////////////////////////////////////////are these needed????
     /**
      * Reference temperature constant in Celsius
      */
@@ -95,6 +91,7 @@ private:
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
+     //////////////////////////////////////////////////////////////////////////
     const float ResistorValue = 0.0f;
 
     /**
@@ -131,7 +128,7 @@ private:
     ///maybe not needed
 //    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
 //     *  created from the values provided in the datasheet.
-//     *	@return double The temperature in celsius.
+//     *	@return double The temperature in Celsius.
 //     */
 //    double Resistance2Temperature();
 };

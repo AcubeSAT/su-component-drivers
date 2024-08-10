@@ -39,10 +39,11 @@ const void Thermistor::Voltage2Resistance() {
 }
 
 etl::expected<float, bool> Thermistor::getTemperature() const {
-    static_assert(MaxADCValue > 0 && VoltageValue > 0, " MaxADCValue and VoltageValue andValue must be above zero");
+    static_assert(MaxADCValue > 0 && VoltageValue > 0, " MaxADCValue and VoltageValue must be above zero");
     if (ResistorValue <= 0.0f) {
         return etl::unexpected(true);
     }
+    getADCResult();
     const float voltageConversion = static_cast<float>(AdcResult) / MaxADCValue * VoltageValue;
     Voltage2Resistance();
     const float currentConversion = voltageConversion / ResistorValue;
