@@ -23,6 +23,8 @@ public:
      * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
      *
      * @note This function does not enable or configure the corresponding AFEC channel
+     *
+     * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
     Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : ResistorValue(ResistorValue),
                                                                          AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
@@ -34,6 +36,8 @@ public:
      * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
      *
      * @note This function does not enable or configure the corresponding AFEC channel
+     *
+     * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
     Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
