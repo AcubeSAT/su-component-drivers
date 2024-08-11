@@ -9,8 +9,10 @@ uint16_t Thermistor::getADCResult() {
         status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
         if (status) {
             AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
+            return AdcResult;
+        } else {
+            LOG_ERROR << "AFEC0 channel result not ready";
         }
-        return AdcResult;
     } else if (AdcChannelMask == AFEC_CH1_MASK) {
         AFEC1_Initialize();
         AFEC1_ChannelsEnable(AFEC_CH0);
@@ -18,8 +20,10 @@ uint16_t Thermistor::getADCResult() {
         status = AFEC1_ChannelResultIsReady(AdcChannelNumber);
         if (status) {
             AdcResult = AFEC1_ChannelResultGet(AdcChannelNumber);
+            return AdcResult;
+        } else {
+            LOG_ERROR << "AFEC0 channel result not ready";
         }
-        return AdcResult;
     }
 }
 
