@@ -1,13 +1,5 @@
 #include "Thermistor.hpp"
 
-AFEC_CHANNEL_NUM Thermistor::getADCChannelNum() const {
-    return this->AdcChannelNumber;
-}
-
-void Thermistor::setADCResult(const uint16_t ADCResult) {
-    AdcResult = ADCResult;
-}
-
 uint16_t Thermistor::getADCResult() {
     bool status;
     if (AdcChannelMask == AFEC_CH0_MASK) {
@@ -31,6 +23,12 @@ uint16_t Thermistor::getADCResult() {
     }
 }
 
+uint16_t VoltageValueCalculation(){
+    getADCResult();
+    VoltageValue = AdcResult / MaxADCValue;
+    return VoltageValue;
+}
+
 const void Thermistor::Voltage2Resistance() {
     double r3 = 1;
     double r4 = 3.57;
@@ -38,14 +36,24 @@ const void Thermistor::Voltage2Resistance() {
     ResistorValue = r2 * 5 * (r4 + r3) / ((r4 + r3) * VoltageValue + PowerSupply) - r1;
 }
 
-etl::expected<float, bool> Thermistor::getTemperature() const {
-    static_assert(MaxADCValue > 0 && VoltageValue > 0, " MaxADCValue and VoltageValue must be above zero");
-    if (ResistorValue <= 0.0f) {
-        return etl::unexpected(true);
-    }
-    getADCResult();
-    const float voltageConversion = static_cast<float>(AdcResult) / MaxADCValue * VoltageValue;
+double Thermistor::Resistance2Temperature() {
     Voltage2Resistance();
-    const float currentConversion = voltageConversion / ResistorValue;
-    return currentConversion - OffsetCurrent + ReferenceTemperature;
+    if (ResistorValue < 166.71) {
+        Temperature = 0.0001*pow(ResistorValue, 2) +
+                -0.0743 * ResistorValue + 21.5320;
+        return Temperature;
+    } else if (ResistorValue < 402.32 && ResistorValue > 166.71) {
+        Temperature = 0.0004*pow(ResistorValue, 2) +
+                      -0.2277 * ResistorValue + 42.2494;
+        return Temperature;
+    } else {
+        Temperature = 0.0039*pow(ResistorValue, 2) +
+                      -0.7207 * ResistorValue + 66.7732;
+        return Temperature;
+    }
+}
+
+float Thermistor::getTemperature() const {
+    Resistance2Temperature();
+    return Temperature;
 }

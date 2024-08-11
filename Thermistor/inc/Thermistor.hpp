@@ -16,7 +16,7 @@
 class Thermistor {
 public:
     /**
-     * Contructor for the Thermistor class.
+     * Constructor for the Thermistor class.
      * @param ResistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
      * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
@@ -30,7 +30,7 @@ public:
                                                                          AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
-     * Contructor for the Thermistor class that takes a default resistor value.
+     * Constructor for the Thermistor class that takes a default resistor value.
      * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
      * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
@@ -42,23 +42,11 @@ public:
     Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
-     * Getter function for the number of the channel used in the ADC conversion.
-     * @return AFEC peripheral channel number
-     */
-    AFEC_CHANNEL_NUM getADCChannelNum() const;
-
-    /**
-    * Sets the Analog to Digital conversion result.
-    * @param adcResult The result of the ADC conversion.
-    */
-    void setADCResult(const uint16_t ADCResult);
-
-    /**
     * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
     * and finally to temperature in Celsius.
     * @return The temperature in Celsius.
      */
-    etl::expected<float, bool> getTemperature() const;
+    float getTemperature() const;
 
 private:
     /**
@@ -71,12 +59,15 @@ private:
 
     /**
      * Nominal Current Output at 25°C (298.2 K)
+     *
+     * @note This member variable is currently not in use
      */
     static float OffsetCurrent = PowerSupply * 10e5 / ResistorValue;
 
-    //////////////////////////////////////////are these needed????
     /**
      * Reference temperature constant in Celsius
+     *
+     * @note This member variable is currently not in use
      */
     static constexpr float ReferenceTemperature = 25.0f;
 
@@ -88,6 +79,8 @@ private:
 
     /**
      * Value of the voltage that we connect the sensor to.
+     *
+     * @note This member variable is currently not in use
      */
     static constexpr uint16_t
     VoltageValue = 3300;
@@ -95,8 +88,7 @@ private:
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-     //////////////////////////////////////////////////////////////////////////
-    const float ResistorValue = 0.0f;
+    const float ResistorValue;
 
     /**
      * Number of the AFEC peripheral channel being used.
@@ -109,7 +101,7 @@ private:
     const AFEC_CHANNEL_MASK AdcChannelMask;
 
     /**
-     * Variable in which the Analog to Digital (ADC) conversion result from channel 0 is stored.
+     * Variable in which the Analog to Digital (ADC) conversion result is stored.
      */
     uint16_t AdcResult = 0;
 
@@ -124,15 +116,19 @@ private:
     */
     uint16_t getADCResult();
 
+    /**
+     * @return VoltageValue calculated using AdcResult and MaxADCValue
+     */
+    uint16_t VoltageValueCalculation();
+
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.
      */
     void Voltage2Resistance();
 
-    ///maybe not needed
-//    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
-//     *  created from the values provided in the datasheet.
-//     *	@return double The temperature in Celsius.
-//     */
-//    double Resistance2Temperature();
+    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
+     *  created from the values provided in the datasheet.
+     *	@return double The temperature in Celsius.
+     */
+    double Resistance2Temperature();
 };
