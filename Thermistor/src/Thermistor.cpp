@@ -22,7 +22,7 @@ uint16_t Thermistor::getADCResult() {
             AdcResult = AFEC1_ChannelResultGet(AdcChannelNumber);
             return AdcResult;
         } else {
-            LOG_ERROR << "AFEC0 channel result not ready";
+            LOG_ERROR << "AFEC1 channel result not ready";
         }
     }
 }
