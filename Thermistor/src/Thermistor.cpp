@@ -33,21 +33,21 @@ const void Thermistor::Voltage2Resistance() {
     double r3 = 1;
     double r4 = 3.57;
     double r2 = 301;
-    ResistorValue = r2 * 5 * (r4 + r3) / ((r4 + r3) * VoltageValue + PowerSupply) - r1;
+    ResistorValue = r2 * PowerSupply * (r4 + r3) / ((r4 + r3) * VoltageValue + r4 * PowerSupply) - r2;
 }
 
 double Thermistor::Resistance2Temperature() {
     Voltage2Resistance();
     if (ResistorValue < 166.71) {
-        Temperature = 0.0001*pow(ResistorValue, 2) +
-                -0.0743 * ResistorValue + 21.5320;
+        Temperature = 0.0001 * pow(ResistorValue, 2) +
+                      -0.0743 * ResistorValue + 21.5320;
         return Temperature;
     } else if (ResistorValue < 402.32 && ResistorValue > 166.71) {
-        Temperature = 0.0004*pow(ResistorValue, 2) +
+        Temperature = 0.0004 * pow(ResistorValue, 2) +
                       -0.2277 * ResistorValue + 42.2494;
         return Temperature;
     } else {
-        Temperature = 0.0039*pow(ResistorValue, 2) +
+        Temperature = 0.0039 * pow(ResistorValue, 2) +
                       -0.7207 * ResistorValue + 66.7732;
         return Temperature;
     }

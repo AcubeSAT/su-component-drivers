@@ -23,8 +23,9 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : ResistorValue(ResistorValue),
-                                                                         AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
+    Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask)
+            : ResistorValue(ResistorValue),
+              AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
@@ -36,7 +37,8 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
+    Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(
+            AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
     * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
@@ -80,7 +82,7 @@ private:
      * @note This member variable is currently not in use
      */
     static constexpr float
-    VoltageValue = 3300;
+            VoltageValue = 3300;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
