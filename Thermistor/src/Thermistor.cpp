@@ -23,10 +23,10 @@ uint16_t Thermistor::getADCResult() {
     }
 }
 
-uint16_t VoltageValueCalculation(){
+float VoltageValueCalculation() {
     getADCResult();
-    VoltageValue = AdcResult / MaxADCValue;
-    return VoltageValue;
+    VoltageValue = static_cast<float>(AdcResult) / MaxADCValue * PowerSupply;
+    return VoltageValue
 }
 
 const void Thermistor::Voltage2Resistance() {

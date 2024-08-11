@@ -52,7 +52,7 @@ private:
      * @note If we decide to change the Power Supply ,
      * we will need to change the value of this member variable as well
      */
-    static constexpr float PowerSupply = 5.0f
+    static constexpr float PowerSupply = 5.0f;
 
     /**
      * Nominal Current Output at 25°C (298.2 K)
@@ -79,7 +79,7 @@ private:
      *
      * @note This member variable is currently not in use
      */
-    static constexpr uint16_t
+    static constexpr float
     VoltageValue = 3300;
 
     /**
@@ -116,7 +116,7 @@ private:
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue
      */
-    uint16_t VoltageValueCalculation();
+    float VoltageValueCalculation();
 
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.
