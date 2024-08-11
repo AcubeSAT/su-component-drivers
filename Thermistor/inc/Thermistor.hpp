@@ -1,9 +1,6 @@
 #pragma once
 
 #include "Logger.hpp"
-#include "peripheral/afec/plib_afec_common.h"
-#include "peripheral/afec/plib_afec0.h"
-#include "peripheral/afec/plib_afec1.h"
 
 /**
  * Thermistor NRBE10524450B1F driver
