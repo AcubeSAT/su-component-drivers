@@ -87,7 +87,7 @@ private:
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    const float ResistorValue;
+    float ResistorValue;
 
     /**
      * Number of the AFEC peripheral channel being used.
