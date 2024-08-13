@@ -8,23 +8,31 @@ uint16_t Thermistor::getADCResult() {
         AFEC0_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
         AFEC0_ConversionStart();
         status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
-        if (status) {
+        while (!status) {
+            LOG_ERROR << "AFEC0 channel result not ready";
+            AFEC0_Initialize();
+            AFEC0_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
+            AFEC0_ConversionStart();
+            status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
             AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
             return AdcResult;
-        } else {
-            LOG_ERROR << "AFEC0 channel result not ready";
         }
+        AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
+        return AdcResult;
     } else if (AdcChannelMask == AFEC_CH1_MASK) {
         AFEC1_Initialize();
         AFEC1_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
         AFEC1_ConversionStart();
         status = AFEC1_ChannelResultIsReady(AdcChannelNumber);
-        if (status) {
-            AdcResult = AFEC1_ChannelResultGet(AdcChannelNumber);
-            return AdcResult;
-        } else {
+        while (!status) {
             LOG_ERROR << "AFEC1 channel result not ready";
+            AFEC1_Initialize();
+            AFEC1_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
+            AFEC1_ConversionStart();
+            status = AFEC1_ChannelResultIsReady(AdcChannelNumber);
         }
+        AdcResult = AFEC1_ChannelResultGet(AdcChannelNumber);
+        return AdcResult;
     }
 }
 
