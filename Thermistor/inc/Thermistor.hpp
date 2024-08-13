@@ -74,7 +74,7 @@ private:
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
     static constexpr uint16_t
-    MaxADCValue = 4450;
+    MaxADCValue = 4096;
 
     /**
      * Value of the voltage Vout of the thermistor.
