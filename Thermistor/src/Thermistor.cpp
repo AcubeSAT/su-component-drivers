@@ -1,10 +1,11 @@
 #include "Thermistor.hpp"
+#include <cmath>
 
 uint16_t Thermistor::getADCResult() {
     bool status;
     if (AdcChannelMask == AFEC_CH0_MASK) {
         AFEC0_Initialize();
-        AFEC0_ChannelsEnable(AFEC_CH0);
+        AFEC0_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
         AFEC0_ConversionStart();
         status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
         if (status) {
@@ -15,7 +16,7 @@ uint16_t Thermistor::getADCResult() {
         }
     } else if (AdcChannelMask == AFEC_CH1_MASK) {
         AFEC1_Initialize();
-        AFEC1_ChannelsEnable(AFEC_CH0);
+        AFEC1_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
         AFEC1_ConversionStart();
         status = AFEC1_ChannelResultIsReady(AdcChannelNumber);
         if (status) {
@@ -27,13 +28,13 @@ uint16_t Thermistor::getADCResult() {
     }
 }
 
-float VoltageValueCalculation() {
+float Thermistor::VoltageValueCalculation() {
     getADCResult();
     VoltageValue = static_cast<float>(AdcResult) / MaxADCValue * PowerSupply;
-    return VoltageValue
+    return VoltageValue;
 }
 
-const void Thermistor::Voltage2Resistance() {
+void Thermistor::Voltage2Resistance() {
     double r3 = 1;
     double r4 = 3.57;
     double r2 = 301;
@@ -57,7 +58,7 @@ double Thermistor::Resistance2Temperature() {
     }
 }
 
-float Thermistor::getTemperature() const {
+double Thermistor::getTemperature() {
     Resistance2Temperature();
     return Temperature;
 }

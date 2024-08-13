@@ -45,7 +45,7 @@ public:
     * and finally to temperature in Celsius.
     * @return The temperature in Celsius.
      */
-    float getTemperature() const;
+    double getTemperature();
 
 private:
     /**
@@ -55,13 +55,6 @@ private:
      * we will need to change the value of this member variable as well
      */
     static constexpr float PowerSupply = 5.0f;
-
-    /**
-     * Nominal Current Output at 25°C (298.2 K)
-     *
-     * @note This member variable is currently not in use
-     */
-    static float OffsetCurrent = PowerSupply * 10e5 / ResistorValue;
 
     /**
      * Reference temperature constant in Celsius
