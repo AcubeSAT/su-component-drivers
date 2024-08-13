@@ -77,12 +77,10 @@ private:
     MaxADCValue = 4450;
 
     /**
-     * Value of the voltage that we connect the sensor to.
-     *
-     * @note This member variable is currently not in use
+     * Value of the voltage Vout of the thermistor.
+     * Ranges from 0 to 3V3
      */
-    static constexpr float
-            VoltageValue = 3300;
+    float VoltageValue;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
