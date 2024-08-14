@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Logger.hpp"
-
+#include "plib_afec_common.h"
+#include "plib_afec0.h"
 /**
  * Thermistor NRBE10524450B1F driver
  *
@@ -23,8 +24,10 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask)
-            : ResistorValue(ResistorValue),
+    Thermistor(float R1, float R2, float R3, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask)
+            : R1(R1),
+              R2(R2),
+              R3(R3),
               AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
@@ -45,7 +48,7 @@ public:
     * and finally to temperature in Celsius.
     * @return The temperature in Celsius.
      */
-    float getTemperature() const;
+    double getTemperature();
 
 private:
     /**
@@ -54,40 +57,26 @@ private:
      * @note If we decide to change the Power Supply ,
      * we will need to change the value of this member variable as well
      */
-    static constexpr float PowerSupply = 5.0f;
-
-    /**
-     * Nominal Current Output at 25°C (298.2 K)
-     *
-     * @note This member variable is currently not in use
-     */
-    static float OffsetCurrent = PowerSupply * 10e5 / ResistorValue;
-
-    /**
-     * Reference temperature constant in Celsius
-     *
-     * @note This member variable is currently not in use
-     */
-    static constexpr float ReferenceTemperature = 25.0f;
+    static constexpr uint8_t PowerSupply = 5;
 
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t
-    MaxADCValue = 4450;
+    static constexpr uint16_t MaxADCValue = 4095;
+
+    /**
+     * Resistances of the circuit in kilo ohms.
+     */
+    const float R1 = 1.0f;
+    const float R2 = 3.57f;
+    const float R3 = 301.0f;
 
     /**
      * Value of the voltage that we connect the sensor to.
      *
      * @note This member variable is currently not in use
      */
-    static constexpr float
-            VoltageValue = 3300;
-
-    /**
-     * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
-     */
-    const float ResistorValue;
+    float OutputVoltage;
 
     /**
      * Number of the AFEC peripheral channel being used.
@@ -110,15 +99,20 @@ private:
     double Temperature;
 
     /**
-    * Sets the Analog to Digital conversion result.
-    * @param adcResult The result of the ADC conversion.
-    */
+     * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
+     */
+    float ResistorValue;
+
+    /**
+     * Sets the Analog to Digital conversion result.
+     * @param adcResult The result of the ADC conversion.
+     */
     uint16_t getADCResult();
 
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue
      */
-    float VoltageValueCalculation();
+    void VoltageValueCalculation();
 
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.
@@ -129,5 +123,5 @@ private:
      *  created from the values provided in the datasheet.
      *	@return double The temperature in Celsius.
      */
-    double Resistance2Temperature();
+    void Resistance2Temperature();
 };
