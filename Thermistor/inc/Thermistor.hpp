@@ -50,6 +50,28 @@ public:
      */
     double getTemperature();
 
+    /**
+ * Variable in which the Analog to Digital (ADC) conversion result is stored.
+ */
+    uint16_t AdcResult = 0;
+
+    /**
+ * Number of the AFEC peripheral channel being used.
+ */
+    const AFEC_CHANNEL_NUM AdcChannelNumber = AFEC_CH8;
+
+    /**
+     * Resistances of the circuit in kilo ohms.
+     */
+    const float R1 = 1.0f;
+    const float R2 = 3.57f;
+    const float R3 = 301.0f;
+
+
+    /**
+     * Mask of the AFEC peripheral channel being used.
+     */
+    const AFEC_CHANNEL_MASK AdcChannelMask = AFEC_CH8_MASK;
 private:
     /**
      * Power Supply of the NRBE10524450B1F thermistor
@@ -64,12 +86,7 @@ private:
      */
     static constexpr uint16_t MaxADCValue = 4095;
 
-    /**
-     * Resistances of the circuit in kilo ohms.
-     */
-    const float R1 = 1.0f;
-    const float R2 = 3.57f;
-    const float R3 = 301.0f;
+
 
     /**
      * Value of the voltage that we connect the sensor to.
@@ -78,20 +95,10 @@ private:
      */
     float OutputVoltage;
 
-    /**
-     * Number of the AFEC peripheral channel being used.
-     */
-    const AFEC_CHANNEL_NUM AdcChannelNumber;
 
-    /**
-     * Mask of the AFEC peripheral channel being used.
-     */
-    const AFEC_CHANNEL_MASK AdcChannelMask;
 
-    /**
-     * Variable in which the Analog to Digital (ADC) conversion result is stored.
-     */
-    uint16_t AdcResult = 0;
+
+
 
     /**
      * Variable in which the Temperature the thermistor measures is stored.
