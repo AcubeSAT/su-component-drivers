@@ -3,16 +3,37 @@
 
 uint16_t Thermistor::getADCResult() {
     bool status;
-    AFEC0_Initialize();
-    AFEC0_ChannelsEnable(AdcChannelMask);
-    AFEC0_ConversionStart();
-    status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
-    if (status) {
-        AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
-        return AdcResult;
-    } else {
-        LOG_ERROR << "AFEC0 channel result not ready";
-        return 0;
+    constexpr uint8_t maxRetries = 3;
+    if (AdcChannelMask == AFEC_CH0_MASK) {
+        AFEC0_Initialize();
+        AFEC0_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
+        AFEC0_ConversionStart();
+        status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
+        for(int retrycount=0; retrycount<maxRetries; retrycount++) {
+            if (status) {
+                AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
+                return AdcResult;
+            }
+            status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+        LOG_ERROR << "Failed to get AFEC0 channel result after " << maxRetries << " retries.";
+        return ErrorHandler::ExecutionCompletionErrorType;
+    } else if (AdcChannelMask == AFEC_CH1_MASK) {
+        AFEC1_Initialize();
+        AFEC1_ChannelsEnable((AFEC_CHANNEL_MASK) AFEC_CH0);
+        AFEC1_ConversionStart();
+        status = AFEC1_ChannelResultIsReady(AdcChannelNumber);
+        for(int retrycount=0; retrycount<maxRetries; retrycount++) {
+            if (status) {
+                AdcResult = AFEC1_ChannelResultGet(AdcChannelNumber);
+                return AdcResult;
+            }
+            status = AFEC1_ChannelResultIsReady(AdcChannelNumber);
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+        LOG_ERROR << "Failed to get AFEC1 channel result after " << maxRetries << " retries.";
+        return ErrorHandler::ExecutionCompletionErrorType;
     }
 }
 
