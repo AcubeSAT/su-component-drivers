@@ -14,7 +14,7 @@ class Thermistor {
 public:
     /**
      * Constructor for the Thermistor class.
-     * @param ResistorValue The value of the resistor (in kiloOhms) that is used to map the current output of the sensor.
+     * @param R1, R2, R3: The resistances of the circuit in kilo ohms.
      * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
      * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
@@ -23,8 +23,10 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(float ResistorValue, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask)
-            : ResistorValue(ResistorValue),
+    Thermistor(float R1, float R2, float R3, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask)
+            : R1(R1),
+              R2(R2),
+              R3(R3),
               AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
@@ -57,11 +59,11 @@ private:
     static constexpr float PowerSupply = 5.0f;
 
     /**
-     * Reference temperature constant in Celsius
-     *
-     * @note This member variable is currently not in use
+     * Resistances of the circuit in kilo ohms
      */
-    static constexpr float ReferenceTemperature = 25.0f;
+    const float R1 = 1.0f;
+    const float R2 = 3.57f;
+    const float R3 = 301.0f;
 
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
@@ -73,7 +75,7 @@ private:
      * Value of the voltage Vout of the thermistor.
      * Ranges from 0 to 3V3
      */
-    float VoltageValue;
+    float OutputVoltage;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
@@ -109,7 +111,7 @@ private:
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue
      */
-    float VoltageValueCalculation();
+    void OutputVoltageCalculation();
 
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.
@@ -120,5 +122,5 @@ private:
      *  created from the values provided in the datasheet.
      *	@return double The temperature in Celsius.
      */
-    double Resistance2Temperature();
+    void Resistance2Temperature();
 };
