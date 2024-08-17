@@ -58,20 +58,20 @@ public:
     /**
  * Number of the AFEC peripheral channel being used.
  */
-    const AFEC_CHANNEL_NUM AdcChannelNumber = AFEC_CH8;
+    AFEC_CHANNEL_NUM AdcChannelNumber = AFEC_CH8;
 
     /**
      * Resistances of the circuit in kilo ohms.
      */
-    const float R1 = 1.0f;
-    const float R2 = 3.57f;
-    const float R3 = 301.0f;
+    float R1 = 1.0f;
+    float R2 = 3.57f;
+    float R3 = 301.0f;
 
 
     /**
      * Mask of the AFEC peripheral channel being used.
      */
-    const AFEC_CHANNEL_MASK AdcChannelMask = AFEC_CH8_MASK;
+    AFEC_CHANNEL_MASK AdcChannelMask = AFEC_CH8_MASK;
 private:
     /**
      * Power Supply of the NRBE10524450B1F thermistor
@@ -114,7 +114,7 @@ private:
      * Sets the Analog to Digital conversion result.
      * @param adcResult The result of the ADC conversion.
      */
-    uint16_t getADCResult();
+    void getADCResult();
 
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue

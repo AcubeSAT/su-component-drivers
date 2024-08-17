@@ -1,26 +1,27 @@
 #include "Thermistor.hpp"
 
-uint16_t Thermistor::getADCResult() {
+void Thermistor::getADCResult() {
     bool status;
     AFEC0_Initialize();
-    AFEC0_ChannelsEnable(AdcChannelMask);
+    AFEC0_ChannelsEnable(AFEC_CH8_MASK);
     AFEC0_ConversionStart();
-    status = AFEC0_ChannelResultIsReady(AdcChannelNumber);
+//    while(!AFEC0_ChannelResultIsReady(AFEC_CH0)) {};
+
     if (status) {
         AdcResult = AFEC0_ChannelResultGet(AdcChannelNumber);
-        return AdcResult;
     } else {
         LOG_ERROR << "AFEC0 channel result not ready";
-        return 1;
     }
 }
 
 void Thermistor::VoltageValueCalculation() {
+    LOG_DEBUG << "WORKSSSSSSSS" ;
     getADCResult();
     OutputVoltage = static_cast<float>(AdcResult) / MaxADCValue * PowerSupply;
 }
 
 void Thermistor::Voltage2Resistance() {
+    VoltageValueCalculation();
     ResistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * OutputVoltage + R2 * PowerSupply) - R3;
 }
 
