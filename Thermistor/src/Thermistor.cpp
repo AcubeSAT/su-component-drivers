@@ -17,7 +17,6 @@ uint16_t Thermistor::getADCResult(AFEC_CALLBACK callback, uintptr_t context) {
     return AdcResult;
 }
 
-
 void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     auto thermistor = reinterpret_cast<Thermistor*>(context);
 
@@ -32,27 +31,28 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
 
 void Thermistor::OutputVoltageCalculation() {
 
-    OutputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0))/ MaxADCValue * PowerSupply;
+    OutputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0))/ MaxADCValue * VrefAfec;
     LOG_DEBUG<<"OutputVoltage is : "<<OutputVoltage;
 }
 
 void Thermistor::Voltage2Resistance() {
     OutputVoltageCalculation();
-    ResistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * OutputVoltage + R2 * PowerSupply) - R3;
+    ResistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * OutputVoltage + R1 * PowerSupply) - R3;
+    LOG_DEBUG<< "Resistor value is :" << ResistorValue;
 }
 
 void Thermistor::Resistance2Temperature() {
     Voltage2Resistance();
-    if (ResistorValue < 166.71) {
-        Temperature = 0.0001 * pow(ResistorValue, 2) +
-                      -0.0743 * ResistorValue + 21.5320;
-    } else if (ResistorValue < 402.32 && ResistorValue > 166.71) {
-        Temperature = 0.0004 * pow(ResistorValue, 2) +
-                      -0.2277 * ResistorValue + 42.2494;
-    } else {
-        Temperature = 0.0039 * pow(ResistorValue, 2) +
-                      -0.7207 * ResistorValue + 66.7732;
+    if (ResistorValue < 166.71){
+        Temperature = -8.47506357770908*pow(10,-6)*pow(ResistorValue, 3)+0.00386892064896403*pow(ResistorValue, 2)-0.720748414692382*ResistorValue+66.7732219851856;
     }
+    else if (ResistorValue < 402.32 && ResistorValue > 166.71){
+        Temperature = 38.4859 -0.1705*ResistorValue + (1.8468*pow(10,-4))*ResistorValue*ResistorValue;
+    }
+    else{
+        Temperature  = 15.1909 -0.0476*ResistorValue + (1.5773*pow(10,-5))*ResistorValue*ResistorValue;
+    }
+
 }
 
 double Thermistor::getTemperature() {

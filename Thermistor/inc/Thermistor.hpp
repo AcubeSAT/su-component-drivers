@@ -59,7 +59,8 @@ private:
      * @note If we decide to change the Power Supply ,
      * we will need to change the value of this member variable as well
      */
-    static constexpr float PowerSupply = 5.0f;
+    static constexpr float PowerSupply = 4.97f;
+    static constexpr float VrefAfec = 3.3f;
 
     /**
      * Resistances of the circuit in kilo ohms
@@ -71,7 +72,7 @@ private:
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t MaxADCValue = 4096;
+    static constexpr uint16_t MaxADCValue = 4095;
 
     /**
      * Value of the voltage Vout of the thermistor.
@@ -82,7 +83,7 @@ private:
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    float ResistorValue = 0.0f;
+    double ResistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
