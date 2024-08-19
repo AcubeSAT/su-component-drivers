@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Logger.hpp"
-
+#include "peripheral/afec/plib_afec_common.h"
+#include "peripheral/afec/plib_afec0.h"
+#include "peripheral/afec/plib_afec1.h"
 /**
  * Thermistor NRBE10524450B1F driver
  *
@@ -49,6 +51,7 @@ public:
      */
     double getTemperature();
 
+
 private:
     /**
      * Power Supply of the NRBE10524450B1F thermistor
@@ -68,19 +71,18 @@ private:
     /**
      * Number of bits that the Analog to Digital (ADC) conversion result consists of.
      */
-    static constexpr uint16_t
-    MaxADCValue = 4096;
+    static constexpr uint16_t MaxADCValue = 4096;
 
     /**
      * Value of the voltage Vout of the thermistor.
      * Ranges from 0 to 3V3
      */
-    float OutputVoltage;
+    float OutputVoltage = 0.0f;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    float ResistorValue;
+    float ResistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
@@ -95,18 +97,22 @@ private:
     /**
      * Variable in which the Analog to Digital (ADC) conversion result is stored.
      */
-    uint16_t AdcResult = 0;
+     uint16_t AdcResult = 0;
+
+
 
     /**
      * Variable in which the Temperature the thermistor measures is stored.
      */
-    double Temperature;
+    double Temperature = 0;
+
 
     /**
-    * Sets the Analog to Digital conversion result.
-    * @param adcResult The result of the ADC conversion.
-    */
-    uint16_t getADCResult();
+     * Gets the ADC result using a callback function.
+     * @return The ADC result value.
+     */
+
+    uint16_t getADCResult(AFEC_CALLBACK callback, uintptr_t context);
 
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue
@@ -123,4 +129,11 @@ private:
      *	@return double The temperature in Celsius.
      */
     void Resistance2Temperature();
+
+/**
+     * Callback function to handle ADC conversion complete event.
+     * @param status The status of the ADC conversion.
+     * @param context A pointer to the Thermistor object.
+     */
+    static void ADCResultCallback(uint32_t status, uintptr_t context);
 };
