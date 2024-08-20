@@ -60,6 +60,14 @@ private:
      * we will need to change the value of this member variable as well
      */
     static constexpr float PowerSupply = 4.97f;
+
+    /**
+     * Reference Reference Voltage used for calculations by the Afec
+     *
+     * @note The value of VrefAfec corresponds to the MaxADCValue
+     *
+     * @example 3V3 (=VrefAfec) corresponds to 4095(=MaxADCValue)
+     */
     static constexpr float VrefAfec = 3.3f;
 
     /**
