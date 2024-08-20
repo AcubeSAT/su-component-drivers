@@ -118,7 +118,7 @@ private:
      * Gets the ADC result using a callback function.
      * @return The ADC result value.
      */
-    uint16_t getADCResult(AFEC_CALLBACK callback, uintptr_t context);
+    uint16_t getADCResult();
 
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue

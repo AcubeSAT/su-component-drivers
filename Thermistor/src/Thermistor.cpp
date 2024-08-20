@@ -1,7 +1,7 @@
 #include "Thermistor.hpp"
 #include <cmath>
 
-uint16_t Thermistor::getADCResult(AFEC_CALLBACK callback, uintptr_t context) {
+uint16_t Thermistor::getADCResult() {
     // Initialize AFEC0
     AFEC0_Initialize();
 
