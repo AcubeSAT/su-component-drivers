@@ -22,7 +22,7 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     if (AFEC0_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
         // Assuming 'context' is a pointer to the Thermistor instance
         thermistor->adcResult = AFEC0_ChannelResultGet(thermistor->AdcChannelNumber);
-        LOG_INFO << "ADC Result: " << thermistor->adcResult;
+        LOG_DEBUG << "ADC Result: " << thermistor->adcResult;
     } else {
         LOG_ERROR << "AFEC0 channel result not ready";
     }
