@@ -134,9 +134,11 @@ private:
     uint16_t getADCResult();
 
     /**
+     * Calculates and returns the outputVoltage
+     *
      * @return outputVoltage calculated using adcResult and MaxADCValue
      */
-    void calculateOutputVoltage();
+    float getAndCalculateOutputVoltage();
 
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.

@@ -27,14 +27,14 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     }
 }
 
-void Thermistor::calculateOutputVoltage() {
+float Thermistor::getAndCalculateOutputVoltage() {
     outputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0)) / MaxADCValue * VrefAfec;
     LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
+    return outputVoltage;
 }
 
 void Thermistor::voltage2Resistance() {
-    outputVoltageCalculation();
-    resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * outputVoltage + R1 * PowerSupply) - R3;
+    resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * getAndCalculateOutputVoltage() + R1 * PowerSupply) - R3;
     LOG_DEBUG << "Resistor value is :" << resistorValue;
 }
 
