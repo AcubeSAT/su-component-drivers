@@ -63,7 +63,7 @@ public:
     Thermistor( AFEC_CHANNEL_MASK AdcChannelMask) :  AdcChannelMask(AdcChannelMask) {}
 
     /**
-    * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to current
+    * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to resistance
     * and finally to temperature in Celsius.
     * @return The temperature in Celsius.
      */
