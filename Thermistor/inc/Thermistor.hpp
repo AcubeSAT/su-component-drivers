@@ -8,6 +8,7 @@
 #if THERMISTOR_PORT == 0
 
 #include "peripheral/afec/plib_afec0.h"
+
 #define AFEC_Initialize AFEC0_Initialize
 #define AFEC_ChannelsEnable AFEC0_ChannelsEnable
 #define AFEC_CallbackRegister AFEC0_CallbackRegister
