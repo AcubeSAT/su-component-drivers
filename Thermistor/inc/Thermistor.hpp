@@ -100,17 +100,6 @@ private:
     MaxADCValue = 4095;
 
     /**
-     * Value of the voltage Vout of the thermistor.
-     * Ranges from 0 to 3V3
-     */
-    float outputVoltage = 0.0f;
-
-    /**
-     * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
-     */
-    double resistorValue = 0.0f;
-
-    /**
      * Mask of the AFEC peripheral channel being used.
      */
     const AFEC_CHANNEL_MASK AdcChannelMask;
@@ -132,7 +121,8 @@ private:
     uint16_t getADCResult();
 
     /**
-     * Calculates and returns the outputVoltage
+     * Calculates and returns the output voltage
+     * output voltage: Value of the voltage Vout of the thermistor that ranges from 0 to 3V3
      *
      * @return outputVoltage calculated using adcResult and MaxADCValue
      */
