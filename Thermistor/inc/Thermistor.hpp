@@ -121,20 +121,20 @@ private:
     uint16_t getADCResult();
 
     /**
-     * @return VoltageValue calculated using adcResult and MaxADCValue
+     * @return outputVoltage calculated using adcResult and MaxADCValue
      */
-    void CalculateVoltageValue();
+    void calculateOutputVoltage();
 
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.
      */
-    void Voltage2Resistance();
+    void voltage2Resistance();
 
     /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
      *  created from the values provided in the datasheet.
      *	@return double The temperature in Celsius.
      */
-    void Resistance2Temperature();
+    void resistance2Temperature();
 
     /**
      * Callback function to handle ADC conversion complete event.

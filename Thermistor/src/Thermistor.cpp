@@ -28,19 +28,19 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     }
 }
 
-void Thermistor::CalculateVoltageValue() {
+void Thermistor::calculateOutputVoltage() {
     outputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0)) / MaxADCValue * VrefAfec;
     LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
 }
 
-void Thermistor::Voltage2Resistance() {
+void Thermistor::voltage2Resistance() {
     outputVoltageCalculation();
     resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * outputVoltage + R1 * PowerSupply) - R3;
     LOG_DEBUG << "Resistor value is :" << resistorValue;
 }
 
-void Thermistor::Resistance2Temperature() {
-    Voltage2Resistance();
+void Thermistor::resistance2Temperature() {
+    voltage2Resistance();
     if (resistorValue < 166.71) {
         temperature =
                 -8.47506357770908 * pow(10, -6) * pow(resistorValue, 3) + 0.00386892064896403 * pow(resistorValue, 2) -
@@ -53,6 +53,6 @@ void Thermistor::Resistance2Temperature() {
 }
 
 double Thermistor::getTemperature() {
-    Resistance2Temperature();
+    resistance2Temperature();
     return temperature;
 }
