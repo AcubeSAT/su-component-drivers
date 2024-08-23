@@ -123,7 +123,7 @@ private:
     /**
      * @return VoltageValue calculated using AdcResult and MaxADCValue
      */
-    void OutputVoltageCalculation();
+    void CalculateVoltageValue();
 
     /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *	@return double The current resistance of the thermistor.
