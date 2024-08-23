@@ -1,5 +1,4 @@
 #include "Thermistor.hpp"
-#include <cmath>
 
 uint16_t Thermistor::getADCResult() {
     // Initialize AFEC

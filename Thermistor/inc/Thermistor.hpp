@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Logger.hpp"
+#include <cmath>
 #include "peripheral/afec/plib_afec_common.h"
 #include "Peripheral_Definitions.hpp"
 
