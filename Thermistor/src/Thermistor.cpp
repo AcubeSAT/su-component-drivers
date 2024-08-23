@@ -3,25 +3,25 @@
 
 uint16_t Thermistor::getADCResult() {
     // Initialize AFEC0
-    AFEC0_Initialize();
+    AFEC_Initialize();
 
     // Enable the required ADC channels
-    AFEC0_ChannelsEnable(AdcChannelMask);
+    AFEC_ChannelsEnable(AdcChannelMask);
 
     // Register the callback function
-    AFEC0_CallbackRegister(ADCResultCallback, reinterpret_cast<uintptr_t>(this));
+    AFEC_CallbackRegister(ADCResultCallback, reinterpret_cast<uintptr_t>(this));
 
     // Start the conversion
-    AFEC0_ConversionStart();
+    AFEC_ConversionStart();
     return adcResult;
 }
 
 void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     auto thermistor = reinterpret_cast<Thermistor *>(context);
 
-    if (AFEC0_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
+    if (AFEC_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
         // Assuming 'context' is a pointer to the Thermistor instance
-        thermistor->adcResult = AFEC0_ChannelResultGet(thermistor->AdcChannelNumber);
+        thermistor->adcResult = AFEC_ChannelResultGet(thermistor->AdcChannelNumber);
         LOG_DEBUG << "ADC Result: " << thermistor->adcResult;
     } else {
         LOG_ERROR << "AFEC0 channel result not ready";
