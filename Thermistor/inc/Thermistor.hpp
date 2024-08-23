@@ -2,6 +2,7 @@
 
 #include "Logger.hpp"
 #include "peripheral/afec/plib_afec_common.h"
+#include "Peripheral_Definitions.hpp"
 
 #if THERMISTOR_PORT == 0
 
