@@ -2,7 +2,7 @@
 #include <cmath>
 
 uint16_t Thermistor::getADCResult() {
-    // Initialize AFEC0
+    // Initialize AFEC
     AFEC_Initialize();
 
     // Enable the required ADC channels
@@ -24,7 +24,7 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
         thermistor->adcResult = AFEC_ChannelResultGet(thermistor->AdcChannelNumber);
         LOG_DEBUG << "ADC Result: " << thermistor->adcResult;
     } else {
-        LOG_ERROR << "AFEC0 channel result not ready";
+        LOG_ERROR << "AFEC channel result not ready";
     }
 }
 
