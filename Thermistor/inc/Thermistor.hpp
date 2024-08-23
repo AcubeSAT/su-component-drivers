@@ -64,9 +64,7 @@ public:
     Thermistor( AFEC_CHANNEL_MASK AdcChannelMask) :  AdcChannelMask(AdcChannelMask) {}
 
     /**
-    * Gets the last measured analog temperature from the NRBE10524450B1F temperature sensor, by converting the voltage to resistance
-    * and finally to temperature in Celsius.
-    * @return The temperature in Celsius.
+     *	@return The temperature in Celsius.
      */
     double getTemperature();
 
@@ -138,18 +136,14 @@ private:
      *
      * @return outputVoltage calculated using adcResult and MaxADCValue
      */
-    float getAndCalculateOutputVoltage();
+    float getOutputVoltage();
 
-    /**	Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
-     *	@return double The current resistance of the thermistor.
+    /**
+     * Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
+     *
+     *	@return The current resistance of the thermistor.
      */
-    void voltage2Resistance();
-
-    /**	Takes the resistance calculated and converts it to a readable temperature using a polynomial,
-     *  created from the values provided in the datasheet.
-     *	@return double The temperature in Celsius.
-     */
-    void resistance2Temperature();
+    double getResistance();
 
     /**
      * Callback function to handle ADC conversion complete event.

@@ -27,31 +27,28 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     }
 }
 
-float Thermistor::getAndCalculateOutputVoltage() {
+float Thermistor::getOutputVoltage() {
     outputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0)) / MaxADCValue * VrefAfec;
     LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
     return outputVoltage;
 }
 
-void Thermistor::voltage2Resistance() {
-    resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * getAndCalculateOutputVoltage() + R1 * PowerSupply) - R3;
+double Thermistor::getResistance() {
+    resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * getOutputVoltage() + R1 * PowerSupply) - R3;
     LOG_DEBUG << "Resistor value is :" << resistorValue;
-}
-
-void Thermistor::resistance2Temperature() {
-    voltage2Resistance();
-    if (resistorValue < 166.71) {
-        temperature =
-                -8.47506357770908 * pow(10, -6) * pow(resistorValue, 3) + 0.00386892064896403 * pow(resistorValue, 2) -
-                0.720748414692382 * resistorValue + 66.7732219851856;
-    } else if (resistorValue < 402.32 && resistorValue > 166.71) {
-        temperature = 38.4859 - 0.1705 * resistorValue + (1.8468 * pow(10, -4)) * resistorValue * resistorValue;
-    } else {
-        temperature = 15.1909 - 0.0476 * resistorValue + (1.5773 * pow(10, -5)) * resistorValue * resistorValue;
-    }
+    return resistorValue;
 }
 
 double Thermistor::getTemperature() {
-    resistance2Temperature();
+    getResistance();
+    if (getResistance() < 166.71) {
+        temperature =
+                -8.47506357770908 * pow(10, -6) * pow(getResistance(), 3) + 0.00386892064896403 * pow(getResistance(), 2) -
+                0.720748414692382 * getResistance() + 66.7732219851856;
+    } else if (getResistance() < 402.32 && getResistance() > 166.71) {
+        temperature = 38.4859 - 0.1705 * getResistance() + (1.8468 * pow(10, -4)) * getResistance() * getResistance();
+    } else {
+        temperature = 15.1909 - 0.0476 * getResistance() + (1.5773 * pow(10, -5)) * getResistance() * getResistance();
+    }
     return temperature;
 }
