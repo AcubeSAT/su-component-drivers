@@ -87,12 +87,12 @@ private:
      * Value of the voltage Vout of the thermistor.
      * Ranges from 0 to 3V3
      */
-    float OutputVoltage = 0.0f;
+    float outputVoltage = 0.0f;
 
     /**
      * Value of the resistor, in kilo-ohms (kΩ), that maps the current output of the sensor onto the range 0-3.3V.
      */
-    double ResistorValue = 0.0f;
+    double resistorValue = 0.0f;
 
     /**
      * Number of the AFEC peripheral channel being used.
@@ -107,12 +107,12 @@ private:
     /**
      * Variable in which the Analog to Digital (ADC) conversion result is stored.
      */
-    uint16_t AdcResult = 0;
+    uint16_t adcResult = 0;
 
     /**
-     * Variable in which the Temperature the thermistor measures is stored.
+     * Variable in which the temperature the thermistor measures is stored.
      */
-    double Temperature = 0;
+    double temperature = 0;
 
     /**
      * Gets the ADC result using a callback function.
@@ -121,7 +121,7 @@ private:
     uint16_t getADCResult();
 
     /**
-     * @return VoltageValue calculated using AdcResult and MaxADCValue
+     * @return VoltageValue calculated using adcResult and MaxADCValue
      */
     void CalculateVoltageValue();
 
