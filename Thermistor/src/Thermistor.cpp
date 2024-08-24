@@ -48,9 +48,11 @@ double Thermistor::getTemperature() {
                 0.00386892064896403 * pow(EquivalentResistance, 2) -
                 0.720748414692382 * EquivalentResistance + 66.7732219851856;
     } else if (EquivalentResistance < 402.32 && EquivalentResistance > 166.71) {
-        temperature = 38.4859 - 0.1705 * EquivalentResistance + (1.8468 * pow(10, -4)) * EquivalentResistance * EquivalentResistance;
+        temperature = 38.4859 - 0.1705 * EquivalentResistance +
+                      (1.8468 * pow(10, -4)) * EquivalentResistance * EquivalentResistance;
     } else {
-        temperature = 15.1909 - 0.0476 * EquivalentResistance + (1.5773 * pow(10, -5)) * EquivalentResistance * EquivalentResistance;
+        temperature = 15.1909 - 0.0476 * EquivalentResistance +
+                      (1.5773 * pow(10, -5)) * EquivalentResistance * EquivalentResistance;
     }
     return temperature;
 }
