@@ -40,16 +40,17 @@ double Thermistor::getResistance() {
 }
 
 double Thermistor::getTemperature() {
-    getResistance();
-    if (getResistance() < 166.71) {
+    const double EquivalentResistance = getResistance();
+    double temperature;
+    if (EquivalentResistance < 166.71) {
         temperature =
-                -8.47506357770908 * pow(10, -6) * pow(getResistance(), 3) +
-                0.00386892064896403 * pow(getResistance(), 2) -
-                0.720748414692382 * getResistance() + 66.7732219851856;
-    } else if (getResistance() < 402.32 && getResistance() > 166.71) {
-        temperature = 38.4859 - 0.1705 * getResistance() + (1.8468 * pow(10, -4)) * getResistance() * getResistance();
+                -8.47506357770908 * pow(10, -6) * pow(EquivalentResistance, 3) +
+                0.00386892064896403 * pow(EquivalentResistance, 2) -
+                0.720748414692382 * EquivalentResistance + 66.7732219851856;
+    } else if (EquivalentResistance < 402.32 && EquivalentResistance > 166.71) {
+        temperature = 38.4859 - 0.1705 * EquivalentResistance + (1.8468 * pow(10, -4)) * EquivalentResistance * EquivalentResistance;
     } else {
-        temperature = 15.1909 - 0.0476 * getResistance() + (1.5773 * pow(10, -5)) * getResistance() * getResistance();
+        temperature = 15.1909 - 0.0476 * EquivalentResistance + (1.5773 * pow(10, -5)) * EquivalentResistance * EquivalentResistance;
     }
     return temperature;
 }
