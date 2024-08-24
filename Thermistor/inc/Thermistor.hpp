@@ -13,7 +13,7 @@
  * This is a simple driver to use the thermistor NRBE10524450B1F on ATSAMV71Q21B microcontrollers.
  *
  * currently this driver only works for AdcChannelNumber==0.
- * @TODO make it work for AdcChannelNumber==1 or if we dont need an extra channel number make the appropriate changes
+ * @TODO see if we need AFEC1 and make the appropriate changes
  *
  * For more details about the operation of the sensor, see the datasheets found at:
  * https://gitlab.com/acubesat/su/hardware/breakout-boards/-/issues/27#note_1841589545
