@@ -18,23 +18,6 @@
 class Thermistor {
 public:
     /**
-     * Constructor for the Thermistor class.
-     * @param R1, R2, R3: The resistances of the circuit in kilo ohms.
-     * @param AdcChannelNumber Number of the AFEC channel that is being used.
-     * @param AdcChannelMask Mask of the AFEC channel that is being used.
-     * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
-     *
-     * @note This function does not enable or configure the corresponding AFEC channel
-     *
-     * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
-     */
-    Thermistor(float R1, float R2, float R3, AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask)
-            : R1(R1),
-              R2(R2),
-              R3(R3),
-              AdcChannelNumber(AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
-
-    /**
      * Constructor for the Thermistor class that takes a default resistor value.
      * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
