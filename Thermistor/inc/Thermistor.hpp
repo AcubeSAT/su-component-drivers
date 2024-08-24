@@ -34,7 +34,8 @@ public:
             AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
-     *	@return The temperature in Celsius.
+     *	@return The temperature the Thermistor measures in Celsius.
+     *	@TODO check if double is supported by our FPU
      */
     double getTemperature();
 
@@ -83,11 +84,6 @@ private:
      * Variable in which the Analog to Digital (ADC) conversion result is stored.
      */
     uint16_t adcResult = 0;
-
-    /**
-     * Variable in which the temperature the thermistor measures is stored.
-     */
-    double temperature = 0;
 
     /**
      * Gets the ADC result using a callback function.
