@@ -52,7 +52,7 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(AFEC_CHANNEL_MASK AdcChannelMask);
+    explicit Thermistor(AFEC_CHANNEL_MASK AdcChannelMask);
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
