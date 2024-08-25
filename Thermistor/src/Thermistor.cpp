@@ -1,16 +1,9 @@
 #include "Thermistor.hpp"
 
 uint16_t Thermistor::getADCResult() {
-    // Initialize AFEC
     AFEC_Initialize();
-
-    // Enable the required ADC channels
     AFEC_ChannelsEnable(AdcChannelMask);
-
-    // Register the callback function
     AFEC_CallbackRegister(ADCResultCallback, reinterpret_cast<uintptr_t>(this));
-
-    // Start the conversion
     AFEC_ConversionStart();
     return adcResult;
 }
@@ -19,7 +12,6 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     auto thermistor = reinterpret_cast<Thermistor *>(context);
 
     if (AFEC_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
-        // Assuming 'context' is a pointer to the Thermistor instance
         thermistor->adcResult = AFEC_ChannelResultGet(thermistor->AdcChannelNumber);
         LOG_DEBUG << "ADC Result: " << thermistor->adcResult;
     } else {
