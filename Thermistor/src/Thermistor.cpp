@@ -1,5 +1,8 @@
 #include "Thermistor.hpp"
 
+Thermistor::Thermistor(AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelMask(AdcChannelMask), AdcChannelNumber(
+        THERMISTOR_PORT == 0 ? AFEC_CH0 : AFEC_CH1) {}
+
 uint16_t Thermistor::getADCResult() {
     AFEC_Initialize();
     AFEC_ChannelsEnable(AdcChannelMask);

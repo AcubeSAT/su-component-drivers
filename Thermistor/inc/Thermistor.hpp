@@ -46,15 +46,13 @@ public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
      *
-     * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
      *
      * @note This function does not enable or configure the corresponding AFEC channel
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(
-            AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
+    Thermistor(AFEC_CHANNEL_MASK AdcChannelMask);
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
