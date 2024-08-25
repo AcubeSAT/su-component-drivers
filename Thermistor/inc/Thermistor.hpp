@@ -7,13 +7,34 @@
 #include "peripheral/afec/plib_afec0.h"
 #include "peripheral/afec/plib_afec1.h"
 
+#if THERMISTOR_PORT == 0
+
+#include "peripheral/afec/plib_afec0.h"
+
+#define AFEC_Initialize AFEC0_Initialize
+#define AFEC_ChannelsEnable AFEC0_ChannelsEnable
+#define AFEC_CallbackRegister AFEC0_CallbackRegister
+#define AFEC_ConversionStart AFEC0_ConversionStart
+#define AFEC_ChannelResultIsReady AFEC0_ChannelResultIsReady
+#define AFEC_ChannelResultGet AFEC0_ChannelResultGet
+
+#elif THERMISTOR_PORT == 1
+
+#include "peripheral/afec/plib_afec1.h"
+#define AFEC_Initialize AFEC1_Initialize
+#define AFEC_ChannelsEnable AFEC1_ChannelsEnable
+#define AFEC_CallbackRegister AFEC1_CallbackRegister
+#define AFEC_ConversionStart AFEC1_ConversionStart
+#define AFEC_ChannelResultIsReady AFEC1_ChannelResultIsReady
+#define AFEC_ChannelResultGet AFEC1_ChannelResultGet
+
 /**
  * Thermistor NRBE10524450B1F driver
  *
  * This is a simple driver to use the thermistor NRBE10524450B1F on ATSAMV71Q21B microcontrollers.
  *
- * currently this driver only works for AdcChannelNumber==0.
- * @TODO see if we need AFEC1 and make the appropriate changes
+ * The THERMISTOR_PORT definition is used to select which AFEC peripheral of the ATSAMV71Q21B MCU will be used.
+ * By giving the corresponding value to THERMISTOR_PORT, the user can choose between AFEC0 or AFEC1 respectively.
  *
  * For more details about the operation of the sensor, see the datasheets found at:
  * https://gitlab.com/acubesat/su/hardware/breakout-boards/-/issues/27#note_1841589545
@@ -22,7 +43,6 @@ class Thermistor {
 public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
-     * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
      * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
      *
@@ -30,8 +50,7 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(
-            AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
+    Thermistor(AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelMask(AdcChannelMask) {}
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
@@ -74,11 +93,6 @@ private:
      * Mask of the AFEC peripheral channel being used.
      */
     const AFEC_CHANNEL_MASK AdcChannelMask;
-
-    /**
-     * Number of the AFEC peripheral channel being used.
-     */
-    const AFEC_CHANNEL_NUM AdcChannelNumber;
 
     /**
      * Variable in which the Analog to Digital (ADC) conversion result is stored.

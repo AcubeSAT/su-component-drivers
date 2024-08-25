@@ -1,34 +1,34 @@
 #include "Thermistor.hpp"
 
 uint16_t Thermistor::getADCResult() {
-    // Initialize AFEC0
-    AFEC0_Initialize();
+    // Initialize AFEC
+    AFEC_Initialize();
 
     // Enable the required ADC channels
-    AFEC0_ChannelsEnable(AdcChannelMask);
+    AFEC_ChannelsEnable(AdcChannelMask);
 
     // Register the callback function
-    AFEC0_CallbackRegister(ADCResultCallback, reinterpret_cast<uintptr_t>(this));
+    AFEC_CallbackRegister(ADCResultCallback, reinterpret_cast<uintptr_t>(this));
 
     // Start the conversion
-    AFEC0_ConversionStart();
+    AFEC_ConversionStart();
     return adcResult;
 }
 
 void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
     auto thermistor = reinterpret_cast<Thermistor *>(context);
 
-    if (AFEC0_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
+    if (AFEC_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
         // Assuming 'context' is a pointer to the Thermistor instance
-        thermistor->adcResult = AFEC0_ChannelResultGet(thermistor->AdcChannelNumber);
+        thermistor->adcResult = AFEC_ChannelResultGet(thermistor->AdcChannelNumber);
         LOG_DEBUG << "ADC Result: " << thermistor->adcResult;
     } else {
-        LOG_ERROR << "AFEC0 channel result not ready";
+        LOG_ERROR << "AFEC channel result not ready";
     }
 }
 
 float Thermistor::getOutputVoltage() {
-    float outputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0)) / MaxADCValue * VrefAFEC0;
+    float outputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0)) / MaxADCValue * VrefAfec;
     LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
     return outputVoltage;
 }
