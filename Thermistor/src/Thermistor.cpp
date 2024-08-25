@@ -20,7 +20,7 @@ void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
 }
 
 float Thermistor::getOutputVoltage() {
-    float outputVoltage = static_cast<float>(getADCResult(ADCResultCallback, 0)) / MaxADCValue * VrefAfec;
+    float outputVoltage = static_cast<float>(getADCResult()) / MaxADCValue * VrefAfec;
     LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
     return outputVoltage;
 }

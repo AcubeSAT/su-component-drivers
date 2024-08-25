@@ -28,6 +28,8 @@
 #define AFEC_ChannelResultIsReady AFEC1_ChannelResultIsReady
 #define AFEC_ChannelResultGet AFEC1_ChannelResultGet
 
+#endif
+
 /**
  * Thermistor NRBE10524450B1F driver
  *
@@ -43,14 +45,16 @@ class Thermistor {
 public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
+     *
+     * @param AdcChannelNumber Number of the AFEC channel that is being used.
      * @param AdcChannelMask Mask of the AFEC channel that is being used.
-     * @note Harmony only lets us use AFEC_CH0_MASK and AFEC_CH1_MASK
      *
      * @note This function does not enable or configure the corresponding AFEC channel
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    Thermistor(AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelMask(AdcChannelMask) {}
+    Thermistor(AFEC_CHANNEL_NUM AdcChannelNumber, AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelNumber(
+            AdcChannelNumber), AdcChannelMask(AdcChannelMask) {}
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
@@ -95,12 +99,18 @@ private:
     const AFEC_CHANNEL_MASK AdcChannelMask;
 
     /**
+     * Number of the AFEC peripheral channel being used.
+     */
+    const AFEC_CHANNEL_NUM AdcChannelNumber;
+
+    /**
      * Variable in which the Analog to Digital (ADC) conversion result is stored.
      */
     uint16_t adcResult = 0;
 
     /**
      * Gets the ADC result using a callback function.
+     *
      * @return The ADC result value.
      */
     uint16_t getADCResult();
@@ -116,12 +126,13 @@ private:
     /**
      * Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
      *
-     *	@return The current resistance of the thermistor.
+     * @return The current resistance of the thermistor.
      */
     double getResistance();
 
     /**
      * Callback function to handle ADC conversion complete event.
+     *
      * @param status The status of the ADC conversion.
      * @param context A pointer to the Thermistor object.
      */
