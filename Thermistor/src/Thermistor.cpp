@@ -2,24 +2,12 @@
 
 template<AFECPeripheral AfecPeripheral>
 Thermistor<AfecPeripheral>::Thermistor(AFEC_CHANNEL_MASK afecChannelMask, AFEC_CHANNEL_NUM afecChannelNum)
-        : afecChannelMask(afecChannelMask), afecChannelNum(afecChannelNum){}
+        : afecChannelMask(afecChannelMask), afecChannelNum(afecChannelNum), AFECHandlingTask<AfecPeripheral>(afecChannelMask,afecChannelNum){}
 
 template<AFECPeripheral AfecPeripheral>
-uint16_t Thermistor<AfecPeripheral>::getADCResult() {}
-
-template<>
-uint16_t Thermistor<AFECPeripheral::AFEC0>::getADCResult() {
-    AFECHandlingTask<AFECPeripheral::AFEC0> afecTask(afecChannelMask,afecChannelNum);
-    afecTask.execute();
-    thermistorAdcResult = afecTask.getAdcResult();
-    return thermistorAdcResult;
-}
-
-template<>
-uint16_t Thermistor<AFECPeripheral::AFEC1>::getADCResult() {
-    AFECHandlingTask<AFECPeripheral::AFEC1> afecTask(afecChannelMask,afecChannelNum);
-    afecTask.execute();
-    thermistorAdcResult = afecTask.getAdcResult();
+uint16_t Thermistor<AfecPeripheral>::getADCResult() {
+    this->execute();
+    thermistorAdcResult = this->getAdcResult();
     return thermistorAdcResult;
 }
 
