@@ -1,40 +1,44 @@
 #include "Thermistor.hpp"
 
-Thermistor::Thermistor(AFEC_CHANNEL_MASK AdcChannelMask) : AdcChannelMask(AdcChannelMask), AdcChannelNumber(
-        THERMISTOR_PORT == 0 ? AFEC_CH0 : AFEC_CH1) {}
+template<AFECPeripheral AfecPeripheral>
+Thermistor<AfecPeripheral>::Thermistor(AFEC_CHANNEL_MASK afecChannelMask, AFEC_CHANNEL_NUM afecChannelNum)
+        : afecChannelMask(afecChannelMask), afecChannelNum(afecChannelNum){}
 
-uint16_t Thermistor::getADCResult() {
-    AFEC_Initialize();
-    AFEC_ChannelsEnable(AdcChannelMask);
-    AFEC_CallbackRegister(ADCResultCallback, reinterpret_cast<uintptr_t>(this));
-    AFEC_ConversionStart();
-    return adcResult;
+template<AFECPeripheral AfecPeripheral>
+uint16_t Thermistor<AfecPeripheral>::getADCResult() {}
+
+template<>
+uint16_t Thermistor<AFECPeripheral::AFEC0>::getADCResult() {
+    AFECHandlingTask<AFECPeripheral::AFEC0> afecTask(afecChannelMask,afecChannelNum);
+    afecTask.execute();
+    thermistorAdcResult = afecTask.getAdcResult();
+    return thermistorAdcResult;
 }
 
-void Thermistor::ADCResultCallback(uint32_t status, uintptr_t context) {
-    auto thermistor = reinterpret_cast<Thermistor *>(context);
-
-    if (AFEC_ChannelResultIsReady(thermistor->AdcChannelNumber)) {
-        thermistor->adcResult = AFEC_ChannelResultGet(thermistor->AdcChannelNumber);
-        LOG_DEBUG << "ADC Result: " << thermistor->adcResult;
-    } else {
-        LOG_ERROR << "AFEC channel result not ready";
-    }
+template<>
+uint16_t Thermistor<AFECPeripheral::AFEC1>::getADCResult() {
+    AFECHandlingTask<AFECPeripheral::AFEC1> afecTask(afecChannelMask,afecChannelNum);
+    afecTask.execute();
+    thermistorAdcResult = afecTask.getAdcResult();
+    return thermistorAdcResult;
 }
 
-float Thermistor::getOutputVoltage() {
+template<AFECPeripheral AfecPeripheral>
+float Thermistor<AfecPeripheral>::getOutputVoltage() {
     float outputVoltage = static_cast<float>(getADCResult()) / MaxADCValue * VrefAfec;
     LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
     return outputVoltage;
 }
 
-double Thermistor::getResistance() {
+template<AFECPeripheral AfecPeripheral>
+double Thermistor<AfecPeripheral>::getResistance() {
     double resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * getOutputVoltage() + R1 * PowerSupply) - R3;
     LOG_DEBUG << "Resistor value is :" << resistorValue;
     return resistorValue;
 }
 
-double Thermistor::getTemperature() {
+template<AFECPeripheral AfecPeripheral>
+double Thermistor<AfecPeripheral>::getTemperature() {
     const double EquivalentResistance = getResistance();
     double temperature;
     if (EquivalentResistance < 166.71) {
