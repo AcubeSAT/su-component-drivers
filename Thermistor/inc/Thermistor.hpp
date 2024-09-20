@@ -17,7 +17,7 @@
  * https://gitlab.com/acubesat/su/hardware/breakout-boards/-/issues/27#note_1841589545
  */
 template <AFECPeripheral AfecPeripheral>
-class Thermistor :  AFECHandlingTask<AfecPeripheral>{
+class Thermistor : AFECHandlingTask<AfecPeripheral>{
 public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
