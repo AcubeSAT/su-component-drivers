@@ -6,7 +6,6 @@
 #include "Peripheral_Definitions.hpp"
 #include "peripheral/afec/plib_afec0.h"
 #include "peripheral/afec/plib_afec1.h"
-#include "inc/FreeRTOSTasks/AFECHandlingTask.hpp"
 
 /**
  * Thermistor NRBE10524450B1F driver
@@ -16,8 +15,8 @@
  * For more details about the operation of the sensor, see the datasheets found at:
  * https://gitlab.com/acubesat/su/hardware/breakout-boards/-/issues/27#note_1841589545
  */
-template <AFECPeripheral AfecPeripheral>
-class Thermistor : AFECHandlingTask<AfecPeripheral>{
+template<AFECPeripheral AfecPeripheral>
+class Thermistor {
 public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
@@ -30,7 +29,8 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    explicit Thermistor(AFEC_CHANNEL_MASK afecChannelMask, AFEC_CHANNEL_NUM afecChannelNum);
+    explicit Thermistor(AFEC_CHANNEL_MASK afecChannelMask, AFEC_CHANNEL_NUM afecChannelNum) : afecChannelMask(
+            afecChannelMask), afecChannelNum(afecChannelNum) { AFEC0_ChannelsEnable(afecChannelMask);}
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.

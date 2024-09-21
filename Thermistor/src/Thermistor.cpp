@@ -1,27 +1,12 @@
 #include "Thermistor.hpp"
 
 template<AFECPeripheral AfecPeripheral>
-Thermistor<AfecPeripheral>::Thermistor(AFEC_CHANNEL_MASK afecChannelMask, AFEC_CHANNEL_NUM afecChannelNum)
-        : afecChannelMask(afecChannelMask), afecChannelNum(afecChannelNum), AFECHandlingTask<AfecPeripheral>() {}
-
-template<AFECPeripheral AfecPeripheral>
 uint16_t Thermistor<AfecPeripheral>::getADCResult() {
     if (AfecPeripheral == AFECPeripheral::AFEC0) {
-        AFEC0_ChannelsEnable(afecChannelMask);
-        while (pdMS_TO_TICKS(AFECHandlingTask<AfecPeripheral>::getMaxDelay())) {
-            if (ulTaskNotifyTake(pdTRUE, AFECHandlingTask<AfecPeripheral>::getMaxDelay()) == pdTRUE) {
-                thermistorAdcResult = AFEC0_ChannelResultGet(afecChannelNum);
-                break;
-            }
-        }
-    } else {
-        AFEC1_ChannelsEnable(afecChannelMask);
-        while (pdMS_TO_TICKS(AFECHandlingTask<AfecPeripheral>::getMaxDelay())) {
-            if (ulTaskNotifyTake(pdTRUE, AFECHandlingTask<AfecPeripheral>::getMaxDelay()) == pdTRUE) {
-                thermistorAdcResult = AFEC1_ChannelResultGet(afecChannelNum);
-                break;
-            }
-        }
+        thermistorAdcResult = AFEC0_ChannelResultGet(afecChannelNum);
+    }
+    else {
+        thermistorAdcResult = AFEC1_ChannelResultGet(afecChannelNum);
     }
     return thermistorAdcResult;
 }
