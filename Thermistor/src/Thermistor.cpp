@@ -1,33 +1,11 @@
 #include "Thermistor.hpp"
 
 template<AFECPeripheral AfecPeripheral>
-uint16_t Thermistor<AfecPeripheral>::getADCResult() {
-    if (AfecPeripheral == AFECPeripheral::AFEC0) {
-        thermistorAdcResult = AFEC0_ChannelResultGet(afecChannelNum);
-    }
-    else {
-        thermistorAdcResult = AFEC1_ChannelResultGet(afecChannelNum);
-    }
-    return thermistorAdcResult;
-}
+etl::expected<float, bool>  Thermistor<AfecPeripheral>::getTemperature() const {
+    float outputVoltage = static_cast<float>(ADCResult) / MaxADCValue * VrefAfec;
+    double resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * outputVoltage + R1 * PowerSupply) - R3;
 
-template<AFECPeripheral AfecPeripheral>
-float Thermistor<AfecPeripheral>::getOutputVoltage() {
-    float outputVoltage = static_cast<float>(getADCResult()) / MaxADCValue * VrefAfec;
-    LOG_DEBUG << "OutputVoltage is : " << outputVoltage;
-    return outputVoltage;
-}
-
-template<AFECPeripheral AfecPeripheral>
-double Thermistor<AfecPeripheral>::getResistance() {
-    double resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * getOutputVoltage() + R1 * PowerSupply) - R3;
-    LOG_DEBUG << "Resistor value is :" << resistorValue;
-    return resistorValue;
-}
-
-template<AFECPeripheral AfecPeripheral>
-double Thermistor<AfecPeripheral>::getTemperature() {
-    const double EquivalentResistance = getResistance();
+    const double EquivalentResistance = resistorValue;
     double temperature;
     if (EquivalentResistance < 166.71) {
         temperature =
@@ -43,3 +21,16 @@ double Thermistor<AfecPeripheral>::getTemperature() {
     }
     return temperature;
 }
+
+template<AFECPeripheral AfecPeripheral>
+void  Thermistor<AfecPeripheral>::setADCResult(uint16_t _ADCResult){
+    ADCResult=_ADCResult;
+}
+
+template<AFECPeripheral AfecPeripheral>
+AFEC_CHANNEL_NUM  Thermistor<AfecPeripheral>::getADCChannelNum(){
+    return afecChannelNum;
+}
+
+template class Thermistor<AFECPeripheral::AFEC0>;
+template class Thermistor<AFECPeripheral::AFEC1>;

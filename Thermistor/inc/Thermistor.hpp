@@ -4,8 +4,7 @@
 #include <cmath>
 #include "peripheral/afec/plib_afec_common.h"
 #include "Peripheral_Definitions.hpp"
-#include "peripheral/afec/plib_afec0.h"
-#include "peripheral/afec/plib_afec1.h"
+#include "etl/expected.h"
 
 /**
  * Thermistor NRBE10524450B1F driver
@@ -29,15 +28,29 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    explicit Thermistor(AFEC_CHANNEL_MASK afecChannelMask, AFEC_CHANNEL_NUM afecChannelNum) : afecChannelMask(
-            afecChannelMask), afecChannelNum(afecChannelNum) { AFEC0_ChannelsEnable(afecChannelMask);}
+    explicit Thermistor( AFEC_CHANNEL_NUM afecChannelNum) :  afecChannelNum(afecChannelNum) {}
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
      */
-    double getTemperature();
+    etl::expected<float, bool> getTemperature() const ;
+
+    /**
+     *  Sets the ADC Result of the Afec channel of the Thermistor instance
+     */
+    void setADCResult(uint16_t _ADCResult);
+
+    /**
+     * @return The channel Number of the Themistor instance
+     */
+    AFEC_CHANNEL_NUM getADCChannelNum();
 
 private:
+    /**
+     *  The result of the ADC conversion of the Thermistor instance
+     */
+    uint16_t ADCResult ;
+
     /**
      * Power Supply of the NRBE10524450B1F thermistor
      *
@@ -69,39 +82,7 @@ private:
     MaxADCValue = 4095;
 
     /**
-     * Mask of the AFEC peripheral channel being used.
-     */
-    const AFEC_CHANNEL_MASK afecChannelMask;
-
-    /**
      * Number of the AFEC peripheral channel being used.
      */
     const AFEC_CHANNEL_NUM afecChannelNum;
-
-    /**
-     * Variable in which the Analog to Digital (ADC) conversion result is stored.
-     */
-    uint16_t thermistorAdcResult = 0;
-
-    /**
-     * Gets the ADC result using a callback function.
-     *
-     * @return The ADC result value.
-     */
-    uint16_t getADCResult();
-
-    /**
-     * Calculates and returns the output voltage
-     * output voltage: Value of the voltage Vout of the thermistor that ranges from 0 to 3V3
-     *
-     * @return outputVoltage calculated using adcResult and MaxADCValue
-     */
-    float getOutputVoltage();
-
-    /**
-     * Takes the voltage read by the  MCU and converts it to the resistance that the thermistor has.
-     *
-     * @return The current resistance of the thermistor.
-     */
-    double getResistance();
 };
