@@ -2,7 +2,7 @@
 
 template<AFECPeripheral AfecPeripheral>
 etl::expected<float, bool>  Thermistor<AfecPeripheral>::getTemperature() const {
-    float outputVoltage = static_cast<float>(ADCResult) / MaxADCValue * VrefAfec;
+    float outputVoltage = static_cast<float>(AfecGeneral<AfecPeripheral>::ADCResult) / MaxADCValue * VrefAfec;
     double resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * outputVoltage + R1 * PowerSupply) - R3;
 
     const double EquivalentResistance = resistorValue;
@@ -20,16 +20,6 @@ etl::expected<float, bool>  Thermistor<AfecPeripheral>::getTemperature() const {
                       (1.5773 * pow(10, -5)) * EquivalentResistance * EquivalentResistance;
     }
     return temperature;
-}
-
-template<AFECPeripheral AfecPeripheral>
-void  Thermistor<AfecPeripheral>::setADCResult(uint16_t _ADCResult){
-    ADCResult=_ADCResult;
-}
-
-template<AFECPeripheral AfecPeripheral>
-AFEC_CHANNEL_NUM  Thermistor<AfecPeripheral>::getADCChannelNum(){
-    return afecChannelNum;
 }
 
 template class Thermistor<AFECPeripheral::AFEC0>;
