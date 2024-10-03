@@ -2,7 +2,7 @@
 
 #include <cmath>
 #include "etl/expected.h"
-#include "AfecGeneral.hpp"
+#include "AFECGeneral.hpp"
 
 /**
  * Thermistor NRBE10524450B1F driver
@@ -13,7 +13,7 @@
  * https://gitlab.com/acubesat/su/hardware/breakout-boards/-/issues/27#note_1841589545
  */
 template<AFECPeripheral AfecPeripheral>
-class Thermistor : public AfecGeneral<AfecPeripheral>{
+class Thermistor : public AFECGeneral<AfecPeripheral>{
 public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
@@ -23,7 +23,7 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    explicit Thermistor( AFEC_CHANNEL_NUM afecChannelNum) : AfecGeneral<AfecPeripheral>(afecChannelNum) {}
+    explicit Thermistor( AFEC_CHANNEL_NUM afecChannelNum) : AFECGeneral<AfecPeripheral>(afecChannelNum) {}
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
