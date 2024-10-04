@@ -1,7 +1,7 @@
 #pragma once
 
 #include "peripheral/afec/plib_afec_common.h"
-#include "Peripheral_Definitions.hpp"
+#include "HAL_AFEC.hpp"
 
 /**
  * AFECGeneral driver
