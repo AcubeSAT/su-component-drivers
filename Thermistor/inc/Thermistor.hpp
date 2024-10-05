@@ -28,9 +28,13 @@ public:
     /**
      *	@return The temperature the Thermistor measures in Celsius.
      */
-    etl::expected<float, bool> getTemperature() const ;
+    etl::expected<float, bool> getTemperature() ;
 
 private:
+    /**
+     * The Temperature of the Thermistor instance measured and set by getTemperature Function
+     */
+    float Temperature;
 
     /**
      * Power Supply of the NRBE10524450B1F thermistor
