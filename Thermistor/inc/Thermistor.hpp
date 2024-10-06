@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include "etl/expected.h"
 #include "AFECGeneral.hpp"
 
 /**
@@ -13,7 +12,7 @@
  * https://gitlab.com/acubesat/su/hardware/breakout-boards/-/issues/27#note_1841589545
  */
 template<AFECPeripheral AfecPeripheral>
-class Thermistor : public AFECGeneral<AfecPeripheral>{
+class Thermistor : public AFECGeneral<AfecPeripheral> {
 public:
     /**
      * Constructor for the Thermistor class that takes a default resistor value.
@@ -23,12 +22,12 @@ public:
      *
      * @warning if we want to use any of the  channels we need to first enable them from Harmony Configuration
      */
-    explicit Thermistor( AFEC_CHANNEL_NUM afecChannelNum) : AFECGeneral<AfecPeripheral>(afecChannelNum) {}
+    explicit Thermistor(AFEC_CHANNEL_NUM afecChannelNum) : AFECGeneral<AfecPeripheral>(afecChannelNum) {}
 
     /**
      *	@return The temperature the Thermistor measures in Celsius.
      */
-    etl::expected<float, bool> getTemperature() ;
+    float getTemperature();
 
 private:
     /**
