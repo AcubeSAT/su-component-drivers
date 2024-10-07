@@ -2,7 +2,7 @@
 
 template<AFECPeripheral AfecPeripheral>
 float Thermistor<AfecPeripheral>::getTemperature() {
-    float outputVoltage = static_cast<float>(AFECGeneral<AfecPeripheral>::ADCResult) / MaxADCValue * VrefAfec;
+    float outputVoltage = static_cast<float>(AFECGeneral<AfecPeripheral>::adcResult) / MaxADCValue * VrefAfec;
     double resistorValue = R3 * PowerSupply * (R2 + R1) / ((R2 + R1) * outputVoltage + R1 * PowerSupply) - R3;
     if (resistorValue < 166.71) {
         Temperature =

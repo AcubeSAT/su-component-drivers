@@ -1,8 +1,8 @@
 #include "AFECGeneral.hpp"
 
 template<AFECPeripheral AfecPeripheral>
-void AFECGeneral<AfecPeripheral>::setADCResult(uint16_t adcResult) {
-    ADCResult = adcResult;
+void AFECGeneral<AfecPeripheral>::setAdcResult(uint16_t adcResult) {
+    this->adcResult = adcResult;
 }
 
 template<AFECPeripheral AfecPeripheral>

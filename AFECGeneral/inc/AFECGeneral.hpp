@@ -24,7 +24,7 @@ public:
     /**
      *  Sets the ADC Result of the Afec channel of the Thermistor instance
      */
-    void setADCResult(uint16_t adcResult);
+    void setAdcResult(uint16_t adcResult);
 
     /**
      * @return The channel Number of the Themistor instance
@@ -35,7 +35,7 @@ protected:
     /**
      *  The result of the ADC conversion of the Thermistor instance
      */
-    uint16_t ADCResult;
+    uint16_t adcResult;
 
     /**
      * Number of the AFEC peripheral channel being used.
