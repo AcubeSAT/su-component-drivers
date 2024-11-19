@@ -9,7 +9,7 @@ etl::expected<etl::array<T, BUFFER_SIZE>, bool> PCA9685::i2cReadData() {
         return etl::unexpected<bool>(true);
     }
 
-    while (TWIHS2_IsBusy());
+    while (PCA9685_TWIHS_IsBusy());
 
     if (PCA9685_TWIHS_ErrorGet() == TWIHS_ERROR_NACK) {
         LOG_INFO << "PCA9685 was not able to perform any transaction: I2C bus NAK";
