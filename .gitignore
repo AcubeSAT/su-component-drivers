@@ -12,6 +12,7 @@
 /*.X/nbproject/Package-*
 /*.X/nbproject/private/
 /*.X/.generated_files/
+/*.X/defmplabxtrace*
 
 # Build files
 /build

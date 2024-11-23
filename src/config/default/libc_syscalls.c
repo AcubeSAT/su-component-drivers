@@ -41,7 +41,7 @@ extern "C" {
 extern int _end;
     
 extern void _exit(int status);
-extern caddr_t _sbrk(int incr);
+// extern caddr_t _sbrk(int incr); //comment-out due to double definition in latest toolchain 4.45
 
 extern void _exit(int status)
 {
@@ -57,23 +57,23 @@ extern void _exit(int status)
     }
 }
 
-/**
- * \brief Replacement of C library of _sbrk
- */
-extern caddr_t _sbrk(int incr)
-{
-	static unsigned char *heap = NULL;
-	unsigned char *       prev_heap;
+// /**
+//  * \brief Replacement of C library of _sbrk
+//  */
+// extern caddr_t _sbrk(int incr)       //comment-out due to double definition in latest toolchain 4.45
+// {
+// 	static unsigned char *heap = NULL;
+// 	unsigned char *       prev_heap;
 
-	if (heap == NULL) {
-		heap = (unsigned char *)&_end;
-	}
-	prev_heap = heap;
+// 	if (heap == NULL) {
+// 		heap = (unsigned char *)&_end;
+// 	}
+// 	prev_heap = heap;
 
-	heap += incr;
+// 	heap += incr;
 
-	return (caddr_t)prev_heap;
-}
+// 	return (caddr_t)prev_heap;
+// }
 
 #ifdef __cplusplus
 }

@@ -4,14 +4,19 @@ import socket
 import os
 
 output_path = '/home/mojo/Downloads/img_output.raw'	# select your output path and file (will be created if not exist)
-serial_device = '/dev/ttyACM0'				# ttyACM0 -> USB serial communication device (CDC)
-baudrate = 115200					# for ATSAMv71check your baud rate setting for MHC generated file > plib_usart1.c > line201: USART1_REGS->US_BRGR = US_BRGR_CD(81);
-timeout_sel = 3000					# set high to avoid re-writing a new file stream if timeout runs out
+
+ser = serial.Serial(
+	port='/dev/ttyACM0',		# Serial Port to read the data from
+	baudrate = 115200,		# Rate at which the information is shared to the communication channel
+	parity=serial.PARITY_NONE,	# Applying Parity Checking (none in this case)
+	stopbits=serial.STOPBITS_ONE,	# Pattern of Bits to be read
+	bytesize=serial.EIGHTBITS,	# Total number of bits to be read
+	timeout=500			# Number of serial commands to accept before timing out
+)
 
 with open(output_path, 'wb') as fl:
 	os.chmod(output_path, 0o777)			# change file permissions to R/W all groups (if py script is called as root or sudo it holds rights to root)
-	with serial.Serial(serial_device, baudrate, timeout=timeout_sel) as ser:	
-		while 1:
-			message = ser.read()
-			print(message)
-			fl.write(message)
+	while 1:
+		message = ser.read()
+		print(message)
+		fl.write(message)
