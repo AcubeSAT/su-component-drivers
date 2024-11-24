@@ -27,6 +27,23 @@ typedef enum
 } T_U3VCamDriverStatus;
 
 /**
+ * U3VCamDriver image configuration preset selection.
+ * 
+ * Enum which describes the image config. preset selected
+ * (invalid / default / user_set_0 / user_set_1).
+ * @note This image configuration preset contains a 
+ * series of user defined image sensor related params
+ * which can be preloaded in the camera's NVM slots.
+ */
+typedef enum
+{
+    U3V_CAM_DRV_IMG_PRESET_INVLD = -1,
+    U3V_CAM_DRV_IMG_PRESET_DEFAULT,
+    U3V_CAM_DRV_IMG_PRESET_USER_SET_0,
+    U3V_CAM_DRV_IMG_PRESET_USER_SET_1
+} T_U3VCamDriverImagePreset;
+
+/**
  * U3V Camera text descriptor text datatype.
  * 
  * Enum to specify the text descriptor to get.
@@ -245,6 +262,33 @@ T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC);
  * operability of the driver.
  */
 T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
+
+/**
+ * Request an image sensor configuration preset selection.
+ * 
+ * This function may be used to request a different image sensor config preset
+ * on runtime. A preset may contain user defined configurations for image sensor
+ * parameters that can be preloaded in the camera's NVM slots.
+ * @param presetRequest image sensor config set selection (enum).
+ * @return T_U3VCamDriverStatus Status of the driver that indicates the 
+ * operability of the driver.
+ * @warning A requested preset will be applied during camera boot time and
+ * not while the camera is in ready for image acquition state, therefore it is
+ * recommended to call this function prior to powering on the camera, else the 
+ * selected set will be applied in the next session.
+ */
+T_U3VCamDriverStatus U3VCamDriver_RequestImagePreset(T_U3VCamDriverImagePreset presetRequest);
+
+/**
+ * Get the current image sensor configuration preset selection.
+ * 
+ * This function may be used to read the current image sensor config preset  
+ * selection. 
+ * @note It may be (optionally) used prior to U3VCamDriver_RequestImagePreset 
+ * to avoid unecessary requesting an already active set.
+ * @return T_U3VCamDriverImagePreset 
+ */
+T_U3VCamDriverImagePreset U3VCamDriver_GetCurrImagePreset(void);
 
 /**
  * Get the image payload block maximum size of the U3VCamDriver.

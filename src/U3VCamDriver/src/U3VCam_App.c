@@ -7,13 +7,17 @@
 * Local function declarations
 *******************************************************************************/
 
-static T_U3VDriverInitStatus U3VApp_DrvInitStatus(void);
+static inline T_U3VDriverInitStatus U3VApp_DrvInitStatus(void);
 
 static USB_HOST_EVENT_RESPONSE U3VApp_USBHostEventHandlerCbk(USB_HOST_EVENT event, void *pEventData, uintptr_t context);
 
 static void U3VApp_AttachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context);
 
 static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_t context);
+
+static inline uint32_t U3VApp_ImgPresetAppReqToRegMapping(T_U3VCamDriverImagePreset presetAppReq);
+
+static inline T_U3VCamDriverImagePreset U3VApp_ImgPresetRegToAppReqMapping(uint32_t presetRegVal);
 
 static T_U3VHostEventResponse U3VApp_HostEventHandlerCbk(T_U3VHostHandle u3vObjHandle, T_U3VHostEvent event, void *pEventData, uintptr_t context);
 
@@ -37,19 +41,21 @@ void U3VCamDriver_Initialize(void)
 
     LED1_Off(); //TODO: remove on integration, XULT board specific
 
-    u3vAppData.state                = U3V_APP_STATE_BUS_ENABLE;
-    u3vAppData.deviceIsAttached     = false;
-    u3vAppData.deviceWasDetached    = false;
-    u3vAppData.camTemperature       = 0.F;
-    u3vAppData.pixelFormat          = UINT32_C(0);
-    u3vAppData.payloadSize          = UINT32_C(0);
-    u3vAppData.acquisitionMode      = UINT32_C(0);
-    u3vAppData.imgAcqRequested      = false;
-    u3vAppData.camSwResetRequested  = false;
-    u3vAppData.appImgTransfState    = U3V_SI_IMG_TRANSF_STATE_IDLE;
-    u3vAppData.appImgBlockCounter   = UINT32_C(0);
-    u3vAppData.appImgEvtCbk         = NULL;
-    u3vAppData.appImgDataBfr        = NULL;
+    u3vAppData.state                        = U3V_APP_STATE_BUS_ENABLE;
+    u3vAppData.deviceIsAttached             = false;
+    u3vAppData.deviceWasDetached            = false;
+    u3vAppData.camTemperature               = 0.F;
+    u3vAppData.imgPresetLoad.regVal         = UINT32_C(-1); /* set value to invalid */
+    u3vAppData.imgPresetLoad.reqstdPreset   = U3V_CAM_DRV_IMG_PRESET_USER_SET_0; /* apply user set 0 at startup */
+    u3vAppData.pixelFormat                  = UINT32_C(0);
+    u3vAppData.payloadSize                  = UINT32_C(0);
+    u3vAppData.acquisitionMode              = UINT32_C(0);
+    u3vAppData.imgAcqRequested              = false;
+    u3vAppData.camSwResetRequested          = false;
+    u3vAppData.appImgTransfState            = U3V_SI_IMG_TRANSF_STATE_IDLE;
+    u3vAppData.appImgBlockCounter           = UINT32_C(0);
+    u3vAppData.appImgEvtCbk                 = NULL;
+    u3vAppData.appImgDataBfr                = NULL;
 
     u3vDriver_InitStatus = drvSts;
 }
@@ -82,6 +88,7 @@ void U3VCamDriver_Tasks(void)
         u3vAppData.state                = U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH;
         u3vAppData.deviceWasDetached    = false;
         u3vAppData.camTemperature       = 0.F;
+        u3vAppData.imgPresetLoad.regVal = UINT32_C(-1); /* set value to invalid */
         u3vAppData.pixelFormat          = UINT32_C(0);
         u3vAppData.payloadSize          = UINT32_C(0);
         u3vAppData.acquisitionMode      = UINT32_C(0);
@@ -184,13 +191,46 @@ void U3VCamDriver_Tasks(void)
 
         case U3V_APP_STATE_GET_STREAM_CAPABILITIES:
             result1 = U3VHost_GetStreamCapabilities(u3vAppData.u3vHostHandle);
-            if ((result1 == U3V_HOST_RESULT_SUCCESS))
+            if (result1 == U3V_HOST_RESULT_SUCCESS)
             {
-                u3vAppData.state = U3V_APP_STATE_SETUP_PIXEL_FORMAT;
+                u3vAppData.state = U3V_APP_STATE_SETUP_IMG_PRESET;
             }
             else
             {
                 U3V_REPORT_ERROR(U3V_DRV_ERR_GET_STREAM_CPBL_FAIL);
+                u3vAppData.state = U3V_APP_STATE_ERROR;
+            }
+            break;
+
+        case U3V_APP_STATE_SETUP_IMG_PRESET:
+            result1 = U3VHost_ReadMemRegIntegerValue(u3vAppData.u3vHostHandle, U3V_MEM_REG_INT_IMG_PRESET_CURRENT, &u3vAppData.imgPresetLoad.regVal);
+            if (result1 == U3V_HOST_RESULT_SUCCESS)
+            {
+                /* if the camera's register current value is not matching the requested image preset */
+                if (u3vAppData.imgPresetLoad.reqstdPreset != U3VApp_ImgPresetRegToAppReqMapping(u3vAppData.imgPresetLoad.regVal))
+                {
+                    /* first select the preset to the UserSetSelector */
+                    result1 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, 
+                                                              U3V_MEM_REG_INT_IMG_PRESET_SELECT, 
+                                                              U3VApp_ImgPresetAppReqToRegMapping(u3vAppData.imgPresetLoad.reqstdPreset));
+                    /* then load the selected preset to UserSetLoad */
+                    result2 = U3VHost_WriteMemRegIntegerValue(u3vAppData.u3vHostHandle, 
+                                                              U3V_MEM_REG_INT_IMG_PRESET_LOAD, 
+                                                              U3V_SET_IMG_PRESET_LOAD_CMD(U3VApp_ImgPresetAppReqToRegMapping(u3vAppData.imgPresetLoad.reqstdPreset)));
+                    if ((result1 != U3V_HOST_RESULT_SUCCESS) || (result2 != U3V_HOST_RESULT_SUCCESS))
+                    {
+                        U3V_REPORT_ERROR(U3V_DRV_ERR_SET_IMG_PRESET_FAIL);
+                        u3vAppData.state = U3V_APP_STATE_ERROR;
+                    }
+                }
+                else
+                {
+                    u3vAppData.state = U3V_APP_STATE_SETUP_PIXEL_FORMAT;
+                }
+            }
+            else
+            {
+                U3V_REPORT_ERROR(U3V_DRV_ERR_SET_IMG_PRESET_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -499,6 +539,31 @@ T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void)
 }
 
 
+T_U3VCamDriverStatus U3VCamDriver_RequestImagePreset(T_U3VCamDriverImagePreset presetRequest)
+{
+    T_U3VCamDriverStatus drvSts = U3V_CAM_DRV_OK;
+
+    drvSts = (U3VApp_DrvInitStatus() == U3V_DRV_INITIALIZATION_OK) ? drvSts : U3V_CAM_DRV_NOT_INITD;
+
+    if (drvSts != U3V_CAM_DRV_OK)
+    {
+        return drvSts;
+    }
+
+    u3vAppData.imgPresetLoad.reqstdPreset = presetRequest;
+
+    return drvSts;
+}
+
+
+T_U3VCamDriverImagePreset U3VCamDriver_GetCurrImagePreset(void)
+{
+    T_U3VCamDriverImagePreset presetSel = u3vAppData.imgPresetLoad.reqstdPreset;
+
+    return presetSel;
+}
+
+
 size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
 {
     return U3V_PAYLD_BLOCK_MAX_SIZE;
@@ -515,7 +580,7 @@ size_t U3VCamDriver_GetImagePayldMaxBlockSize(void)
  * This function returns the initialization status of the U3V cam driver.
  * @return T_U3VDriverInitStatus 
  */
-static T_U3VDriverInitStatus U3VApp_DrvInitStatus(void)
+static inline T_U3VDriverInitStatus U3VApp_DrvInitStatus(void)
 {
     return u3vDriver_InitStatus;
 }
@@ -575,6 +640,80 @@ static void U3VApp_DetachEventListenerCbk(T_U3VHostHandle u3vObjHandle, uintptr_
     T_U3VAppData *pUsbU3VAppData;
     pUsbU3VAppData = (T_U3VAppData*)context;
     pUsbU3VAppData->deviceWasDetached = true;
+}
+
+
+/**
+ * U3V App image config. preset app request enum type to register value mapping.
+ * 
+ * This function translates the image sensor configuration preset value input
+ * from the application type value (enum) to register level value (uint32_t) 
+ * according to the camera's manifest xml.
+ * @param presetAppReq
+ * @return uint32_t
+ */
+static inline uint32_t U3VApp_ImgPresetAppReqToRegMapping(T_U3VCamDriverImagePreset presetAppReq)
+{
+    uint32_t presetRegVal;
+
+    switch (presetAppReq)
+    {
+        case U3V_CAM_DRV_IMG_PRESET_DEFAULT:
+            presetRegVal = U3V_CAM_IMG_PRESET_DEFAULT_SET;
+            break;
+
+        case U3V_CAM_DRV_IMG_PRESET_USER_SET_0:
+            presetRegVal = U3V_CAM_IMG_PRESET_USER_SET_0;
+            break;
+
+        case U3V_CAM_DRV_IMG_PRESET_USER_SET_1:
+            presetRegVal = U3V_CAM_IMG_PRESET_USER_SET_1;
+            break;
+
+        /* fallthrough to default */
+        case U3V_CAM_DRV_IMG_PRESET_INVLD:
+        default:
+            presetRegVal = U3V_CAM_IMG_PRESET_DEFAULT_SET;
+            break;
+    }
+
+    return presetRegVal;
+}
+
+
+/**
+ * U3V App image config. preset register value to app request enum type mapping.
+ * 
+ * This function translates the image sensor configuration preset value input
+ * from the register level value (uint32_t) to application type value (enum) 
+ * according to the camera's manifest xml.
+ * @param presetRegVal
+ * @return T_U3VCamDriverImagePreset
+ */
+static inline T_U3VCamDriverImagePreset U3VApp_ImgPresetRegToAppReqMapping(uint32_t presetRegVal)
+{
+    T_U3VCamDriverImagePreset presetSel;
+
+    switch (presetRegVal)
+    {
+        case U3V_CAM_IMG_PRESET_DEFAULT_SET:
+            presetSel = U3V_CAM_DRV_IMG_PRESET_DEFAULT;
+            break;
+
+        case U3V_CAM_IMG_PRESET_USER_SET_0:
+            presetSel = U3V_CAM_DRV_IMG_PRESET_USER_SET_0;
+            break;
+
+        case U3V_CAM_IMG_PRESET_USER_SET_1:
+            presetSel = U3V_CAM_DRV_IMG_PRESET_USER_SET_1;
+            break;
+
+        default:
+            presetSel = U3V_CAM_DRV_IMG_PRESET_INVLD;
+            break;
+    }
+
+    return presetSel;
 }
 
 
