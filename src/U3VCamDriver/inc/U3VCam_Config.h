@@ -99,8 +99,8 @@ extern "C" {
     #define U3V_SI_CTRL_ENABLE_CMD                  (UINT32_C(0x1))             /* 1 = SI control enable true */
     #define U3V_SI_CTRL_DISABLE_CMD                 (UINT32_C(0x0))             /* 1 = SI control disable true */
     #define U3V_CAM_IMG_PRESET_DEFAULT_SET          (UINT32_C(0x0))             /* UserSetSelector: Default set (0) */
-    #define U3V_CAM_IMG_PRESET_USER_SET_0           (UINT32_C(0x31))            /* UserSetSelector: User set 0 (31) */
-    #define U3V_CAM_IMG_PRESET_USER_SET_1           (UINT32_C(0x30))            /* UserSetSelector: User set 1 (30) */
+    #define U3V_CAM_IMG_PRESET_USER_SET_0           (UINT32_C(0x1F))            /* UserSetSelector: User set 0 (31) */
+    #define U3V_CAM_IMG_PRESET_USER_SET_1           (UINT32_C(0x1E))            /* UserSetSelector: User set 1 (30) */
     #define U3V_SET_IMG_PRESET_LOAD_CMD(val)        (UINT32_C(0x1))             /* UserSetLoad command (1) */
     #define U3V_GET_IMG_PRESET_CURRENT_CONV(val)    (val)                       /* UserSetSelector_Val: no conversion */
     #define U3V_GET_IMG_PRESET_SELECT_CONV(val)     (val)                       /* UserSetSelector_Val: no conversion */
