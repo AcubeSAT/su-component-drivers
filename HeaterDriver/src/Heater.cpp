@@ -36,7 +36,7 @@ void Heater<PWMPeripheral, ChannelMask, ChannelNum>::setDutyCyclePercentage(uint
         startHeater();
     }
     this->dutyCyclePercentage = dutyCyclePercentage;
-    HAL_PWM::PWM_ChannelDutySet<PeripheralNumber>(ChannelNum, convertDutyCyclePercentageToTicks());
+    HAL_PWM::PWM_ChannelDutySet<PWMPeripheral>(ChannelNum, convertDutyCyclePercentageToTicks());
     if (not _heaterHasStarted) {
         stopHeater();
     }
