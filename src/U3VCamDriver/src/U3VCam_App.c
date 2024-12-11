@@ -452,6 +452,54 @@ void U3VCamDriver_CancelImageAcqRequest(void)
 }
 
 
+T_U3VCamDriverCamState U3VCamDriver_GetCamState(void)
+{
+    T_U3VCamDriverCamState camSt;
+
+    switch (u3vAppData.state)
+    {
+        /* fallthrough 3 cases for "DISCONNECTED" state */
+        case U3V_APP_STATE_BUS_ENABLE:
+        case U3V_APP_STATE_WAIT_FOR_BUS_ENABLE_COMPLETE:
+        case U3V_APP_STATE_WAIT_FOR_DEVICE_ATTACH:
+            camSt = U3V_CAM_DRV_CAM_DISCONNECTED;
+            break;
+
+        /* fallthrough 9 cases for "CONNECTED" state */
+        case U3V_APP_STATE_OPEN_DEVICE:
+        case U3V_APP_STATE_SETUP_U3V_CONTROL_IF:
+        case U3V_APP_STATE_READ_DEVICE_TEXT_DESCR:
+        case U3V_APP_STATE_GET_STREAM_CAPABILITIES:
+        case U3V_APP_STATE_SETUP_IMG_PRESET:
+        case U3V_APP_STATE_SETUP_PIXEL_FORMAT:
+        case U3V_APP_STATE_SETUP_ACQUISITION_MODE:
+        case U3V_APP_STATE_SETUP_U3V_STREAM_IF:
+        case U3V_APP_STATE_GET_CAM_TEMPERATURE:
+            camSt = U3V_CAM_DRV_CAM_CONNECTED;
+            break;
+
+        /* "READY TO ACQUIRE IMAGE" state */
+        case U3V_APP_STATE_READY_TO_START_IMG_ACQUISITION:
+            camSt = U3V_CAM_DRV_CAM_READY_TO_ACQ_IMG;
+            break;
+
+        /* fallthrough 2 cases for "IN IMAGE TRANSFER" state */
+        case U3V_APP_STATE_WAIT_TO_ACQUIRE_IMAGE:
+        case U3V_APP_STATE_STOP_IMAGE_ACQ:
+            camSt = U3V_CAM_DRV_CAM_IN_IMG_TRANSF;
+            break;
+
+        /* fallthrough 2 cases for "FAILURE" state */
+        case U3V_APP_STATE_ERROR:
+        default:
+            camSt = U3V_CAM_DRV_CAM_FAILURE;
+            break;
+    }
+
+    return camSt;
+}
+
+
 T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDeviceDescriptorTextType textType, void *buffer)
 {
     T_U3VCamDriverStatus drvSts = U3V_CAM_DRV_OK;
