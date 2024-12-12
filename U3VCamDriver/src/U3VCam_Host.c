@@ -286,6 +286,18 @@ T_U3VHostResult U3VHost_ReadMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_U
     {
         switch (integerReg)
         {
+            case U3V_MEM_REG_INT_IMG_PRESET_CURRENT:
+                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_IMG_PRESET_CURRENT_REG_ADR;
+                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, &regValue);
+                regValue = U3V_GET_IMG_PRESET_CURRENT_CONV(regValue);
+                break;
+
+            case U3V_MEM_REG_INT_IMG_PRESET_SELECT:
+                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_IMG_PRESET_SELECT_REG_ADR;
+                u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, &regValue);
+                regValue = U3V_GET_IMG_PRESET_SELECT_CONV(regValue);
+                break;
+
             case U3V_MEM_REG_INT_ACQ_MODE:
                 regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_ACQ_MODE_REG_ADR;
                 u3vResult = U3VHost_CtrlIfReadMemory(ctrlIfInstance, NULL, regAddr, sizeof(regValue), &bytesRead, &regValue);
@@ -346,6 +358,16 @@ T_U3VHostResult U3VHost_WriteMemRegIntegerValue(T_U3VHostHandle u3vObjHandle, T_
     {
         switch (integerReg)
         {
+            case U3V_MEM_REG_INT_IMG_PRESET_SELECT:
+                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_IMG_PRESET_SELECT_REG_ADR;
+                regValue = U3V_SET_IMG_PRESET_SELECT_CONV(regVal);
+                break;
+
+            case U3V_MEM_REG_INT_IMG_PRESET_LOAD:
+                regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_IMG_PRESET_LOAD_REG_ADR;
+                regValue = U3V_SET_IMG_PRESET_LOAD_CONV(regVal);
+                break;
+
             case U3V_MEM_REG_INT_ACQ_MODE:
                 regAddr = U3V_CAM_CFG_REG_BASE_ADR + U3V_CAM_CFG_ACQ_MODE_REG_ADR;
                 regValue = U3V_SET_ACQ_MODE_CONV(regVal);

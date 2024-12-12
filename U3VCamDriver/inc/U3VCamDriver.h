@@ -27,6 +27,37 @@ typedef enum
 } T_U3VCamDriverStatus;
 
 /**
+ * U3VCamDriver camera state.
+ * 
+ * Enum which describes the operation state of the camera.
+ */
+typedef enum
+{
+    U3V_CAM_DRV_CAM_FAILURE          = -1,
+    U3V_CAM_DRV_CAM_DISCONNECTED     =  0,
+    U3V_CAM_DRV_CAM_CONNECTED        =  1,
+    U3V_CAM_DRV_CAM_READY_TO_ACQ_IMG =  2,
+    U3V_CAM_DRV_CAM_IN_IMG_TRANSF    =  3
+} T_U3VCamDriverCamState;
+
+/**
+ * U3VCamDriver image configuration preset selection.
+ * 
+ * Enum which describes the image config. preset selected
+ * (invalid / default / user_set_0 / user_set_1).
+ * @note This image configuration preset contains a 
+ * series of user defined image sensor related params
+ * which can be preloaded in the camera's NVM slots.
+ */
+typedef enum
+{
+    U3V_CAM_DRV_IMG_PRESET_INVLD = -1,
+    U3V_CAM_DRV_IMG_PRESET_DEFAULT,
+    U3V_CAM_DRV_IMG_PRESET_USER_SET_0,
+    U3V_CAM_DRV_IMG_PRESET_USER_SET_1
+} T_U3VCamDriverImagePreset;
+
+/**
  * U3V Camera text descriptor text datatype.
  * 
  * Enum to specify the text descriptor to get.
@@ -200,6 +231,26 @@ T_U3VCamDriverStatus U3VCamDriver_RequestNewImagePayloadBlock(void);
 void U3VCamDriver_CancelImageAcqRequest(void);
 
 /**
+ * Get camera operation state.
+ * 
+ * Get the current camera operation state.
+ * @return T_U3VCamDriverCamState current operation state of the camera.
+ * @note While the camera supply is not powered, the expected state shall be 
+ * U3V_CAM_DRV_CAM_DISCONNECTED. After powering-on the camera supply and a 
+ * successful USB handshake, the state switches to U3V_CAM_DRV_CAM_CONNECTED but
+ * the camera is still being configured to reach ready state and may take up to 
+ * 120ms (assuming that the U3VCamDriver_Tasks() task time is 10ms). The state 
+ * U3V_CAM_DRV_CAM_READY_TO_ACQ_IMG occurs after the camera has reached the 
+ * ready state, impying that it is ready to start an image acquisition. After an
+ * image is requested, the state switches to U3V_CAM_DRV_CAM_IN_IMG_TRANSF until
+ * the image is fully trasferred. The state U3V_CAM_DRV_CAM_FAILURE implies that
+ * there was a failure detected during the configuration time (after the USB 
+ * handshake). In that case, a power-reset of the camera supply can be a typical 
+ * solution to the problem.
+ */
+T_U3VCamDriverCamState U3VCamDriver_GetCamState(void);
+
+/**
  * Get a selected text descriptor from the connected camera.
  * 
  * Get a text descriptor (T_U3VCamDriverDeviceDescriptorTextType) from the 
@@ -245,6 +296,33 @@ T_U3VCamDriverStatus U3VCamDriver_GetDeviceTemperature(float *temperatureC);
  * operability of the driver.
  */
 T_U3VCamDriverStatus U3VCamDriver_CamSwReset(void);
+
+/**
+ * Request an image sensor configuration preset selection.
+ * 
+ * This function may be used to request a different image sensor config preset
+ * on runtime. A preset may contain user defined configurations for image sensor
+ * parameters that can be preloaded in the camera's NVM slots.
+ * @param presetRequest image sensor config set selection (enum).
+ * @return T_U3VCamDriverStatus Status of the driver that indicates the 
+ * operability of the driver.
+ * @warning A requested preset will be applied during camera boot time and
+ * not while the camera is in ready for image acquition state, therefore it is
+ * recommended to call this function prior to powering on the camera, else the 
+ * selected set will be applied in the next session.
+ */
+T_U3VCamDriverStatus U3VCamDriver_RequestImagePreset(T_U3VCamDriverImagePreset presetRequest);
+
+/**
+ * Get the current image sensor configuration preset selection.
+ * 
+ * This function may be used to read the current image sensor config preset  
+ * selection. 
+ * @note It may be (optionally) used prior to U3VCamDriver_RequestImagePreset 
+ * to avoid unecessary requesting an already active set.
+ * @return T_U3VCamDriverImagePreset 
+ */
+T_U3VCamDriverImagePreset U3VCamDriver_GetCurrImagePreset(void);
 
 /**
  * Get the image payload block maximum size of the U3VCamDriver.
