@@ -18,7 +18,7 @@
 #define Dosimeter_IsTransmitterBusy SPI0_IsTransmitterBusy
 #define Dosimeter_Initialize SPI0_Initialize
 #else
-#include "peripheral/spi/spi_master/plib_spi0_master.h"
+#include "peripheral/spi/spi_master/plib_spi1_master.h"
 #define Dosimeter_WriteRead SPI1_WriteRead
 #define Dosimeter_Write SPI1_Write
 #define Dosimeter_Read SPI1_Read
@@ -50,6 +50,8 @@ public:
     void quickSetup();
 
     uint8_t readChipID();
+
+    bool sensorIsAlive();
 
 private:
     /**
@@ -283,5 +285,4 @@ private:
 
     void readSerialNumber();
 
-    bool sensorIsAlive();
 };

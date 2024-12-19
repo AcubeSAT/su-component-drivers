@@ -14,12 +14,12 @@ uint8_t Dosimeter::readRegister(Dosimeter::RegisterAddress readRegister) {
     uint8_t commandAddressByte = static_cast<uint8_t>(readRegister) | SPI_READ_COMMAND;
     uint8_t registerValue = 0;
 
-    executeSPITransaction(Dosimeter_WriteRead, &commandAddressByte, RegisterAddressSizeInBytes, &registerValue, RegisterSizeInBytes);
+    executeSPITransaction(Dosimeter_WriteRead, &commandAddressByte, RegisterAddressSizeInBytes, &registerValue, RegisterSizeInBytes + RegisterAddressSizeInBytes);
 
     // or try this if the sensor is slow
-//    executeSPITransaction(DOSIMETER_SPI_Write, &commandAddressByte, RegisterAddressSizeInBytes);
+      // executeSPITransaction(Dosimeter_Write, &commandAddressByte, RegisterAddressSizeInBytes);
 //
-//    executeSPITransaction(DOSIMETER_SPI_Read, &registerValue, RegisterSizeInBytes);
+      // executeSPITransaction(Dosimeter_Read, &registerValue, RegisterSizeInBytes);
 
     return registerValue;
 }
