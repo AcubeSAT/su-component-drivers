@@ -75,7 +75,7 @@ extern "C" {
     #define U3V_GET_PAYLOAD_SIZE_CONV(val)          (val)                       /* no conversion */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)          ((val & 0xFF000000) >> 24)  /* value is stored on high byte (bits 24 to 31) */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)          ((val & 0x000000FF) << 24)  /* value is stored on high byte (bits 24 to 31) */
-    #define U3V_GET_TEMPERATURE_CONV(val)           (((float)(val & 0x00000FFF) / 10.0F) - 273.15F) /* convert Kelvin to Celcius (from unsigned int input) */
+    #define U3V_GET_TEMPERATURE_CONV(val)           (((float)(val & 0x00000FFF) / 10.0F) - 273.15F) /* convert Kelvin to Celsius (from unsigned int input) */
 /*******************************************************************************
  * FLIR Blackfly S BFS-U3-16S2C-CS
  ******************************************************************************/
@@ -114,7 +114,7 @@ extern "C" {
     #define U3V_GET_PAYLOAD_SIZE_CONV(val)          (val)                       /* no conversion */
     #define U3V_GET_PIXEL_FORMAT_CONV(val)          (val)                       /* no conversion */
     #define U3V_SET_PIXEL_FORMAT_CONV(val)          (val)                       /* no conversion */
-    #define U3V_GET_TEMPERATURE_CONV(val)           (((float)(val & 0x0000FFFF) / 10.0F)) /* Celcius (from unsigned int input) */
+    #define U3V_GET_TEMPERATURE_CONV(val)           (((float)(val & 0x0000FFFF) / 10.0F)) /* Celsius (from unsigned int input) */
 /******************************************************************************/
 #else
     #error "Invalid USB3 Vision camera model selected"

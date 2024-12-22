@@ -196,8 +196,8 @@ T_U3VCamDriverStatus U3VCamDriver_SetImagePayldTransfParams(T_U3VCamDriverPayloa
  * for a new image payload block. In order for the request to be processed 
  * properly, the app has first to configure the app callback and the image data 
  * buffer via the U3VCamDriver_SetImagePayldTransfParams. When the image payload
- * block has been received and transfered into the data buffer, the app callback
- * will be called to notify about the received block with an event
+ * block has been received and transferred into the data buffer, the app 
+ * callback will be called to notify about the received block with an event
  * (T_U3VCamDriverImageAcqPayloadEvent) which indicates the type of the received
  * image payload block. The 'leader' is the first block to be received, then a 
  * large series of 'payload data' containing the actual image data follow, until
@@ -241,12 +241,12 @@ void U3VCamDriver_CancelImageAcqRequest(void);
  * the camera is still being configured to reach ready state and may take up to 
  * 120ms (assuming that the U3VCamDriver_Tasks() task time is 10ms). The state 
  * U3V_CAM_DRV_CAM_READY_TO_ACQ_IMG occurs after the camera has reached the 
- * ready state, impying that it is ready to start an image acquisition. After an
- * image is requested, the state switches to U3V_CAM_DRV_CAM_IN_IMG_TRANSF until
- * the image is fully trasferred. The state U3V_CAM_DRV_CAM_FAILURE implies that
- * there was a failure detected during the configuration time (after the USB 
- * handshake). In that case, a power-reset of the camera supply can be a typical 
- * solution to the problem.
+ * ready state, implying that it is ready to start an image acquisition. After 
+ * an image is requested, the state switches to U3V_CAM_DRV_CAM_IN_IMG_TRANSF 
+ * until the image is fully transferred. The state U3V_CAM_DRV_CAM_FAILURE 
+ * implies that there was a failure detected during the configuration time 
+ * (after the USB handshake). In that case, a power-reset of the camera supply 
+ * can be a typical solution to the problem.
  */
 T_U3VCamDriverCamState U3VCamDriver_GetCamState(void);
 
@@ -269,11 +269,11 @@ T_U3VCamDriverCamState U3VCamDriver_GetCamState(void);
 T_U3VCamDriverStatus U3VCamDriver_GetDeviceTextDescriptor(T_U3VCamDriverDeviceDescriptorTextType textType, void *buffer);
 
 /**
- * Get camera's temperature in Celcius. 
+ * Get camera's temperature in Celsius. 
  * 
- * Get the connected camera's last temperature reading in Celcius scale. The 
+ * Get the connected camera's last temperature reading in Celsius degrees. The 
  * temperature is read during power-on time and is stored in driver's local data
- * (RAM). Every time this function is called, the temperature is copied by the 
+ * (RAM). Every time this function is called, the temperature is copied from the 
  * RAM area and not by the camera directly, thus the reading may be as much 
  * 'old' as the time that passed since the powering-on of the camera and shall 
  * not be considered as a precise measurement for critical operations. 
@@ -320,6 +320,10 @@ T_U3VCamDriverStatus U3VCamDriver_RequestImagePreset(T_U3VCamDriverImagePreset p
  * selection. 
  * @note It may be (optionally) used prior to U3VCamDriver_RequestImagePreset 
  * to avoid unecessary requesting an already active set.
+ * @warning It returns the last requested value and not the current preset of 
+ * the camera, which may differ if the request for a new image preset is placed
+ * while the camera is already power on. The requested preset is applied during 
+ * configuration time after a camera power reset.
  * @return T_U3VCamDriverImagePreset 
  */
 T_U3VCamDriverImagePreset U3VCamDriver_GetCurrImagePreset(void);
