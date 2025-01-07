@@ -8,14 +8,14 @@ bool LPS22HH::executeI2CTransaction(F i2cFunction, Arguments... arguments) {
         return true;
     }
 
-    LOG_INFO << "Humidity sensor with address " << static_cast<uint8_t>(I2CAddress) << ": I2C bus is busy";
+    LOG_INFO << "Pressure sensor with address " << static_cast<uint8_t>(I2CAddress) << ": I2C bus is busy";
     return false;
 }
 
 void LPS22HH::checkForNACK() {
     auto error = LPS22HH_TWIHS_ErrorGet();
     if (error == TWIHS_ERROR_NACK) {
-        LOG_ERROR << "Humidity-Temperature sensor with address " << static_cast<uint8_t>(I2CAddress) <<
+        LOG_ERROR << "Pressure sensor with address " << static_cast<uint8_t>(I2CAddress) <<
                 " , is disconnected, suspending task";
         vTaskSuspend(nullptr);
     }
