@@ -1,38 +1,77 @@
 #pragma once
 
+#include <etl/utility.h>
 #include <etl/array.h>
 #include <cstdint>
-#include "definitions.h"
-#include "Task.hpp"
+#include "FreeRTOS.h"
+#include "Logger.hpp"
+#include "task.h"
+#include "peripheral/pio/plib_pio.h"
+#include "Peripheral_Definitions.hpp"
 
-#define LPS22HH_SPI_PORT 0
+/**
+ * The LPS22HH_TWI_PORT definition is used to select which TWI peripheral of the ATSAMV71 MCU will be used.
+ * By giving the corresponding value to LPS22HH_TWI_PORT, the user can choose between TWI0, TWI1 or TWI2 respectively.
+ */
+#if LPS22HH_TWI_PORT == 0
 
-#if LPS22HH_SPI_PORT == 0
-#define LPS22HH_SPI_WriteRead SPI0_WriteRead
-#define LPS22HH_SPI_Write   SPI0_Write
-#define LPS22HH_SPI_Read    SPI0_Read
-#define LPS22HH_SPI_IsBusy  SPI0_IsBusy
+#include "plib_twihs0_master.h"
+#define LPS22HH_TWIHS_WriteRead TWIHS0_WriteRead
+#define LPS22HH_TWIHS_Write TWIHS0_Write
+#define LPS22HH_TWIHS_ErrorGet TWIHS0_ErrorGet
+#define LPS22HH_TWIHS_Read TWIHS0_Read
+#define LPS22HH_TWIHS_Initialize TWIHS0_Initialize
+#define LPS22HH_TWIHS_IsBusy TWIHS0_IsBusy
 
-#elif LPS22HH_SPI_PORT == 1
-#define LPS22HH_SPI_WriteRead SPI1_WriteRead
-#define LPS22HH_SPI_Write   SPI1_Write
-#define LPS22HH_SPI_Read    SPI1_Read
-#define LPS22HH_SPI_IsBusy  SPI1_IsBusy
+#elif LPS22HH_TWI_PORT == 1
 
-#elif LPS22HH_SPI_PORT == 2
-#define LPS22HH_SPI_WriteRead SPI2_WriteRead
-#define LPS22HH_SPI_Write   SPI2_Write
-#define LPS22HH_SPI_Read    SPI2_Read
-#define LPS22HH_SPI_IsBusy  SPI2_IsBusy
+#include "plib_twihs1_master.h"
+#define LPS22HH_TWIHS_WriteRead TWIHS1_WriteRead
+#define LPS22HH_TWIHS_Write TWIHS1_Write
+#define LPS22HH_TWIHS_ErrorGet TWIHS1_ErrorGet
+#define LPS22HH_TWIHS_Read TWIHS1_Read
+#define LPS22HH_TWIHS_Initialize TWIHS1_Initialize
+#define LPS22HH_TWIHS_IsBusy TWIHS1_IsBusy
+
+#elif LPS22HH_TWI_PORT == 2
+
+#include "plib_twihs2_master.h"
+#define LPS22HH_TWIHS_WriteRead TWIHS2_WriteRead
+#define LPS22HH_TWIHS_Write TWIHS2_Write
+#define LPS22HH_TWIHS_ErrorGet TWIHS2_ErrorGet
+#define LPS22HH_TWIHS_Read TWIHS2_Read
+#define LPS22HH_TWIHS_Initialize TWIHS2_Initialize
+#define LPS22HH_TWIHS_IsBusy TWIHS2_IsBusy
+
 #endif
 
 /**
- * This is a generic driver implementation for LPS22HH based on the SPI protocol.
- * @ingroup drivers
- * @see https://gr.mouser.com/datasheet/2/389/lps22hh-1395924.pdf
+ * @class LPS22HH
  */
 class LPS22HH {
-private:
+public:
+    /**
+     * User defined I2C address.
+     * I2C_ADDRESS_A : ADDR (pin 2) is connected to logic low (default)
+     * I2C_ADDRESS_B : ADDR (pin 2) is connected to logic high
+     */
+    enum LPS22HH_I2C_Address : uint8_t {
+        I2C_ADDRESS_A = 0x5C,
+        I2C_ADDRESS_B = 0x5D
+    };
+
+    enum FIFOModes : uint8_t {
+        BYPASS = 0x00,
+        FIFO = 0x01,
+        CONTINUOUS = 0x02,
+        BYPASS_TO_FIFO = 0x01,
+        BYPASS_TO_CONTINUOUS = 0x02,
+        CONTINUOUS_TO_FIFO = 0x03,
+    };
+
+    /**
+    * Register addresses as defined within the datasheet
+    */
     enum RegisterAddress : uint8_t {
         CTRL_REG1 = 0x10,
         CTRL_REG2 = 0x11,
@@ -55,103 +94,27 @@ private:
     };
 
     /**
-     * SPI Command Type (Write/Read)
-     */
-    enum SPICommandType : uint8_t {
-        SPI_WRITE_COMMAND = 0x0,
-        SPI_READ_COMMAND = 0x80,
-    };
-
-    /**
-     *
-     */
-    inline static constexpr uint8_t whoAmIRegisterDefaultValue = 0b10110011;
-
-    /**
-     * The output data rate (Hz) set in Control Register 1
-     */
+    * The output data rate (Hz) set in Control Register 1
+    */
     enum OutputDataRate : uint8_t {
-        ONE_SHOT = 0x0,
-        HZ1 = 0x1,
-        HZ10 = 0x2,
-        HZ25 = 0x3,
-        HZ50 = 0x4,
-        HZ75 = 0x5,
-        HZ100 = 0x6,
-        HZ200 = 0x7,
-    };
-
-    enum FIFOModes : uint8_t {
-        BYPASS = 0x0,
-        FIFO = 0x1,
-        CONTINUOUS = 0x2,
-        BYPASS_TO_FIFO = 0x1,
-        BYPASS_TO_CONTINUOUS = 0x2,
-        CONTINUOUS_TO_FIFO = 0x3,
+        ONE_SHOT = 0x00,
+        HZ1 = 0x01,
+        HZ10 = 0x02,
+        HZ25 = 0x03,
+        HZ50 = 0x04,
+        HZ75 = 0x05,
+        HZ100 = 0x06,
+        HZ200 = 0x07,
     };
 
     /**
-     * Wait period before for abandoning an SPI transfer because the send/receive buffer does not get unloaded/gets loaded.
+     * Constructor used for initializing the sensor I2C address
+     * @param i2cUserAddress the I2C address. Must be of type LPS22HH_I2C_Address
+     * @param nResetPin the GPIO of the MCU connected to the nRESET pin (pin 6) of the sensor
+     * @param alertPin the GPIO of the MCU connected to the Alert pin (pin 3) of the sensor
      */
-    static inline constexpr uint16_t TimeoutTicks = 5000;
-
-
-    /**
-     * The pressure sensitivity value according to the datasheet in LSB/hPa. It is used to calculate the pressure.
-     */
-    static const uint16_t PressureSensitivity = 4096;
-
-    /**
-     * The temperature sensitivity value according to the datasheet in LSB/°C. It is used to calculate the temperature.
-     */
-    static const uint8_t TemperatureSensitivity = 100;
-
-    /**
-     * The temperature measurement in °C.
-     */
-    float temperatureValue;
-
-    /**
-     * The pressure measurement in hPa.
-     */
-    float pressureValue;
-
-    /**
-     * Chip select pin of the SPI peripheral.
-     */
-    PIO_PIN ssn;
-
-    /**
-     * Maximum number of bytes that are written in registers.
-     */
-    static const uint8_t MaxWriteBytes = 3;
-
-    /**
-     * Reads from a specific register of the LPS22HH device.
-     * @param registerAddress is the value of a register address.
-     */
-    [[nodiscard]] uint8_t readFromRegister(RegisterAddress registerAddress) const;
-
-    /**
-     * Writes a byte to a specific address.
-     * @param registerAddress is the specific address in which a byte is going to be written.
-     * @param data is the byte which will be written to the specific register.
-     */
-    void writeToRegister(RegisterAddress registerAddress, uint8_t data) const;
-
-    /**
-     * Get the STATUS of the sensor.
-     * @return byte in the STATUS register of the sensor.
-     */
-    uint8_t getStatus();
-
-public:
-    /**
-     * @param ssn the chip select pin for the SPI protocol
-     */
-    LPS22HH(PIO_PIN ssn) : ssn(ssn) {
-        PIO_PinWrite(ssn, true);
-    };
+    explicit LPS22HH(LPS22HH_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {
+    }
 
     /**
      * Read the current pressure measurement in hPa.
@@ -166,9 +129,9 @@ public:
     float readTemperature();
 
     /**
-     * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
-     * @param rate ODR bits
-     */
+    * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
+    * @param rate ODR bits
+    */
     void setODRBits(OutputDataRate rate);
 
     /**
@@ -189,17 +152,90 @@ public:
     void setFIFOMode(FIFOModes mode);
 
     /**
-     * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measuremnt
+     * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measurement
      */
     void triggerOneShotMode();
 
+private:
     /**
-     *
+     * I2C device address.
      */
-    void performAreYouAliveCheck();
+    const LPS22HH_I2C_Address I2CAddress;
 
     /**
-     *
+     * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
+     * This value was chosen arbitrarily and seems to be working, it is not stated in the datasheet.
      */
-    void waitForTransfer() const;
+    static constexpr uint8_t msToWait = 30;
+
+    /**
+     * The number of bytes a command consists of.
+     */
+    static constexpr uint8_t NumberOfBytesInCommand = 1;
+
+    /**
+     * The number of bytes hat are sent from the sensor after sending the command for Single-Shot Mode.
+     * The data consist of 6 bytes, 2 raw sensor data bytes for each physical measurement plus 1 byte each for the checksum.
+     */
+    static constexpr uint8_t NumberOfBytesToReadFromRegister = 1;
+
+    /**
+     * Wait period before for abandoning an I2C transaction because the send/receive buffer does not get unloaded/gets loaded.
+     */
+    static constexpr uint16_t TimeoutTicks = 1000;
+
+    /**
+        * The pressure sensitivity value according to the datasheet in LSB/hPa. It is used to calculate the pressure.
+        */
+    static constexpr uint16_t PressureSensitivity = 4096;
+
+    /**
+     * The temperature sensitivity value according to the datasheet in LSB/°C. It is used to calculate the temperature.
+     */
+    static constexpr  uint8_t TemperatureSensitivity = 100;
+
+    /**
+     * Function that prevents hanging when a I2C device is not responding.
+     */
+    void waitForI2CBuffer() const {
+        auto start = xTaskGetTickCount();
+        while (LPS22HH_TWIHS_IsBusy()) {
+            if (xTaskGetTickCount() - start > TimeoutTicks) {
+                LOG_ERROR << "Humidity sensor with address " << I2CAddress << " , communication has timed out";
+                LPS22HH_TWIHS_Initialize();
+                break;
+            }
+        }
+    };
+
+    /**
+     * An abstraction layer function that is the only one that interacts with the HAL. Executes one of the Read, Write or ReadWrite functions of
+     * the HAL with the correct number of parameters.
+     * @tparam F function template
+     * @tparam Arguments template for arbitrary number of arguments
+     * @param i2cFunction the HAL I2C function to execute
+     * @param arguments the arguments for the I2C function
+     * @return true if transaction was successful, false otherwise
+     */
+    template<typename F, typename... Arguments>
+    bool executeI2CTransaction(F i2cFunction, Arguments... arguments);
+
+    /**
+     * Function that prevents hanging when a I2C device is not responding.
+     */
+    void checkForNACK();
+
+    /**
+     * Sends a command to the sensor.
+     * @param registerAddress can be one of the register address enum types
+     * @param txData the byte to be sent and written on the selected register
+     */
+    void writeToRegister(RegisterAddress registerAddress, uint8_t txData);
+
+    /**
+     * Attempts to read register data from the provided register address
+     * @param registerAddress
+     */
+    uint8_t readFromRegister(RegisterAddress registerAddress);
+
 };
