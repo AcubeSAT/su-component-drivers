@@ -36,22 +36,17 @@
 #elif LPS22HH_TWI_PORT == 2
 
 #include "plib_twihs2_master.h"
-
 #define LPS22HH_TWIHS_WriteRead TWIHS2_WriteRead
 #define LPS22HH_TWIHS_Write TWIHS2_Write
 #define LPS22HH_TWIHS_ErrorGet TWIHS2_ErrorGet
 #define LPS22HH_TWIHS_Read TWIHS2_Read
 #define LPS22HH_TWIHS_Initialize TWIHS2_Initialize
 #define LPS22HH_TWIHS_IsBusy TWIHS2_IsBusy
+
 #endif
 
 /**
- * Driver for the SHT3x-DIS family of Humidity and Temperature Sensors.
- * This is a driver to operate a SHT3x-DIS sensor with the ATSAMV71 microcontroller. All Microchip-specific
- * functions are used solely within the core read and write functions.
- *
- * For more details about the operation of the sensor, see the datasheet found at:
- * https://sensirion.com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.pdf
+ * @class LPS22HH
  */
 class LPS22HH {
 public:
@@ -74,7 +69,6 @@ public:
         CONTINUOUS_TO_FIFO = 0x03,
     };
 
-private:
     /**
     * Register addresses as defined within the datasheet
     */
@@ -114,6 +108,56 @@ private:
     };
 
     /**
+     * Constructor used for initializing the sensor I2C address
+     * @param i2cUserAddress the I2C address. Must be of type LPS22HH_I2C_Address
+     * @param nResetPin the GPIO of the MCU connected to the nRESET pin (pin 6) of the sensor
+     * @param alertPin the GPIO of the MCU connected to the Alert pin (pin 3) of the sensor
+     */
+    explicit LPS22HH(LPS22HH_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {
+    }
+
+    /**
+     * Read the current pressure measurement in hPa.
+     * @return the calculated pressure value.
+     */
+    float readPressure();
+
+    /**
+     * Read the current temperature measurement in °C.
+     * @return the calculated temperature value.
+     */
+    float readTemperature();
+
+    /**
+    * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
+    * @param rate ODR bits
+    */
+    void setODRBits(OutputDataRate rate);
+
+    /**
+     * Sets the bit that defines the use of the FIFO watermark level in the FIFO Control Register (FIFO_CTRL(13h))
+     * @param stopOnWTM flag to enable the mode or not
+     */
+    void setStopOnWTM(bool stopOnWTM);
+
+    /**
+     * Sets the bit that enables triggered FIFO modes in the FIFO Control Register (FIFO_CTRL(13h))
+     * @param trigMode flag to enable trigger mode or not
+     */
+    void setTrigModes(bool trigMode);
+
+    /**
+     * Sets the FIFO mode in the FIFO Control Register (FIFO_CTRL(13h))
+     */
+    void setFIFOMode(FIFOModes mode);
+
+    /**
+     * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measurement
+     */
+    void triggerOneShotMode();
+
+private:
+    /**
      * I2C device address.
      */
     const LPS22HH_I2C_Address I2CAddress;
@@ -122,33 +166,33 @@ private:
      * Milliseconds to wait for the sensor measurements to be completed in Single-shot Mode or a sensor reset to complete.
      * This value was chosen arbitrarily and seems to be working, it is not stated in the datasheet.
      */
-    static inline constexpr uint8_t msToWait = 30;
+    static constexpr uint8_t msToWait = 30;
 
     /**
      * The number of bytes a command consists of.
      */
-    static inline constexpr uint8_t NumberOfBytesInCommand = 1;
+    static constexpr uint8_t NumberOfBytesInCommand = 1;
 
     /**
      * The number of bytes hat are sent from the sensor after sending the command for Single-Shot Mode.
      * The data consist of 6 bytes, 2 raw sensor data bytes for each physical measurement plus 1 byte each for the checksum.
      */
-    static inline constexpr uint8_t NumberOfBytesToReadFromRegister = 1;
+    static constexpr uint8_t NumberOfBytesToReadFromRegister = 1;
 
     /**
      * Wait period before for abandoning an I2C transaction because the send/receive buffer does not get unloaded/gets loaded.
      */
-    static inline constexpr uint16_t TimeoutTicks = 1000;
+    static constexpr uint16_t TimeoutTicks = 1000;
 
     /**
         * The pressure sensitivity value according to the datasheet in LSB/hPa. It is used to calculate the pressure.
         */
-    static const uint16_t PressureSensitivity = 4096;
+    static constexpr uint16_t PressureSensitivity = 4096;
 
     /**
      * The temperature sensitivity value according to the datasheet in LSB/°C. It is used to calculate the temperature.
      */
-    static const uint8_t TemperatureSensitivity = 100;
+    static constexpr  uint8_t TemperatureSensitivity = 100;
 
     /**
      * The temperature measurement in °C.
@@ -163,7 +207,7 @@ private:
     /**
      * Function that prevents hanging when a I2C device is not responding.
      */
-    inline void waitForI2CBuffer() const {
+    void waitForI2CBuffer() const {
         auto start = xTaskGetTickCount();
         while (LPS22HH_TWIHS_IsBusy()) {
             if (xTaskGetTickCount() - start > TimeoutTicks) {
@@ -204,54 +248,4 @@ private:
      */
     uint8_t readFromRegister(RegisterAddress registerAddress);
 
-public:
-    /**
-     * Constructor used for initializing the sensor I2C address
-     * @param i2cUserAddress the I2C address. Must be of type LPS22HH_I2C_Address
-     * @param nResetPin the GPIO of the MCU connected to the nRESET pin (pin 6) of the sensor
-     * @param alertPin the GPIO of the MCU connected to the Alert pin (pin 3) of the sensor
-     */
-    explicit LPS22HH(LPS22HH_I2C_Address i2cUserAddress) : I2CAddress(i2cUserAddress) {
-    }
-
-    /**
-     * Read the current pressure measurement in hPa.
-     * @return the calculated pressure value.
-     */
-    float readPressure();
-
-    /**
-        * Read the current temperature measurement in °C.
-        * @return the calculated temperature value.
-        */
-    float readTemperature();
-
-    /**
-    * Sets the Output Data Rate bits for the Control Register 1 (CTRL_REG1(10h))
-    * @param rate ODR bits
-    */
-    void setODRBits(OutputDataRate rate);
-
-    /**
-     * Sets the bit that defines the use of the FIFO watermark level in the FIFO Control Register (FIFO_CTRL(13h))
-     * @param stopOnWTM flag to enable the mode or not
-     */
-    void setStopOnWTM(bool stopOnWTM);
-
-    /**
-     * Sets the bit that enables triggered FIFO modes in the FIFO Control Register (FIFO_CTRL(13h))
-     * @param trigMode flag to enable trigger mode or not
-     */
-    void setTrigModes(bool trigMode);
-
-    /**
-     * Sets the FIFO mode in the FIFO Control Register (FIFO_CTRL(13h))
-     */
-    void setFIFOMode(FIFOModes mode);
-
-    /**
-     * Activates ONE_SHOT bit of CTRL_REG2 in order for the sensor to acquire a measurement
-     */
-    void triggerOneShotMode();
 };
-
