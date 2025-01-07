@@ -195,16 +195,6 @@ private:
     static constexpr  uint8_t TemperatureSensitivity = 100;
 
     /**
-     * The temperature measurement in °C.
-     */
-    float temperatureValue;
-
-    /**
-     * The pressure measurement in hPa.
-     */
-    float pressureValue;
-
-    /**
      * Function that prevents hanging when a I2C device is not responding.
      */
     void waitForI2CBuffer() const {
