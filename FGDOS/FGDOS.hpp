@@ -63,7 +63,7 @@ private:
      * @enum DeviceRegister
      * @brief Defines device register addresses for the FGDOS device.
      */
-    enum DeviceRegister : DeviceRegisterAddressType_t {
+    enum class DeviceRegister : DeviceRegisterAddressType_t {
         CHIPID = 0x13 /**< Register address for the Chip ID. */
     };
 
