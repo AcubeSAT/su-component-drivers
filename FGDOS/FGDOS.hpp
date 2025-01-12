@@ -39,7 +39,7 @@ public:
      */
     explicit FGDOS(PIO_PIN chipSelectPin) : ChipSelectPin(chipSelectPin) {
         PIO_PinWrite(ChipSelectPin, true);
-    };
+    }
 
     /**
      * @brief Retrieves the Chip ID from the FGDOS device.
@@ -50,7 +50,7 @@ public:
 
 private:
     /**
-     *The chip select pin for SPI communication.
+     * The chip select pin for SPI communication.
      */
     PIO_PIN ChipSelectPin = PIO_PIN_NONE;
 
