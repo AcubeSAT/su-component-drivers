@@ -46,7 +46,7 @@ public:
      *
      * @return The Chip ID as a byte.
      */
-    [[nodiscard]] uint8_t getChipID();
+    [[nodiscard]] uint8_t getChipID() const;
 
 private:
     /**

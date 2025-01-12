@@ -1,6 +1,6 @@
 #include "FGDOS.hpp"
 
-[[nodiscard]] uint8_t FGDOS::getChipID() {
+[[nodiscard]] uint8_t FGDOS::getChipID() const {
     return readRegister(DeviceRegister::CHIPID);
 }
 
