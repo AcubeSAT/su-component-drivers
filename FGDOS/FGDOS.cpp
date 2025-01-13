@@ -4,6 +4,10 @@
     return readRegister(DeviceRegister::CHIPID);
 }
 
+[[nodiscard]] uint8_t FGDOS::getTemperature() const {
+    return readRegister(DeviceRegister::TEMP);
+}
+
 [[nodiscard]] uint8_t FGDOS::readRegister(DeviceRegister targetRegister) const {
     constexpr uint8_t ReadOperationMask = 0b1000'0000;
     const auto targetRegisterAddress = static_cast<DeviceRegisterAddressType_t>(targetRegister);
@@ -11,7 +15,21 @@
     etl::array<uint8_t, 1> rxData {0};
 
     PIO_PinWrite(ChipSelectPin, false);
-    if (not FGDOS_WriteRead(txData.data(), txData.size(), rxData.data(), rxData.size())) {
+    // if (not FGDOS_WriteRead(txData.data(), txData.size(), rxData.data(), rxData.size())) {
+    //     LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
+    //     vTaskSuspend(nullptr);
+    // }
+    if (not FGDOS_Write(txData.data(), txData.size()))
+    {
+        LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
+        vTaskSuspend(nullptr);
+    }
+    // PIO_PinWrite(ChipSelectPin, true);
+
+
+    // PIO_PinWrite(ChipSelectPin, false);
+    if (not FGDOS_Read(rxData.data(), rxData.size()))
+    {
         LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
         vTaskSuspend(nullptr);
     }

@@ -48,6 +48,8 @@ public:
      */
     [[nodiscard]] uint8_t getChipID() const;
 
+    [[nodiscard]] uint8_t getTemperature() const;
+
 private:
     /**
      * The chip select pin for SPI communication.
@@ -64,6 +66,7 @@ private:
      * @brief Defines device register addresses for the FGDOS device.
      */
     enum class DeviceRegister : DeviceRegisterAddressType_t {
+        TEMP = 0x00,
         CHIPID = 0x13 /**< Register address for the Chip ID. */
     };
 
