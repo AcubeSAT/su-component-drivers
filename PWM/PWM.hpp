@@ -38,9 +38,9 @@ enum class PWM_PeripheralChannelMask {
  * @class PWM
  * Template class to manage PWM peripherals and their respective channels.
  *
- * @tparam Peripheral The ID of the PWM peripheral selected.
+ * @tparam peripheralID The ID of the PWM peripheral selected.
  */
-template<typename Peripheral>
+template<PWM_PeripheralID peripheralID>
 class PWM {
 public:
     /**
@@ -49,8 +49,9 @@ public:
      * @param peripheralID The PWM peripheral instance.
      * @param channelNumber The specific channel of the peripheral to be managed.
      */
-    constexpr PWM(PWM_PeripheralID peripheralID, PWM_PeripheralChannel channelNumber)
-        : peripheralID(peripheralID), channelNumber(convertChannelNumberEnum(channelNumber)) {}
+    constexpr PWM(PWM_PeripheralChannel channelNumber)
+              : channelNumber(convertChannelNumberEnum(channelNumber)),
+                channelMask(convertChannelNumberToMask(channelNumber)) {}
 
     /**
      * Starts the PWM signal on the configured channel.
@@ -103,6 +104,7 @@ public:
 private:
     PWM_PeripheralID peripheralID;
     PWM_CHANNEL_NUM channelNumber;
+    PWM_CHANNEL_MASK channelMask;
 
     /**
      * Converts the channel enum to its corresponding mask.
@@ -110,20 +112,20 @@ private:
      * @param channelNumber Channel enum to convert.
      * @return Corresponding channel mask.
      */
-    PWM_CHANNEL_MASK channelMask = [](PWM_PeripheralChannel channelNumber) {
+     constexpr PWM_CHANNEL_MASK convertChannelNumberToMask(PWM_PeripheralChannel channelNumber) {
         switch (channelNumber) {
             case PWM_PeripheralChannel::CHANNEL0:
-                return PWM_PeripheralChannelMask::CHANNEL0;
+                return PWM_CHANNEL_0_MASK;
             case PWM_PeripheralChannel::CHANNEL1:
-                return PWM_PeripheralChannelMask::CHANNEL1;
+                return PWM_CHANNEL_1_MASK;
             case PWM_PeripheralChannel::CHANNEL2:
-                return PWM_PeripheralChannelMask::CHANNEL2;
+                return PWM_CHANNEL_2_MASK;
             case PWM_PeripheralChannel::CHANNEL3:
-                return PWM_PeripheralChannelMask::CHANNEL3;
+                return PWM_CHANNEL_3_MASK;
             default:
                 break;
         }
-    }(channelNumber);
+    }
 
     /**
      * Converts the custom channel enum class to its respective HAL enum.
@@ -144,7 +146,7 @@ private:
             default:
                 break;
         }
-    };
+    }
 
 };
 
