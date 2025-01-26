@@ -10,7 +10,7 @@ namespace PayloadDrivers {
 /**
  * The number of the LED instances as declared by the user in the keyValuePairs array.
  */
-inline constexpr size_t NumberOfLEDStrings = keyValuePairs.size();
+inline constexpr size_t NumberOfLEDStrings = LED_PWM_Config.size();
 
 /**
  * @class LED
@@ -107,7 +107,7 @@ public:
     static auto initLEDs() {
         etl::vector<etl::variant<LED<PWM_PeripheralID::PERIPHERAL_0>, LED<PWM_PeripheralID::PERIPHERAL_1>>, NumberOfLEDStrings> ledVector;
 
-        for (const auto& kv : keyValuePairs) {
+        for (const auto& kv : LED_PWM_Config) {
             if (kv.first == PWM_PeripheralID::PERIPHERAL_0) {
                 ledVector.push_back(LED<PWM_PeripheralID::PERIPHERAL_0>(kv.second));
             }
@@ -120,6 +120,6 @@ public:
     }
 };
 
-inline auto ledCollection = LED_Init::initLEDs();
+inline auto leds = LED_Init::initLEDs();
 
 } // namespace PayloadDrivers
