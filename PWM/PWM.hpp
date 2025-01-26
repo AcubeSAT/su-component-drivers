@@ -147,4 +147,7 @@ private:
      }
 };
 
+extern template class PWM<PWM_PeripheralID::PERIPHERAL_0>;
+extern template class PWM<PWM_PeripheralID::PERIPHERAL_1>;
+
 } // namespace PayloadDrivers
