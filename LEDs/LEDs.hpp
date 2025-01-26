@@ -1,6 +1,5 @@
 #pragma once
 
-#include "PWM.hpp"
 #include "Peripheral_Definitions.hpp"
 #include "etl/utility.h"
 #include "etl/vector.h"
@@ -8,12 +7,9 @@
 
 namespace PayloadDrivers {
 
-constexpr etl::array<etl::pair<PWM_PeripheralID, PWM_PeripheralChannel>, 3> keyValuePairs = {{
-    {PWM_PeripheralID::PERIPHERAL_0, PWM_PeripheralChannel::CHANNEL0},
-    {PWM_PeripheralID::PERIPHERAL_1, PWM_PeripheralChannel::CHANNEL1},
-    {PWM_PeripheralID::PERIPHERAL_1, PWM_PeripheralChannel::CHANNEL2},
-}};
-
+/**
+ * The number of the LED instances as declared by the user in the keyValuePairs array.
+ */
 inline constexpr size_t NumberOfLEDStrings = keyValuePairs.size();
 
 /**
