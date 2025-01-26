@@ -10,7 +10,7 @@ namespace PayloadDrivers {
 /**
  * The number of the LED instances as declared by the user in the keyValuePairs array.
  */
-inline constexpr size_t NumberOfLEDStrings = LED_PWM_Config.size();
+inline constexpr size_t NumberOfLEDStrings = 2;
 
 /**
  * @class LED
@@ -31,6 +31,13 @@ public:
      * channel, allowing control over the LED's brightness and frequency.
      */
     explicit LED(PWM_PeripheralChannel channel) : pwm(channel) {}
+
+    enum class LED_ControlModes {
+        MODE1,
+        MODE2,
+        MODE3,
+        MODE4,
+    };
 
     /**
      * Default dimming frequency for PWM.
@@ -105,7 +112,8 @@ public:
      * @return A vector of LEDs for all peripherals and channels, using etl::variant to handle different types.
      */
     static auto initLEDs() {
-        etl::vector<etl::variant<LED<PWM_PeripheralID::PERIPHERAL_0>, LED<PWM_PeripheralID::PERIPHERAL_1>>, NumberOfLEDStrings> ledVector;
+        using LEDS = etl::variant<LED<PWM_PeripheralID::PERIPHERAL_0>, LED<PWM_PeripheralID::PERIPHERAL_1>>;
+        etl::vector<LEDS, NumberOfLEDStrings> ledVector;
 
         for (const auto& kv : LED_PWM_Config) {
             if (kv.first == PWM_PeripheralID::PERIPHERAL_0) {
@@ -118,8 +126,12 @@ public:
 
         return ledVector;
     }
+
 };
 
-inline auto leds = LED_Init::initLEDs();
+// inline auto leds = LED_Init::initLEDs();
+static_assert(LED_PWM_Config.size() == NumberOfLEDStrings, "PWM channel allocations for LEDs are too many");
+inline LED<LED_PWM_Config[0].first> LED_String1 {LED_PWM_Config[0].second};
+inline LED<LED_PWM_Config[1].first> LED_String2 {LED_PWM_Config[1].second};
 
 } // namespace PayloadDrivers
