@@ -38,9 +38,9 @@ enum class PWM_PeripheralChannelMask {
  * @class PWM
  * Template class to manage PWM peripherals and their respective channels.
  *
- * @tparam peripheralID The ID of the PWM peripheral selected.
+ * @tparam PeripheralID The ID of the PWM peripheral selected.
  */
-template<PWM_PeripheralID peripheralID>
+template<PWM_PeripheralID PeripheralID>
 class PWM {
 public:
     /**
@@ -56,9 +56,9 @@ public:
      * Starts the PWM signal on the configured channel.
      */
     void start() const {
-        if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_0) {
+        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
             PWM0_ChannelsStart(channelMask);
-        } else if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_1) {
+        } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_ChannelsStart(channelMask);
         }
     }
@@ -67,9 +67,9 @@ public:
      * Stops the PWM signal on the configured channel.
      */
     void stop() const {
-        if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_0) {
+        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
             PWM0_ChannelsStop(channelMask);
-        } else if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_1) {
+        } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_ChannelsStop(channelMask);
         }
     }
@@ -80,9 +80,9 @@ public:
      * @param frequency Frequency value to set (in Hz).
      */
     void setFrequency(uint32_t frequency) const {
-        if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_0) {
+        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
             PWM0_ChannelPeriodSet(PWM_CHANNEL_0, frequency);
-        } else if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_1) {
+        } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_ChannelPeriodSet(PWM_CHANNEL_0, frequency);
         }
     }
@@ -93,9 +93,9 @@ public:
      * @param dutyCycle Duty cycle value to set (0-100%).
      */
     void setDutyCycle(uint32_t dutyCycle) const {
-        if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_0) {
+        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
             PWM0_ChannelDutySet(PWM_CHANNEL_0, dutyCycle);
-        } else if constexpr (peripheralID == PWM_PeripheralID::PERIPHERAL_1) {
+        } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_ChannelDutySet(PWM_CHANNEL_0, dutyCycle);
         }
     }

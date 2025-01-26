@@ -24,7 +24,7 @@ inline constexpr size_t NumberOfLEDStrings = keyValuePairs.size();
  * The PWM class is templated on the peripheral ID, meaning each LED
  * can control a specific peripheral with a distinct channel.
  */
-template<PWM_PeripheralID peripheralID>
+template<PWM_PeripheralID PeripheralID>
 class LED {
 public:
     /**
@@ -91,7 +91,7 @@ private:
     /**
      * Templated PWM instance for the given peripheral.
      */
-    PWM<peripheralID> pwm;
+    PWM<PeripheralID> pwm;
 };
 
 /**
