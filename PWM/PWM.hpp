@@ -46,10 +46,9 @@ public:
     /**
      * Constructor.
      *
-     * @param peripheralID The PWM peripheral instance.
      * @param channelNumber The specific channel of the peripheral to be managed.
      */
-    constexpr PWM(PWM_PeripheralChannel channelNumber)
+    explicit constexpr PWM(PWM_PeripheralChannel channelNumber)
               : channelNumber(convertChannelNumberEnum(channelNumber)),
                 channelMask(convertChannelNumberToMask(channelNumber)) {}
 
@@ -102,7 +101,6 @@ public:
     }
 
 private:
-    PWM_PeripheralID peripheralID;
     PWM_CHANNEL_NUM channelNumber;
     PWM_CHANNEL_MASK channelMask;
 
@@ -123,7 +121,7 @@ private:
             case PWM_PeripheralChannel::CHANNEL3:
                 return PWM_CHANNEL_3_MASK;
             default:
-                break;
+                return {};
         }
     }
 
@@ -134,20 +132,19 @@ private:
      * @return HAL enum representation of the channel.
      */
     constexpr PWM_CHANNEL_NUM convertChannelNumberEnum(PWM_PeripheralChannel channelNum) {
-        switch (channelNumber) {
-            case PWM_CHANNEL_0:
-                return PWM_CHANNEL_0;
-            case PWM_CHANNEL_1:
-                return PWM_CHANNEL_1;
-            case PWM_CHANNEL_2:
-                return PWM_CHANNEL_2;
-            case PWM_CHANNEL_3:
-                return PWM_CHANNEL_3;
-            default:
-                break;
-        }
-    }
-
+         switch (channelNum) {
+         case PWM_PeripheralChannel::CHANNEL0:
+             return PWM_CHANNEL_0;
+         case PWM_PeripheralChannel::CHANNEL1:
+             return PWM_CHANNEL_1;
+         case PWM_PeripheralChannel::CHANNEL2:
+             return PWM_CHANNEL_2;
+         case PWM_PeripheralChannel::CHANNEL3:
+             return PWM_CHANNEL_3;
+         default:
+             return {};
+         }
+     }
 };
 
 } // namespace PayloadDrivers
