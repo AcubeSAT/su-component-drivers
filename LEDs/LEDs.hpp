@@ -71,7 +71,7 @@ public:
      */
     void setRelativeBrightness(uint32_t brightness) {
         if (brightness > 100) {
-            brightness = 100;  ///< Clamps brightness to a maximum of 100%
+            brightness = 100;
         }
         pwm.setDutyCycle(brightness);
     }
