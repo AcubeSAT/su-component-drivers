@@ -60,7 +60,7 @@ public:
     CPRD_RegisterType_t CPRD_RegisterValue = 15000;
     static constexpr uint32_t PeripheralClockFrequency = 150000000;
     float ClockPrescaler = 16.0f;
-c
+
     /**
      * Starts the PWM signal on the configured channel.
      */
