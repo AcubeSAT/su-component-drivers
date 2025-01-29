@@ -73,9 +73,9 @@ public:
      * while 0 turns off the LED.
      */
     void setRelativeBrightness(uint32_t brightness) {
-        if (brightness > 100) {
-            brightness = 100;
-        }
+        // if (brightness > 100) {
+        //     brightness = 100;
+        // }
         pwm.setDutyCycle(brightness);
     }
 
@@ -95,38 +95,6 @@ private:
      * Templated PWM instance for the given peripheral.
      */
     PWM<PeripheralID> pwm;
-};
-
-/**
- * @class LED_Init
- * @brief Initializes and manages a collection of LED objects.
- *
- * This class provides functionality to initialize LEDs based on the peripheral map
- * and create an array or vector of LED objects. It supports initialization of LEDs
- * for multiple peripherals and channels, allowing the user to ignore peripheral details.
- */
-class LED_Init {
-public:
-    /**
-     * @brief Initializes LEDs for all peripherals and channels.
-     * @return A vector of LEDs for all peripherals and channels, using etl::variant to handle different types.
-     */
-    static auto initLEDs() {
-        using LEDS = etl::variant<LED<PWM_PeripheralID::PERIPHERAL_0>, LED<PWM_PeripheralID::PERIPHERAL_1>>;
-        etl::vector<LEDS, NumberOfLEDStrings> ledVector;
-
-        for (const auto& kv : LED_PWM_Config) {
-            if (kv.first == PWM_PeripheralID::PERIPHERAL_0) {
-                ledVector.push_back(LED<PWM_PeripheralID::PERIPHERAL_0>(kv.second));
-            }
-            else if (kv.first == PWM_PeripheralID::PERIPHERAL_1) {
-                ledVector.push_back(LED<PWM_PeripheralID::PERIPHERAL_1>(kv.second));
-            }
-        }
-
-        return ledVector;
-    }
-
 };
 
 // inline auto leds = LED_Init::initLEDs();

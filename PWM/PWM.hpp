@@ -52,6 +52,15 @@ public:
               : channelNumber(convertChannelNumberEnum(channelNumber)),
                 channelMask(convertChannelNumberToMask(channelNumber)) {}
 
+    PWM_CHANNEL_NUM channelNumber;
+    PWM_CHANNEL_MASK channelMask;
+
+    using CTDY_RegisterType_t = uint32_t;
+    using CPRD_RegisterType_t = uint32_t;
+    CPRD_RegisterType_t CPRD_RegisterValue = 15000;
+    static constexpr uint32_t PeripheralClockFrequency = 150000000;
+    float ClockPrescaler = 16.0f;
+c
     /**
      * Starts the PWM signal on the configured channel.
      */
@@ -64,7 +73,7 @@ public:
     }
 
     /**
-     * Stops the PWM signal on the configured channel.
+     * Stops the PWM signal on the configured channel.z
      */
     void stop() const {
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
@@ -79,11 +88,13 @@ public:
      *
      * @param frequency Frequency value to set (in Hz).
      */
-    void setFrequency(uint32_t frequency) const {
+    void setFrequency(float frequency) {
+        CPRD_RegisterValue = static_cast<CPRD_RegisterType_t>(static_cast<float>(PeripheralClockFrequency) / (ClockPrescaler * frequency));
+
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
-            PWM0_ChannelPeriodSet(PWM_CHANNEL_0, frequency);
+            PWM0_ChannelPeriodSet(channelNumber, CPRD_RegisterValue);
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
-            PWM1_ChannelPeriodSet(PWM_CHANNEL_0, frequency);
+            PWM1_ChannelPeriodSet(channelNumber, CPRD_RegisterValue);
         }
     }
 
@@ -92,18 +103,17 @@ public:
      *
      * @param dutyCycle Duty cycle value to set (0-100%).
      */
-    void setDutyCycle(uint32_t dutyCycle) const {
+    void setDutyCycle(float dutyCycle) const {
+        const CTDY_RegisterType_t CTDY_RegisterValue = dutyCycle * static_cast<float>(CPRD_RegisterValue) / 100.0f;
+
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
-            PWM0_ChannelDutySet(PWM_CHANNEL_0, dutyCycle);
+            PWM0_ChannelDutySet(channelNumber, CTDY_RegisterValue);
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
-            PWM1_ChannelDutySet(PWM_CHANNEL_0, dutyCycle);
+            PWM1_ChannelDutySet(channelNumber, CTDY_RegisterValue);
         }
     }
 
 private:
-    PWM_CHANNEL_NUM channelNumber;
-    PWM_CHANNEL_MASK channelMask;
-
     /**
      * Converts the channel enum to its corresponding mask.
      *
