@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Peripheral_Definitions.hpp"
-#include "etl/utility.h"
-#include "etl/vector.h"
 #include "etl/array.h"
 
 namespace PayloadDrivers {
