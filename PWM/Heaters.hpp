@@ -9,7 +9,9 @@ inline constexpr size_t NumberOfHeaters = 4;
 template<PWM_PeripheralID PeripheralID>
 class Heater {
 public:
-    explicit Heater(PWM_PeripheralChannel channel) : pwm(channel) {}
+    explicit Heater(PWM_PeripheralChannel channel) : pwm(channel) {
+        pwm.setFrequency(PWM_Frequency);
+    }
 
     static constexpr uint32_t PWM_Frequency = 800;
 
