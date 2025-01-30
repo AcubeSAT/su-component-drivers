@@ -95,7 +95,7 @@ private:
 };
 
 static_assert(LED_PWM_Config.size() == NumberOfLEDStrings, "PWM channel allocations for LEDs are too many");
-inline LED<LED_PWM_Config[0].first> LED_String1 {LED_PWM_Config[0].second};
-inline LED<LED_PWM_Config[1].first> LED_String2 {LED_PWM_Config[1].second};
+// inline LED<LED_PWM_Config[0].first> LED_String1 {LED_PWM_Config[0].second};
+// inline LED<LED_PWM_Config[1].first> LED_String2 {LED_PWM_Config[1].second};
 
 } // namespace PayloadDrivers
