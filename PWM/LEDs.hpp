@@ -27,7 +27,9 @@ public:
      * This constructor initializes the PWM instance with the given
      * channel, allowing control over the LED's brightness and frequency.
      */
-    explicit LED(PWM_PeripheralChannel channel) : pwm(channel) {}
+    explicit LED(PWM_PeripheralChannel channel) : pwm(channel) {
+        pwm.setFrequency(DefaultDimmingFrequency);
+    }
 
     enum class LED_ControlModes {
         MODE1,
@@ -39,7 +41,7 @@ public:
     /**
      * Default dimming frequency for PWM.
      */
-    uint32_t dimmingFrequency = 1000;
+    static constexpr uint32_t DefaultDimmingFrequency = 1000;
 
     /**
      * @brief Opens the LED (starts PWM signal).
