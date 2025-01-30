@@ -51,7 +51,7 @@ public:
     explicit PWM(PWM_PeripheralChannel channelNumber)
               : channelNumber(convertChannelNumberEnum(channelNumber)),
                 channelMask(convertChannelNumberToMask(channelNumber)),
-                channelPrescaler(readChannelPrescaler()),
+                channelPrescaler(getChannelPrescaler()),
                 CPRD_RegisterValue(initializeCPRDValue()) {
         setDisabledChannelPolarity();
     }
@@ -60,6 +60,12 @@ public:
     using CPRD_RegisterType_t = uint32_t;
     using ChannelPrescalerType_t = uint32_t;
 
+    /**
+     * @enum ChannelPrescaler
+     *
+     * The possible prescaler values that control the frequency division of the clock signal.
+     * Register CMRx, CPRE[3:0] bits.
+     */
     enum class ChannelPrescaler : ChannelPrescalerType_t {
         MCK = 0x0,
         MCK_DIV_2 = 0x1,
@@ -127,14 +133,23 @@ public:
     }
 
 private:
-
+    /**
+     * The selected channel of the PWM peripheral (0, 1, 2, 3, 4).
+     */
     PWM_CHANNEL_NUM channelNumber;
+
+    /**
+     * The corresponding mask of the PWM peripheral.
+     */
     PWM_CHANNEL_MASK channelMask;
 
+    /**
+     * The MCK clock frequency.
+     */
     static constexpr uint32_t MCK_ClockFrequency = 150e6;
 
     /**
-     * Variable to store the channel prescaler value.
+     * The channel prescaler value.
      */
     float channelPrescaler;
     CPRD_RegisterType_t CPRD_RegisterValue;
@@ -179,15 +194,21 @@ private:
          default:
              return {};
          }
-     }
+    }
 
     /**
- * Reads the channel prescaler value from the hardware register.
- *
- * @return The prescaler value as a float.
- */
-    float readChannelPrescaler() {
-        auto CPRE_Value = PWM_CMR_CPRE(getPeripheralRegisters().PWM_CH_NUM[channelNumber].PWM_CMR);
+     * Reads the channel prescaler value from the hardware register.
+     *
+     * @return The prescaler value as a float.
+     */
+    float getChannelPrescaler() {
+        const auto CPRE_Value = [=]() -> uint32_t {
+            if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
+                return PWM_CMR_CPRE(PWM0_REGS->PWM_CH_NUM[channelNumber].PWM_CMR);
+            } else {
+                return PWM_CMR_CPRE(PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CMR);
+            }
+        }();
 
         switch (static_cast<ChannelPrescaler>(CPRE_Value)) {
         case ChannelPrescaler::MCK_DIV_2:
@@ -216,17 +237,6 @@ private:
     }
 
     /**
-     * Returns the peripheral register set for the configured peripheral.
-     */
-    constexpr auto& getPeripheralRegisters() const {
-        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
-            return *PWM0_REGS;
-        } else {
-            return *PWM1_REGS;
-        }
-    }
-
-    /**
      * Initializes the CPRD register value with a default value.
      *
      * @return Default CPRD value.
@@ -239,11 +249,19 @@ private:
         }
     }
 
+    /**
+     * The value of the DPOLI bit of the PWM_CMR register.
+     */
+    static constexpr uint32_t CMR_DPOLI_Value = 1;
+
+    /**
+     * Set the disabled channel polarity DPOLI bit of PWM_CMR register.
+     */
     void setDisabledChannelPolarity() {
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
-            PWM0_REGS->PWM_CH_NUM[channelNumber].PWM_CMR |= PWM_CMR_DPOLI(1);;
+            PWM0_REGS->PWM_CH_NUM[channelNumber].PWM_CMR |= PWM_CMR_DPOLI(CMR_DPOLI_Value);;
         } else {
-            PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CMR |= PWM_CMR_DPOLI(1);
+            PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CMR |= PWM_CMR_DPOLI(CMR_DPOLI_Value);
         }
     }
 };
