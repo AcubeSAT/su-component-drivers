@@ -49,8 +49,8 @@ public:
      * @param channelNumber The specific channel of the peripheral to be managed.
      */
     explicit PWM(PWM_PeripheralChannel channelNumber)
-              : channelNumber(convertChannelNumberEnum(channelNumber)),
-                channelMask(convertChannelNumberToMask(channelNumber)),
+              : channelNumber(ConvertChannelNumberEnum(channelNumber)),
+                channelMask(ConvertChannelNumberToMask(channelNumber)),
                 channelPrescaler(getChannelPrescaler()),
                 CPRD_RegisterValue(initializeCPRDValue()) {
         setDisabledChannelPolarity();
@@ -160,7 +160,7 @@ private:
      * @param channelNumber Channel enum to convert.
      * @return Corresponding channel mask.
      */
-    constexpr PWM_CHANNEL_MASK convertChannelNumberToMask(PWM_PeripheralChannel channelNumber) {
+    constexpr PWM_CHANNEL_MASK ConvertChannelNumberToMask(PWM_PeripheralChannel channelNumber) {
         switch (channelNumber) {
             case PWM_PeripheralChannel::CHANNEL0:
                 return PWM_CHANNEL_0_MASK;
@@ -181,7 +181,7 @@ private:
      * @param channelNum Channel enum to convert.
      * @return HAL enum representation of the channel.
      */
-    constexpr PWM_CHANNEL_NUM convertChannelNumberEnum(PWM_PeripheralChannel channelNum) {
+    constexpr PWM_CHANNEL_NUM ConvertChannelNumberEnum(PWM_PeripheralChannel channelNum) {
          switch (channelNum) {
          case PWM_PeripheralChannel::CHANNEL0:
              return PWM_CHANNEL_0;
