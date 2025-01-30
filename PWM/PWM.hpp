@@ -211,6 +211,8 @@ private:
         }();
 
         switch (static_cast<ChannelPrescaler>(CPRE_Value)) {
+        case ChannelPrescaler::MCK:
+            return 1;
         case ChannelPrescaler::MCK_DIV_2:
             return 2;
         case ChannelPrescaler::MCK_DIV_4:
@@ -232,7 +234,7 @@ private:
         case ChannelPrescaler::MCK_DIV_1024:
             return 1024;
         default:
-            return 1;
+            return { };
         }
     }
 
