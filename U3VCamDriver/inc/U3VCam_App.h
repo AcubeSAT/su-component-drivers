@@ -37,6 +37,7 @@ typedef enum
     U3V_APP_STATE_SETUP_U3V_CONTROL_IF,
     U3V_APP_STATE_READ_DEVICE_TEXT_DESCR,
     U3V_APP_STATE_GET_STREAM_CAPABILITIES,
+    U3V_APP_STATE_SETUP_IMG_PRESET,
     U3V_APP_STATE_SETUP_PIXEL_FORMAT,
     U3V_APP_STATE_SETUP_ACQUISITION_MODE,
     U3V_APP_STATE_SETUP_U3V_STREAM_IF,
@@ -73,6 +74,16 @@ typedef struct
 } T_U3VAppDevTextDescr;
 
 /**
+ * U3V App image config preset load struct.
+ * 
+ */
+typedef struct
+{
+    uint32_t                    regVal;
+    T_U3VCamDriverImagePreset   reqstdPreset;
+} T_U3VAppImagePresetLoad;
+
+/**
  * U3V App data struct.
  * 
  * This struct holds all data handled by the U3V App localy.
@@ -88,6 +99,7 @@ typedef struct
     bool                                camSwResetRequested;
     T_U3VAppDevTextDescr                camTextDescriptions;
     float                               camTemperature;
+    T_U3VAppImagePresetLoad             imgPresetLoad;
     uint32_t                            pixelFormat;
     uint32_t                            payloadSize;
     uint32_t                            acquisitionMode;
@@ -112,6 +124,7 @@ typedef enum
     U3V_DRV_ERR_SETUP_CTRL_IF_FAIL,
     U3V_DRV_ERR_READ_TEXT_DESCR_FAIL,
     U3V_DRV_ERR_GET_STREAM_CPBL_FAIL,
+    U3V_DRV_ERR_SET_IMG_PRESET_FAIL,
     U3V_DRV_ERR_SET_PIXEL_FORMAT_FAIL,
     U3V_DRV_ERR_SET_ACQ_MODE_FAIL,
     U3V_DRV_ERR_GET_PAYLD_SIZE_FAIL,
