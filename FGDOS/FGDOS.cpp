@@ -1,55 +1,296 @@
 #include "FGDOS.hpp"
 
-[[nodiscard]] uint8_t FGDOS::getChipID() const {
-    return readRegister(DeviceRegister::CHIPID);
+bool FGDOS::updateData(){
+    //10 byte buffer, byte 1 is don't care because we are writing address 0 and the rest are the raw data
+    etl::array<uint8_t,10> buffer{};
+
+    //read address zero (and continue to the next registers)
+    uint8_t baseAddress=0b1000'0000;
+
+
+    //error checking here
+    if (!writeRead(&baseAddress,1,buffer.data(),buffer.size()))
+    {
+        //return error instead!
+        LOG_ERROR<<"SPI read/write failed!\n";
+        return false;
+
+
+    }
+
+    uint8_t rchcnt=buffer[2];
+
+    //contains flags and 2 most significant bits for ref and sensor respectively
+    const uint8_t rLast=buffer[6];
+    const uint8_t sLast=buffer[9];
+
+recharging=rchcnt&0b1000'0000;
+const bool refReady=rLast&0b1000;
+const bool sensorReady=sLast&0b1000;
+
+//if recharging no data available
+if(recharging){
+    LOG_DEBUG<<"Disregarding data because sensor is recharging\n";
+
+        return false;
 }
 
-[[nodiscard]] uint8_t FGDOS::getTemperature() const {
-    return readRegister(DeviceRegister::TEMP);
+//store secondary data :ref (if ready) and temp
+    if(refReady){
+        refPrevFrequency=refFrequency;
+        uint32_t rawRefFrequency=buffer[4]|(buffer[5]<<8)|((rLast&0b11)<<16);
+        LOG_DEBUG<<"Raw reference frequency:"<<rawRefFrequency<<'\n';
+
+        referenceOverflown=rLast&0b100;
+        refFrequency=frequencyFromRaw(rawRefFrequency);
+        LOG_DEBUG<<"Updated reference frequency to:"<<refFrequency<<'\n';
+
 }
 
-[[nodiscard]] uint8_t FGDOS::readRegister(DeviceRegister targetRegister) const {
-    constexpr uint8_t ReadOperationMask = 0b1000'0000;
-    const auto targetRegisterAddress = static_cast<DeviceRegisterAddressType_t>(targetRegister);
-    etl::array<uint8_t, 1> txData {static_cast<uint8_t>(targetRegisterAddress | ReadOperationMask)};
-    etl::array<uint8_t, 1> rxData {0};
+    temperature=buffer[1];
 
-    PIO_PinWrite(ChipSelectPin, false);
-    // if (not FGDOS_WriteRead(txData.data(), txData.size(), rxData.data(), rxData.size())) {
-    //     LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
-    //     vTaskSuspend(nullptr);
-    // }
-    if (not FGDOS_Write(txData.data(), txData.size()))
+//if sensor not ready, don't store it and return false
+if(!sensorReady){
+
+return false;
+
+}
+
+//bit 7 is zero anyway at this point so no need to clear it
+//if rchcnt=127 then it may be overflown so that value is an error
+//but is dealt with outside the function
+rechargeCount=rchcnt;
+    LOG_DEBUG<<"Recharge count: "<<static_cast<uint32_t>(rchcnt)<<'\n';
+
+if(rchcnt!=0){
+    clearRechargeCount();
+}
+
+//deal with these errors outside this function
+sensorOverflown=sLast&0b100;
+
+sensorPrevFrequency=sensorFrequency;
+uint32_t rawSensorFrequency=buffer[7]|(buffer[8]<<8)|((sLast&0b11)<<16);
+LOG_DEBUG<<"Raw sensor data:"<<rawSensorFrequency<<'\n';
+uint32_t uncompensatedSensorFrequency=frequencyFromRaw(rawSensorFrequency);
+LOG_DEBUG<<"Uncompensated sensor frequency: "<<uncompensatedSensorFrequency<<'\n';
+    sensorFrequency=temperatureCompensateFrequency(uncompensatedSensorFrequency);
+
+previousDose+=doseIncrease;
+    LOG_DEBUG<<"Updated sensor frequency to:"<<sensorFrequency<<'\n';
+
+updateLastReadTick();
+return true;
+
+
+
+}
+void FGDOS::calculateDose(){
+    if(not enoughTimeElapsed()){
+        if(sensorOverflown){
+            LOG_WARNING<<"Sensor counter has overflowed!\n";
+            //return error
+            return;
+        }
+        if(referenceOverflown){
+            LOG_WARNING<<"Reference counter has overflowed!\n";
+            //return error
+            return;
+        }
+        if(rechargeCount==127){
+            LOG_WARNING<<"Recharge count possibly has overflowed!\n";
+            //return error
+            return;
+        }
+        LOG_TRACE<<"Skipping dose calculation: Not enough time elapsed\n";
+        return;
+}
+
+    if(not updateData())
     {
-        LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
-        vTaskSuspend(nullptr);
+        LOG_TRACE<<"Data not updated\n";
+        return;
     }
-    // PIO_PinWrite(ChipSelectPin, true);
 
 
-    // PIO_PinWrite(ChipSelectPin, false);
-    if (not FGDOS_Read(rxData.data(), rxData.size()))
+    if(sensorOverflown){
+        LOG_WARNING<<"Sensor counter has overflowed!\n";
+        //return error
+        return;
+    }
+    if(referenceOverflown){
+        LOG_WARNING<<"Reference counter has overflowed!\n";
+        //return error
+        return;
+    }
+    if(rechargeCount==127){
+        LOG_WARNING<<"Recharge count possibly has overflowed!\n";
+        //return error
+        return;
+    }
+	//may be negative during recharge,in that case it is corrected by the addition of approximated recharge dose
+    int32_t deltaF=static_cast<int32_t>(sensorFrequency)-static_cast<int32_t>(sensorPrevFrequency);
+    doseIncrease=static_cast<float>(deltaF)/configSensitivity;
+
+    if(rechargeCount!=0){
+        doseIncrease+=approximateDoseFromRecharges();
+}
+	assert(doseIncrease>=0);
+}
+uint32_t FGDOS::frequencyFromRaw(const uint32_t freq) const{
+
+	//sensor and ref frequencies for raw counter
+    return (freq*configClockFrequency)/windowAmount;
+
+}
+
+uint32_t FGDOS::temperatureCompensateFrequency(const uint32_t freq) const
+{
+    //TODO implement
+    return freq;
+}
+
+void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensitivity, const bool forceRecharge)
+{
+        //write so that recharging is disabled
+        constexpr uint8_t recharge_write_address=0b0100'0000|0xD;
+        etl::array<uint8_t,2> buffer{recharge_write_address,0};
+        if (!write(buffer.data(),buffer.size()))
+        {
+
+            //set some sort of error flag
+            LOG_ERROR<<"SPI write failed!\n";
+            return;
+
+        }
+        //prepare and write config data
+        ConfigData config{};
+        config.setSensitivity(highSensitivity);
+        //make sure that charge voltage is a 3 bit value
+        config.setVoltage(chargeVoltage&0b111);
+        uint8_t target4Bits=frequencyTo4Bit(targetFrequency);
+        config.setTargetFrequency(target4Bits);
+        uint8_t threshold4Bits=frequencyTo4Bit(thresholdFrequency);
+
+
+        config.setThresholdFrequency(forceRecharge?target4Bits:threshold4Bits);
+
+        if (!write(config.data.data(),config.data.size()))
+        {
+            //set some sort of error flag
+            LOG_ERROR<<"SPI write failed!\n";
+            return;
+
+        }
+
+        //enable recharge
+        buffer.back()=config.getRechargeEnableByte();
+        if (!write(buffer.data(),buffer.size()))
+        {
+            //set some sort of error flag
+            LOG_ERROR<<"SPI write failed!\n";
+            return;
+
+        }
+
+
+
+
+
+        //if force recharge, write threshold back
+        if(forceRecharge){
+        constexpr uint8_t thresholdWriteAddress=0b0100'0000|0xA;
+            buffer.front()=thresholdWriteAddress;
+            buffer.back()=config.getThresholdByte(threshold4Bits);
+
+            if (!write(buffer.data(),buffer.size()))
+            {
+
+                //set some sort of error flag
+                LOG_ERROR<<"SPI write failed!\n";
+                return;
+            }
+        //TODO set flag to disregard the first recharge
+        }
+    //just in case recharge count isn't set to 0 by default
+    clearRechargeCount();
+    updateLastReadTick();
+
+}
+
+void FGDOS::clearRechargeCount() const{
+    constexpr uint8_t write_address=0b0100'0000|0x01;
+    etl::array<uint8_t,2> buffer{write_address,0};
+    if (!write(buffer.data(),buffer.size()))
     {
-        LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
-        vTaskSuspend(nullptr);
+        //set some sort of error flag
+        LOG_ERROR<<"SPI write failed!\n";
+        return;
+
     }
+
+}
+
+FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin, const bool highSensitivity,const uint8_t chargeVoltage)
+: ChipSelectPin{chipSelectPin}
+,configClockFrequency{clockFrequency}
+,thresholdFrequency{highSensitivity?thresholdFrequencyDefaultHigh:thresholdFrequencyDefaultLow}
+,targetFrequency{highSensitivity?targetFrequencyDefaultHigh:targetFrequencyDefaultLow}
+,configSensitivity{highSensitivity?sensitivityDefaultHigh:sensitivityDefaultLow}
+
+{
+    LOG_TRACE<<"Constructing driver";
     PIO_PinWrite(ChipSelectPin, true);
 
-    return rxData[0];
+    LOG_TRACE<<"Initializing configuration";
+    initConfiguration(chargeVoltage,highSensitivity,false);
+    LOG_TRACE<<"Done initializing configuration";
+
 }
 
-void FGDOS::writeRegister(DeviceRegister targetRegister, etl::span<uint8_t> dataBuffer) const {
-    constexpr uint8_t WriteOperationMask = 0b0100'0000;
-    constexpr size_t MaximumDataBufferSize = 5;
-    const auto targetRegisterAddress = static_cast<DeviceRegisterAddressType_t>(targetRegister);
+uint8_t FGDOS::getChipID() const
+{
+    uint8_t readAddress=0b1000'0000|0x13;
+    //first value is dont care, second is chipid;
+    etl::array<uint8_t,2> buffer{};
+    if (!writeRead(&readAddress,1,buffer.data(),buffer.size()))
+    {
+        LOG_ERROR<<"SPI read failed!\n";
 
-    etl::vector<uint8_t, MaximumDataBufferSize> txData {static_cast<uint8_t>(targetRegisterAddress | WriteOperationMask)};
-    std::copy(dataBuffer.begin(), dataBuffer.end(), txData.begin() + 1);
+        //return error
+        return 0;
 
-    PIO_PinWrite(ChipSelectPin, false);
-    if (not FGDOS_Write(dataBuffer.data(), dataBuffer.size())) {
-        LOG_ERROR << "FGDOS SPI transaction failed. Suspending task...";
-        vTaskSuspend(nullptr);
     }
-    PIO_PinWrite(ChipSelectPin, true);
+    return buffer.back();
+
 }
+
+uint32_t FGDOS::getSerialNumber() const
+{
+    uint8_t readAddress=0b1000'0000|0x10;
+    //first value is dont care, second is chipid;
+    etl::array<uint8_t,4> buffer{};
+    if (!writeRead(&readAddress,1,buffer.data(),buffer.size()))
+    {
+        LOG_ERROR<<"SPI read failed!\n";
+
+        //return error
+        return 0;
+
+    }
+    return (static_cast<uint32_t>(buffer[3])<<16)|(static_cast<uint32_t>(buffer[2])<<8)|buffer[1];
+
+}
+
+float FGDOS::getTotalDose(){
+
+        calculateDose();
+        return previousDose+doseIncrease;
+
+}
+float FGDOS::getDoseRate(){
+    calculateDose();
+    return (doseIncrease*static_cast<float>(configClockFrequency))/static_cast<float>(windowAmount);
+
+}
+
