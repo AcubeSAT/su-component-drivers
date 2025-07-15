@@ -27,10 +27,12 @@ bool FGDOS::updateData(){
 recharging=rchcnt&0b1000'0000;
 const bool refReady=rLast&0b1000;
 const bool sensorReady=sLast&0b1000;
-
+LOG_DEBUG<<"Recharge count:"<<rchcnt<<'\n';
 //if recharging no data available
 if(recharging){
+
     LOG_DEBUG<<"Disregarding data because sensor is recharging\n";
+    LOG_DEBUG<<"Sensor frequency is:"<<frequencyFromRaw(buffer[7]|(buffer[8]<<8)|((sLast&0b11)<<16));
 
         return false;
 }
@@ -51,7 +53,7 @@ if(recharging){
 
 //if sensor not ready, don't store it and return false
 if(!sensorReady){
-
+LOG_DEBUG<<"Sensor not ready\n";
 return false;
 
 }
@@ -133,8 +135,12 @@ void FGDOS::calculateDose(){
     doseIncrease=static_cast<float>(deltaF)/configSensitivity;
 
     if(rechargeCount!=0){
+
+        LOG_DEBUG<<"Skipping dose increase correction:"<<doseIncrease;
+        return;
         doseIncrease+=approximateDoseFromRecharges();
 }
+    LOG_DEBUG<<"Dose increase:"<<doseIncrease;
 	assert(doseIncrease>=0);
 }
 uint32_t FGDOS::frequencyFromRaw(const uint32_t freq) const{
