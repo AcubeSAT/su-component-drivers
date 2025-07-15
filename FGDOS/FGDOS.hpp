@@ -65,7 +65,7 @@ class FGDOS
         //sets the 4 bits that specify threshold frequency
         inline void setThresholdFrequency(const uint8_t freq4bits){
             assert(freq4bits<=0b1111);
-            data[2]=(data[1]&0b1111'0000)|freq4bits;
+            data[2]=(data[2]&0b1111'0000)|freq4bits;
         }
 
         //sets sensitivity. The user must set target and threshold frequency separately
@@ -77,7 +77,7 @@ class FGDOS
         //sets charge voltage. It takes a 3 bit value which is translated to a value between 14.5 and 18 Volts
         inline void setVoltage(const uint8_t voltage3bits){
             assert(voltage3bits<=0b111);
-            data[4]=(data[4]&0b1111'1000)|(voltage3bits);
+            data[5]=(data[5]&0b1111'1000)|(voltage3bits);
 
         }
     };
@@ -240,7 +240,8 @@ private:
         //convert to 4 bit values: new=old*window/(tDiv?(clock_freq*8192):clock_freq*1024)
 
         //*1024 if tDiv, * 8912 if not tDiv, so leftshift by 10+3*(not tDiv)
-        const auto result=static_cast<uint8_t>((frequency*windowAmount)/(configClockFrequency<<(10+3*tDiv)));
+       //const auto result=static_cast<uint8_t>((frequency*windowAmount)/(configClockFrequency<<(10+3*tDiv)));
+        const auto result=static_cast<uint8_t>(frequency/configClockFrequency);
     //assert that result is 4 bit value
         assert(result<=0b0000'1111);
     return result;
