@@ -205,7 +205,7 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
 
         //if force recharge, write threshold back
         if(forceRecharge){
-        constexpr uint8_t thresholdWriteAddress=0b0100'0000|0xA;
+        constexpr uint8_t thresholdWriteAddress=writeMask|0xA;
             buffer.front()=thresholdWriteAddress;
             buffer.back()=config.getThresholdByte(threshold4Bits);
 
@@ -225,7 +225,7 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
 }
 
 void FGDOS::clearRechargeCount() const{
-    constexpr uint8_t write_address=0b0100'0000|0x01;
+    constexpr uint8_t write_address=writeMask|0x01;
     etl::array<uint8_t,2> buffer{write_address,0};
     if (!write(buffer.data(),buffer.size()))
     {
@@ -256,7 +256,7 @@ FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin, const b
 
 uint8_t FGDOS::getChipID() const
 {
-    uint8_t readAddress=0b1000'0000|0x13;
+    uint8_t readAddress=readMask|0x13;
     //first value is dont care, second is chipid;
     etl::array<uint8_t,2> buffer{};
     if (!writeRead(&readAddress,1,buffer.data(),buffer.size()))
@@ -273,7 +273,7 @@ uint8_t FGDOS::getChipID() const
 
 uint32_t FGDOS::getSerialNumber() const
 {
-    uint8_t readAddress=0b1000'0000|0x10;
+    uint8_t readAddress=readMask|0x10;
     //first value is dont care, second is chipid;
     etl::array<uint8_t,4> buffer{};
     if (!writeRead(&readAddress,1,buffer.data(),buffer.size()))

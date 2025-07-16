@@ -36,6 +36,8 @@
  */
 class FGDOS
 {
+    constexpr static uint8_t writeMask=0b0100'0000;
+    constexpr static uint8_t readMask=0b1000'0000;
     //private struct that prepares config data to be written to registers
     struct ConfigData
     {
