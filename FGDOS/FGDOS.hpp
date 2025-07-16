@@ -190,7 +190,7 @@ private:
 
 
     //whether target and threshold values have smaller ranges (*1024 instead of *8912)
-    bool tDiv=false;
+    bool tDiv=true;
 
     //spi functions
     //write data should be const but can't due to SPI api
