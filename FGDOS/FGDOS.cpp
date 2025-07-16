@@ -174,12 +174,12 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
         config.setSensitivity(highSensitivity);
         //make sure that charge voltage is a 3 bit value
         config.setVoltage(chargeVoltage&0b111);
-        uint8_t target4Bits=frequencyTo4Bit(targetFrequency);
-        config.setTargetFrequency(target4Bits);
-        uint8_t threshold4Bits=frequencyTo4Bit(thresholdFrequency);
+        uint8_t target5Bits=frequencyTo5Bit(targetFrequency);
+        config.setTargetFrequency(target5Bits);
+        uint8_t threshold5Bits=frequencyTo5Bit(thresholdFrequency);
 
 
-        config.setThresholdFrequency(forceRecharge?target4Bits:threshold4Bits);
+        config.setThresholdFrequency(forceRecharge?target5Bits:threshold5Bits);
 
         if (!write(config.data.data(),config.data.size()))
         {
@@ -207,7 +207,7 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
         if(forceRecharge){
         constexpr uint8_t thresholdWriteAddress=writeMask|0xA;
             buffer.front()=thresholdWriteAddress;
-            buffer.back()=config.getThresholdByte(threshold4Bits);
+            buffer.back()=config.getThresholdByte(threshold5Bits);
 
             if (!write(buffer.data(),buffer.size()))
             {
@@ -220,7 +220,13 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
         }
     //just in case recharge count isn't set to 0 by default
     clearRechargeCount();
-    updateLastReadTick();
+
+    if (!updateData())
+    {
+        LOG_TRACE<<"Data not updated after initialization\n";
+
+    }
+
 
 }
 

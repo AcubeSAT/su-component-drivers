@@ -42,14 +42,14 @@ class FGDOS
     struct ConfigData
     {
         etl::array<uint8_t, 7> data{
-            0b0100'0000|0x9//write base address
-           ,0b0000'1011//default target value for default clock and window and high sensitivity: 90kHz
-           ,0b0000'0110 //default threshold value for -||- : 50kHZ
-           ,0b1100'1000//default window and tDiv settings
-           ,0b0111'1001//high sensitivity
-           ,0 //start with charging disabled, charge voltage is 000->14.5V
-           ,0b0000'0100
-       };//dont measure during spi: true, interrupt:0, engate:0
+            writeMask|0x9//write base address
+           ,0b0000'1011//0x9:default target value for default clock and window and high sensitivity: 90kHz
+           ,0b0000'0110 //0xA:default threshold value for -||- : 50kHZ
+           ,0b1100'1001//0xB:default window, set tDiv to 1, it is mistakenly set to 0 in the datasheet
+           ,0b0111'1001//0xC:high sensitivity
+           ,0 //0xD:start with charging disabled, charge voltage is 000->14.5V
+           ,0b0000'0100//0xE dont measure during spi: true, interrupt:0, engate:0
+       };
 
         //returns byte that must be written to 0xD to enable recharging without changing anything else
         inline uint8_t getRechargeEnableByte(){
@@ -59,15 +59,15 @@ class FGDOS
         inline uint8_t getThresholdByte(const uint8_t threshold4Bits){
             return (data[2]&0b1111'0000)|threshold4Bits;
         }
-        //sets the 4 bits that specify target frequency
-        inline void setTargetFrequency(const uint8_t freq4bits){
-            assert(freq4bits<=0b1111);
-            data[1]=(data[1]&0b1111'0000)|freq4bits;
+        //sets the 5 bits that specify target frequency
+        inline void setTargetFrequency(const uint8_t freq5bits){
+            assert(freq5bits<=0b11111);
+            data[1]=(data[1]&0b1110'0000)|freq5bits;
         }
-        //sets the 4 bits that specify threshold frequency
-        inline void setThresholdFrequency(const uint8_t freq4bits){
-            assert(freq4bits<=0b1111);
-            data[2]=(data[2]&0b1111'0000)|freq4bits;
+        //sets the 5 bits that specify threshold frequency
+        inline void setThresholdFrequency(const uint8_t freq5bits){
+            assert(freq5bits<=0b1111);
+            data[2]=(data[2]&0b1110'0000)|freq5bits;
         }
 
         //sets sensitivity. The user must set target and threshold frequency separately
@@ -237,15 +237,13 @@ private:
     //stage configuration and write it to dosimeter registers
     void initConfiguration(uint8_t chargeVoltage,bool highSensitivity, bool forceRecharge);
 
-    //convert frequency in hertz to the appropriate 4 bit value according to datasheet
-    [[nodiscard]] uint8_t frequencyTo4Bit(const uint32_t frequency) const{
-        //convert to 4 bit values: new=old*window/(tDiv?(clock_freq*8192):clock_freq*1024)
+    //convert frequency in hertz to the appropriate 5 bit value according to datasheet
+    [[nodiscard]] uint8_t frequencyTo5Bit(const uint32_t frequency) const{
+        //convert to 5 bit values: new=old*window/(tDiv?(clock_freq*8192):clock_freq*1024)
 
-        //*1024 if tDiv, * 8912 if not tDiv, so leftshift by 10+3*(not tDiv)
-       //const auto result=static_cast<uint8_t>((frequency*windowAmount)/(configClockFrequency<<(10+3*tDiv)));
-        const auto result=static_cast<uint8_t>(frequency/configClockFrequency);
-    //assert that result is 4 bit value
-        assert(result<=0b0000'1111);
+       const auto result=static_cast<uint8_t>((frequency*windowAmount)/(configClockFrequency*(tDiv?1024:8192)));
+    //assert that result is 5 bit value
+        assert(result<=0b0001'1111);
     return result;
 
 }
