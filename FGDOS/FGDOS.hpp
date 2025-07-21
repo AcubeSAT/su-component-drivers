@@ -372,11 +372,14 @@ private:
      */
     [[nodiscard]] uint8_t frequencyTo5Bit(const uint32_t frequency) const{
         //convert to 5 bit values: new=old*window/(tDiv?(clock_freq*8192):clock_freq*1024)
+        //use rounding for better accuracy
+        const auto numerator=((frequency*windowAmount));
+        const auto denominator=(configClockFrequency*(tDiv?1024:8192));
+       const auto result=numerator/denominator+(2*(numerator%denominator)>=(denominator));
 
-       const auto result=static_cast<uint8_t>((frequency*windowAmount)/(configClockFrequency*(tDiv?1024:8192)));
     //assert that result is 5 bit value
         assert(result<=0b0001'1111);
-    return result;
+    return static_cast<uint8_t>(result)&0b0001'1111;
 
 }
 
