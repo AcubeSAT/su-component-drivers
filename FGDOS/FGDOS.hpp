@@ -76,7 +76,7 @@ class FGDOS
             * @param freq5bits 5 bit value that corresponds to the frequency, acquired through frequencyTo5Bit()
         */
         inline void setTargetFrequency(const uint8_t freq5bits){
-            assert(freq5bits<=0b11111);
+            configASSERT(freq5bits<=0b11111);
             data[1]=(data[1]&0b1110'0000)|freq5bits;
         }
 
@@ -85,7 +85,7 @@ class FGDOS
          * @param freq5bits 5 bit value that corresponds to the frequency, acquired through frequencyTo5Bit()
          */
         inline void setThresholdFrequency(const uint8_t freq5bits){
-            assert(freq5bits<=0b1111);
+            configASSERT(freq5bits<=0b1111);
             data[2]=(data[2]&0b1110'0000)|freq5bits;
         }
 
@@ -104,7 +104,7 @@ class FGDOS
          * @param voltage3bits A 3 bit value which is translated to a value between 14.5 and 18 Volts
          */
         inline void setVoltage(const uint8_t voltage3bits){
-            assert(voltage3bits<=0b111);
+            configASSERT(voltage3bits<=0b111);
             data[5]=(data[5]&0b1111'1000)|(voltage3bits);
 
         }
@@ -377,8 +377,8 @@ private:
         const auto denominator=(configClockFrequency*(tDiv?1024:8192));
        const auto result=numerator/denominator+(2*(numerator%denominator)>=(denominator));
 
-    //assert that result is 5 bit value
-        assert(result<=0b0001'1111);
+    //configASSERT that result is 5 bit value
+        configASSERT(result<=0b0001'1111);
     return static_cast<uint8_t>(result)&0b0001'1111;
 
 }

@@ -141,7 +141,7 @@ void FGDOS::calculateDose(){
         doseIncrease+=approximateDoseFromRecharges();
 }
     LOG_DEBUG<<"Dose increase:"<<doseIncrease;
-	assert(doseIncrease>=0);
+	configASSERT(doseIncrease>=0);
 }
 uint32_t FGDOS::frequencyFromRaw(const uint32_t freq) const{
 
