@@ -77,3 +77,8 @@ template<PeripheralNumber PWMPeripheral, PWM_CHANNEL_MASK ChannelMask, PWM_CHANN
 uint8_t Heater<PWMPeripheral, ChannelMask, ChannelNum>::getDutyCyclePercentage() const {
     return dutyCyclePercentage;
 }
+
+template class Heater<PeripheralNumber::Peripheral_0, PWM_CHANNEL_0_MASK, PWM_CHANNEL_0>;
+template class Heater<PeripheralNumber::Peripheral_0, PWM_CHANNEL_1_MASK, PWM_CHANNEL_1>;
+template class Heater<PeripheralNumber::Peripheral_0, PWM_CHANNEL_2_MASK, PWM_CHANNEL_2>;
+template class Heater<PeripheralNumber::Peripheral_0, PWM_CHANNEL_3_MASK, PWM_CHANNEL_3>;
