@@ -171,7 +171,12 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
         }
         //prepare and write config data
         ConfigData config{};
+        //setting tdiv to 1 for low sensitivity will cause overflow!
+        tDiv=highSensitivity;
+        config.setTDiv(highSensitivity);
+
         config.setSensitivity(highSensitivity);
+
         //make sure that charge voltage is a 3 bit value
         config.setVoltage(chargeVoltage&0b111);
         uint8_t target5Bits=frequencyTo5Bit(targetFrequency);
