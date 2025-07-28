@@ -47,9 +47,9 @@ class FGDOS
     {
         etl::array<uint8_t, 7> data{
             writeMask|0x9//write base address
-           ,0b0000'1011//0x9:default target value for default clock and window and high sensitivity: 90kHz
-           ,0b0000'0110 //0xA:default threshold value for -||- : 50kHZ
-           ,0b1100'1001//0xB:default window, set tDiv to 1, it is mistakenly set to 0 in the datasheet
+           ,0b0001'0110//0x9:default target value for default clock and window and high sensitivity, tdiv=1: 90kHz -> 22 as specified by manufacturer
+           ,0b0000'1100 //0xA:default threshold value for -||- : 50kHZ -> 12 -||-
+           ,0b1100'1001//0xB:default window, set tDiv to 1 for accuracy
            ,0b0111'1001//0xC:high sensitivity
            ,0 //0xD:start with charging disabled, charge voltage is 000->14.5V
            ,0b0000'0100//0xE dont measure during spi: true, interrupt:0, engate:0
