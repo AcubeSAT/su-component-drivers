@@ -243,12 +243,13 @@ void FGDOS::clearRechargeCount() const{
 
 }
 
-FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin, const bool highSensitivity,const uint8_t chargeVoltage)
+FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin, const bool highSensitivity,const uint8_t chargeVoltage, const int8_t tempOffset)
 : ChipSelectPin{chipSelectPin}
 ,configClockFrequency{clockFrequency}
 ,thresholdFrequency{highSensitivity?thresholdFrequencyDefaultHigh:thresholdFrequencyDefaultLow}
 ,targetFrequency{highSensitivity?targetFrequencyDefaultHigh:targetFrequencyDefaultLow}
 ,configSensitivity{highSensitivity?sensitivityDefaultHigh:sensitivityDefaultLow}
+,temperatureOffset{tempOffset}
 
 {
     LOG_TRACE<<"Constructing driver";
