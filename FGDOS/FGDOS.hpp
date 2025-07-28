@@ -108,7 +108,7 @@ public:
      *@param chargeVoltage value from 0 to 7 that indicated charge voltage, from 14.5 to 18
      *
      */
-    FGDOS(uint32_t clockFrequency,PIO_PIN chipSelectPin, bool highSensitivity,uint8_t chargeVoltage);
+    FGDOS(uint32_t clockFrequency,PIO_PIN chipSelectPin, bool highSensitivity,uint8_t chargeVoltage,int8_t temperatureOffset);
 
     /**
      * @brief Retrieves the Chip ID from the FGDOS device.
@@ -123,12 +123,16 @@ public:
      * @return The 3-byte Serial Number as a 4 byte value
      */
     [[nodiscard]] uint32_t getSerialNumber() const;
-    //returns temperature in celsius
-    //TODO do i need to apply post processing to temperature?
-    [[nodiscard]] int8_t getTemperature()
+
+    /**
+     * Gets the temperature from the device (may perform a read or use a cached value)
+     * @return The signed temperature value in degrees Celsius
+     */
+    //TODO: calibration
+    [[nodiscard]] int getTemperature()
     {
         calculateDose();
-        return etl::bit_cast<int8_t>(temperature);
+        return temperature+temperatureOffset;
 
     }
 
@@ -145,6 +149,10 @@ private:
      */
     PIO_PIN ChipSelectPin = PIO_PIN_NONE;
 
+    /**
+     * Constant temperature offset, provided by calibration
+     */
+    int8_t temperatureOffset=0;
 
     uint32_t lastReadTick =0;
 
