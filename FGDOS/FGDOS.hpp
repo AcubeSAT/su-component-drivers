@@ -56,8 +56,13 @@ class FGDOS
             return data[5]|0b0100'0000;
         }
         //returns byte that must be written to 0xA to change threshold to required value without changing anything else
-        inline uint8_t getThresholdByte(const uint8_t threshold4Bits){
-            return (data[2]&0b1111'0000)|threshold4Bits;
+        /**
+         * Used to edit threshold frequency through a direct write to the appropriate register
+         * @param threshold5Bits 5bit value that corresponds to the frequency , acquired through frequencyTo5Bit()
+         * @return The appropriate configuration byte, with the threshold frequency altered to match the specified value and the rest of the bits unaltered
+         */
+        [[nodiscard]] uint8_t getThresholdByte(const uint8_t threshold5Bits) const{
+            return (data[2]&0b1110'0000)|threshold5Bits;
         }
         //sets the 5 bits that specify target frequency
         inline void setTargetFrequency(const uint8_t freq5bits){
