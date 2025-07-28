@@ -23,7 +23,8 @@
 
 #endif
 
-//TODO test,fix temperature compensation,error handling,fix style, add documentation
+//TODO test,fix temperature compensation,error handling,fix style, add documentation, test low sensitivity
+
 
 
 
@@ -107,6 +108,14 @@ class FGDOS
             configASSERT(voltage3bits<=0b111);
             data[5]=(data[5]&0b1111'1000)|(voltage3bits);
 
+        }
+        /**
+         *Sets the tDiv bit to true or false
+         *@param tDiv the value for tDiv
+         */
+        inline void setTDiv(bool tDiv)
+        {
+            data[3]=(data[3]&0b1111'1110)|tDiv;
         }
     };
 
@@ -271,7 +280,8 @@ private:
 
 
     /**
-     * Whether target and threshold values have smaller ranges (*1024 instead of *8912). Currently forced to true for accuracy
+     * Whether target and threshold values have smaller ranges (*1024 instead of *8912).
+     * Currently force to true for high sensitivity for accuracy, and forced to false for low sensitivity to prevent overflow
      */
     bool tDiv=true;
 
