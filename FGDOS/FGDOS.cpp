@@ -243,6 +243,25 @@ void FGDOS::clearRechargeCount() const{
 
 }
 
+void FGDOS::debugPrintConfig() const
+{
+    uint8_t read_address=readMask|0x9;
+    etl::array<uint8_t,6> buffer{};
+    if (!writeRead(&read_address,1,buffer.data(),buffer.size()))
+    {
+        LOG_DEBUG<<"SPI read failed!\n";
+        return;
+    }
+    for (int i=0;i<buffer.size();i++)
+    {
+        LOG_DEBUG<<"At address:"<<i+9<<" value is:"<<buffer[i]<<'\n';
+
+
+    }
+
+
+}
+
 FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin, const bool highSensitivity,const uint8_t chargeVoltage, const int8_t tempOffset)
 : ChipSelectPin{chipSelectPin}
 ,configClockFrequency{clockFrequency}

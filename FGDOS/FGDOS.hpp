@@ -158,7 +158,6 @@ public:
 
     }
 
-    //returns total dose in grays received since the driver was initialized
     /**
      * Reads data from the device and updates the total dose received. May use a cached value.
      * @return The dose in Grays
@@ -356,7 +355,6 @@ private:
     [[nodiscard]] uint32_t temperatureCompensateFrequency(uint32_t freq) const;
 
 
-    //stage configuration and write it to dosimeter registers
     /**
      * Writes all relevant configuration values to device registers
      * @param chargeVoltage 3 bit value taht corresponds to charge voltage from 14.5 to 18 Volts
@@ -383,11 +381,17 @@ private:
 
 }
 
-//set recharge count indicator in dosimeter register to 0
     /**
      * Clears the recharge count register. Required after each read
      */
     void clearRechargeCount() const;
+
+    /**
+     *Only for testing
+     *Prints all config values
+     */
+    void debugPrintConfig() const;
+
 
 
 };
