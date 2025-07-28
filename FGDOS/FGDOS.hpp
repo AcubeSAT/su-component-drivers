@@ -39,6 +39,10 @@ class FGDOS
     constexpr static uint8_t writeMask=0b0100'0000;
     constexpr static uint8_t readMask=0b1000'0000;
     //private struct that prepares config data to be written to registers
+    /**
+     * @struct ConfigData
+     * Used to stage the configuration data to be written with SPI
+     */
     struct ConfigData
     {
         etl::array<uint8_t, 7> data{
@@ -51,8 +55,11 @@ class FGDOS
            ,0b0000'0100//0xE dont measure during spi: true, interrupt:0, engate:0
        };
 
-        //returns byte that must be written to 0xD to enable recharging without changing anything else
-        inline uint8_t getRechargeEnableByte(){
+        /**
+         * Used to enable recharge through a direct write to the appropriate register
+         * @return the configuration byte that has the recharge enable bit set to true and the rest of the bits unaltered
+         */
+        [[nodiscard]] uint8_t getRechargeEnableByte() const{
             return data[5]|0b0100'0000;
         }
         //returns byte that must be written to 0xA to change threshold to required value without changing anything else
@@ -64,24 +71,38 @@ class FGDOS
         [[nodiscard]] uint8_t getThresholdByte(const uint8_t threshold5Bits) const{
             return (data[2]&0b1110'0000)|threshold5Bits;
         }
-        //sets the 5 bits that specify target frequency
+        /**
+            * Sets the Target frequency
+            * @param freq5bits 5 bit value that corresponds to the frequency, acquired through frequencyTo5Bit()
+        */
         inline void setTargetFrequency(const uint8_t freq5bits){
             assert(freq5bits<=0b11111);
             data[1]=(data[1]&0b1110'0000)|freq5bits;
         }
-        //sets the 5 bits that specify threshold frequency
+
+        /**
+         * Sets the Threshold frequency
+         * @param freq5bits 5 bit value that corresponds to the frequency, acquired through frequencyTo5Bit()
+         */
         inline void setThresholdFrequency(const uint8_t freq5bits){
             assert(freq5bits<=0b1111);
             data[2]=(data[2]&0b1110'0000)|freq5bits;
         }
 
-        //sets sensitivity. The user must set target and threshold frequency separately
+        /**
+         * Sets the sensitivity to high or low. The user must set target and threshold frequencies separately
+         * @param high true if sensitivity is high, false if low
+         */
         inline void setSensitivity(const bool high){
             data[4]=(data[4]&0b1111'1000)|(high?0b001:0b100);
 
         }
 
-        //sets charge voltage. It takes a 3 bit value which is translated to a value between 14.5 and 18 Volts
+
+        /**
+         *Sets the recharge voltage
+         * @param voltage3bits A 3 bit value which is translated to a value between 14.5 and 18 Volts
+         */
         inline void setVoltage(const uint8_t voltage3bits){
             assert(voltage3bits<=0b111);
             data[5]=(data[5]&0b1111'1000)|(voltage3bits);
@@ -97,7 +118,7 @@ public:
     /**
      * Constructor that initializes the FGDOS instance and sets the chip select pin to high by default.
      *
-     *@param clockFrequency Frequency of clock provided at CK pin of Dosimeter
+     *@param clockFrequency Frequency of clock provided at CK pin of Dosimeter. This is a hardware dependent value.
      *
      *@param chipSelectPin The pin used for chip select (CS) in SPI communication.
 
@@ -107,6 +128,7 @@ public:
      *
      *@param chargeVoltage value from 0 to 7 that indicated charge voltage, from 14.5 to 18
      *
+     *@param temperatureOffset value provided by calibration to correctly calculate the temperature
      */
     FGDOS(uint32_t clockFrequency,PIO_PIN chipSelectPin, bool highSensitivity,uint8_t chargeVoltage,int8_t temperatureOffset);
 
@@ -137,13 +159,19 @@ public:
     }
 
     //returns total dose in grays received since the driver was initialized
+    /**
+     * Reads data from the device and updates the total dose received. May use a cached value.
+     * @return The dose in Grays
+     */
     [[nodiscard]] float getTotalDose();
-    //returns the approximate rate of radiation in grays per second
+    /**
+     * Approximates the dose rate using the last two values read. May perform a new read.
+     * @return The approximated dose rate in Grays per second
+     */
     [[nodiscard]] float getDoseRate();
 
 private:
 
-    //constexpr static bool DoDebugPrinting = true;
     /**
      * The chip select pin for SPI communication.
      */
@@ -154,32 +182,72 @@ private:
      */
     int8_t temperatureOffset=0;
 
+    /**
+     * Timestamp of last read
+     */
     uint32_t lastReadTick =0;
 
-
+    /**
+     * cached temperature value
+     */
     uint8_t temperature = 0;
+    /**
+     * cached recharge count value (usually 0)
+     */
     uint8_t rechargeCount = 0;
+
+    /**
+     * cached Reference Frequency value
+     */
     uint32_t refFrequency=0;
+    /**
+     * cached Sensor Frequency value
+     */
     uint32_t sensorFrequency=0;
 
-    //previous frequency, used to calculate dose
+    /**
+     * Sensor Frequency from the previous read, used for dose increase calculations
+     */
     uint32_t sensorPrevFrequency=0;
-    //previous reference frequency, used if recharge(s) have occurred
+    /**
+        * Sensor Reference from the previous read, used for approximation if recharges occurred
+     */
     uint32_t refPrevFrequency=0;
 
+    /**
+     * Flag corresponding to the device's sensor overflow flag
+     */
     bool sensorOverflown=false;
+
+    /**
+     * Flag corresponding to the device's reference overflow flag
+     */
     bool referenceOverflown=false;
+
+    /**
+     * Flag corresponding to the device's recharge in progress flag
+     */
     bool recharging=false;
 
-    // combined dose of all previous timesteps (except the last one)
+    /**
+     * Accumulated dose of all previous reads except the last one
+     */
     float previousDose=0.0f;
-    // dose of only the last timestep. This is separate so that the current rate of change can be calculated
+    /**
+     * Dose increase, calculated fron the last read
+     */
     float doseIncrease=0.0f;
 
+    /**
+     * Hardware clock frequency
+     */
     uint32_t configClockFrequency=0;
 
-    //default
+    /**
+     * Window amount value. Currently only the default value is supported.
+     */
     uint32_t windowAmount=8192;
+
 
     constexpr static uint32_t thresholdFrequencyDefaultHigh=50'000;
 
@@ -202,11 +270,18 @@ private:
     constexpr static float configCoefTempToRef=0.0f;
 
 
-    //whether target and threshold values have smaller ranges (*1024 instead of *8912)
+
+    /**
+     * Whether target and threshold values have smaller ranges (*1024 instead of *8912). Currently forced to true for accuracy
+     */
     bool tDiv=true;
 
-    //spi functions
-    //write data should be const but can't due to SPI api
+    /**
+     * SPI Write Wrapper
+     * @param data pointer to data to be written
+     * @param size size of data to be written
+     * @return true if successful
+     */
     [[nodiscard]] inline bool write(uint8_t* data,size_t size) const
     {
         PIO_PinWrite(ChipSelectPin, false);
@@ -216,7 +291,16 @@ private:
         return success;
 
     }
-   [[nodiscard]] inline bool writeRead(uint8_t* writeData,size_t writeSize,uint8_t* readData,size_t readSize)const
+
+    /**
+     * SPI WriteRead Wrapper
+     * @param writeData pointer to data to be written
+     * @param writeSize size of data to be written
+     * @param readData pointer to data to be read
+     * @param readSize size of data to be read
+     * @return true if successful
+     */
+    [[nodiscard]] inline bool writeRead(uint8_t* writeData,size_t writeSize,uint8_t* readData,size_t readSize)const
     {
 
 
@@ -228,29 +312,64 @@ private:
 
     }
 
-    //check if enough time has elapsed since last read to read again or use old values
+    /**
+     * NYI. Check if enough time is elapsed to read again
+     * @return false if not enough time is elapsed to try reading
+     */
     bool enoughTimeElapsed(){return true;}
-    //return seconds that passed from last read tick until right now
+    /**
+     * NYI.Helper function to check time elapsed since last read
+     * @return the seconds passed from last read
+     */
     float getSecondsPassed(){return 0.0f;}
 
 
-    //calculate approximate dose during recharges, using previous ref frequency and assuming temperature changed linearly from the first to the last recharge
+    /**
+     * NYI. Do not call if recharge count is 0. Uses count of recharges and previous reference frequency to approximate the does increase from recharges.
+     * @return dose increase from recharges
+     */
     float approximateDoseFromRecharges(){return 0.0f;};
-    //update data if necessary and calculate the dose in grays
+    /**
+     * Calls @ref updateData() and updates dose values
+     */
     void calculateDose();
-    //set last read tick to right now
+    /**
+     * NYI. Helper Function that updates @ref lastReadTick
+     */
     void updateLastReadTick(){};
-    //read all the necessary data from dosimeter. Returns false if data is not ready
+    /**
+     * Attempts to read from the device if necessary and updates read values
+     * @return false if data was not updated
+     */
     [[nodiscard]] bool updateData();
-    //convert raw counter to frequency in hertz
+    /**
+     * Converts raw value from register to frequency in Hertz
+     * @param freq raw value read from sensor or reference register
+     * @return frequency in hertz
+     */
     [[nodiscard]] uint32_t frequencyFromRaw(uint32_t freq) const;
+    /**
+     * NYI. Compensates frequency for temperature
+     * @param freq Sensor Frequency in hertz
+     * @return compensated frequency in hertz
+     */
     [[nodiscard]] uint32_t temperatureCompensateFrequency(uint32_t freq) const;
 
 
     //stage configuration and write it to dosimeter registers
+    /**
+     * Writes all relevant configuration values to device registers
+     * @param chargeVoltage 3 bit value taht corresponds to charge voltage from 14.5 to 18 Volts
+     * @param highSensitivity true for high sensitivity mode, false for low
+     * @param forceRecharge if true, an initial recharge will occur. Recommended for first use after installation
+     */
     void initConfiguration(uint8_t chargeVoltage,bool highSensitivity, bool forceRecharge);
 
-    //convert frequency in hertz to the appropriate 5 bit value according to datasheet
+    /**
+     * Converts frequency to 5bit value to be used in target and threshold registers
+     * @param frequency the frequency in Hertz
+     * @return The converted 5bit value
+     */
     [[nodiscard]] uint8_t frequencyTo5Bit(const uint32_t frequency) const{
         //convert to 5 bit values: new=old*window/(tDiv?(clock_freq*8192):clock_freq*1024)
 
@@ -262,7 +381,10 @@ private:
 }
 
 //set recharge count indicator in dosimeter register to 0
-void clearRechargeCount() const;
+    /**
+     * Clears the recharge count register. Required after each read
+     */
+    void clearRechargeCount() const;
 
 
 };
