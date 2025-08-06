@@ -398,10 +398,11 @@ private:
 
     /**
      *Only for testing
-     *Prints all config values
+     *Prints all values from data and config registers, does not update cached data
      */
-    void debugPrintConfig() const;
+    void debugPrintAll() const;
 
 
 
 };
+#endif
