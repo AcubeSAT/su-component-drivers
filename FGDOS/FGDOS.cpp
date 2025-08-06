@@ -19,6 +19,13 @@ bool FGDOS::updateData(){
     }
 
     uint8_t rchcnt=buffer[2];
+    LOG_TRACE<<"Read buffer contents:"<<buffer.data()<<'\n';
+    for (int i=1;i<buffer.size();i++)
+    {
+        LOG_TRACE<<"At :"<<i-1<<" = "<<static_cast<int>(buffer[i]);
+
+
+    }
 
     //contains flags and 2 most significant bits for ref and sensor respectively
     const uint8_t rLast=buffer[6];
@@ -27,7 +34,7 @@ bool FGDOS::updateData(){
 recharging=rchcnt&0b1000'0000;
 const bool refReady=rLast&0b1000;
 const bool sensorReady=sLast&0b1000;
-LOG_DEBUG<<"Recharge count:"<<rchcnt<<'\n';
+//LOG_DEBUG<<"Recharge count:"<<rchcnt<<'\n';
 //if recharging no data available
 if(recharging){
 
@@ -159,6 +166,8 @@ uint32_t FGDOS::temperatureCompensateFrequency(const uint32_t freq) const
 void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensitivity, const bool forceRecharge)
 {
         //write so that recharging is disabled
+        LOG_DEBUG<<"Before initConfig:";
+        debugPrintAll();
         constexpr uint8_t recharge_write_address=0b0100'0000|0xD;
         etl::array<uint8_t,2> buffer{recharge_write_address,0};
         if (!write(buffer.data(),buffer.size()))
@@ -226,6 +235,12 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
     //just in case recharge count isn't set to 0 by default
     clearRechargeCount();
 
+    //remove this after testing
+    LOG_DEBUG<<"After initConfig:";
+    debugPrintAll();
+
+    //If force recharge is set to false, we may want to read the current frequency which may be below the target and include the radiation received before initialization
+    //Should add a function getPastDose()
     if (!updateData())
     {
         LOG_TRACE<<"Data not updated after initialization\n";
@@ -248,18 +263,18 @@ void FGDOS::clearRechargeCount() const{
 
 }
 
-void FGDOS::debugPrintConfig() const
+void FGDOS::debugPrintAll() const
 {
-    uint8_t read_address=readMask|0x9;
-    etl::array<uint8_t,6> buffer{};
+    uint8_t read_address=readMask|0x0;
+    etl::array<uint8_t,16> buffer{};
     if (!writeRead(&read_address,1,buffer.data(),buffer.size()))
     {
         LOG_DEBUG<<"SPI read failed!\n";
         return;
     }
-    for (int i=0;i<buffer.size();i++)
+    for (int i=1;i<buffer.size();i++)
     {
-        LOG_DEBUG<<"At address:"<<i+9<<" value is:"<<buffer[i]<<'\n';
+        LOG_DEBUG<<"At address:"<<i-1<<" value is:"<<buffer[i]<<'\n';
 
 
     }
