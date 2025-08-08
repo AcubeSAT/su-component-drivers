@@ -322,15 +322,20 @@ private:
     }
 
     /**
-     * NYI. Check if enough time is elapsed to read again
+     * Check if enough time is elapsed to read again. Checks for tick counter overflow
      * @return false if not enough time is elapsed to try reading
      */
-    bool enoughTimeElapsed(){return true;}
+    [[nodiscard]] bool enoughTimeElapsed() const
+    {
+        float elapsed = getSecondsPassed();
+        return  (getSecondsPassed()> static_cast<float>(windowAmount)/static_cast<float>(configClockFrequency))||getSecondsPassed()<0.0f;
+
+    }
     /**
-     * NYI.Helper function to check time elapsed since last read
+     * Helper function to check time elapsed since last read
      * @return the seconds passed from last read
      */
-    float getSecondsPassed(){return 0.0f;}
+    [[nodiscard]] inline float getSecondsPassed() const{return (static_cast<float>(xTaskGetTickCount()-lastReadTick))/configTICK_RATE_HZ;}
 
 
     /**
@@ -343,9 +348,13 @@ private:
      */
     void calculateDose();
     /**
-     * NYI. Helper Function that updates @ref lastReadTick
+     * Helper Function that updates @ref lastReadTick
      */
-    void updateLastReadTick(){};
+    inline void updateLastReadTick()
+    {
+        lastReadTick=xTaskGetTickCount();
+
+    };
     /**
      * Attempts to read from the device if necessary and updates read values
      * @return false if data was not updated
