@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef SU_EQM
 #include <etl/array.h>
 #include "Peripheral_Definitions.hpp"
 #include "Task.hpp"
