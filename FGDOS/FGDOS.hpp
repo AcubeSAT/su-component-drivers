@@ -322,13 +322,13 @@ private:
     }
 
     /**
-     * Check if enough time is elapsed to read again. Checks for tick counter overflow
+     * Check if enough time is elapsed to read again.
      * @return false if not enough time is elapsed to try reading
      */
     [[nodiscard]] bool enoughTimeElapsed() const
     {
         float elapsed = getSecondsPassed();
-        return  (getSecondsPassed()> static_cast<float>(windowAmount)/static_cast<float>(configClockFrequency))||getSecondsPassed()<0.0f;
+        return  (getSecondsPassed()> static_cast<float>(windowAmount)/static_cast<float>(configClockFrequency));
 
     }
     /**
