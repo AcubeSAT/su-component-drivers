@@ -46,7 +46,7 @@ constexpr float DefaultHeaterFrequency = 1500.0f;
 constexpr float DefaultHeaterDutyCycle = 28.0f;
 
 static_assert(Heaters_PWM_Config.size() == NumberOfHeaters, "PWM channel allocations for heaters are too many");
-inline Heater<Heaters_PWM_Config[0].first> heater1 {Heaters_PWM_Config[0].second, DefaultHeaterFrequency,  DefaultHeaterDutyCycle};
+inline Heater<Heaters_PWM_Config[0].first> heater1 {Heaters_PWM_Config[0].second, DefaultHeaterFrequency, DefaultHeaterDutyCycle};
 inline Heater<Heaters_PWM_Config[1].first> heater2 {Heaters_PWM_Config[1].second, DefaultHeaterFrequency, DefaultHeaterDutyCycle};
 inline Heater<Heaters_PWM_Config[2].first> heater3 {Heaters_PWM_Config[2].second, DefaultHeaterFrequency, DefaultHeaterDutyCycle};
 inline Heater<Heaters_PWM_Config[3].first> heater4 {Heaters_PWM_Config[3].second, DefaultHeaterFrequency, DefaultHeaterDutyCycle};
