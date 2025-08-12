@@ -30,7 +30,7 @@ public:
     }
 
     /**
-     * Disabled the Heater
+     * Disables the Heater
      */
     void close() {
         pwm.stop();
