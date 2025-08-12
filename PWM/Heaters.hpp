@@ -22,11 +22,16 @@ public:
 
     }
 
-
+    /**
+     * Enables the Heater
+     */
     void open() {
         pwm.start();
     }
 
+    /**
+     * Disabled the Heater
+     */
     void close() {
         pwm.stop();
     }
