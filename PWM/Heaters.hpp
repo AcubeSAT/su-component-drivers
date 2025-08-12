@@ -13,11 +13,11 @@ public:
      *
      * @param channel the PWM channel used by the Heater
      * @param frequency the PWM frequency in Hz
-     * @param averagePower percentage of duty cycle from 0 to 100
+     * @param dutyCycle percentage of duty cycle from 0 to 100
      */
-    explicit Heater(PWM_PeripheralChannel channel, float frequency, float averagePower) : pwm(channel) {
+    explicit Heater(PWM_PeripheralChannel channel, float frequency, float dutyCycle) : pwm(channel) {
         pwm.setFrequency(frequency);
-        setAveragePower(averagePower);
+        setDutyCycle(dutyCycle);
         close();
 
     }
@@ -31,8 +31,12 @@ public:
         pwm.stop();
     }
 
-    void setAveragePower(float averagePower) {
-        pwm.setDutyCycle(averagePower);
+    /**
+     * Sets the Heater's Duty Cycle
+     * @param dutyCycle percentage of duty cycle from 0 to 100
+     */
+    void setDutyCycle(float dutyCycle) {
+        pwm.setDutyCycle(dutyCycle);
     }
 
 private:
