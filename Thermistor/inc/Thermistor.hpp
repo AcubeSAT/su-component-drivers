@@ -35,7 +35,7 @@ public:
      */
     inline static void updateVoltage(float voltage)
     {
-        PowerSupply=voltage;
+        powerSupply=voltage;
 
     }
 
@@ -50,7 +50,7 @@ private:
      *
      * @note Due to the voltage drop cause by the camera, this is made a variable that can be updated from the business logic
      */
-    inline static float PowerSupply = 4.97f;
+    inline static float powerSupply = 4.97f;
 
     /**
      * Reference Reference Voltage used for calculations by the Afec
