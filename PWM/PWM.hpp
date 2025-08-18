@@ -53,7 +53,7 @@ public:
                 channelMask(ConvertChannelNumberToMask(channelNumber)),
                 channelPrescaler(getChannelPrescaler()),
                 CPRD_RegisterValue(initializeCPRDValue()),
-                isOpen{false}    {
+                isActive{false}    {
         setDisabledChannelPolarity();
     }
 
@@ -85,7 +85,7 @@ public:
      * Starts the PWM signal on the configured channel.
      */
     void start() {
-        isOpen=true;
+        isActive = true;
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
             PWM0_ChannelsStart(channelMask);
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
@@ -97,7 +97,7 @@ public:
      * Stops the PWM signal on the configured channel.
      */
     void stop() {
-        isOpen=false;
+        isActive = false;
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
             PWM0_ChannelsStop(channelMask);
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
@@ -111,11 +111,13 @@ public:
      * @param frequency Frequency value to set (in Hz).
      */
     void setFrequency(float frequency) {
-        if (isOpen) {
-            stop();
-            isOpen=true;
+        bool shouldResume = false;
 
+        if (isActive) {
+            stop();
+            shouldResume = true;
         }
+
         CPRD_RegisterValue = static_cast<CPRD_RegisterType_t>(static_cast<float>(MCK_ClockFrequency) / (channelPrescaler * frequency));
 
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
@@ -123,7 +125,7 @@ public:
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CPRD = CPRD_RegisterValue;
         }
-        if (isOpen) {
+        if (shouldResume) {
             start();
         }
     }
@@ -134,11 +136,13 @@ public:
      * @param dutyCycle Duty cycle value to set (0-100%).
      */
     void setDutyCycle(float dutyCycle) {
-        if (isOpen) {
+        bool shouldResume = false;
+        
+        if (isActive) {
             stop();
-            isOpen=true;
-
+            shouldResume = true;
         }
+
         const CTDY_RegisterType_t CTDY_RegisterValue = dutyCycle * static_cast<float>(CPRD_RegisterValue) / 100.0f;
 
         if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
@@ -147,7 +151,8 @@ public:
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CDTY = CTDY_RegisterValue;
         }
-        if (isOpen) {
+
+        if (shouldResume) {
             start();
         }
     }
@@ -170,7 +175,7 @@ private:
     /**
      * Whether the channel is active
      */
-    bool isOpen=false;
+    bool isActive = false;
     /**
      * The channel prescaler value.
      */
