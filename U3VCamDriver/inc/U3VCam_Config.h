@@ -138,7 +138,6 @@ extern "C" {
  * This macro can be used optionally as a 'stub' function for calling an 
  * external error handler to report or log the error event by U3V App.
  */
-#define U3V_REPORT_ERROR(errID)                     (void)(errID) //TODO: add error report IF
 
 /**
  * U3V Host supported instances (devices) number.
