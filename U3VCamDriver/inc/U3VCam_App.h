@@ -106,6 +106,7 @@ typedef struct
     T_U3VImgPayldTransfState            appImgTransfState;
     uint32_t                            appImgBlockCounter;
     T_U3VCamDriverPayloadEventCallback  appImgEvtCbk;
+    T_U3VCamDriverErrorCallback         appErrorCbk;
     void                                *appImgDataBfr;
 } T_U3VAppData;
 
@@ -135,6 +136,8 @@ typedef enum
     U3V_DRV_ERR_IMG_TRANSF_STATE_FAIL,
     U3V_DRV_ERR_STOP_IMG_ACQ_FAIL
 } T_U3VCamDriverErrorID;
+
+T_U3VCamDriverStatus U3VCamDriver_SetErrorCallback(T_U3VCamDriverErrorCallback callback);
 
 
 #ifdef __cplusplus
