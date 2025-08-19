@@ -137,6 +137,11 @@ typedef enum
     U3V_DRV_ERR_STOP_IMG_ACQ_FAIL
 } T_U3VCamDriverErrorID;
 
+/**
+ * Sets up a callback to handle internal driver errors
+ * @param callback callback that receives the error id
+ * @return The driver status, which indicates failure if not U3V_CAM_DRV_OK
+ */
 T_U3VCamDriverStatus U3VCamDriver_SetErrorCallback(T_U3VCamDriverErrorCallback callback);
 
 
