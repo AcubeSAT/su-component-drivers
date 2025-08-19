@@ -35,7 +35,7 @@ public:
      */
     inline static void updateVoltage(float voltage)
     {
-        powerSupply=voltage;
+        powerSupply = voltage;
 
     }
 
