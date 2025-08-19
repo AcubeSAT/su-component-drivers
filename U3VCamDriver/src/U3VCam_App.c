@@ -30,7 +30,7 @@ static T_U3VDriverInitStatus u3vDriver_InitStatus = U3V_DRV_NOT_INITIALIZED;
 
 static T_U3VAppData u3vAppData;
 
-void internalReportError(T_U3VCamDriverErrorID err) {
+void reportError(T_U3VCamDriverErrorID err) {
     if (u3vAppData.appErrorCbk!=NULL) {
         u3vAppData.appErrorCbk(err);
     }
@@ -81,7 +81,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_SW_RESET_REQ_FAIL);
+                reportError(U3V_DRV_ERR_SW_RESET_REQ_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
         }
@@ -116,7 +116,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_BUS_ENABLE_FAIL);
+                reportError(U3V_DRV_ERR_BUS_ENABLE_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -148,7 +148,7 @@ void U3VCamDriver_Tasks(void)
                 }
                 else
                 {
-                    internalReportError(U3V_DRV_ERR_OPEN_DEVICE_FAIL);
+                    reportError(U3V_DRV_ERR_OPEN_DEVICE_FAIL);
                     u3vAppData.state = U3V_APP_STATE_ERROR;
                 }
             }
@@ -162,7 +162,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_SETUP_CTRL_IF_FAIL);
+                reportError(U3V_DRV_ERR_SETUP_CTRL_IF_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -186,7 +186,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_READ_TEXT_DESCR_FAIL);
+                reportError(U3V_DRV_ERR_READ_TEXT_DESCR_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -199,7 +199,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_GET_STREAM_CPBL_FAIL);
+                reportError(U3V_DRV_ERR_GET_STREAM_CPBL_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -221,7 +221,7 @@ void U3VCamDriver_Tasks(void)
                                                               U3V_SET_IMG_PRESET_LOAD_CMD(U3VApp_ImgPresetAppReqToRegMapping(u3vAppData.imgPresetLoad.reqstdPreset)));
                     if ((result1 != U3V_HOST_RESULT_SUCCESS) || (result2 != U3V_HOST_RESULT_SUCCESS))
                     {
-                        internalReportError(U3V_DRV_ERR_SET_IMG_PRESET_FAIL);
+                        reportError(U3V_DRV_ERR_SET_IMG_PRESET_FAIL);
                         u3vAppData.state = U3V_APP_STATE_ERROR;
                     }
                 }
@@ -232,7 +232,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_SET_IMG_PRESET_FAIL);
+                reportError(U3V_DRV_ERR_SET_IMG_PRESET_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -252,7 +252,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_SET_PIXEL_FORMAT_FAIL);
+                reportError(U3V_DRV_ERR_SET_PIXEL_FORMAT_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -272,7 +272,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_SET_ACQ_MODE_FAIL);
+                reportError(U3V_DRV_ERR_SET_ACQ_MODE_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -288,13 +288,13 @@ void U3VCamDriver_Tasks(void)
                }
                else
                {
-                   internalReportError(U3V_DRV_ERR_SETUP_STREAM_IF_FAIL);
+                   reportError(U3V_DRV_ERR_SETUP_STREAM_IF_FAIL);
                    u3vAppData.state = U3V_APP_STATE_ERROR;
                }
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_GET_PAYLD_SIZE_FAIL);
+                reportError(U3V_DRV_ERR_GET_PAYLD_SIZE_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -307,7 +307,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_GET_CAM_TEMP_FAIL);
+                reportError(U3V_DRV_ERR_GET_CAM_TEMP_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -324,7 +324,7 @@ void U3VCamDriver_Tasks(void)
                 }
                 else
                 {
-                    internalReportError(U3V_DRV_ERR_START_IMG_ACQ_FAIL);
+                    reportError(U3V_DRV_ERR_START_IMG_ACQ_FAIL);
                     u3vAppData.state = U3V_APP_STATE_ERROR;
                 }
             }
@@ -343,7 +343,7 @@ void U3VCamDriver_Tasks(void)
                     result1 = U3VHost_StartImgPayldTransfer(u3vAppData.u3vHostHandle, u3vAppData.appImgDataBfr, U3V_PAYLD_BLOCK_MAX_SIZE);
                     if (result1 != U3V_HOST_RESULT_SUCCESS)
                     {
-                        internalReportError(U3V_DRV_ERR_START_IMG_TRANSF_FAIL);
+                        reportError(U3V_DRV_ERR_START_IMG_TRANSF_FAIL);
                         u3vAppData.state = U3V_APP_STATE_ERROR;
                     }
                 }
@@ -356,7 +356,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_IMG_TRANSF_STATE_FAIL);
+                reportError(U3V_DRV_ERR_IMG_TRANSF_STATE_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
@@ -372,7 +372,7 @@ void U3VCamDriver_Tasks(void)
             }
             else
             {
-                internalReportError(U3V_DRV_ERR_STOP_IMG_ACQ_FAIL);
+                reportError(U3V_DRV_ERR_STOP_IMG_ACQ_FAIL);
                 u3vAppData.state = U3V_APP_STATE_ERROR;
             }
             break;
