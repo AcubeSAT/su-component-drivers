@@ -29,6 +29,14 @@ public:
      */
     float getTemperature();
 
+    /**
+     * Update the Supply Voltage during runtime.
+     * @param voltage the supply voltage provided to the Thermistor, in Volts
+     */
+    inline static void setVoltage(float voltage) {
+        powerSupply = voltage;
+    }
+
 private:
     /**
      * The Temperature of the Thermistor instance measured and set by getTemperature Function
@@ -38,10 +46,9 @@ private:
     /**
      * Power Supply of the NRBE10524450B1F thermistor
      *
-     * @note If we decide to change the Power Supply ,
-     * we will need to change the value of this member variable as well
+     * @note Due to the voltage drop cause by the camera, this is made a variable that can be updated from the business logic
      */
-    static constexpr float PowerSupply = 4.97f;
+    inline static float powerSupply = 4.97f;
 
     /**
      * Reference Reference Voltage used for calculations by the Afec
