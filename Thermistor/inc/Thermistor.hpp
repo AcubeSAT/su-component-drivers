@@ -33,7 +33,7 @@ public:
      * Update the Supply Voltage during runtime.
      * @param voltage the supply voltage provided to the Thermistor, in Volts
      */
-    inline static void updateVoltage(float voltage)
+    inline static void setVoltage(float voltage)
     {
         powerSupply = voltage;
 
