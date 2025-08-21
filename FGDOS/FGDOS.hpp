@@ -50,7 +50,7 @@ class FGDOS
             writeMask|0x9//write base address
            ,0b0001'0110//0x9:default target value for default clock and window and high sensitivity, tdiv=1: 90kHz -> 22 as specified by manufacturer
            ,0b0000'1100 //0xA:default threshold value for -||- : 50kHZ -> 12 -||-
-           ,0b1100'1001//0xB:default window, set tDiv to 1 for accuracy
+           ,0b1100'0000//0xB:experimental configuration
            ,0b0111'1001//0xC:high sensitivity
            ,0 //0xD:start with charging disabled, charge voltage is 000->14.5V
            ,0b0000'0100//0xE dont measure during spi: true, interrupt:0, engate:0
@@ -254,7 +254,7 @@ private:
     /**
      * Window amount value. Currently only the default value is supported.
      */
-    uint32_t windowAmount=8192;
+    uint32_t windowAmount=32768;
 
 
     constexpr static uint32_t thresholdFrequencyDefaultHigh=50'000;
@@ -283,7 +283,7 @@ private:
      * Whether target and threshold values have smaller ranges (*1024 instead of *8912).
      * Currently force to true for high sensitivity for accuracy, and forced to false for low sensitivity to prevent overflow
      */
-    bool tDiv=true;
+    bool tDiv=false;
 
     /**
      * SPI Write Wrapper
