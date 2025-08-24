@@ -2,8 +2,6 @@
 #define PUMPV3_H
 #include "PCA9685.hpp"
 
-#endif //PUMPV3_H
-
 /**
  * Step mode configurations referenced from the DRV8825 datasheet
  * @note Due to hardware constraints, the modes greater than 3 are not possible to be set
@@ -51,31 +49,32 @@ class PumpV3 {
          * @return true if the driving circuit signals a fault
          */
         static bool getPumpFault();
+
     private:
         /**
          * PCA PWM channel corresponding to driver step input
          */
-        constexpr static auto Step =PCA9685::PWMChannel::CHANNEL6;
+        constexpr static auto Step = PCA9685::PWMChannel::CHANNEL6;
         /**
          * PCA PWM channel corresponding to mode select bit 0. Used a high or low signal, not a PWM
          */
-        constexpr static auto Mode0 =PCA9685::PWMChannel::CHANNEL5;
+        constexpr static auto Mode0 = PCA9685::PWMChannel::CHANNEL5;
          /**
          * PCA PWM channel corresponding to mode select bit 1. Used a high or low signal, not a PWM
          */
-        constexpr static auto Mode1 =PCA9685::PWMChannel::CHANNEL1;
+        constexpr static auto Mode1 = PCA9685::PWMChannel::CHANNEL1;
         /**
         * PCA PWM channel corresponding to direction select. Used a high or low signal, not a PWM
          */
-        constexpr static auto Dir=PCA9685::PWMChannel::CHANNEL7;
+        constexpr static auto Dir = PCA9685::PWMChannel::CHANNEL7;
          /**
         * PCA PWM channel corresponding to sleep mode. Used a high or low signal, not a PWM
          */
-        constexpr static auto Sleep=PCA9685::PWMChannel::CHANNEL9;
+        constexpr static auto Sleep = PCA9685::PWMChannel::CHANNEL9;
         /**
         * PCA PWM channel corresponding to reset . Used a high or low signal, not a PWM. Active Low
         */
-        constexpr static auto Reset=PCA9685::PWMChannel::CHANNEL8;
+        constexpr static auto Reset = PCA9685::PWMChannel::CHANNEL8;
         /**
          * Hardcoded PCA address
          */
@@ -86,3 +85,4 @@ class PumpV3 {
         PCA9685 pca9685;
 
 };
+#endif //PUMPV3_H

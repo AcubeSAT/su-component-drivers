@@ -17,7 +17,7 @@ PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency, bool direction
 
     setDirection(direction);
 
-    pca9685.setPWMChannel(Step,50,0);
+    pca9685.setPWMChannel(Step, 50, 0);
 
     bool modeBit0 = static_cast<uint8_t>(mode) & 1;
 
