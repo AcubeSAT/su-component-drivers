@@ -84,5 +84,10 @@ class PumpV3 {
          */
         PCA9685 pca9685;
 
+        /**
+         * Hardcoded I2C address for the DAC that controlls the driver circuit referrence voltage
+         */
+        constexpr  static uint8_t DacAddress = 0b1100110;
+
 };
 #endif //PUMPV3_H
