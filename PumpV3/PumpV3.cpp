@@ -37,12 +37,12 @@ PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency, bool direction
 }
 
 void PumpV3::exitSleep() {
-    //TODO: Investigate if the pca itself can also be placed in sleep mode here
-    pca9685.setPWMChannelAlwaysOff(Sleep);
+    pca9685.setPWMChannelAlwaysOn(Sleep,0.0f);
 }
 
 void PumpV3::enterSleep() {
-    pca9685.setPWMChannelAlwaysOn(Sleep, 0);
+    //TODO: Investigate if the pca itself can also be placed in sleep mode here
+    pca9685.setPWMChannelAlwaysOff(Sleep);
 }
 
 void PumpV3::setDirection(bool direction) {
