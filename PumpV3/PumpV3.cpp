@@ -2,7 +2,7 @@
 
 #include "plib_pio.h"
 
-PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency, bool direction) : pca9685{PcaAddress} {
+PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress} {
 
     pca9685.reset();
     pca9685.setAllPWMChannelsOff();
@@ -16,7 +16,7 @@ PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency, bool direction
         exitSleep();
     }
 
-    setDirection(direction);
+    setDirection(PumpDirection::ForwardDirection);
 
     pca9685.setPWMChannel(Step, 50, 0);
 
@@ -46,8 +46,14 @@ void PumpV3::enterSleep() {
     pca9685.setPWMChannelAlwaysOff(Sleep);
 }
 
-void PumpV3::setDirection(bool direction) {
-    pca9685.setPWMChannel(Dir, 100 * direction, 0);
+void PumpV3::setDirection(PumpDirection direction) {
+    if (direction == PumpDirection::ReverseDirection) {
+        LOG_WARNING << "Pump has been set to Reverse!";
+        pca9685.setPWMChannelAlwaysOff(Dir);
+    }
+    else {
+        pca9685.setPWMChannelAlwaysOn(Dir,0);
+    }
 }
 
 bool PumpV3::getPumpFault() {

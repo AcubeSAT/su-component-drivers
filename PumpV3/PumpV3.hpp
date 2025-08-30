@@ -14,6 +14,15 @@ enum  class PumpStepMode : uint8_t {
 
 };
 
+/**
+ * Direction of pump turning
+ * @note According to the indication on the pump and the assembly procedures, the ForwardDirection should be used
+ */
+enum class PumpDirection {
+    ForwardDirection,
+    ReverseDirection,
+
+};
 
 /**
  * @class PumpV3
@@ -26,9 +35,8 @@ class PumpV3 {
         * @param mode Step mode for the pump driver
         * @param sleeping Whether the driving circuit should be in sleep mode
         * @param frequency Frequency of step PWM. This controls the speed
-        * @param direction Controls in which direction the pump will spin
         */
-        PumpV3(PumpStepMode mode, bool sleeping, float frequency, bool direction);
+        PumpV3(PumpStepMode mode, bool sleeping, float frequency);
         /**
          * Disables the driving circuit, putting it to sleep mode
          */
@@ -41,8 +49,9 @@ class PumpV3 {
         /**
          * Sets the pump spin direction
          * @param direction The new direction for the pump to spin at
+         * @note The ReverseDirection should NOT be used unless specifically activated by ground intervention
          */
-        void setDirection(bool direction);
+        void setDirection(PumpDirection direction);
 
         /**
          * Checks whether the pump driving circuit has a fault
