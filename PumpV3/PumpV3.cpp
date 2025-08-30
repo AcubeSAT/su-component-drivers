@@ -4,6 +4,7 @@
 
 PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency, bool direction) : pca9685{PcaAddress} {
 
+    pca9685.reset();
     pca9685.setAllPWMChannelsOff();
 
     pca9685.setPWMFrequency(frequency);
