@@ -1,5 +1,4 @@
-#ifndef PUMPV3_H
-#define PUMPV3_H
+#pragma once
 #include "PCA9685.hpp"
 
 /**
@@ -106,4 +105,3 @@ class DRV8825 {
         constexpr static uint8_t StepDutyCycle = 50;
 
 };
-#endif //PUMPV3_H
