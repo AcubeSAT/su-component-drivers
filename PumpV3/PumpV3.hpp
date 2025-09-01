@@ -98,5 +98,11 @@ class PumpV3 {
          */
         constexpr  static uint8_t DacAddress = 0b1100110;
 
+        /**
+         * Duty cycle for the driver PWM input signal.
+         * @note 50% for a square wave
+         */
+        constexpr static uint8_t StepDutyCycle = 50;
+
 };
 #endif //PUMPV3_H
