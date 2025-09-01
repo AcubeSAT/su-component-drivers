@@ -54,7 +54,6 @@ void PumpV3::setDirection(PumpDirection direction) {
 }
 
 bool PumpV3::getPumpFault() {
-
     auto activeLowFault = DRV8833_FAULT_Get();
 
     return !activeLowFault;
