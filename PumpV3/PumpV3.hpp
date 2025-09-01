@@ -46,12 +46,7 @@ class PumpV3 {
          */
         void exitSleep();
 
-        /**
-         * Sets the pump spin direction
-         * @param direction The new direction for the pump to spin at
-         * @note The ReverseDirection should NOT be used unless specifically activated by ground intervention
-         */
-        void setDirection(PumpDirection direction);
+
 
         /**
          * Checks whether the pump driving circuit has a fault
@@ -60,6 +55,12 @@ class PumpV3 {
         static bool getPumpFault();
 
     private:
+        /**
+        * Sets the pump spin direction
+        * @param direction The new direction for the pump to spin at
+        * @note The ReverseDirection should NOT be used unless specifically activated by ground intervention
+        */
+        void setDirection(PumpDirection direction);
         /**
          * PCA PWM channel corresponding to driver step input
          */
