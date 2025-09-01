@@ -48,8 +48,7 @@ void PumpV3::setDirection(PumpDirection direction) {
     if (direction == PumpDirection::ReverseDirection) {
         LOG_WARNING << "Pump has been set to Reverse!";
         pca9685.setPWMChannelAlwaysOff(Dir);
-    }
-    else {
+    } else {
         pca9685.setPWMChannelAlwaysOn(Dir,0);
     }
 }
