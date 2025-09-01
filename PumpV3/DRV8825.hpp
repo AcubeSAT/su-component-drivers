@@ -4,13 +4,13 @@
 
 /**
  * Step mode configurations referenced from the DRV8825 datasheet
- * @note Due to hardware constraints, the modes greater than 3 are not possible to be set
+ * @note Due to hardware constraints, some step modes are omitted
  */
 enum  class PumpStepMode : uint8_t {
-    FullStep = 0, //"Full step (2-phase excitation) with 71% current"
-    HalfStep = 1, //1/2 step (1-2 phase excitation)
-    QuarterStep = 2, //1/4 step (W1-2 phase excitation)
-    EightMicrosteps = 3, //8 microsteps/step
+    FullStep = 0,
+    HalfStep = 1,
+    QuarterStep = 2,
+    EightMicrosteps = 3
 
 };
 
@@ -95,7 +95,7 @@ class DRV8825 {
         PCA9685 pca9685;
 
         /**
-         * Hardcoded I2C address for the DAC that controlls the driver circuit referrence voltage
+         * Hardcoded I2C address for the DAC that controls the driver circuit reference voltage
          */
         constexpr  static uint8_t DacAddress = 0b1100110;
 

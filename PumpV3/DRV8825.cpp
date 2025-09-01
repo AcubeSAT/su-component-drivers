@@ -24,7 +24,7 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
 
     pca9685.setPWMChannel(Mode0, 100 * modeBit0, 0);
 
-    pca9685.setPWMChannel(Mode1, 100 * modeBit1,0);
+    pca9685.setPWMChannel(Mode1, 100 * modeBit1, 0);
 
     //Investigate required configuration, using default for now
     //pca9685.start();
@@ -36,7 +36,7 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
 }
 
 void DRV8825::exitSleep() {
-    pca9685.setPWMChannelAlwaysOn(Sleep,0.0f);
+    pca9685.setPWMChannelAlwaysOn(Sleep, 0.0f);
 }
 
 void DRV8825::enterSleep() {
@@ -49,7 +49,7 @@ void DRV8825::setDirection(PumpDirection direction) {
         LOG_WARNING << "Pump has been set to Reverse!";
         pca9685.setPWMChannelAlwaysOff(Dir);
     } else {
-        pca9685.setPWMChannelAlwaysOn(Dir,0);
+        pca9685.setPWMChannelAlwaysOn(Dir, 0);
     }
 }
 
