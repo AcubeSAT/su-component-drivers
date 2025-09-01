@@ -10,8 +10,7 @@ PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaA
 
     if (sleeping) {
         enterSleep();
-    }
-    else {
+    } else {
         exitSleep();
     }
 
