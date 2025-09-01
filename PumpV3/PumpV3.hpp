@@ -26,7 +26,7 @@ enum class PumpDirection {
 
 /**
  * @class PumpV3
- * @brief A driver for the Pump circuit on the v3 pcb. Functions as a wrapper for the underlying PCA9685 driver
+ * @brief A driver for the Pump circuit on the v3 SU PCB. This class functions as a wrapper for the underlying PCA9685 driver.
  */
 class PumpV3 {
     public:
