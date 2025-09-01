@@ -1,8 +1,8 @@
-#include "PumpV3.hpp"
+#include "DRV8825.hpp"
 
 #include "plib_pio.h"
 
-PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress} {
+DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress} {
 
     pca9685.reset();
     pca9685.setAllPWMChannelsOff();
@@ -35,16 +35,16 @@ PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaA
     pca9685.setPWMChannelAlwaysOn(Reset, 0);
 }
 
-void PumpV3::exitSleep() {
+void DRV8825::exitSleep() {
     pca9685.setPWMChannelAlwaysOn(Sleep,0.0f);
 }
 
-void PumpV3::enterSleep() {
+void DRV8825::enterSleep() {
     //TODO: Investigate if the pca itself can also be placed in sleep mode here
     pca9685.setPWMChannelAlwaysOff(Sleep);
 }
 
-void PumpV3::setDirection(PumpDirection direction) {
+void DRV8825::setDirection(PumpDirection direction) {
     if (direction == PumpDirection::ReverseDirection) {
         LOG_WARNING << "Pump has been set to Reverse!";
         pca9685.setPWMChannelAlwaysOff(Dir);
@@ -53,7 +53,7 @@ void PumpV3::setDirection(PumpDirection direction) {
     }
 }
 
-bool PumpV3::getPumpFault() {
+bool DRV8825::getPumpFault() {
     auto activeLowFault = DRV8833_FAULT_Get();
 
     return !activeLowFault;

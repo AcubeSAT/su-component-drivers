@@ -25,10 +25,10 @@ enum class PumpDirection {
 };
 
 /**
- * @class PumpV3
- * @brief A driver for the Pump circuit on the v3 SU PCB. This class functions as a wrapper for the underlying PCA9685 driver.
+ * @class DRV8825
+ * @brief A driver for DRV8825, the Pump circuit on the v3 SU PCB. This class functions as a wrapper for the underlying PCA9685 driver.
  */
-class PumpV3 {
+class DRV8825 {
     public:
         /**
         *
@@ -36,7 +36,7 @@ class PumpV3 {
         * @param sleeping Whether the driving circuit should be in sleep mode
         * @param frequency Frequency of step PWM. This controls the speed
         */
-        PumpV3(PumpStepMode mode, bool sleeping, float frequency);
+        DRV8825(PumpStepMode mode, bool sleeping, float frequency);
         /**
          * Disables the driving circuit, putting it to sleep mode
          */
