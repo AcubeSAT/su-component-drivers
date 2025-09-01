@@ -22,7 +22,7 @@ PumpV3::PumpV3(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaA
 
     bool modeBit1 = static_cast<uint8_t>(mode) & 2;
 
-    pca9685.setPWMChannel(Mode0, 100 * modeBit0,0);
+    pca9685.setPWMChannel(Mode0, 100 * modeBit0, 0);
 
     pca9685.setPWMChannel(Mode1, 100 * modeBit1,0);
 
