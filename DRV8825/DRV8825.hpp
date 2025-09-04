@@ -1,5 +1,6 @@
 #pragma once
 #include "INA228.hpp"
+#include "MCP4725.hpp"
 #include "PCA9685.hpp"
 
 /**
@@ -59,6 +60,11 @@ class DRV8825 {
          * @return The pump drawn by the current in Amps
          */
         float getPumpCurrent() const;
+
+        /**
+         * DAC driver that controls the reference voltage for the DRV
+         */
+        MCP4725 dac;
     private:
         /**
         * Sets the pump spin direction
@@ -103,6 +109,7 @@ class DRV8825 {
          * INA current sensor driver
          */
         INA228 ina;
+
 
 
         /**
