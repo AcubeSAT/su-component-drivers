@@ -1,4 +1,5 @@
 #pragma once
+#include "INA228.hpp"
 #include "PCA9685.hpp"
 
 /**
@@ -53,6 +54,11 @@ class DRV8825 {
          */
         static bool getPumpFault();
 
+        /**
+         * Gets the pump current using the INA current sensor driver
+         * @return The pump drawn by the current in Amps
+         */
+        float getPumpCurrent() const;
     private:
         /**
         * Sets the pump spin direction
@@ -94,9 +100,20 @@ class DRV8825 {
         PCA9685 pca9685;
 
         /**
+         * INA current sensor driver
+         */
+        INA228 ina;
+
+
+        /**
          * Hardcoded I2C address for the DAC that controls the driver circuit reference voltage
          */
         constexpr  static uint8_t DacAddress = 0b1100110;
+
+        /**
+         * Hardcoded I2C address for the INA current sensor
+         */
+        constexpr static auto InaAddress = INA228::I2CAddress::Address_1000100;
 
         /**
          * Duty cycle for the driver PWM input signal.

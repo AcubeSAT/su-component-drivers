@@ -2,7 +2,7 @@
 
 #include "plib_pio.h"
 
-DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress} {
+DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress}, ina{InaAddress} {
 
     pca9685.reset();
     pca9685.setAllPWMChannelsOff();
@@ -33,6 +33,8 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
     vTaskDelay(200 / portTICK_PERIOD_MS);
 
     pca9685.setPWMChannelAlwaysOn(Reset, 0);
+
+
 }
 
 void DRV8825::exitSleep() {
@@ -57,4 +59,9 @@ bool DRV8825::getPumpFault() {
     auto activeLowFault = DRV8833_FAULT_Get();
 
     return !activeLowFault;
+}
+
+float DRV8825::getPumpCurrent() const
+{
+    return ina.getCurrent();
 }
