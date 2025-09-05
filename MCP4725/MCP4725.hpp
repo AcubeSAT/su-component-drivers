@@ -102,6 +102,6 @@ private:
      * Reads all data from the DAC register and EEPROM
      * @return the read data or nothing on read failure
      */
-    etl::optional<etl::array<uint8_t,5>> readRegisters() const;
+    etl::optional<etl::array<uint8_t, 5>> readRegisters() const;
 };
 
