@@ -33,7 +33,7 @@ MCP4725::Error MCP4725::setVoltage(float voltage)
 
 
     constexpr uint8_t byte0 =(WriteToEEPROM?WriteAllCommandByte:WriteRegisterCommandByte);
-    etl::array<uint8_t,3> buffer2 = {byte0, static_cast<uint8_t>(rawValue >> 4), static_cast<uint8_t>((rawValue & 0b1111) << 4)};
+    etl::array<uint8_t, 3> buffer2 = {byte0, static_cast<uint8_t>(rawValue >> 4), static_cast<uint8_t>((rawValue & 0b1111) << 4)};
     bool success = TWIHS0_Write(address, reinterpret_cast<uint8_t*>(&buffer2), 3);
     if (!success) {
         return Error::WRITE_FAIL;
