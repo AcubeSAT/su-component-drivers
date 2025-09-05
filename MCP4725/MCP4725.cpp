@@ -49,7 +49,7 @@ template MCP4725::Error MCP4725::setVoltage<true>(float voltage);
 template MCP4725::Error MCP4725::setVoltage<false>(float voltage);
 
 etl::optional<etl::array<uint8_t, 5>> MCP4725::readRegisters() const {
-    etl::array<uint8_t,5> buffer{};
+    etl::array<uint8_t, 5> buffer{};
     bool success = TWIHS0_Read(address, buffer.data(), 5);
     while (TWIHS0_IsBusy()) {
         vTaskDelay(1);
