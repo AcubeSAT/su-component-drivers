@@ -24,7 +24,7 @@ class MCP4725 {
      * @param i2cAddress The hardware I2C address of the DAC
      * @param maxVoltage Maximum Voltage the DAC can output, equal to the supply voltage
      */
-    MCP4725(uint8_t i2cAddress,float maxVoltage);
+    MCP4725(uint8_t i2cAddress, float maxVoltage);
 
     /**
      * Sets the output voltage, also programming the EEPROM to preserver the value after power down
