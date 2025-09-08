@@ -2,7 +2,7 @@
 
 #include "plib_pio.h"
 
-DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress}, ina{InaAddress}, dac{DacAddress,3.3f} {
+DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{PcaAddress}, ina{InaAddress}, dac{DacAddress, 3.3f} {
 
     pca9685.reset();
     pca9685.setAllPWMChannelsOff();
