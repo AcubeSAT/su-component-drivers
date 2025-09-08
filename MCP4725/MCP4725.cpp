@@ -38,7 +38,7 @@ MCP4725::Error MCP4725::setVoltage(float voltage) {
         return Error::WRITE_FAIL;
     }
     while (TWIHS0_IsBusy()) {
-        vTaskDelay(1);
+
     }
     voltageRaw = rawValue;
     return Error::NO_ERROR;
@@ -51,7 +51,7 @@ etl::optional<etl::array<uint8_t, 5>> MCP4725::readRegisters() const {
     etl::array<uint8_t, 5> buffer{};
     bool success = TWIHS0_Read(address, buffer.data(), 5);
     while (TWIHS0_IsBusy()) {
-        vTaskDelay(1);
+
     }
     if (!success) {
         LOG_ERROR << "Failed to read from EEPROM";
