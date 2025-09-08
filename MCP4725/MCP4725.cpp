@@ -24,7 +24,7 @@ MCP4725::Error MCP4725::setVoltage(float voltage) {
         return Error::INVALID_ARGUMENT;
     }
 
-    etl::optional<etl::array<uint8_t,5>> readData = readRegisters();
+    etl::optional<etl::array<uint8_t, 5>> readData = readRegisters();
     if ((!readData.has_value()) || ((*readData)[0] & 0b10000000) == 0) {
         return Error::EEPROM_BUSY;
     }
