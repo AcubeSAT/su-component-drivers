@@ -19,7 +19,6 @@ MCP4725::MCP4725(uint8_t i2cAddress, float _maxVoltage) : address{i2cAddress}, m
 
 
 template <bool WriteToEEPROM>
-MCP4725::Error MCP4725::setVoltage(float voltage)
 MCP4725::Error MCP4725::setVoltage(float voltage) {
     if (voltage < 0.0f || voltage > maxVoltage) {
         return Error::INVALID_ARGUMENT;
