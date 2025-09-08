@@ -8,8 +8,6 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
     pca9685.setAllPWMChannelsOff();
     pca9685.setPWMFrequency(frequency);
 
-
-
     setDirection(PumpDirection::ForwardDirection);
 
     pca9685.setPWMChannel(Step, StepDutyCycle, 0);
