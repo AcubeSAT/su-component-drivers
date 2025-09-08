@@ -6,8 +6,8 @@
 
 
 MCP4725::MCP4725(uint8_t i2cAddress, float _maxVoltage) : address{i2cAddress}, maxVoltage {_maxVoltage}, voltageRaw{0} {
-    etl::optional<etl::array<uint8_t,5>> data = readRegisters();
-    if (!data) {
+    etl::optional<etl::array<uint8_t, 5>> data = readRegisters();
+    if (!data.has_value()) {
         LOG_ERROR << "Failed to read DAC voltage, assuming 0";
         return;
     }
