@@ -8,11 +8,7 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
     pca9685.setAllPWMChannelsOff();
     pca9685.setPWMFrequency(frequency);
 
-    if (sleeping) {
-        enterSleep();
-    } else {
-        exitSleep();
-    }
+
 
     setDirection(PumpDirection::ForwardDirection);
 
@@ -26,12 +22,11 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
 
     pca9685.setPWMChannel(Mode1, 100 * modeBit1, 0);
 
-    //Investigate required configuration, using default for now
-    //pca9685.start();
-
-    //Possibly unnecessary delay before stopping the reset signal
-    vTaskDelay(200 / portTICK_PERIOD_MS);
-
+    if (sleeping) {
+        enterSleep();
+    } else {
+        exitSleep();
+    }
     pca9685.setPWMChannelAlwaysOn(Reset, 0);
 
 
@@ -39,11 +34,12 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
 
 void DRV8825::exitSleep() {
     pca9685.setPWMChannelAlwaysOn(Sleep, 0.0f);
+    pca9685.exitSleepMode();
 }
 
 void DRV8825::enterSleep() {
-    //TODO: Investigate if the pca itself can also be placed in sleep mode here
     pca9685.setPWMChannelAlwaysOff(Sleep);
+    pca9685.enterSleepMode();
 }
 
 void DRV8825::setDirection(PumpDirection direction) {
