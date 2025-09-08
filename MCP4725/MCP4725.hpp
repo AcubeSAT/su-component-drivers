@@ -103,5 +103,13 @@ private:
      * @return the read data or nothing on read failure
      */
     etl::optional<etl::array<uint8_t, 5>> readRegisters() const;
+    constexpr static inline uint8_t getCommandByte(bool writeToEEPROM) {
+        if (writeToEEPROM) {
+            return WriteAllCommandByte;
+        }
+        else {
+            return WriteRegisterCommandByte;
+        }
+    }
 };
 
