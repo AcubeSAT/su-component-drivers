@@ -57,7 +57,6 @@ bool DRV8825::getPumpFault() {
     return !activeLowFault;
 }
 
-float DRV8825::getPumpCurrent() const
-{
+float DRV8825::getPumpCurrent() const {
     return ina.getCurrent();
 }
