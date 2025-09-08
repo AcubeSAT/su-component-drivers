@@ -106,8 +106,7 @@ private:
     constexpr static inline uint8_t getCommandByte(bool writeToEEPROM) {
         if (writeToEEPROM) {
             return WriteAllCommandByte;
-        }
-        else {
+        } else {
             return WriteRegisterCommandByte;
         }
     }
