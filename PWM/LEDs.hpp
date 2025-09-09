@@ -71,9 +71,9 @@ public:
      * the brightness of the LED. A value of 100 results in full brightness,
      * while 0 turns off the LED.
      */
-    void setRelativeBrightness(uint32_t brightness) {
-        if (brightness > 100) {
-            brightness = 100;
+    void setRelativeBrightness(float brightness) {
+        if (brightness > 100.0f) {
+            brightness = 100.0f;
         }
         pwm.setDutyCycle(brightness);
     }
@@ -85,7 +85,7 @@ public:
      * This function sets the PWM frequency for dimming the LED. A higher frequency
      * can lead to smoother dimming effects, while a lower frequency might cause flicker.
      */
-    void setDimmingFrequency(uint32_t frequency) {
+    void setDimmingFrequency(float frequency) {
         pwm.setFrequency(frequency);
     }
 
