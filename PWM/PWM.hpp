@@ -125,6 +125,7 @@ public:
         } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
             PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CPRD = CPRD_RegisterValue;
         }
+        setDutyCycleInternal(savedDutyCycle);
         if (shouldResume) {
             start();
         }
@@ -137,20 +138,13 @@ public:
      */
     void setDutyCycle(float dutyCycle) {
         bool shouldResume = false;
-        
+        savedDutyCycle = dutyCycle;
         if (isActive) {
             stop();
             shouldResume = true;
         }
 
-        const CTDY_RegisterType_t CTDY_RegisterValue = dutyCycle * static_cast<float>(CPRD_RegisterValue) / 100.0f;
-
-        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
-            PWM0_REGS->PWM_CH_NUM[channelNumber].PWM_CDTY = CTDY_RegisterValue;
-
-        } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
-            PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CDTY = CTDY_RegisterValue;
-        }
+        setDutyCycleInternal(dutyCycle);
 
         if (shouldResume) {
             start();
@@ -162,6 +156,11 @@ private:
      * The selected channel of the PWM peripheral (0, 1, 2, 3, 4).
      */
     PWM_CHANNEL_NUM channelNumber;
+
+    /**
+     * Cached value of duty cycle, used for correction when frequency is updated
+     */
+    float savedDutyCycle = 0.0f;
 
     /**
      * The corresponding mask of the PWM peripheral.
@@ -292,6 +291,16 @@ private:
             PWM0_REGS->PWM_CH_NUM[channelNumber].PWM_CMR |= PWM_CMR_DPOLI(CMR_DPOLI_Value);;
         } else {
             PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CMR |= PWM_CMR_DPOLI(CMR_DPOLI_Value);
+        }
+    }
+    void setDutyCycleInternal(float dutyCycle) {
+        const CTDY_RegisterType_t CTDY_RegisterValue = dutyCycle * static_cast<float>(CPRD_RegisterValue) / 100.0f;
+
+        if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_0) {
+            PWM0_REGS->PWM_CH_NUM[channelNumber].PWM_CDTY = CTDY_RegisterValue;
+
+        } else if constexpr (PeripheralID == PWM_PeripheralID::PERIPHERAL_1) {
+            PWM1_REGS->PWM_CH_NUM[channelNumber].PWM_CDTY = CTDY_RegisterValue;
         }
     }
 };
