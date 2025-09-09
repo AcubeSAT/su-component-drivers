@@ -138,7 +138,7 @@ public:
      */
     void setDutyCycle(float dutyCycle) {
         bool shouldResume = false;
-        float savedDutyCycle = dutyCycle;
+        savedDutyCycle = dutyCycle;
         if (isActive) {
             stop();
             shouldResume = true;
