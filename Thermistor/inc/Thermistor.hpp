@@ -59,6 +59,17 @@ private:
      */
     static constexpr float VrefAfec = 3.3f;
 
+
+    /**
+     * Gain of the opamp stage that outputs to the ADC
+     */
+    #ifdef SU_EQM_V3
+    static constexpr float OutputVoltageGain = 0.5f;
+    #else
+    static constexpr float OutputVoltageGain = 1.0f;
+    #endif
+
+
     /**
      * Resistances of the circuit in kilo ohms
      */
