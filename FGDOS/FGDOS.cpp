@@ -168,9 +168,7 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
         }
         //prepare and write config data
         ConfigData config{};
-        //setting tdiv to 1 for low sensitivity will cause overflow!
-        tDiv = highSensitivity;
-        config.setTDiv(highSensitivity);
+        config.setTDiv(tDiv);
 
         config.setSensitivity(highSensitivity);
 
