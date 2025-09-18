@@ -137,16 +137,13 @@ public:
      *@param clockFrequency Frequency of clock provided at CK pin of Dosimeter. This is a hardware dependent value.
      *
      *@param chipSelectPin The pin used for chip select (CS) in SPI communication.
-
-     *
-     *@param highSensitivity True for High Sensitivity mode (default), low for Low Sensitivity Mode
      *
      *
      *@param chargeVoltage value from 0 to 7 that indicated charge voltage, from 14.5 to 18
      *
      *@param temperatureOffset value provided by calibration to correctly calculate the temperature
      */
-    FGDOS(uint32_t clockFrequency, PIO_PIN chipSelectPin, bool highSensitivity, uint8_t chargeVoltage, int8_t temperatureOffset);
+    FGDOS(uint32_t clockFrequency, PIO_PIN chipSelectPin, uint8_t chargeVoltage, int8_t temperatureOffset);
 
     /**
      * @brief Retrieves the Chip ID from the FGDOS device.
@@ -185,7 +182,11 @@ public:
     [[nodiscard]] float getDoseRate();
 
 private:
-
+    /**
+     * Hard coded value defining that the Sensitivity mode is "High Sensitivity"
+     * @note This was decided to avoid problems that would arise due to different frequencies when changing from low to high sensitivity
+     */
+    constexpr static bool HighSensitivity = true;
     /**
      * The chip select pin for SPI communication.
      */

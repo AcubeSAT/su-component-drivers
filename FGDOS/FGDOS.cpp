@@ -257,18 +257,18 @@ void FGDOS::debugPrintAll() const {
 
 }
 
-FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin, const bool highSensitivity,const uint8_t chargeVoltage, const int8_t tempOffset)
+FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin,const uint8_t chargeVoltage, const int8_t tempOffset)
 : ChipSelectPin{chipSelectPin}
 ,configClockFrequency{clockFrequency}
-,thresholdFrequency{highSensitivity?thresholdFrequencyDefaultHigh:thresholdFrequencyDefaultLow}
-,targetFrequency{highSensitivity?targetFrequencyDefaultHigh:targetFrequencyDefaultLow}
-,configSensitivity{highSensitivity?sensitivityDefaultHigh:sensitivityDefaultLow}
+,thresholdFrequency{HighSensitivity?thresholdFrequencyDefaultHigh:thresholdFrequencyDefaultLow}
+,targetFrequency{HighSensitivity?targetFrequencyDefaultHigh:targetFrequencyDefaultLow}
+,configSensitivity{HighSensitivity?sensitivityDefaultHigh:sensitivityDefaultLow}
 ,temperatureOffset{tempOffset} {
     LOG_TRACE << "Constructing driver";
     PIO_PinWrite(ChipSelectPin, true);
 
     LOG_TRACE << "Initializing configuration";
-    initConfiguration(chargeVoltage,highSensitivity, false);
+    initConfiguration(chargeVoltage,HighSensitivity, false);
     LOG_TRACE << "Done initializing configuration";
 }
 
