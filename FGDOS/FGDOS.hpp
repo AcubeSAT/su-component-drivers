@@ -113,6 +113,17 @@ class FGDOS {
         {
             data[3] = (data[3] & 0b1111'1110) | tDiv;
         }
+
+        /**
+         * Overwrites the configuration to force the dosimeter to immediately start discharging.
+         * @note This should be used with caution and for testing purposes ONLY
+         */
+        void setToDischarge() {
+            setVoltage(0b111);
+            data[3] |= (1<<4);
+            data[3] &= ~(1<<6);
+            data[5] |= (1<<6);
+        }
     };
 
 
