@@ -65,7 +65,7 @@ private:
      * @note Some channels are unused, consult Thermistor configuration to find the correct channels
      */
     #ifdef SU_EQM_V3
-    constexpr etl::array<float, static_cast<size_t>(AFEC_CH11) + 1> thermistorGains {1.0f, 1.0f, 1.0f, 1.0, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+    constexpr static etl::array<float, static_cast<size_t>(AFEC_CH11) + 1> thermistorGains {1.0f, 1.0f, 1.0f, 1.0, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
     #endif
 
 
