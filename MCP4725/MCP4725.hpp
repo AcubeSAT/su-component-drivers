@@ -32,7 +32,7 @@ class MCP4725 {
      * @return Returns WRITE_FAIL if I2C write failed, EEPROM_BUSY if a previous write to EEPROM is still in progress, or INVALID_ARGUMENT
      */
     inline Error setVoltagePersistent(float voltage) {
-        return setVoltage<false>(voltage);
+        return setVoltage<true>(voltage);
     }
     /**
         * Sets the output voltage but does not program EEPROM. The value is nto preserved after power down
@@ -40,7 +40,7 @@ class MCP4725 {
         * @return Returns WRITE_FAIL if I2C write failed, EEPROM_BUSY if the command fails due to EEPROM being updated, or INVALID_ARGUMENT
         */
     Error setVoltageRegister(float voltage) {
-        return setVoltage<true>(voltage);
+        return setVoltage<false>(voltage);
     }
 
     /**
