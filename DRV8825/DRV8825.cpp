@@ -12,14 +12,7 @@ DRV8825::DRV8825(PumpStepMode mode, bool sleeping, float frequency) : pca9685{Pc
 
     pca9685.setPWMChannel(Step, StepDutyCycle, 0);
 
-    bool modeBit0 = static_cast<uint8_t>(mode) & 1;
-
-    bool modeBit1 = static_cast<uint8_t>(mode) & 2;
-
-    pca9685.setPWMChannel(Mode0, 100 * modeBit0, 0);
-
-    pca9685.setPWMChannel(Mode1, 100 * modeBit1, 0);
-
+    setStepMode(mode);
     if (sleeping) {
         enterSleep();
     } else {
@@ -51,6 +44,17 @@ void DRV8825::setDirection(PumpDirection direction) {
 
 void DRV8825::setFrequency(float frequency) {
     pca9685.setPWMFrequency(frequency);
+}
+
+void DRV8825::setStepMode(PumpStepMode mode) {
+    bool modeBit0 = static_cast<uint8_t>(mode) & 1;
+
+    bool modeBit1 = static_cast<uint8_t>(mode) & 2;
+
+    pca9685.setPWMChannel(Mode0, 100 * modeBit0, 0);
+
+    pca9685.setPWMChannel(Mode1, 100 * modeBit1, 0);
+
 }
 
 bool DRV8825::getPumpFault() {
