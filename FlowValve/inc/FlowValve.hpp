@@ -131,7 +131,7 @@ private:
     /**
      * Address to store valve state in internal flash
      */
-    static constexpr uint32_t InternalFlashStorageAddress = 0;
+    static constexpr uint32_t InternalFlashStorageAddress = 0x5F0000;
     /**
      * Arbitrary value to store if a valve is closed
      * @note this value was chosen to make it difficult for bitflips to change it
