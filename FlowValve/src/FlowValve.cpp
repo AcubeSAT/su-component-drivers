@@ -1,13 +1,74 @@
 #include "FlowValve.hpp"
 
-void FlowValve::openValve() const {
+bool FlowValve::openValve() const {
+    if (valveIndex >= valveStates.size()) {
+        LOG_ERROR << "Valve index invalid!";
+        return false;
+    }
+    if (valveStates[valveIndex] == ValveState::OPEN) {
+        LOG_ERROR << "Valve is already open!";
+        return false;
+    }
+
     PIO_PinWrite(OpenPin, true);
     vTaskDelay(pdMS_TO_TICKS(LatchPulseDuration));
     PIO_PinWrite(OpenPin, false);
+    setValveState(valveIndex, ValveState::OPEN);
+    valveStates[valveIndex] = ValveState::OPEN;
+    return true;
 }
 
-void FlowValve::closeValve() const {
+bool FlowValve::closeValve() const {
+    if (valveIndex >= valveStates.size()) {
+        LOG_ERROR << "Valve index invalid!";
+        return false;
+    }
+    if (valveStates[valveIndex] == ValveState::CLOSED) {
+        LOG_ERROR << "Valve is already closed!";
+        return false;
+    }
     PIO_PinWrite(ClosePin, true);
     vTaskDelay(pdMS_TO_TICKS(LatchPulseDuration));
     PIO_PinWrite(ClosePin, false);
+    setValveState(valveIndex, ValveState::CLOSED);
+    valveStates[valveIndex] = ValveState::CLOSED;
+    return true;
+}
+
+FlowValve::ValveState FlowValve::getValveState(uint8_t index) {
+    if (index >= valveStates.size()) {
+        LOG_ERROR << "Valve index invalid!";
+        return ValveState::OPEN;
+    }
+    etl::array<uint32_t, 2> savedValveStates{};
+    auto result = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
+    if (result != FlashDriver::EFCError::NONE) {
+        LOG_ERROR << "Flash Read Error:" << result;
+        return ValveState::OPEN;
+    }
+    uint8_t state = reinterpret_cast<uint8_t*>(savedValveStates.data())[index];
+    if (state == ValveClosedMagicNumber) {
+        return ValveState::CLOSED;
+    } else if (state != ValveOpenMagicNumber) {
+        LOG_ERROR << "Read Invalid valve state. Assuming Open!;
+    }
+    return ValveState::OPEN;
+}
+
+void FlowValve::setValveState(uint8_t index, ValveState state) {
+    if (index >= valveStates.size()) {
+        LOG_ERROR << "Invalid Valve Index";
+        return;
+    }
+    etl::array<uint32_t, 4> savedValveStates{};
+    auto readResult = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
+    if (readResult != FlashDriver::EFCError::NONE) {
+        LOG_ERROR << "Flash Read Error before Write:" << readResult;
+    }
+    auto& savedState = reinterpret_cast<uint8_t*>(savedValveStates.data())[index];
+    savedState = ((state == ValveState::OPEN) ? ValveOpenMagicNumber : ValveClosedMagicNumber);
+    auto writeResult = flash->writeQuadWord(savedValveStates, InternalFlashStorageAddress);
+    if (writeResult != FlashDriver::EFCError::NONE) {
+        LOG_ERROR << "Flash write Error:" << writeResult;
+    }
 }
