@@ -79,7 +79,7 @@ private:
     /**
      * Array of all valve states. Populated by reading from internal flash and
      */
-    static etl::array<ValveState, 8> valveStates;
+    inline static etl::array<ValveState, 8> valveStates{ValveState::OPEN, ValveState::OPEN, ValveState::OPEN, ValveState::OPEN, ValveState::OPEN, ValveState::OPEN, ValveState::OPEN, ValveState::OPEN};
 
     /**
      * Retreives the valve state from internal flash

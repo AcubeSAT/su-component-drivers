@@ -43,14 +43,14 @@ FlowValve::ValveState FlowValve::getValveState(uint8_t index) {
     etl::array<uint32_t, 2> savedValveStates{};
     auto result = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
     if (result != FlashDriver::EFCError::NONE) {
-        LOG_ERROR << "Flash Read Error:" << result;
+        LOG_ERROR << "Flash Read Error:" << static_cast<int>(result);
         return ValveState::OPEN;
     }
     uint8_t state = reinterpret_cast<uint8_t*>(savedValveStates.data())[index];
     if (state == ValveClosedMagicNumber) {
         return ValveState::CLOSED;
     } else if (state != ValveOpenMagicNumber) {
-        LOG_ERROR << "Read Invalid valve state. Assuming Open!;
+        LOG_ERROR << "Read Invalid valve state. Assuming Open!";
     }
     return ValveState::OPEN;
 }
@@ -63,12 +63,12 @@ void FlowValve::setValveState(uint8_t index, ValveState state) {
     etl::array<uint32_t, 4> savedValveStates{};
     auto readResult = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
     if (readResult != FlashDriver::EFCError::NONE) {
-        LOG_ERROR << "Flash Read Error before Write:" << readResult;
+        LOG_ERROR << "Flash Read Error before Write:" << static_cast<int>(readResult);
     }
     auto& savedState = reinterpret_cast<uint8_t*>(savedValveStates.data())[index];
     savedState = ((state == ValveState::OPEN) ? ValveOpenMagicNumber : ValveClosedMagicNumber);
     auto writeResult = flash->writeQuadWord(savedValveStates, InternalFlashStorageAddress);
     if (writeResult != FlashDriver::EFCError::NONE) {
-        LOG_ERROR << "Flash write Error:" << writeResult;
+        LOG_ERROR << "Flash write Error:" << static_cast<int>(writeResult);
     }
 }
