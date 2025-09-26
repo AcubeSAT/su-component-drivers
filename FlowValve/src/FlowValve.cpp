@@ -5,16 +5,19 @@ bool FlowValve::openValve() const {
         LOG_ERROR << "Valve index invalid!";
         return false;
     }
+    xSemaphoreTake(valveSemaphore.value(), portMAX_DELAY);
     if (valveStates[valveIndex] == ValveState::OPEN) {
+        xSemaphoreGive(valveSemaphore.value());
         LOG_ERROR << "Valve is already open!";
         return false;
     }
-
     PIO_PinWrite(OpenPin, true);
     vTaskDelay(pdMS_TO_TICKS(LatchPulseDuration));
     PIO_PinWrite(OpenPin, false);
-    setValveState(valveIndex, ValveState::OPEN);
+    setValveStateToFlash(valveIndex, ValveState::OPEN);
     valveStates[valveIndex] = ValveState::OPEN;
+    xSemaphoreGive(valveSemaphore.value());
+
     return true;
 }
 
@@ -32,13 +35,13 @@ bool FlowValve::closeValve() const {
     PIO_PinWrite(ClosePin, true);
     vTaskDelay(pdMS_TO_TICKS(LatchPulseDuration));
     PIO_PinWrite(ClosePin, false);
-    setValveState(valveIndex, ValveState::CLOSED);
+    setValveStateToFlash(valveIndex, ValveState::CLOSED);
     valveStates[valveIndex] = ValveState::CLOSED;
     xSemaphoreGive(valveSemaphore.value());
     return true;
 }
 
-FlowValve::ValveState FlowValve::getValveState(uint8_t index) {
+FlowValve::ValveState FlowValve::getValveStateFromFlash(uint8_t index) {
     if (index >= valveStates.size()) {
         LOG_ERROR << "Valve index invalid!";
         return ValveState::OPEN;
@@ -58,7 +61,7 @@ FlowValve::ValveState FlowValve::getValveState(uint8_t index) {
     return ValveState::OPEN;
 }
 
-void FlowValve::setValveState(uint8_t index, ValveState state) {
+void FlowValve::setValveStateToFlash(uint8_t index, ValveState state) {
     if (index >= valveStates.size()) {
         LOG_ERROR << "Invalid Valve Index";
         return;

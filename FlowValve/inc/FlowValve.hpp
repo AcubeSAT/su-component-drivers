@@ -113,16 +113,16 @@ private:
 
     /**
      * Retreives the valve state from internal flash
-     * @param index valve index from 0 to 8
+     * @param index valve index from 0 to 7
      * @return The valve state, either open or closed. As a failsafe, in case of error the valve is considered open
      */
-    static ValveState getValveState(uint8_t index);
+    static ValveState getValveStateFromFlash(uint8_t index);
     /**
-     * Stores the valve state to internal flash. In case of invalid index nothing happens
-     * @param index the valve index from 0 to 8
+     * Stores the valve state to internal flash. In case of invalid index ore error the state is not saved
+     * @param index the valve index from 0 to 7
      * @param state the state, either open or closed
      */
-    static void setValveState(uint8_t index, ValveState state);
+    static void setValveStateToFlash(uint8_t index, ValveState state);
 
     /**
      * Pulse's time duration for latching operation in milliseconds.
