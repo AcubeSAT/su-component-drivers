@@ -49,6 +49,10 @@ void DRV8825::setDirection(PumpDirection direction) {
     }
 }
 
+void DRV8825::setFrequency(float frequency) {
+    pca9685.setPWMFrequency(frequency);
+}
+
 bool DRV8825::getPumpFault() {
     auto activeLowFault = DRV8833_FAULT_Get();
 
