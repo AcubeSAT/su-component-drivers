@@ -87,7 +87,7 @@ public:
 
 private:
     /**
-     * Flash driver instanced. Initialized with the Singleton Pattern
+     * Flash driver instance. Initialized with the Singleton Pattern
      */
     inline static etl::optional<FlashDriver> flash{};
 
