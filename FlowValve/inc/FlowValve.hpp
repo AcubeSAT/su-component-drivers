@@ -15,6 +15,16 @@
 class FlowValve {
 public:
     /**
+     * @enum ValveState
+     *
+     * Enum that contains the possible on/off states.
+     */
+    enum class ValveState : bool {
+        OPEN = true,
+        CLOSED = false,
+    };
+
+    /**
      * Class constructor.
      *
      * @param openPin The GPIO pin number for opening the valve.
@@ -31,23 +41,38 @@ public:
             LOG_ERROR << "Invalid valve index";
             return;
         }
-        valveStates[index] = getValveState(index);
+        if (not valveSemaphore) {
+            valveSemaphore.emplace(xSemaphoreCreateBinaryStatic(&valveSemaphoreBuffer));
+            xSemaphoreGive(valveSemaphore.value());
+        }
+        valveStates[index] = getValveStateFromFlash(index);
 
     };
 
     /**
      * Function that opens the valve by sending a latching pulse to the open pin.
      * A delay is used to ensure smooth transition to the next latching state.
-     * @return false if the valve was already open
+     * @return false if the valve was already open or invalid
      */
     [[nodiscard]] bool openValve() const;
 
     /**
      * Function that closes the valve by sending a latching pulse to the close pin.
      * A delay is used to ensure smooth transition to the next latching state.
-     * @return false if the valve was already closed
+     * @return false if the valve was already closed or invalid
      */
     [[nodiscard]] bool closeValve() const;
+
+    /**
+     * Gets the cached state of the valve
+     * @return nullopt if the valve is invalid, opened or closed otherwise
+     */
+    [[nodiscard]] etl::optional<ValveState> getValveState() const {
+        if (valveIndex >= valveStates.size()) {
+            return etl::nullopt;
+        }
+        return valveStates[valveIndex];
+    }
 
     /**
      * The GPIO pin number for opening the valve.
