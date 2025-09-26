@@ -4,6 +4,7 @@
 #include "peripheral/pio/plib_pio.h"
 #include "FreeRTOS.h"
 #include "Task.hpp"
+#include "semphr.h"
 #include "InternalFlash.hpp"
 
 /**
@@ -60,16 +61,20 @@ public:
 
 
 private:
-    inline static etl::optional<FlashDriver> flash{};
     /**
-     * @enum ValveState
-     *
-     * Enum that contains the possible on/off states.
+     * Flash driver instanced. Initialized with the Singleton Pattern
      */
-    enum class ValveState : bool {
-        OPEN = true,
-        CLOSED = false,
-    };
+    inline static etl::optional<FlashDriver> flash{};
+
+    /**
+     * Semaphore used to protect valve operations
+     */
+    inline static etl::optional<SemaphoreHandle_t> valveSemaphore;
+
+    /**
+     * Buffer for valve semaphore
+     */
+    inline static StaticSemaphore_t valveSemaphoreBuffer;
 
     /**
      * Index of this valve. Used to save its state

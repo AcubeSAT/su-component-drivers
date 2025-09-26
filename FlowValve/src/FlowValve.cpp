@@ -23,7 +23,9 @@ bool FlowValve::closeValve() const {
         LOG_ERROR << "Valve index invalid!";
         return false;
     }
+    xSemaphoreTake(valveSemaphore.value(), portMAX_DELAY);
     if (valveStates[valveIndex] == ValveState::CLOSED) {
+        xSemaphoreGive(valveSemaphore.value());
         LOG_ERROR << "Valve is already closed!";
         return false;
     }
@@ -32,6 +34,7 @@ bool FlowValve::closeValve() const {
     PIO_PinWrite(ClosePin, false);
     setValveState(valveIndex, ValveState::CLOSED);
     valveStates[valveIndex] = ValveState::CLOSED;
+    xSemaphoreGive(valveSemaphore.value());
     return true;
 }
 
