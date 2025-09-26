@@ -26,7 +26,7 @@ public:
 
     /**
      * Class constructor.
-     *
+     * @note Constructs and gives the semaphore if not already done before (Singleton Pattern)
      * @param openPin The GPIO pin number for opening the valve.
      * @param closePin The GPIO pin number for closing the valve.
      * @param index Index of this valve, from 0 to 7. Used to save its state
@@ -59,6 +59,7 @@ public:
     /**
      * Function that opens the valve by sending a latching pulse to the open pin.
      * A delay is used to ensure smooth transition to the next latching state.
+     * @note An indefinite wait to take the valve semaphore is included for thread safety. It is released only after the operation has finished
      * @return false if the valve was already open or invalid
      */
     [[nodiscard]] bool openValve() const;
@@ -66,6 +67,7 @@ public:
     /**
      * Function that closes the valve by sending a latching pulse to the close pin.
      * A delay is used to ensure smooth transition to the next latching state.
+     * @note An indefinite wait to take the valve semaphore is included for thread safety. It is released only after the operation has finished
      * @return false if the valve was already closed or invalid
      */
     [[nodiscard]] bool closeValve() const;
