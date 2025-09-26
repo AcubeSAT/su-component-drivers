@@ -45,7 +45,14 @@ public:
             valveSemaphore.emplace(xSemaphoreCreateBinaryStatic(&valveSemaphoreBuffer));
             xSemaphoreGive(valveSemaphore.value());
         }
-        valveStates[index] = getValveStateFromFlash(index);
+        auto savedState = getValveStateFromFlash(index);
+        if (!savedState) {
+            valveStates[index] = ValveState::OPEN;
+            closeValve();
+        } else {
+
+            valveStates[index] = savedState.value();
+        }
 
     };
 
@@ -114,9 +121,9 @@ private:
     /**
      * Retreives the valve state from internal flash
      * @param index valve index from 0 to 7
-     * @return The valve state, either open or closed. As a failsafe, in case of error the valve is considered open
+     * @return The valve state, either open or closed. In case of read error, nullopt
      */
-    static ValveState getValveStateFromFlash(uint8_t index);
+    static etl::optional<ValveState> getValveStateFromFlash(uint8_t index);
     /**
      * Stores the valve state to internal flash. In case of invalid index ore error the state is not saved
      * @param index the valve index from 0 to 7

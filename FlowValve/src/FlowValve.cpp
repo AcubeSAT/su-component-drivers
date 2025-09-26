@@ -41,16 +41,16 @@ bool FlowValve::closeValve() const {
     return true;
 }
 
-FlowValve::ValveState FlowValve::getValveStateFromFlash(uint8_t index) {
+etl::optional<FlowValve::ValveState> FlowValve::getValveStateFromFlash(uint8_t index) {
     if (index >= valveStates.size()) {
         LOG_ERROR << "Valve index invalid!";
-        return ValveState::OPEN;
+        return etl::nullopt;
     }
     etl::array<uint32_t, 2> savedValveStates{};
     auto result = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
     if (result != FlashDriver::EFCError::NONE) {
         LOG_ERROR << "Flash Read Error:" << static_cast<int>(result);
-        return ValveState::OPEN;
+        return etl::nullopt;
     }
     uint8_t state = reinterpret_cast<uint8_t*>(savedValveStates.data())[index];
     if (state == ValveClosedMagicNumber) {
