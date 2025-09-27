@@ -62,16 +62,30 @@ class DRV8825 {
         float getPumpCurrent() const;
 
         /**
-         * DAC driver that controls the reference voltage for the DRV
-         */
-        MCP4725 dac;
-    private:
-        /**
         * Sets the pump spin direction
         * @param direction The new direction for the pump to spin at
         * @note The ReverseDirection should NOT be used unless specifically activated by ground intervention
         */
         void setDirection(PumpDirection direction);
+
+        /**
+         * Sets the signal frequency that the DRV receives. This controls the speed
+         * @param frequency The frequency in Hertz
+         */
+        void setFrequency(float frequency);
+
+        /**
+         * Sets the DRV Step mode
+         * @param mode The selected Mode
+         */
+        void setStepMode(PumpStepMode mode);
+
+        /**
+         * DAC driver that controls the reference voltage for the DRV
+         */
+        MCP4725 dac;
+    private:
+
         /**
          * PCA PWM channel corresponding to driver step input
          */
