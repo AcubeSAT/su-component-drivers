@@ -34,9 +34,7 @@ public:
     explicit FlowValve(PIO_PIN openPin, PIO_PIN closePin, uint8_t index) : OpenPin(openPin), ClosePin(closePin), valveIndex{index} {
         PIO_PinWrite(OpenPin, false);
         PIO_PinWrite(ClosePin, false);
-        if (not flash.has_value()) {
-            flash.emplace();
-        }
+
         if (index >= valveStates.size()) {
             LOG_ERROR << "Invalid valve index";
             return;
@@ -95,10 +93,6 @@ public:
 
 
 private:
-    /**
-     * Flash driver instance. Initialized with the Singleton Pattern
-     */
-    inline static etl::optional<FlashDriver> flash{};
 
     /**
      * Semaphore used to protect valve operations

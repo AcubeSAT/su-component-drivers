@@ -47,7 +47,7 @@ etl::optional<FlowValve::ValveState> FlowValve::getValveStateFromFlash(uint8_t i
         return etl::nullopt;
     }
     etl::array<uint32_t, 2> savedValveStates{};
-    auto result = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
+    auto result = FlashDriver::readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
     if (result != FlashDriver::EFCError::NONE) {
         LOG_ERROR << "Flash Read Error:" << static_cast<int>(result);
         return etl::nullopt;
@@ -67,13 +67,13 @@ void FlowValve::setValveStateToFlash(uint8_t index, ValveState state) {
         return;
     }
     etl::array<uint32_t, 4> savedValveStates{};
-    auto readResult = flash->readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
+    auto readResult = FlashDriver::readFromMemory(savedValveStates, sizeof(uint32_t) * savedValveStates.size(), InternalFlashStorageAddress);
     if (readResult != FlashDriver::EFCError::NONE) {
         LOG_ERROR << "Flash Read Error before Write:" << static_cast<int>(readResult);
     }
     auto& savedState = reinterpret_cast<uint8_t*>(savedValveStates.data())[index];
     savedState = ((state == ValveState::OPEN) ? ValveOpenMagicNumber : ValveClosedMagicNumber);
-    auto writeResult = flash->writeQuadWord(savedValveStates, InternalFlashStorageAddress);
+    auto writeResult = FlashDriver::writeQuadWord(savedValveStates, InternalFlashStorageAddress);
     if (writeResult != FlashDriver::EFCError::NONE) {
         LOG_ERROR << "Flash write Error:" << static_cast<int>(writeResult);
     }
