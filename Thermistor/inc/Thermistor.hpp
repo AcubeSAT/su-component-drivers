@@ -48,7 +48,7 @@ private:
      *
      * @note Due to the voltage drop cause by the camera, this is made a variable that can be updated from the business logic
      */
-    inline static float powerSupply = 4.97f;
+    inline static float powerSupply = 4.989f;
 
     /**
      * Reference Reference Voltage used for calculations by the Afec
@@ -65,7 +65,7 @@ private:
      * @note Some channels are unused, consult Thermistor configuration to find the correct channels
      */
     #ifdef SU_EQM_V3
-    constexpr static etl::array<float, static_cast<size_t>(AFEC_CH11) + 1> ThermistorGains {1.0f, 1.0f, 1.0f, 1.0, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+    constexpr static etl::array<float, static_cast<size_t>(AFEC_CH11) + 1> ThermistorGains {0.774f, 0.774f, 0.774f, 0.774, 0.774f, 0.774f, 0.774f, 0.774f, 0.774f, 0.774f, 0.774f, 0.774f};
     #endif
 
 
