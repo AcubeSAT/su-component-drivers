@@ -48,7 +48,7 @@ private:
      *
      * @note Due to the voltage drop cause by the camera, this is made a variable that can be updated from the business logic
      */
-    inline static float powerSupply = 4.97f;
+    inline static float powerSupply = 4.989f;
 
     /**
      * Reference Reference Voltage used for calculations by the Afec
@@ -58,6 +58,16 @@ private:
      * @example 3V3 (=VrefAfec) corresponds to 4095(=MaxADCValue)
      */
     static constexpr float VrefAfec = 3.3f;
+
+
+    /**
+     * Gain of the opamp stage that outputs to the ADC, for each channel
+     * @note Some channels are unused, consult Thermistor configuration to find the correct channels
+     */
+    #ifdef SU_EQM_V3
+    constexpr static etl::array<float, static_cast<size_t>(AFEC_CH11) + 1> ThermistorGains {0.76f, 0.76f, 0.76f, 0.76, 0.76f, 0.76f, 0.76f, 0.76f, 0.76f, 0.76f, 0.76f, 0.76};
+    #endif
+
 
     /**
      * Resistances of the circuit in kilo ohms
