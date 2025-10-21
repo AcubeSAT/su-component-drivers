@@ -288,7 +288,7 @@ private:
 
     /**
      * Whether target and threshold values have smaller ranges (*1024 instead of *8912).
-     * Currently force to true for high sensitivity for accuracy, and forced to false for low sensitivity to prevent overflow
+     * Forced to false to prevent overflow
      */
     bool tDiv = false;
 
