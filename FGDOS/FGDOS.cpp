@@ -152,7 +152,7 @@ uint32_t FGDOS::temperatureCompensateFrequency(const uint32_t freq) const {
     return freq;
 }
 
-void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensitivity, const bool forceRecharge) {
+void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensitivity, const bool forceRecharge, const bool enableAutoRecharge) {
         //write so that recharging is disabled
         LOG_DEBUG << "Before initConfig:";
         debugPrintAll();
@@ -181,18 +181,20 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
 
         config.setThresholdFrequency(forceRecharge ? target5Bits : threshold5Bits);
 
-        if (!write(config.data.data(),config.data.size())) {
+        if (!write(config.data.data(), config.data.size())) {
             //set some sort of error flag
             LOG_ERROR << "SPI write failed!\n";
             return;
         }
 
         //enable recharge
-        buffer.back() = config.getRechargeEnableByte();
-        if (!write(buffer.data(),buffer.size())) {
-            //set some sort of error flag
-            LOG_ERROR << "SPI write failed!\n";
-            return;
+        if (enableAutoRecharge) {
+            buffer.back() = config.getRechargeEnableByte();
+            if (!write(buffer.data(), buffer.size())) {
+                //set some sort of error flag
+                LOG_ERROR << "SPI write failed!\n";
+                return;
+            }
         }
 
 
@@ -268,7 +270,7 @@ FGDOS::FGDOS(const uint32_t clockFrequency, const PIO_PIN chipSelectPin,const ui
     PIO_PinWrite(ChipSelectPin, true);
 
     LOG_TRACE << "Initializing configuration";
-    initConfiguration(chargeVoltage,HighSensitivity, false);
+    initConfiguration(chargeVoltage,HighSensitivity, false, false);
     LOG_TRACE << "Done initializing configuration";
 }
 

@@ -384,8 +384,9 @@ private:
      * @param chargeVoltage 3 bit value taht corresponds to charge voltage from 14.5 to 18 Volts
      * @param highSensitivity true for high sensitivity mode, false for low
      * @param forceRecharge if true, an initial recharge will occur. Recommended for first use after installation
+     * @param enableAutoRecharge if true the dosimeter will recharge when below threshold, otherwise it will never recharge
      */
-    void initConfiguration(uint8_t chargeVoltage, bool highSensitivity, bool forceRecharge);
+    void initConfiguration(uint8_t chargeVoltage, bool highSensitivity, bool forceRecharge, bool enableAutoRecharge);
 
     /**
      * Converts frequency to 5bit value to be used in target and threshold registers
