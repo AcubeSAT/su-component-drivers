@@ -253,7 +253,8 @@ void FGDOS::debugPrintAll() const {
         return;
     }
     for (int i=1;i<buffer.size();i++) {
-        LOG_DEBUG<<"At address:"<<i-1<<" value is:"<<buffer[i]<<'\n';
+        LOG_DEBUG<<"At address:"<<i-1<<" value is:"<<buffer[i]<<'\n'
+        vTaskDelay(300);
     }
 
 
