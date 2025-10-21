@@ -47,6 +47,9 @@ bool FGDOS::updateData() {
         referenceOverflown = rLast&0b100;
         refFrequency = frequencyFromRaw(rawRefFrequency);
         LOG_DEBUG << "Updated reference frequency to:" << refFrequency << '\n';
+        if (referenceOverflown) {
+            LOG_ERROR << "reference frequency overflow";
+        }
 
     }
 
@@ -253,7 +256,7 @@ void FGDOS::debugPrintAll() const {
         return;
     }
     for (int i=1;i<buffer.size();i++) {
-        LOG_DEBUG<<"At address:"<<i-1<<" value is:"<<buffer[i]<<'\n'
+        LOG_DEBUG<<"At address:"<<i-1<<" value is:"<<buffer[i]<<'\n';
         vTaskDelay(300);
     }
 
