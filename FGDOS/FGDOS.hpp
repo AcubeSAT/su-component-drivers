@@ -122,7 +122,7 @@ class FGDOS {
             setVoltage(0b111);
             data[3] |= (1<<4);
             data[3] &= ~(1<<6);
-            data[5] |= (1<<6);
+            data[4] |= (1<<7);
         }
     };
 
