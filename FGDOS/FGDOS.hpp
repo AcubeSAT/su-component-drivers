@@ -1,11 +1,11 @@
 #pragma once
-#ifdef SU_EQM
 #include <etl/array.h>
 #include "Peripheral_Definitions.hpp"
 #include "Task.hpp"
 #include "Logger.hpp"
 #include "definitions.h"
 #include <etl/bit.h>
+#include "peripheral/spi/spi_master/plib_spi0_master.h"
 
 #if FGDOS_SPI_PORT == 0
 
@@ -45,11 +45,11 @@ class FGDOS {
     struct ConfigData {
         etl::array<uint8_t, 7> data {
             writeMask | 0x9//write base address
-           ,0b000'1011 //0x9:default target value for default clock and window and high sensitivity, tdiv=1: 90kHz -> 22 as specified by manufacturer
-           ,0b0000'0101 //0xA:default threshold value for -||- : 50kHZ -> 12 -||-
-           ,0b1100'0000 //0xB:experimental configuration
+           ,0b0001'0110 //0x9:default target value for default clock and window and high sensitivity, tdiv=1: 90kHz -> 22 as specified by manufacturer
+           ,0b0000'1100 //0xA:default threshold value for -||- : 50kHZ -> 12 -||-
+           ,0b0100'1001 //0xB:experimental configuration
            ,0b0111'1001 //0xC:high sensitivity
-           ,0           //0xD:start with charging disabled, charge voltage is 000->14.5V
+           ,0b0000'0111 //0xD:start with charging disabled, charge voltage is 000->14.5V
            ,0b0000'0100 //0xE dont measure during spi: true, interrupt:0, engate:0
        };
 
@@ -115,7 +115,7 @@ class FGDOS {
         }
 
         /**
-         * Overwrites the configuration to force the dosimeter to immediately start discharging.
+         * Overwrites the configuration to force the dosimeter to immediately start discharging, providing that the enable charging bit is enabled
          * @note This should be used with caution and for testing purposes ONLY
          */
         void setToDischarge() {
@@ -261,7 +261,7 @@ private:
     /**
      * Window amount value. Currently only the default value is supported.
      */
-    uint32_t windowAmount = 32768;
+    uint32_t windowAmount = 8192;
 
 
     constexpr static uint32_t thresholdFrequencyDefaultHigh = 50'000;
@@ -290,7 +290,7 @@ private:
      * Whether target and threshold values have smaller ranges (*1024 instead of *8912).
      * Forced to false to prevent overflow
      */
-    bool tDiv = false;
+    bool tDiv = true;
 
     /**
      * SPI Write Wrapper
@@ -420,4 +420,3 @@ private:
 
 
 };
-#endif

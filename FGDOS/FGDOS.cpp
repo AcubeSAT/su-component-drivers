@@ -30,11 +30,18 @@ bool FGDOS::updateData() {
     recharging = rchcnt & 0b1000'0000;
     const bool refReady = rLast & 0b1000;
     const bool sensorReady = sLast & 0b1000;
-    //LOG_DEBUG<<"Recharge count:"<<rchcnt<<'\n';
+
+    //deal with these errors outside this function
+    sensorOverflown = sLast & 0b100;
+
     //if recharging no data available
+
     if(recharging) {
         LOG_DEBUG << "Disregarding data because sensor is recharging\n";
         LOG_DEBUG << "Sensor frequency is:" << frequencyFromRaw(buffer[7] | (buffer[8]<<8) | ((sLast&0b11) << 16));
+        if (sensorOverflown) {
+            LOG_ERROR << "Sensor counter overflow!\n";
+        }
         return false;
     }
 
@@ -70,9 +77,6 @@ bool FGDOS::updateData() {
     if(rchcnt != 0) {
         clearRechargeCount();
     }
-
-    //deal with these errors outside this function
-    sensorOverflown = sLast & 0b100;
 
     sensorPrevFrequency = sensorFrequency;
     uint32_t rawSensorFrequency = buffer[7] | (buffer[8] << 8) | ((sLast & 0b11) << 16);
@@ -155,7 +159,7 @@ uint32_t FGDOS::temperatureCompensateFrequency(const uint32_t freq) const {
     return freq;
 }
 
-void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensitivity, const bool forceRecharge, const bool enableAutoRecharge) {
+void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensitivity, const bool forceRecharge, bool enableAutoRecharge) {
         //write so that recharging is disabled
         LOG_DEBUG << "Before initConfig:";
         debugPrintAll();
@@ -171,19 +175,20 @@ void FGDOS::initConfiguration(const uint8_t chargeVoltage,const bool highSensiti
         }
         //prepare and write config data
         ConfigData config{};
-        config.setTDiv(tDiv);
+        //config.setTDiv(tDiv);
 
-        config.setSensitivity(highSensitivity);
+        //config.setSensitivity(highSensitivity);
 
         //make sure that charge voltage is a 3 bit value
-        config.setVoltage(chargeVoltage&0b111);
+        //config.setVoltage(chargeVoltage&0b111);
         uint8_t target5Bits = frequencyTo5Bit(targetFrequency);
-        config.setTargetFrequency(target5Bits);
+        //config.setTargetFrequency(target5Bits);
         uint8_t threshold5Bits = frequencyTo5Bit(thresholdFrequency);
 
 
         config.setThresholdFrequency(forceRecharge ? target5Bits : threshold5Bits);
-
+        //config.setToDischarge();
+        enableAutoRecharge = false;
         if (!write(config.data.data(), config.data.size())) {
             //set some sort of error flag
             LOG_ERROR << "SPI write failed!\n";
