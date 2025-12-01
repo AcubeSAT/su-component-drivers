@@ -3,43 +3,62 @@
 #include <cstdint>
 #include <type_traits>
 #include <etl/array.h>
+
+#include "INA228.hpp"
 #include "PCA9685.hpp"
-#include "Logger.hpp"
-#include "FreeRTOS.h"
-#include "task.h"
 #include "peripheral/pio/plib_pio.h"
 #include "Peripheral_Definitions.hpp"
 
 class Pump {
+    /**
+     * Direction of pump turning
+     * @note According to the indication on the pump and the assembly procedures, the ForwardDirection should be used
+     */
+    enum class PumpDirection {
+        ForwardDirection,
+        ReverseDirection,
+
+    };
+
 public:
     /**
      * Constructor for the PumpDriver class.
      */
-    Pump() = default;
+    Pump(bool sleeping, float frequency);
 
     /**
-     * Function that initializes the pump.
-     *
-     * @brief Set up the PCA9685 device.
+         * Disables the driving circuit, putting it to sleep mode
+         */
+    void enterSleep();
+    /**
+     * Enables the driver
      */
-    void init();
+    void exitSleep();
 
     /**
-     * Function that sets the pump to operating mode.
-     */
-    void openPump();
+    * Checks whether the pump driving circuit has a fault
+    * @return true if the driving circuit signals a fault
+    */
+    static bool getPumpFault();
 
     /**
-     * Function that stops the operation of the pump.
-     */
-    void closePump();
+    * Gets the pump current using the INA current sensor driver
+    * @return The pump drawn by the current in Amps
+    */
+    float getPumpCurrent() const;
 
     /**
-     * Function that sets the speed of the pump's integrated stepper motor.
-     *
-     * @param speed The rotational speed of the pump's integrated stepper motor.
+        * Sets the pump spin direction
+        * @param direction The new direction for the pump to spin at
+        * @note The ReverseDirection should NOT be used unless specifically activated by ground intervention
+        */
+    void setDirection(PumpDirection direction);
+
+    /**
+     * Sets the signal frequency that the DRV receives. This controls the speed
+     * @param frequency The frequency in Hertz
      */
-    void setSpeed(float speed);
+    void setFrequency(float frequency);
 
 private:
     /**
@@ -51,6 +70,11 @@ private:
      * Driver for the PWM generator PCA9685.
      */
     PCA9685 pwmGenerator{PCA9685::I2CAddress::I2CAddress_101011};
+
+    /**
+     * INA current sensor for the pump
+     */
+    INA228 ina228 {INA228::I2CAddress::Address_1000100}
 
     /**
      * The number of the PWM signals that are required to operate the pump.
